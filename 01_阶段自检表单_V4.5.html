@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>阶段自检表单 V4.5</title>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --success: #52c41a;
+            --warning: #faad14;
+            --danger: #f5222d;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f5f5f5;
+            --card: #fff;
+            --border: #e8e8e8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 15px;
+            padding-bottom: 20px;
+        }
+        .container { max-width: 100%; padding: 12px; }
+        .header {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: #fff;
+            padding: 16px 12px;
+            margin: -12px -12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header .meta { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+            color: var(--text-light);
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        .btn:active { transform: scale(0.98); }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .stat-item {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-value { font-size: 20px; font-weight: 600; color: var(--primary); }
+        .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #fafafa; font-weight: 500; color: var(--text-light); font-size: 12px; }
+        .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .tag-green { background: #f6ffed; color: #52c41a; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; }
+        .phase-box { padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+        .phase-trial { background: #fff2e8; border-left: 4px solid #fa8c16; }
+        .phase-standard { background: #e6f7ff; border-left: 4px solid #1890ff; }
+        .phase-product { background: #f6ffed; border-left: 4px solid #52c41a; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+        .checkbox-item input { width: 18px; height: 18px; }
+        .info-box { background: #e6f7ff; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #1890ff; font-size: 13px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 阶段自检表单</h1>
+            <div class="meta">V4.5 | 配套自媒体战略V4.5</div>
+        </div>
+
+        <!-- 累计数据汇总 -->
+        <div class="card">
+            <div class="card-title">📊 累计数据汇总</div>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">发布总条数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-valid">0</div>
+                    <div class="stat-label">有效方向数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-rate">0%</div>
+                    <div class="stat-label">平均评论率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-need">0</div>
+                    <div class="stat-label">需求评论累计</div>
+                </div>
+            </div>
+            <div class="form-row" style="margin-top: 12px;">
+                <div class="form-group">
+                    <label class="form-label">发布总条数</label>
+                    <input type="number" class="form-input" id="input-total" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">有效方向数</label>
+                    <input type="number" class="form-input" id="input-valid-dirs" placeholder="0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">平均评论率(%)</label>
+                    <input type="number" class="form-input" id="input-avg-rate" placeholder="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">需求评论累计</label>
+                    <input type="number" class="form-input" id="input-need-total" placeholder="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- 阶段判断对照表 -->
+        <div class="card">
+            <div class="card-title">📍 阶段判断对照表</div>
+            <table>
+                <tr>
+                    <th>判定维度</th>
+                    <th>你的现状</th>
+                    <th>试错期</th>
+                    <th>标准期</th>
+                    <th>产品期</th>
+                </tr>
+                <tr>
+                    <td><strong>方向稳定</strong></td>
+                    <td><input type="text" class="form-input" id="dir-status" placeholder="填写"></td>
+                    <td>未锁定</td>
+                    <td>锁定1-2</td>
+                    <td>深耕中</td>
+                </tr>
+                <tr>
+                    <td><strong>执行稳定</strong></td>
+                    <td><input type="text" class="form-input" id="exec-status" placeholder="条/天"></td>
+                    <td>≥3条</td>
+                    <td>≥2条</td>
+                    <td>≥1条</td>
+                </tr>
+                <tr>
+                    <td><strong>数据稳定</strong></td>
+                    <td><input type="text" class="form-input" id="data-status" placeholder="%"></td>
+                    <td>不稳定</td>
+                    <td>2-5%</td>
+                    <td>≥3%</td>
+                </tr>
+                <tr>
+                    <td><strong>需求积累</strong></td>
+                    <td><input type="text" class="form-input" id="need-status" placeholder="条"></td>
+                    <td>&lt;50</td>
+                    <td>50-100</td>
+                    <td>&gt;100</td>
+                </tr>
+                <tr>
+                    <td><strong>商业闭环</strong></td>
+                    <td><input type="text" class="form-input" id="biz-status" placeholder="状态"></td>
+                    <td>无</td>
+                    <td>思考中</td>
+                    <td>测试中</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 当前阶段判断 -->
+        <div class="card">
+            <div class="card-title">🎯 当前阶段判断</div>
+            <div class="checkbox-item">
+                <input type="radio" name="phase" id="phase1" value="试错期">
+                <label for="phase1"><span class="tag tag-orange">试错期</span> 多方向测试，快速验证</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="radio" name="phase" id="phase2" value="标准期">
+                <label for="phase2"><span class="tag tag-blue">标准期</span> 锁定方向，优化表达</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="radio" name="phase" id="phase3" value="产品期">
+                <label for="phase3"><span class="tag tag-green">产品期</span> 需求聚类，变现测试</label>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">建议动作（可填写）</label>
+                <textarea class="form-input" id="suggestion" rows="3" placeholder="根据阶段填写下一步动作..."></textarea>
+            </div>
+        </div>
+
+        <!-- 试错期→标准期 转换检查 -->
+        <div class="card">
+            <div class="card-title">🔄 试错期 → 标准期 转换检查</div>
+            <table>
+                <tr><th>条件</th><th>标准</th><th>你的情况</th><th>达标</th></tr>
+                <tr>
+                    <td>方向锁定</td>
+                    <td>锁定1-2个有效方向</td>
+                    <td><input type="text" class="form-input" id="cond1" placeholder="___个"></td>
+                    <td><input type="checkbox" id="check1"></td>
+                </tr>
+                <tr>
+                    <td>数据稳定</td>
+                    <td>连续14天评论率≥2%</td>
+                    <td><input type="text" class="form-input" id="cond2" placeholder="连续___天"></td>
+                    <td><input type="checkbox" id="check2"></td>
+                </tr>
+                <tr>
+                    <td>需求积累</td>
+                    <td>需求评论≥50条</td>
+                    <td><input type="text" class="form-input" id="cond3" placeholder="___条"></td>
+                    <td><input type="checkbox" id="check3"></td>
+                </tr>
+            </table>
+            <div class="checkbox-item" style="margin-top: 10px;">
+                <input type="checkbox" id="can-standard">
+                <label for="can-standard"><strong>全部达标，可以进入标准期</strong></label>
+            </div>
+        </div>
+
+        <!-- 标准期→产品期 转换检查 -->
+        <div class="card">
+            <div class="card-title">🔄 标准期 → 产品期 转换检查</div>
+            <table>
+                <tr><th>条件</th><th>标准</th><th>你的情况</th><th>达标</th></tr>
+                <tr>
+                    <td>需求积累</td>
+                    <td>需求评论≥100条</td>
+                    <td><input type="text" class="form-input" id="cond4" placeholder="___条"></td>
+                    <td><input type="checkbox" id="check4"></td>
+                </tr>
+                <tr>
+                    <td>需求可聚类</td>
+                    <td>能聚类出明确需求方向</td>
+                    <td><input type="text" class="form-input" id="cond5" placeholder="是/否"></td>
+                    <td><input type="checkbox" id="check5"></td>
+                </tr>
+                <tr>
+                    <td>稳定流量</td>
+                    <td>有稳定流量入口</td>
+                    <td><input type="text" class="form-input" id="cond6" placeholder="有/无"></td>
+                    <td><input type="checkbox" id="check6"></td>
+                </tr>
+            </table>
+            <div class="checkbox-item" style="margin-top: 10px;">
+                <input type="checkbox" id="can-product">
+                <label for="can-product"><strong>全部达标，可以进入产品期</strong></label>
+            </div>
+        </div>
+
+        <!-- 产品期运营 -->
+        <div class="card">
+            <div class="card-title">💰 产品期运营数据</div>
+            <table>
+                <tr><th>指标</th><th>本周</th><th>上周对比</th></tr>
+                <tr>
+                    <td>私域新增</td>
+                    <td><input type="number" class="form-input" id="pv1" placeholder="人"></td>
+                    <td><input type="text" class="form-input" id="pv1c" placeholder="↗↘"></td>
+                </tr>
+                <tr>
+                    <td>产品咨询</td>
+                    <td><input type="number" class="form-input" id="pv2" placeholder="人"></td>
+                    <td><input type="text" class="form-input" id="pv2c" placeholder="↗↘"></td>
+                </tr>
+                <tr>
+                    <td>成交</td>
+                    <td><input type="number" class="form-input" id="pv3" placeholder="单"></td>
+                    <td><input type="text" class="form-input" id="pv3c" placeholder="↗↘"></td>
+                </tr>
+                <tr>
+                    <td>收入</td>
+                    <td><input type="number" class="form-input" id="pv4" placeholder="元"></td>
+                    <td><input type="text" class="form-input" id="pv4c" placeholder="↗↘"></td>
+                </tr>
+            </table>
+            
+            <div style="margin-top: 12px;">
+                <label class="form-label">需求聚类记录</label>
+                <table>
+                    <tr><th>需求类型</th><th>出现次数</th><th>产品候选</th></tr>
+                    <tr>
+                        <td>知识型</td>
+                        <td><input type="number" class="form-input" id="nc1" placeholder="次"></td>
+                        <td><input type="checkbox" id="nc1c"></td>
+                    </tr>
+                    <tr>
+                        <td>工具型</td>
+                        <td><input type="number" class="form-input" id="nc2" placeholder="次"></td>
+                        <td><input type="checkbox" id="nc2c"></td>
+                    </tr>
+                    <tr>
+                        <td>服务型</td>
+                        <td><input type="number" class="form-input" id="nc3" placeholder="次"></td>
+                        <td><input type="checkbox" id="nc3c"></td>
+                    </tr>
+                    <tr>
+                        <td>社群型</td>
+                        <td><input type="number" class="form-input" id="nc4" placeholder="次"></td>
+                        <td><input type="checkbox" id="nc4c"></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label">选定产品方向</label>
+                <input type="text" class="form-input" id="product-dir" placeholder="如：心理学入门课程">
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="card">
+            <div class="card-title">💾 保存与导出</div>
+            <button class="btn btn-primary" onclick="saveData()">保存数据</button>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="exportText()">导出文本</button>
+                <button class="btn btn-outline" onclick="exportJSON()">导出JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'phase_check_form_v45';
+        
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const obj = JSON.parse(data);
+                // 遍历所有input
+                document.querySelectorAll('input, textarea').forEach(el => {
+                    if (obj[el.id] !== undefined) {
+                        if (el.type === 'checkbox' || el.type === 'radio') {
+                            el.checked = obj[el.id];
+                        } else {
+                            el.value = obj[el.id];
+                        }
+                    }
+                });
+                updateStats();
+            }
+        }
+        
+        function saveData() {
+            const obj = {};
+            document.querySelectorAll('input, textarea').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+            updateStats();
+            showToast('保存成功');
+        }
+        
+        function updateStats() {
+            document.getElementById('stat-total').textContent = document.getElementById('input-total').value || '0';
+            document.getElementById('stat-valid').textContent = document.getElementById('input-valid-dirs').value || '0';
+            document.getElementById('stat-rate').textContent = (document.getElementById('input-avg-rate').value || '0') + '%';
+            document.getElementById('stat-need').textContent = document.getElementById('input-need-total').value || '0';
+        }
+        
+        function exportText() {
+            let text = '【阶段自检表单 V4.5】\n导出时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+            
+            // 读取所有输入框
+            document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(el => {
+                const label = el.closest('.form-group, .section')?.querySelector('label')?.textContent?.trim() || el.placeholder || el.id;
+                if (el.value) {
+                    text += label + '：' + el.value + '\n';
+                }
+            });
+            
+            // 读取所有复选框（选中的）
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(el => {
+                const label = el.closest('label')?.textContent?.trim() || el.id;
+                text += '☑ ' + label + '\n';
+            });
+            
+            // 读取选中的阶段
+            const phase = document.querySelector('input[name="phase"]:checked');
+            if (phase) {
+                text += '\n【当前判定阶段】' + phase.value + '\n';
+            }
+            
+            // 读取判定结果
+            const suggestion = document.getElementById('suggestion');
+            if (suggestion && suggestion.textContent) {
+                text += '\n【系统建议】\n' + suggestion.textContent + '\n';
+            }
+            
+            copyToClipboard(text);
+        }
+        function exportJSON() {
+            const obj = {};
+            obj.exportTime = new Date().toISOString();
+            obj.version = 'V4.5';
+            document.querySelectorAll('input, textarea').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            const text = JSON.stringify(obj, null, 2);
+            copyToClipboard(text);
+        }
+        
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '200px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            textarea.style.fontSize = '16px';
+            document.body.appendChild(textarea);
+            
+            textarea.focus();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('✅ 已复制！请粘贴查看');
+                    setTimeout(() => {
+                        document.body.removeChild(textarea);
+                    }, 500);
+                } else {
+                    showToast('❌ 复制失败，请手动复制下方文本');
+                    textarea.style.background = '#fff';
+                    textarea.readOnly = true;
+                    textarea.addEventListener('click', function() {
+                        this.select();
+                    });
+                }
+            } catch (err) {
+                showToast('❌ 复制失败，长按下方文本复制');
+                textarea.style.background = '#fff';
+                textarea.readOnly = true;
+            }
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 监听输入更新统计
+        ['input-total', 'input-valid-dirs', 'input-avg-rate', 'input-need-total'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateStats);
+        });
+        
+        // 初始化
+        loadData();
+    </script>
+</body>
+</html>
