@@ -700,7 +700,8 @@
                         comments: existingRecord.comments,
                         likes: existingRecord.likes,
                         shares: existingRecord.shares,
-                        commentRate: existingRecord.commentRate
+                        commentRate: existingRecord.commentRate,
+                collectRate: r.collect ? (parseFloat(r.collect) / parseInt(r.views) * 100).toFixed(2) : 0
                     });
                 }
                 existingRecord.history.push(dataPoint);
@@ -740,6 +741,7 @@
                     likes: dataPoint.likes,
                     shares: dataPoint.shares,
                     commentRate: dataPoint.commentRate,
+                collectRate: r.collect ? (parseFloat(r.collect) / parseInt(r.views) * 100).toFixed(2) : 0,
                     script: document.getElementById('record-script').value,
                     history: []
                 };
