@@ -609,8 +609,12 @@
         
         // Tab切换
         function switchTab(tabName) {
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab-item[data-tab="${tabName}"]`).classList.add('active');
+            // 只有底部导航的tab才高亮
+            const tabItem = document.querySelector(`.tab-item[data-tab="${tabName}"]`);
+            if (tabItem) {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                tabItem.classList.add('active');
+            }
             
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(`page-${tabName}`).classList.add('active');
