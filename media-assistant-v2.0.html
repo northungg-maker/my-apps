@@ -432,8 +432,138 @@
             if (name === 'history') loadHistory();
             if (name === 'home') updateHome();
             if (name === 'comment') updateCommentSelect();
-            if (name === 'direction') loadDirections();
+            if (name === 'direction') { loadDirectionStats(); loadDirectionOptions(); loadDirections(); }
             if (name === 'weekly') updateWeekly();
+        }
+        
+        // 加载方向统计数据（自动统计）
+        function loadDirectionStats() {
+            const records = getData('records');
+            const directions = getData('directions');
+            
+            // 按方向分组统计
+            const stats = {};
+            records.forEach(r => {
+                if (!r.direction) return;
+                if (!stats[r.direction]) {
+                    stats[r.direction] = { count: 0, valid: 0 };
+                }
+                stats[r.direction].count++;
+                // 有效标准：播放≥3000且评论率≥3%
+                if (parseInt(r.views) >= 3000 && parseFloat(r.commentRate) >= 3) {
+                    stats[r.direction].valid++;
+                }
+            });
+            
+            // 生成显示
+            let html = '';
+            const dirNames = Object.keys(stats);
+            if (dirNames.length === 0) {
+                html = '<p style="color:var(--text2);font-size:14px;">暂无数据，请先录入内容</p>';
+            } else {
+                dirNames.forEach(name => {
+                    const s = stats[name];
+                    const dirData = directions.find(d => d.name === name);
+                    const result = dirData ? dirData.result : '待验证';
+                    const resultClass = result === '坚持' ? 'result-valid' : result === '放弃' ? 'result-invalid' : 'result-testing';
+                    html += '<div class="direction-stat-item">';
+                    html += '<div class="direction-name">' + name + '</div>';
+                    html += '<div class="direction-nums">测试 <strong>' + s.count + '</strong> 条 | 有效 <strong>' + s.valid + '</strong> 条</div>';
+                    html += '<div class="direction-result ' + resultClass + '">' + result + '</div>';
+                    html += '</div>';
+                });
+            }
+            document.getElementById('direction-stats').innerHTML = html;
+        }
+        
+        // 加载方向选择下拉框
+        function loadDirectionOptions() {
+            const records = getData('records');
+            const directions = getData('directions');
+            
+            // 收集所有方向名
+            const dirSet = new Set();
+            records.forEach(r => { if (r.direction) dirSet.add(r.direction); });
+            directions.forEach(d => { if (d.name) dirSet.add(d.name); });
+            
+            const select = document.getElementById('direction-select');
+            select.innerHTML = '<option value="">选择已有方向...</option>';
+            dirSet.forEach(name => {
+                select.innerHTML += '<option value="' + name + '">' + name + '</option>';
+            });
+        }
+        
+        // 加载已有的方向结论
+        function loadDirectionResult() {
+            const name = document.getElementById('direction-select').value;
+            if (!name) return;
+            
+            const directions = getData('directions');
+            const dir = directions.find(d => d.name === name);
+            
+            if (dir) {
+                document.getElementById('direction-result').value = dir.result || '';
+                document.getElementById('direction-note').value = dir.note || '';
+            } else {
+                document.getElementById('direction-result').value = '';
+                document.getElementById('direction-note').value = '';
+            }
+        }
+        
+        // 保存方向结论
+        function saveDirectionResult() {
+            const name = document.getElementById('direction-select').value;
+            const result = document.getElementById('direction-result').value;
+            const note = document.getElementById('direction-note').value;
+            
+            if (!name) {
+                showToast('请选择方向');
+                return;
+            }
+            
+            const directions = getData('directions');
+            const idx = directions.findIndex(d => d.name === name);
+            
+            if (idx >= 0) {
+                directions[idx].result = result;
+                directions[idx].note = note;
+                directions[idx].date = new Date().toISOString().split('T')[0];
+            } else {
+                directions.push({
+                    name: name,
+                    result: result,
+                    note: note,
+                    date: new Date().toISOString().split('T')[0]
+                });
+            }
+            
+            saveData('directions', directions);
+            showToast('已保存');
+            loadDirectionStats();
+            loadDirections();
+        }
+        
+        // 加载方向验证列表
+        function loadDirections() {
+            const directions = getData('directions');
+            let html = '';
+            if (directions.length === 0) {
+                html = '<p style="color:var(--text2);font-size:14px;">暂无验证记录</p>';
+            } else {
+                directions.forEach(d => {
+                    html += '<div class="history-item">';
+                    html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+                    html += '<strong>' + d.name + '</strong>';
+                    html += '<span style="font-size:12px;color:var(--text3);">' + (d.date || '') + '</span>';
+                    html += '</div>';
+                    html += '<div style="margin-top:8px;">';
+                    if (d.result) html += '<span class="badge">结论：' + d.result + '</span> ';
+                    if (d.note) html += '<span style="color:var(--text2);font-size:13px;">' + d.note + '</span>';
+                    html += '</div>';
+                    html += '</div>';
+                });
+            }
+            document.getElementById('direction-list').innerHTML = html;
         }
         
         // 数据存储
