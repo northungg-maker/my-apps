@@ -459,6 +459,36 @@
         <div id="weekly-history"></div>
     </div>
     
+    <!-- 周复盘页 -->
+    <div id="page-weekly" class="tab-content">
+        <h3 style="margin-bottom:12px;">📅 周复盘</h3>
+        <div class="form-group">
+            <label class="form-label">周期</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="date" id="week-start" class="form-input" style="flex:1;">
+                <span>至</span>
+                <input type="date" id="week-end" class="form-input" style="flex:1;">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">本周重点内容</label>
+            <textarea id="week-focus" class="form-input" rows="2" placeholder="本周做了哪些内容？"></textarea>
+        </div>
+        <div id="weekly-stats" style="margin:12px 0;padding:12px;background:var(--card);border-radius:8px;">
+            <small style="color:var(--text2)">选择周期后自动统计各方向数据</small>
+        </div>
+        <div class="form-group">
+            <label class="form-label">有效内容分析</label>
+            <textarea id="week-analysis" class="form-input" rows="2" placeholder="哪些内容表现好？"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">下周计划</label>
+            <textarea id="week-plan" class="form-input" rows="2" placeholder="下周方向调整？"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveWeekly()">保存周复盘</button>
+        <div id="weekly-history" style="margin-top:16px;"></div>
+    </div>
+    
     <!-- 底部导航 -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('home')">
@@ -1032,6 +1062,89 @@
             
             document.getElementById('valid-count').textContent = validRecords.length;
             document.getElementById('total-count').textContent = records.length;
+        }
+        
+        // ========== 周复盘功能 ==========
+        const DIRECTIONS = ['心理学', '经济学', '认知提升', '行为经济学', '社会观察', '人际关系', '自我成长', '博弈论'];
+        
+        function loadWeeklyStats() {
+            const weekStart = document.getElementById('week-start').value;
+            const weekEnd = document.getElementById('week-end').value;
+            const container = document.getElementById('weekly-stats');
+            
+            if (!weekStart || !weekEnd) {
+                container.innerHTML = '<small style="color:var(--text2)">选择周期后自动统计各方向数据</small>';
+                return;
+            }
+            
+            const records = getData('records');
+            let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+            
+            DIRECTIONS.forEach(dir => {
+                const dirRecords = records.filter(r => r.direction === dir && r.date >= weekStart && r.date <= weekEnd);
+                const views = dirRecords.reduce((sum, r) => sum + (r.views || 0), 0);
+                html += `<div style="background:var(--card);padding:8px;border-radius:6px;text-align:center;">
+                    <div style="font-size:12px;color:var(--text2)">${dir}</div>
+                    <div style="font-size:18px;font-weight:bold">${dirRecords.length}</div>
+                    <small style="color:var(--text2)">播放${views>10000?(views/10000).toFixed(1)+'w':views}</small>
+                </div>`;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+            loadWeeklyHistory();
+        }
+        
+        function saveWeekly() {
+            const weekStart = document.getElementById('week-start').value;
+            const weekEnd = document.getElementById('week-end').value;
+            if (!weekStart || !weekEnd) { alert('请选择周期'); return; }
+            
+            const reviews = getData('weeklyReviews');
+            reviews.push({
+                id: Date.now(),
+                weekStart, weekEnd,
+                focus: document.getElementById('week-focus').value,
+                analysis: document.getElementById('week-analysis').value,
+                plan: document.getElementById('week-plan').value,
+                createdAt: new Date().toISOString()
+            });
+            saveData('weeklyReviews', reviews);
+            
+            document.getElementById('week-focus').value = '';
+            document.getElementById('week-analysis').value = '';
+            document.getElementById('week-plan').value = '';
+            loadWeeklyHistory();
+            alert('周复盘已保存');
+        }
+        
+        function loadWeeklyHistory() {
+            const container = document.getElementById('weekly-history');
+            const reviews = getData('weeklyReviews');
+            if (reviews.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '<h4 style="margin:16px 0 8px;">历史周复盘</h4>';
+            reviews.slice(-5).reverse().forEach(r => {
+                html += `<div class="card" style="margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong>${r.weekStart} ~ ${r.weekEnd}</strong>
+                        <button class="btn-small" onclick="deleteWeekly(${r.id})" style="color:#e74c3c;border:1px solid #e74c3c;background:transparent;padding:4px 8px;border-radius:4px;">删除</button>
+                    </div>
+                    <p style="margin:4px 0;font-size:13px;">${r.focus || '无重点'}</p>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        function deleteWeekly(id) {
+            if (!confirm('确定删除？')) return;
+            let reviews = getData('weeklyReviews');
+            reviews = reviews.filter(r => r.id !== id);
+            saveData('weeklyReviews', reviews);
+            loadWeeklyHistory();
         }
         
         // 清空所有数据
