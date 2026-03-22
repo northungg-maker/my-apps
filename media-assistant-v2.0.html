@@ -676,7 +676,8 @@
                 views: parseInt(document.getElementById('record-views').value) || 0,
                 comments: parseInt(document.getElementById('record-comments').value) || 0,
                 likes: parseInt(document.getElementById('record-likes').value) || 0,
-                shares: parseInt(document.getElementById('record-shares').value) || 0
+                shares: parseInt(document.getElementById('record-shares').value) || 0,
+                    collect: parseInt(document.getElementById("record-collect").value) || 0
             };
             
             dataPoint.commentRate = dataPoint.views > 0 ? (dataPoint.comments / dataPoint.views * 100).toFixed(2) : 0;
