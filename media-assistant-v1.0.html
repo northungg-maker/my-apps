@@ -288,6 +288,10 @@
                     <strong id="valid-content">0</strong>
                 </div>
                 <div class="status-item">
+                    <small>延迟爆发</small><br>
+                    <strong id="delayed-explosion">0</strong>
+                </div>
+                <div class="status-item">
                     <small>总播放</small><br>
                     <strong id="total-views">0</strong>
                 </div>
@@ -354,7 +358,10 @@
             
             <div class="form-group">
                 <label class="form-label">选题标题</label>
-                <input type="text" id="record-title" class="form-input" placeholder="例：为什么你越努力越失败">
+                <input type="text" id="record-title" class="form-input" placeholder="相同标题会自动追加数据">
+                <div style="font-size:12px;color:var(--text2);margin-top:4px;">
+                    💡 让子弹飞一会儿 —— 多次记录同一视频可追踪数据变化
+                </div>
             </div>
             
             <div class="form-row">
@@ -646,32 +653,102 @@
         
         // 保存内容记录
         function saveRecord() {
-            const record = {
-                id: Date.now(),
+            const inputTitle = document.getElementById('record-title').value.trim();
+            const records = getData('records');
+            
+            // 检查是否已有相同标题的记录（追加模式）
+            let existingRecord = records.find(r => r.title === inputTitle);
+            
+            const dataPoint = {
                 date: document.getElementById('record-date').value,
-                title: document.getElementById('record-title').value,
-                platform: document.getElementById('record-platform').value,
-                direction: document.getElementById('record-direction').value,
                 views: parseInt(document.getElementById('record-views').value) || 0,
                 comments: parseInt(document.getElementById('record-comments').value) || 0,
                 likes: parseInt(document.getElementById('record-likes').value) || 0,
-                shares: parseInt(document.getElementById('record-shares').value) || 0,
-                script: document.getElementById('record-script').value
+                shares: parseInt(document.getElementById('record-shares').value) || 0
             };
             
-            if (!record.date || !record.title) {
+            // 计算评论率
+            dataPoint.commentRate = dataPoint.views > 0 ? (dataPoint.comments / dataPoint.views * 100).toFixed(2) : 0;
+            
+            if (!dataPoint.date || !inputTitle) {
                 showToast('请填写日期和标题');
                 return;
             }
             
-            // 计算评论率
-            record.commentRate = record.views > 0 ? (record.comments / record.views * 100).toFixed(2) : 0;
-            record.isValid = record.commentRate >= 3 || record.views >= 3000;
-            record.isExplosive = record.views >= 10000 || record.commentRate >= 5;
+            if (existingRecord) {
+                // 追加模式：更新现有记录
+                if (!existingRecord.history) {
+                    existingRecord.history = [];
+                    // 把原始数据作为第一条历史
+                    existingRecord.history.push({
+                        date: existingRecord.date,
+                        views: existingRecord.views,
+                        comments: existingRecord.comments,
+                        likes: existingRecord.likes,
+                        shares: existingRecord.shares,
+                        commentRate: existingRecord.commentRate
+                    });
+                }
+                existingRecord.history.push(dataPoint);
+                
+                // 更新当前数据（取最新）
+                existingRecord.views = dataPoint.views;
+                existingRecord.comments = dataPoint.comments;
+                existingRecord.likes = dataPoint.likes;
+                existingRecord.shares = dataPoint.shares;
+                existingRecord.commentRate = dataPoint.commentRate;
+                existingRecord.lastUpdated = dataPoint.date;
+                
+                // 检测延迟爆发
+                const firstViews = existingRecord.history[0].views;
+                if (dataPoint.views > firstViews * 3 && dataPoint.views >= 3000) {
+                    existingRecord.isDelayedExplosion = true;
+                    showToast('检测到延迟爆发！已标记 🔥');
+                }
+                
+                // 更新有效性判断
+                existingRecord.isValid = existingRecord.commentRate >= 3 || existingRecord.views >= 3000;
+                existingRecord.isExplosive = existingRecord.views >= 10000 || existingRecord.commentRate >= 5;
+                
+                saveData('records', records);
+                showToast('数据已追加到现有记录');
+            } else {
+                // 新建模式
+                const record = {
+                    id: Date.now(),
+                    date: dataPoint.date,
+                    title: inputTitle,
+                    platform: document.getElementById('record-platform').value,
+                    direction: document.getElementById('record-direction').value,
+                    views: dataPoint.views,
+                    comments: dataPoint.comments,
+                    likes: dataPoint.likes,
+                    shares: dataPoint.shares,
+                    commentRate: dataPoint.commentRate,
+                    script: document.getElementById('record-script').value,
+                    history: [] // 初始化历史数组
+                };
+                
+                record.isValid = record.commentRate >= 3 || record.views >= 3000;
+                record.isExplosive = record.views >= 10000 || record.commentRate >= 5;
+                
+                records.unshift(record);
+                saveData('records', records);
+                showToast('新记录保存成功');
+            }
             
-            const records = getData('records');
-            records.unshift(record);
-            saveData('records', records);
+            // 清空表单
+            document.getElementById('record-title').value = '';
+            document.getElementById('record-direction').value = '';
+            document.getElementById('record-views').value = '';
+            document.getElementById('record-comments').value = '';
+            document.getElementById('record-likes').value = '';
+            document.getElementById('record-shares').value = '';
+            document.getElementById('record-script').value = '';
+            
+            updateHome();
+            updateCommentSelect();
+        }
             
             // 清空表单
             document.getElementById('record-title').value = '';
@@ -696,9 +773,11 @@
             const totalViews = records.reduce((sum, r) => sum + r.views, 0);
             const totalComments = records.reduce((sum, r) => sum + r.comments, 0);
             const validCount = records.filter(r => r.isValid).length;
+            const delayedExplosionCount = records.filter(r => r.isDelayedExplosion).length;
             
             document.getElementById('total-content').textContent = records.length;
             document.getElementById('valid-content').textContent = validCount;
+            document.getElementById('delayed-explosion').textContent = delayedExplosionCount;
             document.getElementById('total-views').textContent = formatNumber(totalViews);
             document.getElementById('total-comments').textContent = formatNumber(totalComments);
             
@@ -861,10 +940,22 @@
                 return;
             }
             
-            container.innerHTML = records.map(r => `
+            container.innerHTML = records.map(r => {
+                // 计算数据变化
+                let changeInfo = '';
+                if (r.history && r.history.length > 1) {
+                    const first = r.history[0];
+                    const last = r.history[r.history.length - 1];
+                    const viewChange = last.views - first.views;
+                    if (viewChange > 0) {
+                        changeInfo = `<span style="color:var(--success);">+${formatNumber(viewChange)}播放</span>`;
+                    }
+                }
+                
+                return `
                 <div class="record-item">
                     <span class="delete-btn" onclick="deleteRecord(${r.id})">删除</span>
-                    <div class="date">${r.date} · ${r.platform}</div>
+                    <div class="date">${r.date} · ${r.platform}${r.lastUpdated ? ` · 更新于${r.lastUpdated}` : ''}</div>
                     <div style="font-weight:500;margin-top:4px;">${r.title}</div>
                     <div class="stats">
                         <span>👁 ${formatNumber(r.views)}</span>
@@ -873,9 +964,12 @@
                         <span>📊 ${r.commentRate}%</span>
                         ${r.isValid ? '<span style="color:var(--success);">有效✓</span>' : ''}
                         ${r.isExplosive ? '<span style="color:var(--danger);">爆款🔥</span>' : ''}
+                        ${r.isDelayedExplosion ? '<span style="color:var(--warning);">延迟爆发⚡</span>' : ''}
+                        ${changeInfo}
                     </div>
+                    ${r.history && r.history.length > 1 ? `<div style="font-size:12px;color:var(--text2);margin-top:4px;">📈 已记录${r.history.length}次数据变化</div>` : ''}
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         // 删除记录
