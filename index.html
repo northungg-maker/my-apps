@@ -2,66 +2,183 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>自媒体工具集</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 30px; color: #333; }
-        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .tool-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; }
-        .tool-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-        .tool-card h3 { color: #1a1a1a; margin-bottom: 8px; font-size: 16px; }
-        .tool-card p { color: #666; font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
-        .tool-card .version { font-size: 11px; color: #999; }
-        .tool-card a { display: block; text-align: center; background: #007AFF; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-size: 14px; }
-        .tool-card a:hover { background: #0056b3; }
-        .note { text-align: center; margin-top: 30px; color: #999; font-size: 12px; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        h1 { 
+            text-align: center; 
+            margin-bottom: 8px; 
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        
+        .tool-card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 16px; 
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .tool-card:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+        }
+        .tool-card:active {
+            transform: scale(0.98);
+        }
+        
+        .tool-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .icon-blue { background: #e3f2fd; }
+        .icon-green { background: #e8f5e9; }
+        .icon-orange { background: #fff3e0; }
+        .icon-purple { background: #f3e5f5; }
+        .icon-pink { background: #fce4ec; }
+        .icon-cyan { background: #e0f7fa; }
+        
+        .tool-info { flex: 1; }
+        .tool-info h3 { 
+            font-size: 15px; 
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+        .tool-info p { 
+            color: #666; 
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .tool-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .tool-arrow {
+            color: #ccc;
+            font-size: 18px;
+        }
+        
+        .version-tag {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #764ba2;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+        
+        .note { 
+            text-align: center; 
+            margin-top: 24px;
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
+        }
+        
+        @media (max-width: 400px) {
+            h1 { font-size: 20px; }
+            .tool-card { padding: 14px; }
+            .tool-icon { width: 40px; height: 40px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 自媒体工具集</h1>
-        <div class="tool-grid">
-            <div class="tool-card">
-                <h3>📊 自媒体数据助手</h3>
-                <p>数据录入、方向验证、数据追踪、爆款标记、延迟爆发、数据导出</p>
-                <span class="version">V2.1 | 推荐</span>
-                <a href="media-assistant-v2.1.html">打开工具</a>
+        <p class="subtitle">数据驱动 · 需求验证 · 持续迭代</p>
+        
+        <a href="media-assistant-v2.1.html" class="tool-card">
+            <div class="tool-icon icon-blue">📊</div>
+            <div class="tool-info">
+                <h3>自媒体数据助手</h3>
+                <p>数据录入 · 方向验证 · 爆款标记</p>
             </div>
-            <div class="tool-card">
-                <h3>📋 表单合集</h3>
-                <p>6合1：每日数据、方向验证、评论分析、执行清单、周复盘、问题诊断</p>
-                <span class="version">V4.4</span>
-                <a href="form-collection-v4.4.html">打开工具</a>
+            <span class="tool-badge">推荐</span>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <a href="form-collection-v4.4.html" class="tool-card">
+            <div class="tool-icon icon-green">📋</div>
+            <div class="tool-info">
+                <h3>表单合集</h3>
+                <p>6合1整合版 · 一站式操作</p>
             </div>
-            <div class="tool-card">
-                <h3>📈 阶段自检表单</h3>
-                <p>累计数据汇总、阶段判定</p>
-                <span class="version">V4.5</span>
-                <a href="stage-check-v4.5.html">打开工具</a>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <a href="stage-check-v4.5.html" class="tool-card">
+            <div class="tool-icon icon-orange">📈</div>
+            <div class="tool-info">
+                <h3>阶段自检表单</h3>
+                <p>累计数据 · 三阶段判定</p>
             </div>
-            <div class="tool-card">
-                <h3>📝 14天复盘工具包</h3>
-                <p>内容样本、14天数据、方向验证、评论分析</p>
-                <span class="version">V4.3</span>
-                <a href="14day-review-v4.3.html">打开工具</a>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <a href="14day-review-v4.3.html" class="tool-card">
+            <div class="tool-icon icon-purple">📝</div>
+            <div class="tool-info">
+                <h3>14天复盘工具包</h3>
+                <p>内容样本 · 周期复盘</p>
             </div>
-            <div class="tool-card">
-                <h3>📖 执行手册</h3>
-                <p>零起步完整流程手册，查询用</p>
-                <span class="version">V4.3</span>
-                <a href="manual-v4.3.html">打开工具</a>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <a href="manual-v4.3.html" class="tool-card">
+            <div class="tool-icon icon-pink">📖</div>
+            <div class="tool-info">
+                <h3>执行手册</h3>
+                <p>零起步流程 · 查询参考</p>
             </div>
-            <div class="tool-card">
-                <h3>🎯 阶段判定与产品期策略</h3>
-                <p>判定规则、产品期策略参考</p>
-                <span class="version">V4.5</span>
-                <a href="stage-strategy-v4.5.html">打开工具</a>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <a href="stage-strategy-v4.5.html" class="tool-card">
+            <div class="tool-icon icon-cyan">🎯</div>
+            <div class="tool-info">
+                <h3>阶段判定与产品期策略</h3>
+                <p>判定规则 · 变现策略</p>
             </div>
-        </div>
-        <p class="note">所有工具数据保存在浏览器本地存储，清除浏览器数据会丢失记录</p>
+            <span class="tool-arrow">›</span>
+        </a>
+        
+        <p class="note">数据保存在浏览器本地，清除数据会丢失记录</p>
     </div>
 </body>
 </html>
