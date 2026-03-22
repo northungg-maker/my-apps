@@ -247,9 +247,19 @@
         </div>
         <div class="form-group">
             <label class="form-label">方向标签</label>
-            <input type="text" id="record-direction" class="form-input" placeholder="只填一个，如：心理学">
+            <input type="text" id="record-direction" class="form-input" list="direction-options" placeholder="点击选择方向">
+            <datalist id="direction-options">
+                <option value="心理学">
+                <option value="经济学">
+                <option value="认知提升">
+                <option value="行为经济学">
+                <option value="社会观察">
+                <option value="人际关系">
+                <option value="自我成长">
+                <option value="博弈论">
+            </datalist>
             <small style="color:var(--text3);font-size:12px;margin-top:4px;display:block;">
-                ⚠️ 只填一个方向（内容的切入角度）。8个核心标签：心理学、经济学、认知提升、行为经济学、社会观察、人际关系、自我成长、博弈论
+                ⚠️ 只选一个方向（内容的切入角度）
             </small>
         </div>
         <div style="display:flex;gap:12px;">
