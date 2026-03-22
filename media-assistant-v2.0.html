@@ -284,20 +284,27 @@
                 <option value="">选择一条记录</option>
             </select>
         </div>
+        
+        <p style="font-size:13px;color:var(--text3);margin:12px 0;">刷评论时粗略分类粘贴，助理会帮你解析分析</p>
+        
         <div class="form-group">
-            <label class="form-label">评论内容</label>
-            <textarea id="comment-content" class="form-input" placeholder="粘贴评论内容"></textarea>
+            <label class="form-label" style="color:#007AFF;">需求型（有问题/痛点）</label>
+            <textarea id="comment-demand" class="form-input" style="height:80px;" placeholder="粘贴痛点相关评论..."></textarea>
         </div>
         <div class="form-group">
-            <label class="form-label">评论类型</label>
-            <select id="comment-type" class="form-select">
-                <option value="互动型">互动型（无需求）</option>
-                <option value="需求型">需求型（有问题/痛点）</option>
-                <option value="赞赏型">赞赏型</option>
-                <option value="质疑型">质疑型</option>
-            </select>
+            <label class="form-label" style="color:#34C759;">互动型（无需求）</label>
+            <textarea id="comment-interact" class="form-input" style="height:80px;" placeholder="粘贴互动评论..."></textarea>
         </div>
-        <button class="btn btn-primary" onclick="saveComment()">保存评论</button>
+        <div class="form-group">
+            <label class="form-label" style="color:#FF9500;">赞赏型</label>
+            <textarea id="comment-praise" class="form-input" style="height:80px;" placeholder="粘贴赞赏评论..."></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label" style="color:#FF3B30;">质疑型</label>
+            <textarea id="comment-doubt" class="form-input" style="height:80px;" placeholder="粘贴质疑评论..."></textarea>
+        </div>
+        
+        <button class="btn btn-primary" onclick="saveComments()">保存评论</button>
         <div id="comment-list" style="margin-top:16px;"></div>
     </div>
     
