@@ -446,7 +446,7 @@
             if (name === 'weekly') updateWeekly();
         }
         
-        // 加载方向统计数据（自动统计）
+        // 加载方向统计数据（自动统计 + 智能建议）
         function loadDirectionStats() {
             const records = getData('records');
             const directions = getData('directions');
@@ -473,12 +473,37 @@
             } else {
                 dirNames.forEach(name => {
                     const s = stats[name];
+                    const rate = s.count > 0 ? Math.round(s.valid / s.count * 100) : 0;
                     const dirData = directions.find(d => d.name === name);
                     const result = dirData ? dirData.result : '待验证';
                     const resultClass = result === '坚持' ? 'result-valid' : result === '放弃' ? 'result-invalid' : 'result-testing';
+                    
+                    // 智能建议逻辑
+                    let suggestion = '';
+                    let suggestionColor = '';
+                    if (s.count < 5) {
+                        suggestion = '💡 数据不足，继续测试';
+                        suggestionColor = '#8E8E93';
+                    } else if (rate >= 40) {
+                        suggestion = '✅ 方向可行，继续发';
+                        suggestionColor = '#34C759';
+                    } else if (rate < 20) {
+                        if (s.count >= 10 && s.valid === 0) {
+                            suggestion = '⚠️ 建议放弃';
+                            suggestionColor = '#FF3B30';
+                        } else {
+                            suggestion = '⚡ 方向有问题，考虑调整';
+                            suggestionColor = '#FF9500';
+                        }
+                    } else {
+                        suggestion = '🔍 需要观察，继续测试';
+                        suggestionColor = '#007AFF';
+                    }
+                    
                     html += '<div class="direction-stat-item">';
                     html += '<div class="direction-name">' + name + '</div>';
-                    html += '<div class="direction-nums">测试 <strong>' + s.count + '</strong> 条 | 有效 <strong>' + s.valid + '</strong> 条</div>';
+                    html += '<div class="direction-nums">测试 <strong>' + s.count + '</strong> 条 | 有效 <strong>' + s.valid + '</strong> 条 | 有效率 <strong>' + rate + '%</strong></div>';
+                    html += '<div style="font-size:13px;color:' + suggestionColor + ';margin-top:4px;font-weight:500;">' + suggestion + '</div>';
                     html += '<div class="direction-result ' + resultClass + '">' + result + '</div>';
                     html += '</div>';
                 });
@@ -1167,9 +1192,45 @@
             showToast('数据已清空');
         }
         
+        // 方向输入模糊提示
+        function setupDirectionAutocomplete() {
+            const input = document.getElementById('record-direction');
+            if (!input) return;
+            
+            // 创建datalist
+            let datalist = document.getElementById('direction-datalist');
+            if (!datalist) {
+                datalist = document.createElement('datalist');
+                datalist.id = 'direction-datalist';
+                input.parentNode.appendChild(datalist);
+            }
+            input.setAttribute('list', 'direction-datalist');
+            
+            // 预设标签
+            const presets = ['心理学', '经济学', '认知提升', '行为经济学', '社会观察', '人际关系', '自我成长'];
+            
+            function updateDatalist() {
+                const records = getData('records');
+                const usedDirections = [...new Set(records.map(r => r.direction).filter(Boolean))];
+                const allDirections = [...new Set([...presets, ...usedDirections])];
+                
+                datalist.innerHTML = '';
+                allDirections.forEach(dir => {
+                    const option = document.createElement('option');
+                    option.value = dir;
+                    datalist.appendChild(option);
+                });
+            }
+            
+            updateDatalist();
+            // 每次聚焦时更新列表
+            input.addEventListener('focus', updateDatalist);
+        }
+        
         // 页面加载时初始化
         updateHome();
         updateCommentSelect();
+        setupDirectionAutocomplete();
     </script>
 </body>
 </html>
