@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自媒体数据助手 V2.2</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --primary2: #764ba2;
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --card2: #fafafa;
+            --text: #333333;
+            --text2: #999999;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: 70px;
+            min-height: 100vh;
+        }
+        .container { padding: 16px; max-width: 600px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            padding: 20px 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%);
+            color: white;
+            margin-bottom: 16px;
+        }
+        .header h1 { font-size: 20px; margin-bottom: 4px; }
+        .header p { font-size: 12px; opacity: 0.8; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--card);
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--card);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%);
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        
+        .btn-secondary {
+            background: var(--card);
+            border: 1px solid #e0e0e0;
+            color: var(--text);
+            padding: 8px 16px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .btn-large {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+        
+        .stat-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .stat-box {
+            flex: 1;
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-box .num {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .stat-box .label {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .nav-item {
+            text-align: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: var(--text2);
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item .icon { font-size: 20px; }
+        .nav-item .label { font-size: 10px; margin-top: 2px; }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 4px;
+        }
+        .tag-valid { background: #e8f5e9; color: var(--success); }
+        .tag-invalid { background: #ffebee; color: var(--danger); }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .danger-zone {
+            background: #fff5f5;
+            border: 1px solid #ffe0e0;
+        }
+        
+        .tip-box {
+            background: var(--card2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        
+        .record-item {
+            background: var(--card);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .record-title { font-weight: 500; }
+        .record-meta {
+            font-size: 12px;
+            color: var(--text2);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>自媒体数据助手</h1>
+        <p>V2.2 | 记录、验证、复盘</p>
+    </div>
+    
+    <div class="container">
+        <!-- 首页：数据录入 -->
+        <div id="page-home" class="tab-content active">
+            <h3 style="margin-bottom:12px;">📝 录入数据</h3>
+            <div class="form-group">
+                <label class="form-label">日期</label>
+                <input type="date" id="record-date" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">标题</label>
+                <input type="text" id="record-title" class="form-input" placeholder="内容标题">
+            </div>
+            <div class="form-group">
+                <label class="form-label">方向</label>
+                <select id="record-direction" class="form-select">
+                    <option value="">请选择方向</option>
+                    <option value="心理学">心理学</option>
+                    <option value="经济学">经济学</option>
+                    <option value="认知提升">认知提升</option>
+                    <option value="行为经济学">行为经济学</option>
+                    <option value="社会观察">社会观察</option>
+                    <option value="人际关系">人际关系</option>
+                    <option value="自我成长">自我成长</option>
+                    <option value="博弈论">博弈论</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">平台</label>
+                <select id="record-platform" class="form-select">
+                    <option value="抖音">抖音</option>
+                    <option value="小红书">小红书</option>
+                    <option value="B站">B站</option>
+                </select>
+            </div>
+            <div class="stat-row">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">播放</label>
+                    <input type="number" id="record-views" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">评论</label>
+                    <input type="number" id="record-comments" class="form-input" placeholder="0">
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">点赞</label>
+                    <input type="number" id="record-likes" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">收藏</label>
+                    <input type="number" id="record-saves" class="form-input" placeholder="0">
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">转发</label>
+                    <input type="number" id="record-shares" class="form-input" placeholder="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">备注</label>
+                <textarea id="record-script" class="form-input" rows="2" placeholder="可选"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveRecord()">保存记录</button>
+        </div>
+        
+        <!-- 评论页 -->
+        <div id="page-comment" class="tab-content">
+            <h3 style="margin-bottom:12px;">💬 评论分析</h3>
+            <div class="form-group">
+                <label class="form-label">选择内容</label>
+                <select id="comment-record" class="form-select">
+                    <option value="">请先录入内容</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">评论内容</label>
+                <textarea id="comment-content" class="form-input" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">类型</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <label><input type="radio" name="comment-type" value="需求型" checked> 需求型</label>
+                    <label><input type="radio" name="comment-type" value="认可型"> 认可型</label>
+                    <label><input type="radio" name="comment-type" value="中立"> 中立</label>
+                    <label><input type="radio" name="comment-type" value="质疑"> 质疑</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">用户标签</label>
+                <input type="text" id="comment-user" class="form-input" placeholder="潜在用户/同行/路人">
+            </div>
+            <button class="btn btn-primary" onclick="saveComment()">保存评论</button>
+        </div>
+        
+        <!-- 方向页 -->
+        <div id="page-direction" class="tab-content">
+            <h3 style="margin-bottom:12px;">🧭 方向验证</h3>
+            <div class="form-group">
+                <label class="form-label">方向</label>
+                <select id="direction-name" class="form-select">
+                    <option value="">请选择方向</option>
+                    <option value="心理学">心理学</option>
+                    <option value="经济学">经济学</option>
+                    <option value="认知提升">认知提升</option>
+                    <option value="行为经济学">行为经济学</option>
+                    <option value="社会观察">社会观察</option>
+                    <option value="人际关系">人际关系</option>
+                    <option value="自我成长">自我成长</option>
+                    <option value="博弈论">博弈论</option>
+                </select>
+            </div>
+            <div class="stat-row">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">内容数量</label>
+                    <input type="number" id="direction-count" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">有效内容</label>
+                    <input type="number" id="direction-valid" class="form-input" placeholder="0">
+                </div>
+            </div>
+            <div class="tip-box">
+                有效标准：评论率≥3% 或 收藏率≥2%
+            </div>
+            <div class="form-group" style="margin-top:12px;">
+                <label class="form-label">备注</label>
+                <textarea id="direction-note" class="form-input" rows="2"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveDirection()">保存验证</button>
+            <div id="direction-list" style="margin-top:16px;"></div>
+        </div>
+        
+        <!-- 历史页 -->
+        <div id="page-history" class="tab-content">
+            <h3 style="margin-bottom:12px;">📋 历史记录</h3>
+            <div id="history-list"></div>
+        </div>
+        
+        <!-- 输出页 -->
+        <div id="page-export" class="tab-content">
+            <h3 style="margin-bottom:12px;">📤 输出 & 备份</h3>
+            <div class="card" style="margin-bottom:12px;">
+                <h4 style="margin-bottom:8px;">📊 统计</h4>
+                <p>有效内容：<span id="valid-count">0</span> 条</p>
+                <p>总记录数：<span id="total-count">0</span> 条</p>
+            </div>
+            <div class="card" style="margin-bottom:12px;">
+                <h4 style="margin-bottom:8px;">导出数据</h4>
+                <button class="btn-large" onclick="exportData()">📦 导出备份文件 (JSON)</button>
+                <button class="btn-large" onclick="exportMarkdown()">📝 导出 Markdown</button>
+            </div>
+            <div class="card" style="margin-bottom:12px;">
+                <h4 style="margin-bottom:8px;">📥 导入备份</h4>
+                <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="width:100%;">
+                <p style="font-size:12px;color:var(--text2);margin-top:4px;">支持导入之前导出的JSON备份</p>
+            </div>
+            <div class="card danger-zone">
+                <h4 style="color:var(--danger);margin-bottom:8px;">⚠️ 危险区域</h4>
+                <button class="btn-danger" onclick="clearAllData()">清空所有数据</button>
+            </div>
+        </div>
+        
+        <!-- 周复盘页 -->
+        <div id="page-weekly" class="tab-content">
+            <h3 style="margin-bottom:12px;">📅 周复盘</h3>
+            <div class="form-group">
+                <label class="form-label">周期</label>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="date" id="week-start" class="form-input" style="flex:1;">
+                    <span>至</span>
+                    <input type="date" id="week-end" class="form-input" style="flex:1;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">本周重点内容</label>
+                <textarea id="week-focus" class="form-input" rows="2" placeholder="本周做了哪些内容？"></textarea>
+            </div>
+            <div id="weekly-stats" style="margin:12px 0;padding:12px;background:var(--card);border-radius:8px;">
+                <small style="color:var(--text2)">选择周期后自动统计各方向数据</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">有效内容分析</label>
+                <textarea id="week-analysis" class="form-input" rows="2" placeholder="哪些内容表现好？"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">下周计划</label>
+                <textarea id="week-plan" class="form-input" rows="2" placeholder="下周方向调整？"></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveWeekly()">保存周复盘</button>
+            <div id="weekly-history" style="margin-top:16px;"></div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <div class="icon">🏠</div>
+            <div class="label">首页</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('comment')">
+            <div class="icon">💬</div>
+            <div class="label">评论</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('direction')">
+            <div class="icon">🧭</div>
+            <div class="label">方向</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('history')">
+            <div class="icon">📋</div>
+            <div class="label">历史</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('export')">
+            <div class="icon">📤</div>
+            <div class="label">输出</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('weekly')">
+            <div class="icon">📅</div>
+            <div class="label">周复盘</div>
+        </div>
+    </div>
+
+<script>
+    // 数据存储键
+    const KEYS = {
+        records: 'media_records',
+        comments: 'media_comments', 
+        directions: 'media_directions',
+        weeklyReviews: 'media_weekly_reviews'
+    };
+    
+    const DIRECTIONS = ['心理学', '经济学', '认知提升', '行为经济学', '社会观察', '人际关系', '自我成长', '博弈论'];
+    
+    // 工具函数
+    function getData(key) {
+        const data = localStorage.getItem(KEYS[key] || key);
+        return data ? JSON.parse(data) : [];
+    }
+    
+    function saveData(key, data) {
+        localStorage.setItem(KEYS[key] || key, JSON.stringify(data));
+    }
+    
+    function formatNumber(num) {
+        if (num >= 10000) return (num / 10000).toFixed(1) + 'w';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+        return num;
+    }
+    
+    // Tab切换
+    function switchTab(name) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        if (name === 'history') loadHistory();
+        if (name === 'home') updateHome();
+        if (name === 'comment') updateCommentSelect();
+        if (name === 'direction') loadDirections();
+        if (name === 'weekly') loadWeeklyStats();
+        if (name === 'export') updateExportStats();
+    }
+    
+    function updateHome() {
+        document.getElementById('record-date').value = new Date().toISOString().split('T')[0];
+    }
+    
+    // 保存记录
+    function saveRecord() {
+        const record = {
+            id: Date.now(),
+            date: document.getElementById('record-date').value,
+            title: document.getElementById('record-title').value,
+            direction: document.getElementById('record-direction').value,
+            platform: document.getElementById('record-platform').value,
+            views: parseInt(document.getElementById('record-views').value) || 0,
+            comments: parseInt(document.getElementById('record-comments').value) || 0,
+            likes: parseInt(document.getElementById('record-likes').value) || 0,
+            saves: parseInt(document.getElementById('record-saves').value) || 0,
+            shares: parseInt(document.getElementById('record-shares').value) || 0,
+            script: document.getElementById('record-script').value,
+            createdAt: new Date().toISOString()
+        };
+        
+        if (!record.title || !record.views) {
+            alert('请填写标题和播放数');
+            return;
+        }
+        
+        record.commentRate = record.views > 0 ? (record.comments / record.views * 100).toFixed(2) : 0;
+        record.saveRate = record.views > 0 ? (record.saves / record.views * 100).toFixed(2) : 0;
+        record.isValid = parseFloat(record.commentRate) >= 3 || parseFloat(record.saveRate) >= 2;
+        
+        const records = getData('records');
+        records.push(record);
+        saveData('records', records);
+        
+        // 清空表单
+        document.getElementById('record-title').value = '';
+        document.getElementById('record-views').value = '';
+        document.getElementById('record-comments').value = '';
+        document.getElementById('record-likes').value = '';
+        document.getElementById('record-saves').value = '';
+        document.getElementById('record-shares').value = '';
+        document.getElementById('record-script').value = '';
+        document.getElementById('record-direction').value = '';
+        
+        alert('保存成功！' + (record.isValid ? ' ✓ 有效内容' : ''));
+    }
+    
+    // 评论
+    function updateCommentSelect() {
+        const records = getData('records');
+        const select = document.getElementById('comment-record');
+        select.innerHTML = '<option value="">请选择内容</option>';
+        records.forEach(r => {
+            select.innerHTML += `<option value="${r.id}">${r.title}</option>`;
+        });
+    }
+    
+    function saveComment() {
+        const comment = {
+            id: Date.now(),
+            recordId: document.getElementById('comment-record').value,
+            content: document.getElementById('comment-content').value,
+            type: document.querySelector('input[name="comment-type"]:checked').value,
+            userLabel: document.getElementById('comment-user').value,
+            createdAt: new Date().toISOString()
+        };
+        
+        const comments = getData('comments');
+        comments.push(comment);
+        saveData('comments', comments);
+        
+        document.getElementById('comment-content').value = '';
+        document.getElementById('comment-user').value = '';
+        alert('评论已保存');
+    }
+    
+    // 方向验证
+    function saveDirection() {
+        const direction = {
+            id: Date.now(),
+            name: document.getElementById('direction-name').value,
+            count: parseInt(document.getElementById('direction-count').value) || 0,
+            valid: parseInt(document.getElementById('direction-valid').value) || 0,
+            note: document.getElementById('direction-note').value,
+            createdAt: new Date().toISOString()
+        };
+        
+        direction.validRate = direction.count > 0 ? (direction.valid / direction.count * 100).toFixed(0) : 0;
+        
+        const directions = getData('directions');
+        directions.push(direction);
+        saveData('directions', directions);
+        
+        document.getElementById('direction-name').value = '';
+        document.getElementById('direction-count').value = '';
+        document.getElementById('direction-valid').value = '';
+        document.getElementById('direction-note').value = '';
+        
+        loadDirections();
+        alert('方向验证已保存');
+    }
+    
+    function loadDirections() {
+        const directions = getData('directions');
+        const container = document.getElementById('direction-list');
+        
+        if (directions.length === 0) {
+            container.innerHTML = '<p style="color:var(--text2);text-align:center;">暂无验证记录</p>';
+            return;
+        }
+        
+        let html = '<h4 style="margin:12px 0;">历史验证</h4>';
+        directions.slice(-10).reverse().forEach(d => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${d.name}</span>
+                    <button class="btn-small" onclick="deleteDirection(${d.id})" style="color:var(--danger);">删除</button>
+                </div>
+                <div class="record-meta">
+                    有效率 ${d.validRate}% | ${d.valid}/${d.count}条
+                    ${d.validRate >= 50 ? '<span class="tag tag-valid">有效</span>' : '<span class="tag tag-invalid">待观察</span>'}
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteDirection(id) {
+        if (!confirm('确定删除？')) return;
+        let directions = getData('directions');
+        directions = directions.filter(d => d.id !== id);
+        saveData('directions', directions);
+        loadDirections();
+    }
+    
+    // 历史记录
+    function loadHistory() {
+        const records = getData('records');
+        const container = document.getElementById('history-list');
+        
+        if (records.length === 0) {
+            container.innerHTML = '<p style="color:var(--text2);text-align:center;">暂无记录</p>';
+            return;
+        }
+        
+        let html = '';
+        records.slice().reverse().forEach(r => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${r.title}</span>
+                    <button class="btn-small" onclick="deleteRecord(${r.id})" style="color:var(--danger);">删除</button>
+                </div>
+                <div class="record-meta">
+                    ${r.date} | ${r.direction || ''} | ${r.platform} | 播放${formatNumber(r.views)}
+                    ${r.isValid ? '<span class="tag tag-valid">有效</span>' : '<span class="tag tag-invalid">待验证</span>'}
+                </div>
+                <div class="record-meta">
+                    评论率${r.commentRate}% | 收藏率${r.saveRate}%
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteRecord(id) {
+        if (!confirm('确定删除这条记录？')) return;
+        let records = getData('records');
+        records = records.filter(r => r.id !== id);
+        saveData('records', records);
+        loadHistory();
+    }
+    
+    // 导出
+    function exportData() {
+        const data = {
+            version: '2.2',
+            exportTime: new Date().toISOString(),
+            records: getData('records'),
+            comments: getData('comments'),
+            directions: getData('directions'),
+            weeklyReviews: getData('weeklyReviews')
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `media-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('备份文件已下载！');
+    }
+    
+    function exportMarkdown() {
+        const records = getData('records');
+        let md = '# 自媒体数据记录\n\n';
+        records.forEach(r => {
+            md += `## ${r.title}\n`;
+            md += `- 日期：${r.date}\n`;
+            md += `- 方向：${r.direction}\n`;
+            md += `- 平台：${r.platform}\n`;
+            md += `- 播放：${r.views}\n`;
+            md += `- 评论：${r.comments} (${r.commentRate}%)\n`;
+            md += `- 收藏：${r.saves} (${r.saveRate}%)\n`;
+            md += `- 有效：${r.isValid ? '是' : '否'}\n\n`;
+        });
+        
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `media-records-${new Date().toISOString().split('T')[0]}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.records) saveData('records', data.records);
+                if (data.comments) saveData('comments', data.comments);
+                if (data.directions) saveData('directions', data.directions);
+                if (data.weeklyReviews) saveData('weeklyReviews', data.weeklyReviews);
+                alert('导入成功！');
+                location.reload();
+            } catch (err) {
+                alert('导入失败：文件格式错误');
+            }
+        };
+        reader.readAsText(file);
+    }
+    
+    function updateExportStats() {
+        const records = getData('records');
+        const valid = records.filter(r => r.isValid).length;
+        document.getElementById('valid-count').textContent = valid;
+        document.getElementById('total-count').textContent = records.length;
+    }
+    
+    function clearAllData() {
+        if (!confirm('确定清空所有数据？此操作不可恢复！')) return;
+        if (!confirm('再次确认：真的要清空所有数据吗？')) return;
+        
+        localStorage.removeItem(KEYS.records);
+        localStorage.removeItem(KEYS.comments);
+        localStorage.removeItem(KEYS.directions);
+        localStorage.removeItem(KEYS.weeklyReviews);
+        
+        alert('数据已清空');
+        location.reload();
+    }
+    
+    // 周复盘功能
+    function loadWeeklyStats() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        const container = document.getElementById('weekly-stats');
+        
+        if (!start || !end) {
+            container.innerHTML = '<small style="color:var(--text2)">选择周期后自动统计各方向数据</small>';
+            return;
+        }
+        
+        const records = getData('records');
+        let html = '<div class="grid-2">';
+        
+        DIRECTIONS.forEach(dir => {
+            const filtered = records.filter(r => r.direction === dir && r.date >= start && r.date <= end);
+            const views = filtered.reduce((sum, r) => sum + (r.views || 0), 0);
+            const valid = filtered.filter(r => r.isValid).length;
+            
+            html += `<div style="background:var(--bg);padding:8px;border-radius:6px;text-align:center;">
+                <div style="font-size:12px;color:var(--text2)">${dir}</div>
+                <div style="font-size:18px;font-weight:bold">${filtered.length}</div>
+                <small style="color:var(--text2)">播放${formatNumber(views)} | 有效${valid}</small>
+            </div>`;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        loadWeeklyHistory();
+    }
+    
+    function saveWeekly() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        if (!start || !end) {
+            alert('请选择周期');
+            return;
+        }
+        
+        const reviews = getData('weeklyReviews');
+        reviews.push({
+            id: Date.now(),
+            weekStart: start,
+            weekEnd: end,
+            focus: document.getElementById('week-focus').value,
+            analysis: document.getElementById('week-analysis').value,
+            plan: document.getElementById('week-plan').value,
+            createdAt: new Date().toISOString()
+        });
+        saveData('weeklyReviews', reviews);
+        
+        document.getElementById('week-focus').value = '';
+        document.getElementById('week-analysis').value = '';
+        document.getElementById('week-plan').value = '';
+        
+        loadWeeklyHistory();
+        alert('周复盘已保存');
+    }
+    
+    function loadWeeklyHistory() {
+        const container = document.getElementById('weekly-history');
+        const reviews = getData('weeklyReviews');
+        
+        if (reviews.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<h4 style="margin:12px 0;">历史周复盘</h4>';
+        reviews.slice(-5).reverse().forEach(r => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${r.weekStart} ~ ${r.weekEnd}</span>
+                    <button class="btn-small" onclick="deleteWeekly(${r.id})" style="color:var(--danger);">删除</button>
+                </div>
+                <div class="record-meta">${r.focus || '无重点'}</div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteWeekly(id) {
+        if (!confirm('确定删除？')) return;
+        let reviews = getData('weeklyReviews');
+        reviews = reviews.filter(r => r.id !== id);
+        saveData('weeklyReviews', reviews);
+        loadWeeklyHistory();
+    }
+    
+    // 初始化
+    updateHome();
+</script>
+</body>
+</html>
