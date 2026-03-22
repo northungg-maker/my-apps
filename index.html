@@ -3,87 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自媒体工具</title>
+    <title>自媒体工具集</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .card:active { transform: scale(0.98); }
-        .card-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-        .card-desc { font-size: 14px; color: #666; }
-        .card-version { font-size: 12px; color: #999; margin-top: 6px; }
-        .badge {
-            display: inline-block;
-            background: #007AFF;
-            color: white;
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 10px;
-            margin-left: 8px;
-        }
-        .badge-new { background: #FF3B30; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .tool-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; }
+        .tool-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        .tool-card h3 { color: #1a1a1a; margin-bottom: 8px; font-size: 16px; }
+        .tool-card p { color: #666; font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
+        .tool-card .version { font-size: 11px; color: #999; }
+        .tool-card a { display: block; text-align: center; background: #007AFF; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-size: 14px; }
+        .tool-card a:hover { background: #0056b3; }
+        .note { text-align: center; margin-top: 30px; color: #999; font-size: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📱 自媒体工具</h1>
-        
-        <a href="media-assistant-v2.0.html" class="card">
-            <div class="card-title">📊 自媒体数据助手<span class="badge badge-new">新</span></div>
-            <div class="card-desc">集成式App：数据录入、评论分析、方向验证、周复盘、一键导出</div>
-            <div class="card-version">V2.0 · 可添加到主屏幕</div>
-        </a>
-        
-        <a href="01_阶段自检表单_V4.5.html" class="card">
-            <div class="card-title">📋 阶段自检表单</div>
-            <div class="card-desc">累计数据汇总、阶段判定对照、阶段转换检查</div>
-            <div class="card-version">V4.5</div>
-        </a>
-        
-        <a href="02_14天复盘工具包_V4.3.html" class="card">
-            <div class="card-title">📅 14天复盘工具包</div>
-            <div class="card-desc">内容样本、14天数据表、方向验证结果、评论分析</div>
-            <div class="card-version">V4.3</div>
-        </a>
-        
-        <a href="03_执行手册_零起步版_V4.3.html" class="card">
-            <div class="card-title">📖 执行手册</div>
-            <div class="card-desc">完整流程手册，查询用</div>
-            <div class="card-version">V4.3</div>
-        </a>
-        
-        <a href="04_阶段判定与产品期策略_V4.5.html" class="card">
-            <div class="card-title">🎯 阶段判定与产品期策略</div>
-            <div class="card-desc">判定规则查询、商业化启动条件</div>
-            <div class="card-version">V4.5</div>
-        </a>
-        
-        <a href="05_表单合集_V4.3.html" class="card">
-            <div class="card-title">📑 表单合集</div>
-            <div class="card-desc">6合1：每日数据、方向验证、评论分析、执行清单、周复盘、问题诊断</div>
-            <div class="card-version">V4.3</div>
-        </a>
+        <h1>🎯 自媒体工具集</h1>
+        <div class="tool-grid">
+            <div class="tool-card">
+                <h3>📊 自媒体数据助手</h3>
+                <p>数据录入、方向验证、数据追踪、爆款标记、延迟爆发、数据导出</p>
+                <span class="version">V2.1 | 推荐</span>
+                <a href="media-assistant-v2.1.html">打开工具</a>
+            </div>
+            <div class="tool-card">
+                <h3>📋 表单合集</h3>
+                <p>6合1：每日数据、方向验证、评论分析、执行清单、周复盘、问题诊断</p>
+                <span class="version">V4.4</span>
+                <a href="form-collection-v4.4.html">打开工具</a>
+            </div>
+            <div class="tool-card">
+                <h3>📈 阶段自检表单</h3>
+                <p>累计数据汇总、阶段判定</p>
+                <span class="version">V4.5</span>
+                <a href="stage-check-v4.5.html">打开工具</a>
+            </div>
+            <div class="tool-card">
+                <h3>📝 14天复盘工具包</h3>
+                <p>内容样本、14天数据、方向验证、评论分析</p>
+                <span class="version">V4.3</span>
+                <a href="14day-review-v4.3.html">打开工具</a>
+            </div>
+            <div class="tool-card">
+                <h3>📖 执行手册</h3>
+                <p>零起步完整流程手册，查询用</p>
+                <span class="version">V4.3</span>
+                <a href="manual-v4.3.html">打开工具</a>
+            </div>
+            <div class="tool-card">
+                <h3>🎯 阶段判定与产品期策略</h3>
+                <p>判定规则、产品期策略参考</p>
+                <span class="version">V4.5</span>
+                <a href="stage-strategy-v4.5.html">打开工具</a>
+            </div>
+        </div>
+        <p class="note">所有工具数据保存在浏览器本地存储，清除浏览器数据会丢失记录</p>
     </div>
 </body>
 </html>

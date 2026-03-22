@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>14天复盘工具包 V4.3</title>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --success: #52c41a;
+            --warning: #faad14;
+            --danger: #f5222d;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f5f5f5;
+            --card: #fff;
+            --border: #e8e8e8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 15px;
+            padding-bottom: 20px;
+        }
+        .container { padding: 12px; }
+        .header {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: #fff;
+            padding: 16px 12px;
+            margin: -12px -12px 16px;
+            position: sticky; top: 0; z-index: 10;
+        }
+        .header h1 { font-size: 18px; }
+        .header .meta { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .form-group { margin-bottom: 12px; }
+        .form-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block; color: var(--text-light); }
+        .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-bottom: 8px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #fafafa; font-weight: 500; color: var(--text-light); font-size: 12px; }
+        .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .tag-green { background: #f6ffed; color: #52c41a; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; }
+        .info-box { background: #f9f0ff; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #722ed1; font-size: 13px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .toast.show { opacity: 1; }
+        textarea.form-input { min-height: 80px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 14天复盘工具包</h1>
+            <div class="meta">V4.3 | 连续执行14天后复盘诊断</div>
+        </div>
+
+        <div class="info-box">
+            <strong>什么时候用：</strong>连续执行14天后，需要判断方向是否正确，需要调整策略时。<br>
+            <strong>怎么用：</strong>填写本文档 → 复制发给AI → 获取下一轮具体打法
+        </div>
+
+        <!-- 一、内容样本 -->
+        <div class="card">
+            <div class="card-title">📝 一、内容样本（最重要）</div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+                准备表现最好和最差的各3条内容
+            </p>
+            
+            <h4 style="color: #52c41a; margin-bottom: 8px;">表现最好Top3</h4>
+            <table>
+                <tr><th>#</th><th>文案/标题</th><th>评论率</th><th>为什么好</th></tr>
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" class="form-input" id="best1" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="best1r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="best1w" placeholder="原因"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" class="form-input" id="best2" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="best2r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="best2w" placeholder="原因"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" class="form-input" id="best3" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="best3r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="best3w" placeholder="原因"></td>
+                </tr>
+            </table>
+            
+            <h4 style="color: #f5222d; margin: 16px 0 8px;">表现最差Bottom3</h4>
+            <table>
+                <tr><th>#</th><th>文案/标题</th><th>评论率</th><th>为什么差</th></tr>
+                <tr>
+                    <td>1</td>
+                    <td><input type="text" class="form-input" id="worst1" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="worst1r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="worst1w" placeholder="原因"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><input type="text" class="form-input" id="worst2" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="worst2r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="worst2w" placeholder="原因"></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td><input type="text" class="form-input" id="worst3" placeholder="标题"></td>
+                    <td><input type="text" class="form-input" id="worst3r" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="worst3w" placeholder="原因"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 二、数据表 -->
+        <div class="card">
+            <div class="card-title">📊 二、14天数据表</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">统计周期</label>
+                    <input type="text" class="form-input" id="period" placeholder="如：Day1-14">
+                </div>
+            </div>
+            <table>
+                <tr><th>指标</th><th>数值</th></tr>
+                <tr><td>总发布条数</td><td><input type="number" class="form-input" id="stat1" placeholder="条"></td></tr>
+                <tr><td>总播放量</td><td><input type="number" class="form-input" id="stat2" placeholder="万"></td></tr>
+                <tr><td>总评论数</td><td><input type="number" class="form-input" id="stat3" placeholder="条"></td></tr>
+                <tr><td>总收藏数</td><td><input type="number" class="form-input" id="stat4" placeholder="条"></td></tr>
+                <tr><td>平均评论率</td><td><input type="text" class="form-input" id="stat5" placeholder="%"></td></tr>
+                <tr><td>日均发布条数</td><td><input type="text" class="form-input" id="stat6" placeholder="条/天"></td></tr>
+            </table>
+        </div>
+
+        <!-- 三、方向验证结果 -->
+        <div class="card">
+            <div class="card-title">🧭 三、方向验证结果</div>
+            <table>
+                <tr><th>方向</th><th>条数</th><th>平均评论率</th><th>需求评论</th><th>判断</th></tr>
+                <tr>
+                    <td><span class="tag tag-blue">A</span></td>
+                    <td><input type="number" class="form-input" id="d1n" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d1r" placeholder="%"></td>
+                    <td><input type="number" class="form-input" id="d1c" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d1j" placeholder="有效/无效"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-blue">B</span></td>
+                    <td><input type="number" class="form-input" id="d2n" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d2r" placeholder="%"></td>
+                    <td><input type="number" class="form-input" id="d2c" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d2j" placeholder="有效/无效"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-blue">C</span></td>
+                    <td><input type="number" class="form-input" id="d3n" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d3r" placeholder="%"></td>
+                    <td><input type="number" class="form-input" id="d3c" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d3j" placeholder="有效/无效"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-orange">D</span></td>
+                    <td><input type="number" class="form-input" id="d4n" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d4r" placeholder="%"></td>
+                    <td><input type="number" class="form-input" id="d4c" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d4j" placeholder="有效/无效"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-orange">E</span></td>
+                    <td><input type="number" class="form-input" id="d5n" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d5r" placeholder="%"></td>
+                    <td><input type="number" class="form-input" id="d5c" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="d5j" placeholder="有效/无效"></td>
+                </tr>
+            </table>
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">有效方向结论</label>
+                <input type="text" class="form-input" id="valid-result" placeholder="如：B方向有效，评论率4.2%">
+            </div>
+        </div>
+
+        <!-- 四、评论分析 -->
+        <div class="card">
+            <div class="card-title">💬 四、评论分析</div>
+            <table>
+                <tr><th>评论类型</th><th>数量</th><th>占比</th><th>典型案例</th></tr>
+                <tr>
+                    <td>需求型</td>
+                    <td><input type="number" class="form-input" id="ct1" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="ct1p" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="ct1e" placeholder="如：有课吗"></td>
+                </tr>
+                <tr>
+                    <td>认可型</td>
+                    <td><input type="number" class="form-input" id="ct2" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="ct2p" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="ct2e" placeholder="如：说得太对了"></td>
+                </tr>
+                <tr>
+                    <td>质疑型</td>
+                    <td><input type="number" class="form-input" id="ct3" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="ct3p" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="ct3e" placeholder="如：这不是..."></td>
+                </tr>
+                <tr>
+                    <td>无关型</td>
+                    <td><input type="number" class="form-input" id="ct4" placeholder="条"></td>
+                    <td><input type="text" class="form-input" id="ct4p" placeholder="%"></td>
+                    <td><input type="text" class="form-input" id="ct4e" placeholder="如：打卡"></td>
+                </tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">需求方向归纳（如有）</label>
+                <textarea class="form-input" id="need-summary" placeholder="如：很多人想学实操方法，占需求型评论的60%"></textarea>
+            </div>
+        </div>
+
+        <!-- 五、问题诊断 -->
+        <div class="card">
+            <div class="card-title">🔍 五、问题诊断</div>
+            
+            <div class="form-group">
+                <label class="form-label">主要问题（可多选，用逗号分隔）</label>
+                <textarea class="form-input" id="problems" placeholder="如：评论率低,播放量不稳定,方向不够清晰"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">可能原因分析</label>
+                <textarea class="form-input" id="reasons" placeholder="如：钩子不够吸引人，内容太泛，没有具体痛点"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">已尝试的优化</label>
+                <textarea class="form-input" id="tried" placeholder="如：换了开头方式，调整发布时间"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">效果如何</label>
+                <textarea class="form-input" id="tried-result" placeholder="如：略有提升，但不明显"></textarea>
+            </div>
+        </div>
+
+        <!-- 六、下一轮计划 -->
+        <div class="card">
+            <div class="card-title">🎯 六、下一轮计划</div>
+            
+            <div class="form-group">
+                <label class="form-label">方向决定</label>
+                <textarea class="form-input" id="next-dir" placeholder="如：继续深耕B方向，暂停A方向"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">内容优化计划</label>
+                <textarea class="form-input" id="next-content" placeholder="如：钩子改用反常识开头，结尾加互动引导"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">测试重点</label>
+                <textarea class="form-input" id="next-test" placeholder="如：测试不同时长的效果，测试情绪强弱"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">需要什么帮助</label>
+                <textarea class="form-input" id="need-help" placeholder="如：需要优化钩子的具体方法"></textarea>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="card">
+            <div class="card-title">💾 保存与导出</div>
+            <button class="btn btn-primary" onclick="saveData()">保存数据</button>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="exportText()">导出文本</button>
+                <button class="btn btn-outline" onclick="exportJSON()">导出JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'review_14days_v43';
+        
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const obj = JSON.parse(data);
+                document.querySelectorAll('input, textarea').forEach(el => {
+                    if (obj[el.id] !== undefined) {
+                        el.value = obj[el.id];
+                    }
+                });
+            }
+        }
+        
+        function saveData() {
+            const obj = {};
+            document.querySelectorAll('input, textarea').forEach(el => {
+                obj[el.id] = el.value;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+            showToast('保存成功');
+        }
+        
+        function exportText() {
+            let text = '【14天复盘报告 V4.3】\n\n';
+            
+            text += '一、内容样本\n';
+            text += '表现最好Top3:\n';
+            text += '1. ' + (document.getElementById('best1').value || '-') + ' 评论率' + (document.getElementById('best1r').value || '-') + '% 原因:' + (document.getElementById('best1w').value || '-') + '\n';
+            text += '2. ' + (document.getElementById('best2').value || '-') + ' 评论率' + (document.getElementById('best2r').value || '-') + '% 原因:' + (document.getElementById('best2w').value || '-') + '\n';
+            text += '3. ' + (document.getElementById('best3').value || '-') + ' 评论率' + (document.getElementById('best3r').value || '-') + '% 原因:' + (document.getElementById('best3w').value || '-') + '\n';
+            text += '\n表现最差Bottom3:\n';
+            text += '1. ' + (document.getElementById('worst1').value || '-') + ' 评论率' + (document.getElementById('worst1r').value || '-') + '% 原因:' + (document.getElementById('worst1w').value || '-') + '\n';
+            text += '2. ' + (document.getElementById('worst2').value || '-') + ' 评论率' + (document.getElementById('worst2r').value || '-') + '% 原因:' + (document.getElementById('worst2w').value || '-') + '\n';
+            text += '3. ' + (document.getElementById('worst3').value || '-') + ' 评论率' + (document.getElementById('worst3r').value || '-') + '% 原因:' + (document.getElementById('worst3w').value || '-') + '\n\n';
+            
+            text += '二、14天数据\n';
+            text += '周期: ' + (document.getElementById('period').value || '-') + '\n';
+            text += '总发布: ' + (document.getElementById('stat1').value || '0') + '条\n';
+            text += '总播放: ' + (document.getElementById('stat2').value || '0') + '\n';
+            text += '总评论: ' + (document.getElementById('stat3').value || '0') + '条\n';
+            text += '总收藏: ' + (document.getElementById('stat4').value || '0') + '条\n';
+            text += '平均评论率: ' + (document.getElementById('stat5').value || '0') + '%\n';
+            text += '日均发布: ' + (document.getElementById('stat6').value || '0') + '条\n\n';
+            
+            text += '三、方向验证结果\n';
+            text += 'A方向: ' + (document.getElementById('d1n').value || '0') + '条, ' + (document.getElementById('d1r').value || '0') + '%, 需求' + (document.getElementById('d1c').value || '0') + '条, ' + (document.getElementById('d1j').value || '待判断') + '\n';
+            text += 'B方向: ' + (document.getElementById('d2n').value || '0') + '条, ' + (document.getElementById('d2r').value || '0') + '%, 需求' + (document.getElementById('d2c').value || '0') + '条, ' + (document.getElementById('d2j').value || '待判断') + '\n';
+            text += 'C方向: ' + (document.getElementById('d3n').value || '0') + '条, ' + (document.getElementById('d3r').value || '0') + '%, 需求' + (document.getElementById('d3c').value || '0') + '条, ' + (document.getElementById('d3j').value || '待判断') + '\n';
+            text += 'D方向: ' + (document.getElementById('d4n').value || '0') + '条, ' + (document.getElementById('d4r').value || '0') + '%, 需求' + (document.getElementById('d4c').value || '0') + '条, ' + (document.getElementById('d4j').value || '待判断') + '\n';
+            text += 'E方向: ' + (document.getElementById('d5n').value || '0') + '条, ' + (document.getElementById('d5r').value || '0') + '%, 需求' + (document.getElementById('d5c').value || '0') + '条, ' + (document.getElementById('d5j').value || '待判断') + '\n';
+            text += '结论: ' + (document.getElementById('valid-result').value || '待填写') + '\n\n';
+            
+            text += '四、评论分析\n';
+            text += '需求型: ' + (document.getElementById('ct1').value || '0') + '条 (' + (document.getElementById('ct1p').value || '0') + '%) 例:' + (document.getElementById('ct1e').value || '-') + '\n';
+            text += '认可型: ' + (document.getElementById('ct2').value || '0') + '条 (' + (document.getElementById('ct2p').value || '0') + '%) 例:' + (document.getElementById('ct2e').value || '-') + '\n';
+            text += '质疑型: ' + (document.getElementById('ct3').value || '0') + '条 (' + (document.getElementById('ct3p').value || '0') + '%) 例:' + (document.getElementById('ct3e').value || '-') + '\n';
+            text += '无关型: ' + (document.getElementById('ct4').value || '0') + '条 (' + (document.getElementById('ct4p').value || '0') + '%) 例:' + (document.getElementById('ct4e').value || '-') + '\n';
+            text += '需求方向归纳: ' + (document.getElementById('need-summary').value || '无') + '\n\n';
+            
+            text += '五、问题诊断\n';
+            text += '主要问题: ' + (document.getElementById('problems').value || '无') + '\n';
+            text += '原因分析: ' + (document.getElementById('reasons').value || '无') + '\n';
+            text += '已尝试: ' + (document.getElementById('tried').value || '无') + '\n';
+            text += '效果: ' + (document.getElementById('tried-result').value || '无') + '\n\n';
+            
+            text += '六、下一轮计划\n';
+            text += '方向决定: ' + (document.getElementById('next-dir').value || '待定') + '\n';
+            text += '内容优化: ' + (document.getElementById('next-content').value || '待定') + '\n';
+            text += '测试重点: ' + (document.getElementById('next-test').value || '待定') + '\n';
+            text += '需要帮助: ' + (document.getElementById('need-help').value || '无') + '\n\n';
+            
+            text += '请帮我分析复盘数据，给出下一轮具体打法建议。';
+            
+            copyToClipboard(text);
+        }
+        
+        function exportJSON() {
+            const obj = { exportTime: new Date().toISOString(), version: 'V4.3' };
+            document.querySelectorAll('input, textarea').forEach(el => { obj[el.id] = el.value; });
+            copyToClipboard(JSON.stringify(obj, null, 2));
+        }
+        
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '100px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            document.body.appendChild(textarea);
+            
+            textarea.focus();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('✅ 已复制到剪贴板，请粘贴查看');
+                } else {
+                    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500));
+                }
+            } catch (err) {
+                alert('复制失败，请手动复制');
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(textarea);
+            }, 100);
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>
