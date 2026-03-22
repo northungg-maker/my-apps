@@ -339,6 +339,8 @@
     <div id="page-export" class="tab-content">
         <div class="form-group">
             <label class="form-label">导出数据</label>
+            <button class="btn btn-primary" onclick="copyForAssistant()" style="margin-bottom:12px;width:100%;">📋 复制数据发给助理分析</button>
+            <p style="font-size:12px;color:#888;margin-bottom:16px;text-align:center;">粘贴给助理后，助理会自动解析并存入数据库</p>
             <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom:12px;">导出全部记录 (JSON)</button>
             <button class="btn btn-secondary" onclick="exportMarkdown()">导出为 Markdown</button>
         </div>
@@ -725,6 +727,85 @@
             updateHome();
             updateCommentSelect();
             showToast('已删除');
+        }
+        
+        // 复制数据发给助理分析
+        function copyForAssistant() {
+            const records = getData('records');
+            const comments = getData('comments');
+            const directions = getData('directions');
+            
+            let text = '【自媒体数据助手导出】\n';
+            text += '导出时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+            
+            // 方向验证数据
+            if (directions && directions.length > 0) {
+                text += '════════════════════\n';
+                text += '【方向验证记录】\n';
+                text += '════════════════════\n';
+                directions.forEach((d, i) => {
+                    text += '--- 方向 ' + (i+1) + ' ---\n';
+                    text += '名称：' + d.name + '\n';
+                    text += '测试数量：' + d.count + '\n';
+                    text += '有效数量：' + d.valid + '\n';
+                    text += '结论：' + (d.result || '待定') + '\n';
+                    if (d.note) text += '备注：' + d.note + '\n';
+                    text += '日期：' + d.date + '\n\n';
+                });
+            }
+            
+            // 内容记录数据
+            if (records && records.length > 0) {
+                text += '════════════════════\n';
+                text += '【内容记录】共 ' + records.length + ' 条\n';
+                text += '════════════════════\n';
+                records.forEach((r, i) => {
+                    text += '--- 第 ' + (i+1) + ' 条 ---\n';
+                    text += '标题：' + r.title + '\n';
+                    text += '日期：' + r.date + ' | 方向：' + (r.direction || '-') + '\n';
+                    text += '播放：' + r.views + ' | 评论：' + r.comments + ' | 点赞：' + r.likes + '\n';
+                    text += '评论率：' + r.commentRate + '%';
+                    if (r.isValid) text += ' | ✅有效';
+                    if (r.isExplosive) text += ' | 🔥爆款';
+                    if (r.isDelayedExplosion) text += ' | ⏰延迟爆发';
+                    text += '\n';
+                    if (r.script) text += '脚本：' + r.script.substring(0, 50) + '...\n';
+                    text += '\n';
+                });
+            }
+            
+            // 评论数据
+            if (comments && comments.length > 0) {
+                text += '════════════════════\n';
+                text += '【评论记录】共 ' + comments.length + ' 条\n';
+                text += '════════════════════\n';
+                comments.forEach((c, i) => {
+                    text += '--- 评论 ' + (i+1) + ' ---\n';
+                    text += '内容：' + c.content + '\n';
+                    text += '类型：' + (c.type || '-') + ' | 日期：' + c.date + '\n\n';
+                });
+            }
+            
+            // iOS兼容的复制方法
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:200px;opacity:1;zIndex:9999;fontSize:16px;';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showToast('已复制到剪贴板，请粘贴发给助理');
+                } else {
+                    showToast('复制失败，请手动选择复制');
+                }
+            } catch (err) {
+                showToast('复制失败，请手动选择复制');
+            }
+            
+            document.body.removeChild(textarea);
         }
         
         // 导出数据
