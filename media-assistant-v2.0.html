@@ -681,8 +681,8 @@
                     showToast('数据已追加到现有记录');
                 }
                 
-                // 更新有效性
-                existingRecord.isValid = existingRecord.commentRate >= 3 || existingRecord.views >= 3000;
+                // 更新有效性（AND逻辑：播放≥3000 且 评论率≥3%）
+                existingRecord.isValid = existingRecord.commentRate >= 3 && existingRecord.views >= 3000;
                 existingRecord.isExplosive = existingRecord.views >= 10000 || existingRecord.commentRate >= 5;
                 
                 saveData('records', records);
@@ -703,7 +703,8 @@
                     history: []
                 };
                 
-                record.isValid = record.commentRate >= 3 || record.views >= 3000;
+                // 计算有效性（AND逻辑：播放≥3000 且 评论率≥3%）
+                record.isValid = record.commentRate >= 3 && record.views >= 3000;
                 record.isExplosive = record.views >= 10000 || record.commentRate >= 5;
                 
                 records.unshift(record);
