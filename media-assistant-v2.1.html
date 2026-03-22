@@ -182,6 +182,47 @@
             color: var(--text2);
             margin-top: 4px;
         }
+        
+        .btn-large {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .btn-large:hover { opacity: 0.9; }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .grid-2 .stat-card {
+            background: var(--card);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .grid-2 .stat-card h5 {
+            font-size: 12px;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+        .grid-2 .stat-card .num {
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -364,19 +405,58 @@
     
     <!-- 输出页 -->
     <div id="page-export" class="tab-content">
+        <h3 style="margin-bottom:16px;">输出 & 备份</h3>
+        <div class="card" style="margin-bottom:16px;">
+            <h4>📊 数据统计</h4>
+            <p>有效内容：<span id="valid-count">0</span> 条</p>
+            <p>总记录数：<span id="total-count">0</span> 条</p>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+            <h4>📤 导出数据</h4>
+            <button class="btn-large" onclick="exportData()" style="margin-bottom:8px;">📦 导出全部数据 (JSON)</button>
+            <button class="btn-large" onclick="exportMarkdown()">📝 导出为 Markdown</button>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+            <h4>📥 导入备份</h4>
+            <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="width:100%;margin-bottom:8px;">
+            <small style="color:var(--text2);">支持导入之前导出的JSON备份</small>
+        </div>
+        <div class="card" style="background:#fff5f5;border:1px solid #ffe0e0;">
+            <h4 style="color:#e74c3c;">⚠️ 危险区域</h4>
+            <button class="btn-small" onclick="clearAllData()" style="color:#e74c3c;border:1px solid #e74c3c;background:transparent;">清空所有数据</button>
+        </div>
+    </div>
+    
+    <!-- 周复盘页 -->
+    <div id="page-weekly" class="tab-content">
+        <h3 style="margin-bottom:16px;">📅 周复盘</h3>
         <div class="form-group">
-            <label class="form-label">导出数据</label>
-            <button class="btn btn-secondary" onclick="exportData()" style="margin-bottom:12px;">导出全部记录 (JSON)</button>
-            <button class="btn btn-secondary" onclick="exportMarkdown()">导出为 Markdown</button>
+            <label class="form-label">周期</label>
+            <div style="display:flex;gap:8px;">
+                <input type="date" id="week-start" class="form-input" style="flex:1;">
+                <span style="padding:8px;">至</span>
+                <input type="date" id="week-end" class="form-input" style="flex:1;">
+            </div>
         </div>
         <div class="form-group">
-            <label class="form-label">导入数据</label>
-            <input type="file" id="import-file" accept=".json" onchange="importData(event)" style="width:100%;">
+            <label class="form-label">本周重点内容</label>
+            <textarea id="week-focus" class="form-input" rows="2" placeholder="本周做了哪些内容？"></textarea>
+        </div>
+        <h4 style="margin:16px 0 8px;">各方向数据汇总</h4>
+        <div class="grid-2" id="weekly-directions">
+            <!-- 动态生成方向统计 -->
         </div>
         <div class="form-group">
-            <label class="form-label">清空数据</label>
-            <button class="btn btn-secondary" onclick="clearAllData()" style="color:var(--danger);">清空所有数据</button>
+            <label class="form-label">有效内容分析</label>
+            <textarea id="week-analysis" class="form-input" rows="3" placeholder="哪些内容表现好？评论/收藏情况？"></textarea>
         </div>
+        <div class="form-group">
+            <label class="form-label">下周计划</label>
+            <textarea id="week-plan" class="form-input" rows="2" placeholder="下周方向调整？"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveWeeklyReview()" style="margin-bottom:16px;">保存周复盘</button>
+        
+        <div id="weekly-history"></div>
     </div>
     
     <!-- 底部导航 -->
@@ -405,6 +485,10 @@
             <div class="icon">📤</div>
             <div>输出</div>
         </div>
+        <div class="nav-item" onclick="switchTab('weekly')">
+            <div class="icon">📅</div>
+            <div>周复盘</div>
+        </div>
     </div>
 
     <script>
@@ -422,6 +506,8 @@
             if (name === 'home') updateHome();
             if (name === 'comment') updateCommentSelect();
             if (name === 'direction') loadDirections();
+            if (name === 'weekly') loadWeeklyStats();
+            if (name === 'export') updateExportStats();
         }
         
         // 数据存储
@@ -831,6 +917,121 @@
                 }
             };
             reader.readAsText(file);
+        }
+        
+        // 周复盘功能
+        const DIRECTIONS = ['心理学', '经济学', '认知提升', '行为经济学', '社会观察', '人际关系', '自我成长', '博弈论'];
+        
+        function loadWeeklyStats() {
+            const container = document.getElementById('weekly-directions');
+            const records = getData('records');
+            container.innerHTML = '';
+            
+            // 获取本周日期范围
+            const weekStart = document.getElementById('week-start').value;
+            const weekEnd = document.getElementById('week-end').value;
+            
+            DIRECTIONS.forEach(dir => {
+                // 筛选该方向的记录（本周）
+                let dirRecords = records.filter(r => r.direction === dir);
+                if (weekStart && weekEnd) {
+                    dirRecords = dirRecords.filter(r => r.date >= weekStart && r.date <= weekEnd);
+                }
+                
+                const totalViews = dirRecords.reduce((sum, r) => sum + (r.views || 0), 0);
+                const totalComments = dirRecords.reduce((sum, r) => sum + (r.comments || 0), 0);
+                const totalSaves = dirRecords.reduce((sum, r) => sum + (r.saves || 0), 0);
+                
+                container.innerHTML += `
+                    <div class="stat-card">
+                        <h5>${dir}</h5>
+                        <div class="num">${dirRecords.length}</div>
+                        <small style="color:var(--text2)">播放 ${formatNumber(totalViews)} | 评论 ${totalComments}</small>
+                    </div>
+                `;
+            });
+            
+            // 加载历史周复盘
+            loadWeeklyHistory();
+        }
+        
+        function saveWeeklyReview() {
+            const weekStart = document.getElementById('week-start').value;
+            const weekEnd = document.getElementById('week-end').value;
+            
+            if (!weekStart || !weekEnd) {
+                showToast('请选择周期');
+                return;
+            }
+            
+            const reviews = getData('weeklyReviews');
+            const review = {
+                id: Date.now(),
+                weekStart,
+                weekEnd,
+                focus: document.getElementById('week-focus').value,
+                analysis: document.getElementById('week-analysis').value,
+                plan: document.getElementById('week-plan').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            reviews.push(review);
+            saveData('weeklyReviews', reviews);
+            
+            // 清空表单
+            document.getElementById('week-focus').value = '';
+            document.getElementById('week-analysis').value = '';
+            document.getElementById('week-plan').value = '';
+            
+            loadWeeklyHistory();
+            showToast('周复盘已保存');
+        }
+        
+        function loadWeeklyHistory() {
+            const container = document.getElementById('weekly-history');
+            const reviews = getData('weeklyReviews');
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p style="color:var(--text2);text-align:center;margin-top:16px;">暂无周复盘记录</p>';
+                return;
+            }
+            
+            container.innerHTML = '<h4 style="margin:16px 0 8px;">历史周复盘</h4>';
+            
+            reviews.slice(-5).reverse().forEach(r => {
+                container.innerHTML += `
+                    <div class="card" style="margin-bottom:8px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <strong>${r.weekStart} ~ ${r.weekEnd}</strong>
+                            <button class="btn-small" onclick="deleteWeeklyReview(${r.id})" style="color:#e74c3c;">删除</button>
+                        </div>
+                        <p style="margin:4px 0;font-size:13px;">${r.focus || '无重点内容'}</p>
+                        ${r.analysis ? `<small style="color:var(--text2)">${r.analysis.substring(0, 50)}...</small>` : ''}
+                    </div>
+                `;
+            });
+        }
+        
+        function deleteWeeklyReview(id) {
+            if (!confirm('确定删除这条周复盘？')) return;
+            let reviews = getData('weeklyReviews');
+            reviews = reviews.filter(r => r.id !== id);
+            saveData('weeklyReviews', reviews);
+            loadWeeklyHistory();
+            showToast('已删除');
+        }
+        
+        // 更新输出页统计
+        function updateExportStats() {
+            const records = getData('records');
+            const validRecords = records.filter(r => {
+                const commentRate = r.views > 0 ? (r.comments / r.views * 100) : 0;
+                const saveRate = r.views > 0 ? (r.saves / r.views * 100) : 0;
+                return commentRate >= 3 || saveRate >= 2;
+            });
+            
+            document.getElementById('valid-count').textContent = validRecords.length;
+            document.getElementById('total-count').textContent = records.length;
         }
         
         // 清空所有数据
