@@ -85,8 +85,14 @@
             background: var(--card);
         }
         input[type="date"] {
+            width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="date"]::-webkit-date-and-time-value {
+            text-align: left;
         }
         .form-select {
             width: 100%;
