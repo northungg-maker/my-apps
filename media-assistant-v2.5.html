@@ -500,7 +500,10 @@
                     <label class="form-label">下周计划</label>
                     <textarea id="week-plan" class="form-input" rows="2" placeholder="下周方向调整？"></textarea>
                 </div>
-                <button class="btn btn-primary" onclick="saveWeekly()">保存</button>
+                <div style="display:flex;gap:12px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="saveWeekly()">保存</button>
+                    <button class="btn btn-secondary" style="flex:1;" onclick="exportWeekly()">📋 导出</button>
+                </div>
             </div>
             <div id="weekly-history"></div>
         </div>
@@ -524,13 +527,13 @@
             <div class="icon">📋</div>
             <div class="label">历史</div>
         </div>
-        <div class="nav-item" onclick="switchTab('export', this)">
-            <div class="icon">📤</div>
-            <div class="label">输出</div>
-        </div>
         <div class="nav-item" onclick="switchTab('weekly', this)">
             <div class="icon">📅</div>
             <div class="label">周复盘</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('export', this)">
+            <div class="icon">📤</div>
+            <div class="label">输出</div>
         </div>
     </div>
 
@@ -1036,6 +1039,37 @@
         
         loadWeeklyHistory();
         alert('已保存');
+    }
+    
+    function exportWeekly() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        const focus = document.getElementById('week-focus').value;
+        const analysis = document.getElementById('week-analysis').value;
+        const plan = document.getElementById('week-plan').value;
+        const stats = document.getElementById('weekly-stats').innerText;
+        
+        let output = `# 周复盘报告\n\n`;
+        output += `## 周期: ${start || '未选择'} ~ ${end || '未选择'}\n\n`;
+        output += `### 数据统计\n${stats}\n\n`;
+        if (focus) output += `### 本周重点内容\n${focus}\n\n`;
+        if (analysis) output += `### 有效内容分析\n${analysis}\n\n`;
+        if (plan) output += `### 下周计划\n${plan}\n\n`;
+        
+        // iOS兼容的复制方法
+        const textarea = document.createElement('textarea');
+        textarea.value = output;
+        textarea.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:200px;opacity:1;z-index:9999;font-size:16px;';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            alert('已复制到剪贴板');
+        } catch (e) {
+            alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
     }
     
     function loadWeeklyHistory() {
