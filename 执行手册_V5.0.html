@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自媒体执行手册 V5.0</title>
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text2: #666666;
+            --text3: #999999;
+            --primary: #2196F3;
+            --primary2: #1976D2;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #f44336;
+            --border: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        
+        .header h1 { font-size: 22px; margin-bottom: 4px; }
+        .header .subtitle { font-size: 13px; opacity: 0.9; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+        
+        .phase-card {
+            background: var(--card);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .phase-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        
+        .phase-header.alt { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .phase-header.alt2 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .phase-header.alt3 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .phase-header.alt4 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .phase-header.alt5 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+        
+        .phase-num {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .phase-title { font-size: 17px; font-weight: 600; flex: 1; }
+        .phase-arrow { font-size: 20px; transition: transform 0.3s; }
+        .phase-header.open .phase-arrow { transform: rotate(180deg); }
+        
+        .phase-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .phase-content.open {
+            padding: 20px;
+            max-height: 3000px;
+        }
+        
+        .step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px dashed var(--border);
+        }
+        
+        .step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        
+        .step-num {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .step-content h4 { font-size: 15px; margin-bottom: 6px; color: var(--text); }
+        .step-content p { font-size: 14px; color: var(--text2); margin-bottom: 8px; }
+        
+        .tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            margin-right: 8px;
+            margin-top: 6px;
+        }
+        
+        .tool-link:hover { opacity: 0.9; }
+        .tool-link.secondary { background: var(--text3); }
+        
+        .tip-box {
+            background: #fff3e0;
+            border-left: 4px solid var(--warning);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        
+        .tip-box.good { background: #e8f5e9; border-color: var(--success); }
+        .tip-box.info { background: #e3f2fd; border-color: var(--primary); }
+        
+        .flow-chart {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .flow-chart .arrow { color: var(--primary); margin: 0 8px; }
+        
+        .checklist {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        
+        .checklist-item input { width: 18px; height: 18px; }
+        
+        .data-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        
+        .data-box h5 { margin-bottom: 8px; font-size: 14px; }
+        .data-box table { width: 100%; font-size: 13px; }
+        .data-box td { padding: 4px 0; }
+        .data-box td:last-child { text-align: right; font-weight: 600; }
+        
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active { background: rgba(33,150,243,0.1); }
+        .nav-item.active .icon { color: var(--primary); }
+        
+        .nav-item .icon { font-size: 22px; margin-bottom: 2px; }
+        .nav-item .label { font-size: 11px; color: var(--text2); }
+        .nav-item.active .label { color: var(--primary); font-weight: 600; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 12px;
+            padding-left: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stage-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .stage-card h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary); }
+        
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .criteria-item {
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .criteria-item .value { font-size: 24px; font-weight: 700; color: var(--primary); }
+        .criteria-item .label { font-size: 12px; color: var(--text2); }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .quick-link {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        
+        .quick-link:hover { transform: translateY(-2px); }
+        .quick-link .icon { font-size: 28px; margin-bottom: 8px; }
+        .quick-link .name { font-size: 14px; font-weight: 600; }
+        .quick-link .desc { font-size: 12px; color: var(--text2); margin-top: 4px; }
+        .quick-link.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%); color: white; }
+        .quick-link.primary .desc { color: rgba(255,255,255,0.8); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📖 自媒体执行手册 V5.0</h1>
+        <div class="subtitle">从创作到闭环的完整流程指南</div>
+    </div>
+    
+    <!-- 首页 -->
+    <div id="tab-home" class="tab-content active">
+        <div class="container">
+            <h2 class="section-title">🚀 快速入口</h2>
+            <div class="quick-links">
+                <a href="https://northungg-maker.github.io/my-apps/media-assistant-v2.5.html" class="quick-link primary">
+                    <div class="icon">📊</div>
+                    <div class="name">数据助手</div>
+                    <div class="desc">数据录入·评论收集·周复盘</div>
+                </a>
+                <a href="https://northungg-maker.github.io/my-apps/form-collection-v4.4.html" class="quick-link">
+                    <div class="icon">📋</div>
+                    <div class="name">表单合集</div>
+                    <div class="desc">6合1整合工具</div>
+                </a>
+                <a href="https://northungg-maker.github.io/my-apps/stage-check-v4.5.html" class="quick-link">
+                    <div class="icon">🎯</div>
+                    <div class="name">阶段自检</div>
+                    <div class="desc">累计数据·阶段判定</div>
+                </a>
+                <a href="https://northungg-maker.github.io/my-apps/14day-review-v4.3.html" class="quick-link">
+                    <div class="icon">📅</div>
+                    <div class="name">14天复盘</div>
+                    <div class="desc">双周复盘工具</div>
+                </a>
+            </div>
+            
+            <h2 class="section-title">🔄 完整闭环流程</h2>
+            
+            <!-- Phase 1: 方向选择 -->
+            <div class="phase-card">
+                <div class="phase-header" onclick="togglePhase(this)">
+                    <div class="phase-num">1</div>
+                    <div class="phase-title">选择方向 & 创作脚本</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>从8个方向中选择</h4>
+                            <p>心理学 / 经济学 / 认知提升 / 行为经济学 / 社会观察 / 人际关系 / 自我成长 / 博弈论</p>
+                            <div class="tip-box info">每个方向足够宽，可长期深耕。不随意新增方向，保持聚焦。</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>撰写文案（助理协助）</h4>
+                            <p>告诉我方向和主题，我会协助撰写完整文案，按30秒结构：</p>
+                            <div class="checklist">
+                                <div class="checklist-item">3秒钩子（抓注意力）</div>
+                                <div class="checklist-item">10秒展开（核心观点）</div>
+                                <div class="checklist-item">10秒反转（颠覆认知）</div>
+                                <div class="checklist-item">5秒金句（收尾）</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>拆分3个版本</h4>
+                            <p>每篇文案拆成3个版本，用于A/B测试：</p>
+                            <div class="checklist">
+                                <div class="checklist-item">提问版：以问题开头</div>
+                                <div class="checklist-item">结论版：直接甩结论</div>
+                                <div class="checklist-item">反常识版：颠覆认知</div>
+                            </div>
+                            <div class="tip-box">视频脚本自动存入 iCloud/openclaw/视频脚本/，命名：YYYY-MM-DD_HH-MM_方向_标题.md</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 2: 拍摄发布 -->
+            <div class="phase-card">
+                <div class="phase-header alt" onclick="togglePhase(this)">
+                    <div class="phase-num">2</div>
+                    <div class="phase-title">拍摄 & 发布</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>拍摄3个版本</h4>
+                            <p>同一文案，3种开场方式。拍摄时保持核心内容一致，仅调整开头。</p>
+                            <div class="tip-box info">💡 建议一次拍完3个版本，提高效率</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>多平台发布</h4>
+                            <p>抖音 / 小红书 / B站，根据平台调性微调标题</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>发布后即时记录</h4>
+                            <p>打开数据助手 → 数据录入页 → 填写基础信息</p>
+                            <a href="https://northungg-maker.github.io/my-apps/media-assistant-v2.5.html" class="tool-link">📊 打开数据助手</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 3: 数据追踪 -->
+            <div class="phase-card">
+                <div class="phase-header alt2" onclick="togglePhase(this)">
+                    <div class="phase-num">3</div>
+                    <div class="phase-title">数据追踪 & 评论收集</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="tip-box good">⏰ 让子弹飞：短视频可能持续发酵多天，不要急着判断</div>
+                    
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>数据收集节奏</h4>
+                            <div class="data-box">
+                                <h5>📊 收集时间表</h5>
+                                <table>
+                                    <tr><td>发布当天</td><td>记录初始数据</td></tr>
+                                    <tr><td>Day 1-3</td><td>每天记录</td></tr>
+                                    <tr><td>Day 4-7</td><td>隔天记录</td></tr>
+                                    <tr><td>Day 7+</td><td>每周复盘</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>录入数据</h4>
+                            <p>数据助手 → 数据录入 → 填写播放/评论/收藏/点赞</p>
+                            <p><strong>系统自动判定：</strong></p>
+                            <div class="checklist">
+                                <div class="checklist-item">✅ 评论率≥3% 或 收藏率≥2% → 有效内容</div>
+                                <div class="checklist-item">🔥 播放≥1万 或 评论率≥5% → 爆款</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>收集评论</h4>
+                            <p>数据助手 → 评论收集 → 分类粘贴</p>
+                            <div class="data-box">
+                                <h5>💬 评论分类说明</h5>
+                                <table>
+                                    <tr><td>🔴 需求（有痛点）</td><td>用户有问题要解决</td></tr>
+                                    <tr><td>🟢 认可</td><td>点赞、共鸣、感谢</td></tr>
+                                    <tr><td>⚪ 中立（无意义）</td><td>无实质内容</td></tr>
+                                    <tr><td>🟠 质疑</td><td>反对、挑战、追问</td></tr>
+                                </table>
+                            </div>
+                            <div class="tip-box">分类后点「导出评论」可复制给助理或ChatGPT分析</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 4: 复盘分析 -->
+            <div class="phase-card">
+                <div class="phase-header alt3" onclick="togglePhase(this)">
+                    <div class="phase-num">4</div>
+                    <div class="phase-title">复盘 & 分析</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>周复盘</h4>
+                            <p>每周日打开数据助手 → 周复盘</p>
+                            <a href="https://northungg-maker.github.io/my-apps/media-assistant-v2.5.html" class="tool-link">📊 数据助手周复盘</a>
+                            <div class="tip-box info">点击「导出」可复制本周数据给我分析</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>14天深度复盘</h4>
+                            <p>每两周用14天复盘工具包做深度分析</p>
+                            <a href="https://northungg-maker.github.io/my-apps/14day-review-v4.3.html" class="tool-link">📅 14天复盘</a>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>发送数据给助理</h4>
+                            <p>数据助手 → 输出栏 → 导出到剪贴板 → 粘贴发给我</p>
+                            <div class="tip-box good">我会分析数据、找到规律、给出优化建议</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Phase 5: 调整优化 -->
+            <div class="phase-card">
+                <div class="phase-header alt4" onclick="togglePhase(this)">
+                    <div class="phase-num">5</div>
+                    <div class="phase-title">调整方向 & 进入下一轮</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>判断方向可行性</h4>
+                            <div class="tip-box">同方向 ≥5条内容 且 有效率≥40% → 方向可行</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>阶段判定</h4>
+                            <a href="https://northungg-maker.github.io/my-apps/stage-check-v4.5.html" class="tool-link">🎯 阶段自检</a>
+                            <div class="data-box">
+                                <h5>📊 三阶段模型</h5>
+                                <table>
+                                    <tr><td>测试期</td><td>有效内容 &lt; 5</td></tr>
+                                    <tr><td>验证期</td><td>有效内容 ≥ 5</td></tr>
+                                    <tr><td>产品期</td><td>有效≥20 + 爆款≥3</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>进入下一轮</h4>
+                            <ul style="padding-left:20px;font-size:14px;color:var(--text2);">
+                                <li>方向可行 → 收敛放大，继续深耕</li>
+                                <li>方向不可行 → 换方向测试</li>
+                                <li>进入产品期 → 启动商业化</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 完整闭环图 -->
+            <div class="phase-card">
+                <div class="phase-header alt5" onclick="togglePhase(this)">
+                    <div class="phase-num">∞</div>
+                    <div class="phase-title">持续迭代闭环</div>
+                    <div class="phase-arrow">▼</div>
+                </div>
+                <div class="phase-content">
+                    <div class="flow-chart">
+                        <strong>选方向</strong>
+                        <span class="arrow">→</span>
+                        <strong>写脚本</strong>
+                        <span class="arrow">→</span>
+                        <strong>拍视频</strong>
+                        <span class="arrow">→</span>
+                        <strong>发布</strong>
+                        <br><br>
+                        <strong>收集数据</strong>
+                        <span class="arrow">→</span>
+                        <strong>收集评论</strong>
+                        <span class="arrow">→</span>
+                        <strong>复盘分析</strong>
+                        <span class="arrow">→</span>
+                        <strong>调整优化</strong>
+                        <br><br>
+                        <span class="arrow" style="font-size:24px;">↺</span>
+                        <strong style="color:var(--primary);">回到选方向，持续迭代</strong>
+                    </div>
+                    <div class="tip-box good">💡 每一轮迭代都在积累数据资产：内容库、爆款库、用户库</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 判定标准页 -->
+    <div id="tab-criteria" class="tab-content">
+        <div class="container">
+            <h2 class="section-title">📊 判定标准</h2>
+            
+            <div class="stage-card">
+                <h3>✅ 有效内容标准</h3>
+                <div class="criteria-grid">
+                    <div class="criteria-item">
+                        <div class="value">≥3%</div>
+                        <div class="label">评论率</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="value">≥2%</div>
+                        <div class="label">收藏率</div>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text2);margin-top:12px;text-align:center;">
+                    评论率 ≥ 3% <strong>或</strong> 收藏率 ≥ 2% = 有效内容
+                </p>
+            </div>
+            
+            <div class="stage-card">
+                <h3>🔥 爆款内容标准</h3>
+                <div class="criteria-grid">
+                    <div class="criteria-item">
+                        <div class="value">≥1万</div>
+                        <div class="label">播放量</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="value">≥5%</div>
+                        <div class="label">评论率</div>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text2);margin-top:12px;text-align:center;">
+                    播放 ≥ 1万 <strong>或</strong> 评论率 ≥ 5% = 爆款
+                </p>
+            </div>
+            
+            <div class="stage-card">
+                <h3>🎯 方向可行标准</h3>
+                <div class="criteria-grid">
+                    <div class="criteria-item">
+                        <div class="value">≥5条</div>
+                        <div class="label">同方向内容</div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="value">≥40%</div>
+                        <div class="label">有效率</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📈 三阶段模型</h3>
+                <table style="width:100%;font-size:14px;">
+                    <tr style="background:#fafafa;">
+                        <th style="padding:12px;text-align:left;">阶段</th>
+                        <th style="padding:12px;text-align:left;">判定条件</th>
+                        <th style="padding:12px;text-align:left;">核心目标</th>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px;">🧪 测试期</td>
+                        <td style="padding:12px;">有效内容 &lt; 5</td>
+                        <td style="padding:12px;">横向测试，找方向</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px;">✅ 验证期</td>
+                        <td style="padding:12px;">有效内容 ≥ 5</td>
+                        <td style="padding:12px;">收敛方向，放大有效</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px;">💰 产品期</td>
+                        <td style="padding:12px;">有效≥20 + 爆款≥3</td>
+                        <td style="padding:12px;">商业化，变现</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 工作流页 -->
+    <div id="tab-workflow" class="tab-content">
+        <div class="container">
+            <h2 class="section-title">🔄 日常工作流</h2>
+            
+            <div class="stage-card">
+                <h3>📅 每日工作</h3>
+                <div class="checklist">
+                    <div class="checklist-item"><input type="checkbox"> 检查昨日发布视频数据</div>
+                    <div class="checklist-item"><input type="checkbox"> 数据助手录入数据</div>
+                    <div class="checklist-item"><input type="checkbox"> 收集并分类评论</div>
+                    <div class="checklist-item"><input type="checkbox"> 有灵感时告诉我写脚本</div>
+                </div>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📆 每周工作</h3>
+                <div class="checklist">
+                    <div class="checklist-item"><input type="checkbox"> 周复盘（数据助手）</div>
+                    <div class="checklist-item"><input type="checkbox"> 导出周数据发给我分析</div>
+                    <div class="checklist-item"><input type="checkbox"> 根据分析调整下周方向</div>
+                </div>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📊 每两周</h3>
+                <div class="checklist">
+                    <div class="checklist-item"><input type="checkbox"> 14天深度复盘</div>
+                    <div class="checklist-item"><input type="checkbox"> 阶段自检（判断是否进入下一阶段）</div>
+                </div>
+            </div>
+            
+            <div class="stage-card">
+                <h3>🤝 与助理协作</h3>
+                <p style="font-size:14px;color:var(--text2);margin-bottom:12px;">你可以随时发给我：</p>
+                <ul style="padding-left:20px;font-size:14px;color:var(--text2);">
+                    <li>「帮我写一个心理学方向的脚本」</li>
+                    <li>「导出的数据，帮我分析」</li>
+                    <li>「评论分类导出，帮我找规律」</li>
+                    <li>「当前阶段该怎么做？」</li>
+                </ul>
+                <div class="tip-box good" style="margin-top:12px;">我会根据你的数据给出针对性建议</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 数据说明页 -->
+    <div id="tab-data" class="tab-content">
+        <div class="container">
+            <h2 class="section-title">📁 数据存储说明</h2>
+            
+            <div class="stage-card">
+                <h3>💾 本地存储</h3>
+                <p style="font-size:14px;color:var(--text2);margin-bottom:12px;">所有数据存储在浏览器 localStorage，刷新不丢失</p>
+                <div class="tip-box">⚠️ 清除浏览器数据会丢失，建议定期导出备份</div>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📤 数据导出</h3>
+                <p style="font-size:14px;color:var(--text2);margin-bottom:12px;">数据助手 → 输出栏</p>
+                <ul style="padding-left:20px;font-size:14px;color:var(--text2);">
+                    <li><strong>全部导出</strong> → JSON文件备份</li>
+                    <li><strong>导出到剪贴板</strong> → 复制发给我</li>
+                </ul>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📥 数据导入</h3>
+                <p style="font-size:14px;color:var(--text2);">输出栏 → 导入备份 → 选择之前导出的JSON文件</p>
+            </div>
+            
+            <div class="stage-card">
+                <h3>📂 助理存档</h3>
+                <p style="font-size:14px;color:var(--text2);margin-bottom:12px;">你导出发给我的数据，我会存入：</p>
+                <div class="data-box">
+                    <h5>📁 数据库位置</h5>
+                    <table>
+                        <tr><td>内容库</td><td>每条内容完整记录</td></tr>
+                        <tr><td>爆款库</td><td>验证过的有效内容</td></tr>
+                        <tr><td>用户库</td><td>私信用户管理</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="nav-bottom">
+        <div class="nav-item active" onclick="switchTab('home', this)">
+            <div class="icon">📖</div>
+            <div class="label">手册</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('criteria', this)">
+            <div class="icon">📊</div>
+            <div class="label">标准</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('workflow', this)">
+            <div class="icon">🔄</div>
+            <div class="label">流程</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('data', this)">
+            <div class="icon">📁</div>
+            <div class="label">数据</div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePhase(el) {
+            el.classList.toggle('open');
+            el.nextElementSibling.classList.toggle('open');
+        }
+        
+        function switchTab(tabId, navEl) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            navEl.classList.add('active');
+        }
+        
+        // 默认展开第一个
+        document.querySelector('.phase-header').click();
+    </script>
+</body>
+</html>
