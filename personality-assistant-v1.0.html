@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人格评估助手 V1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+        
+        /* 导航栏 */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            display: flex;
+            border-bottom: 1px solid #e5e5e5;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            color: #8e8e93;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #007AFF;
+            border-bottom-color: #007AFF;
+        }
+        
+        /* 页面 */
+        .page {
+            display: none;
+            padding: 60px 16px 16px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1c1c1e;
+        }
+        
+        /* 表单 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #1c1c1e;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .form-label small {
+            color: #8e8e93;
+            font-weight: 400;
+            margin-left: 4px;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #007AFF;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        /* 评分滑块 */
+        .score-slider {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .score-btn {
+            flex: 1;
+            padding: 10px 0;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            color: #8e8e93;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .score-btn:hover {
+            border-color: #007AFF;
+            color: #007AFF;
+        }
+        
+        .score-btn.active {
+            background: #007AFF;
+            border-color: #007AFF;
+            color: #fff;
+        }
+        
+        .score-desc {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #007AFF;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f7;
+            color: #1c1c1e;
+        }
+        
+        .btn-success {
+            background: #34C759;
+            color: #fff;
+        }
+        
+        .btn-danger {
+            background: #FF3B30;
+            color: #fff;
+        }
+        
+        /* 结果展示 */
+        .result-box {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .result-box.high {
+            background: #d4edda;
+            border: 1px solid #28a745;
+        }
+        
+        .result-box.medium {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+        }
+        
+        .result-box.low {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+        }
+        
+        .result-box.risk {
+            background: #fce4ec;
+            border: 1px solid #e91e63;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .result-score {
+            font-size: 48px;
+            font-weight: 800;
+        }
+        
+        .result-level {
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        
+        /* 维度展示 */
+        .dimension-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .dimension-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dimension-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .dimension-score {
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .dimension-bar {
+            flex: 2;
+            height: 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            margin: 0 12px;
+            overflow: hidden;
+        }
+        
+        .dimension-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        /* 历史记录 */
+        .history-item {
+            padding: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .history-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .history-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        
+        .history-score {
+            font-size: 13px;
+            color: #8e8e93;
+        }
+        
+        .history-total {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        /* 分析建议 */
+        .analysis-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .analysis-item.strength {
+            background: #e8f5e9;
+        }
+        
+        .analysis-item.risk {
+            background: #ffebee;
+        }
+        
+        .analysis-item.suggestion {
+            background: #e3f2fd;
+        }
+        
+        .analysis-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .analysis-label.strength { color: #2e7d32; }
+        .analysis-label.risk { color: #c62828; }
+        .analysis-label.suggestion { color: #1565c0; }
+        
+        .analysis-text {
+            font-size: 14px;
+            color: #1c1c1e;
+            line-height: 1.5;
+        }
+        
+        /* 导出区域 */
+        .export-preview {
+            background: #f5f5f7;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        
+        /* 提示框 */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        /* 颜色变量 */
+        .color-high { color: #34C759; }
+        .color-mid { color: #FF9500; }
+        .color-low { color: #FF3B30; }
+        .color-risk { color: #AF52DE; }
+        
+        .bg-high { background: #34C759; }
+        .bg-mid { background: #FF9500; }
+        .bg-low { background: #FF3B30; }
+        .bg-risk { background: #AF52DE; }
+        
+        /* 无数据提示 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        /* 小屏幕适配 */
+        @media (max-width: 360px) {
+            .score-btn {
+                font-size: 14px;
+                padding: 8px 0;
+            }
+            .nav-item {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <div class="nav-item active" data-page="input">录入</div>
+        <div class="nav-item" data-page="analysis">分析</div>
+        <div class="nav-item" data-page="history">历史</div>
+        <div class="nav-item" data-page="export">导出</div>
+    </div>
+    
+    <!-- 录入页 -->
+    <div class="page active" id="page-input">
+        <div class="card">
+            <div class="card-title">基础信息</div>
+            <div class="form-group">
+                <label class="form-label">评估对象</label>
+                <input type="text" class="form-input" id="input-name" placeholder="姓名或代号">
+            </div>
+            <div class="form-group">
+                <label class="form-label">评估日期</label>
+                <input type="date" class="form-input" id="input-date" style="max-width: 100%;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">行为记录 <small>(可选)</small></label>
+                <textarea class="form-textarea" id="input-notes" placeholder="近期行为样本、观察记录..."></textarea>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">五维度评分</div>
+            
+            <!-- 动力系统 -->
+            <div class="form-group">
+                <label class="form-label">动力系统</label>
+                <small style="color:#8e8e93; display:block; margin-bottom:8px;">目标清晰度、原则稳定性、动机方向</small>
+                <div class="score-slider" data-dimension="motive">
+                    <button class="score-btn" data-score="0">0</button>
+                    <button class="score-btn" data-score="1">1</button>
+                    <button class="score-btn" data-score="2">2</button>
+                    <button class="score-btn" data-score="3">3</button>
+                    <button class="score-btn" data-score="4">4</button>
+                    <button class="score-btn" data-score="5">5</button>
+                </div>
+                <div class="score-desc" id="desc-motive">点击选择分数</div>
+            </div>
+            
+            <!-- 认知系统 -->
+            <div class="form-group">
+                <label class="form-label">认知系统</label>
+                <small style="color:#8e8e93; display:block; margin-bottom:8px;">逻辑判断、归因方式、世界模型</small>
+                <div class="score-slider" data-dimension="cognitive">
+                    <button class="score-btn" data-score="0">0</button>
+                    <button class="score-btn" data-score="1">1</button>
+                    <button class="score-btn" data-score="2">2</button>
+                    <button class="score-btn" data-score="3">3</button>
+                    <button class="score-btn" data-score="4">4</button>
+                    <button class="score-btn" data-score="5">5</button>
+                </div>
+                <div class="score-desc" id="desc-cognitive">点击选择分数</div>
+            </div>
+            
+            <!-- 情绪系统 -->
+            <div class="form-group">
+                <label class="form-label">情绪系统</label>
+                <small style="color:#8e8e93; display:block; margin-bottom:8px;">情绪稳定性、自我调节能力</small>
+                <div class="score-slider" data-dimension="emotion">
+                    <button class="score-btn" data-score="0">0</button>
+                    <button class="score-btn" data-score="1">1</button>
+                    <button class="score-btn" data-score="2">2</button>
+                    <button class="score-btn" data-score="3">3</button>
+                    <button class="score-btn" data-score="4">4</button>
+                    <button class="score-btn" data-score="5">5</button>
+                </div>
+                <div class="score-desc" id="desc-emotion">点击选择分数</div>
+            </div>
+            
+            <!-- 行为系统 -->
+            <div class="form-group">
+                <label class="form-label">行为系统</label>
+                <small style="color:#8e8e93; display:block; margin-bottom:8px;">执行力、持续性、落地能力</small>
+                <div class="score-slider" data-dimension="behavior">
+                    <button class="score-btn" data-score="0">0</button>
+                    <button class="score-btn" data-score="1">1</button>
+                    <button class="score-btn" data-score="2">2</button>
+                    <button class="score-btn" data-score="3">3</button>
+                    <button class="score-btn" data-score="4">4</button>
+                    <button class="score-btn" data-score="5">5</button>
+                </div>
+                <div class="score-desc" id="desc-behavior">点击选择分数</div>
+            </div>
+            
+            <!-- 资源系统 -->
+            <div class="form-group">
+                <label class="form-label">资源系统</label>
+                <small style="color:#8e8e93; display:block; margin-bottom:8px;">资源识别、调配、优化能力</small>
+                <div class="score-slider" data-dimension="resource">
+                    <button class="score-btn" data-score="0">0</button>
+                    <button class="score-btn" data-score="1">1</button>
+                    <button class="score-btn" data-score="2">2</button>
+                    <button class="score-btn" data-score="3">3</button>
+                    <button class="score-btn" data-score="4">4</button>
+                    <button class="score-btn" data-score="5">5</button>
+                </div>
+                <div class="score-desc" id="desc-resource">点击选择分数</div>
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="saveRecord()">保存评估</button>
+    </div>
+    
+    <!-- 分析页 -->
+    <div class="page" id="page-analysis">
+        <div id="analysis-content">
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <div>请先录入数据</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 历史页 -->
+    <div class="page" id="page-history">
+        <div class="card">
+            <div class="card-title">历史记录</div>
+            <div id="history-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div>暂无记录</div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-danger" onclick="clearAllData()" style="font-size:14px; padding:10px;">清空所有数据</button>
+    </div>
+    
+    <!-- 导出页 -->
+    <div class="page" id="page-export">
+        <div class="card">
+            <div class="card-title">导出数据</div>
+            <button class="btn btn-success" onclick="copyForAssistant()">📋 复制发给助理分析</button>
+            <button class="btn btn-secondary" onclick="exportJSON()">导出 JSON 备份</button>
+            <button class="btn btn-secondary" onclick="importBackup()">导入备份</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+        </div>
+        <div class="card">
+            <div class="card-title">Markdown 报告</div>
+            <button class="btn btn-secondary" onclick="generateMDReport()">生成报告</button>
+            <div id="md-preview" class="export-preview" style="margin-top:12px; display:none;"></div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // 评分标准描述
+        const scoreDescriptions = {
+            motive: {
+                0: '无明确目标，行动随意，无自我驱动力',
+                1: '偶尔有目标但不稳定，原则容易妥协',
+                2: '有部分目标和原则，但不连贯',
+                3: '目标明确，有一定规划，原则基本稳定',
+                4: '长期目标清晰，原则稳定，行动有规划',
+                5: '目标明确可量化，原则坚定，动机完全自驱'
+            },
+            cognitive: {
+                0: '判断混乱，常错误归因，世界观偏离现实',
+                1: '偶尔合理判断，常外归因，世界模型不完整',
+                2: '基本能逻辑判断，偶尔错误归因',
+                3: '判断合理，能部分自我归因，世界模型较完整',
+                4: '逻辑清晰，归因合理，能理解复杂因果',
+                5: '高度理性，归因平衡，能预测复杂结果'
+            },
+            emotion: {
+                0: '情绪极易波动，严重依赖他人安抚',
+                1: '情绪容易波动，恢复慢，需外部帮助',
+                2: '情绪波动中等，自我调节能力有限',
+                3: '情绪相对稳定，可部分自我调节',
+                4: '情绪稳定，自我调节能力强',
+                5: '情绪高度稳定，独立应对压力，快速恢复'
+            },
+            behavior: {
+                0: '无行动力，拖延严重，落地失败',
+                1: '偶尔行动，执行断断续续',
+                2: '能完成短期任务，缺乏持续性',
+                3: '行动持续性一般，计划大部分能落地',
+                4: '行动力强，计划稳定落地',
+                5: '高度执行力，计划全部落地并产生成果'
+            },
+            resource: {
+                0: '难发现资源，使用低效，无优化',
+                1: '能发现少量资源，使用不合理',
+                2: '资源识别一般，偶尔优化',
+                3: '资源识别较好，有一定优化能力',
+                4: '高效识别调配资源，持续优化',
+                5: '极高资源感知，优化循环使用，资源最大化'
+            }
+        };
+        
+        // 维度名称映射
+        const dimensionNames = {
+            motive: '动力系统',
+            cognitive: '认知系统',
+            emotion: '情绪系统',
+            behavior: '行为系统',
+            resource: '资源系统'
+        };
+        
+        // 当前评分
+        let currentScores = {
+            motive: null,
+            cognitive: null,
+            emotion: null,
+            behavior: null,
+            resource: null
+        };
+        
+        // 当前查看的记录ID
+        let currentViewingId = null;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置默认日期为今天
+            document.getElementById('input-date').valueAsDate = new Date();
+            
+            // 绑定导航
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    switchPage(page);
+                });
+            });
+            
+            // 绑定评分按钮
+            document.querySelectorAll('.score-slider').forEach(slider => {
+                const dimension = slider.dataset.dimension;
+                slider.querySelectorAll('.score-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        selectScore(dimension, parseInt(this.dataset.score));
+                    });
+                });
+            });
+            
+            // 加载历史
+            loadHistory();
+        });
+        
+        // 切换页面
+        function switchPage(page) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            
+            if (page === 'history') {
+                loadHistory();
+            }
+        }
+        
+        // 选择分数
+        function selectScore(dimension, score) {
+            currentScores[dimension] = score;
+            
+            // 更新按钮状态
+            const slider = document.querySelector(`.score-slider[data-dimension="${dimension}"]`);
+            slider.querySelectorAll('.score-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.score) === score);
+            });
+            
+            // 更新描述
+            document.getElementById(`desc-${dimension}`).textContent = scoreDescriptions[dimension][score];
+        }
+        
+        // 保存记录
+        function saveRecord() {
+            const name = document.getElementById('input-name').value.trim();
+            const date = document.getElementById('input-date').value;
+            const notes = document.getElementById('input-notes').value.trim();
+            
+            if (!name) {
+                showToast('请填写评估对象');
+                return;
+            }
+            
+            if (!date) {
+                showToast('请选择日期');
+                return;
+            }
+            
+            // 检查是否所有维度都已评分
+            const dimensions = ['motive', 'cognitive', 'emotion', 'behavior', 'resource'];
+            for (let dim of dimensions) {
+                if (currentScores[dim] === null) {
+                    showToast(`请完成${dimensionNames[dim]}评分`);
+                    return;
+                }
+            }
+            
+            // 计算总分
+            const total = dimensions.reduce((sum, dim) => sum + currentScores[dim], 0);
+            
+            // 生成记录
+            const record = {
+                id: Date.now().toString(),
+                name: name,
+                date: date,
+                notes: notes,
+                scores: { ...currentScores },
+                total: total,
+                stability: getStabilityLevel(total),
+                createdAt: new Date().toISOString()
+            };
+            
+            // 保存到localStorage
+            let records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            records.unshift(record);
+            localStorage.setItem('personality_records', JSON.stringify(records));
+            
+            // 清空表单
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-notes').value = '';
+            document.getElementById('input-date').valueAsDate = new Date();
+            
+            dimensions.forEach(dim => {
+                currentScores[dim] = null;
+                document.querySelectorAll(`.score-slider[data-dimension="${dim}"] .score-btn`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById(`desc-${dim}`).textContent = '点击选择分数';
+            });
+            
+            showToast('保存成功！');
+            
+            // 切换到分析页
+            currentViewingId = record.id;
+            showAnalysis(record);
+            switchPage('analysis');
+        }
+        
+        // 获取稳定性等级
+        function getStabilityLevel(total) {
+            if (total >= 21) return { level: 'high', label: '高度稳定', color: '#34C759' };
+            if (total >= 16) return { level: 'mid', label: '中等稳定', color: '#FF9500' };
+            if (total >= 11) return { level: 'low', label: '稳定偏低', color: '#FF3B30' };
+            return { level: 'risk', label: '风险较高', color: '#AF52DE' };
+        }
+        
+        // 显示分析
+        function showAnalysis(record) {
+            const stability = record.stability;
+            const dimensions = ['motive', 'cognitive', 'emotion', 'behavior', 'resource'];
+            
+            let html = `
+                <div class="result-box ${stability.level}">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:14px; color:#8e8e93;">${record.name}</div>
+                            <div style="font-size:12px; color:#8e8e93;">${record.date}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="history-total">${record.total}/25</div>
+                            <div style="color:${stability.color}; font-weight:600;">${stability.label}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">五维度评分</div>
+            `;
+            
+            dimensions.forEach(dim => {
+                const score = record.scores[dim];
+                const percent = (score / 5) * 100;
+                let barColor = '#34C759';
+                if (score < 3) barColor = '#FF3B30';
+                else if (score < 4) barColor = '#FF9500';
+                
+                html += `
+                    <div class="dimension-item">
+                        <div class="dimension-name">${dimensionNames[dim]}</div>
+                        <div class="dimension-bar">
+                            <div class="dimension-fill" style="width:${percent}%; background:${barColor};"></div>
+                        </div>
+                        <div class="dimension-score">${score}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div><div class="card"><div class="card-title">分析建议</div>';
+            
+            // 优势分析
+            const strengths = dimensions.filter(dim => record.scores[dim] >= 4);
+            if (strengths.length > 0) {
+                html += `<div class="analysis-item strength">
+                    <div class="analysis-label strength">✅ 优势</div>
+                    <div class="analysis-text">${strengths.map(dim => dimensionNames[dim]).join('、')}表现优秀，可继续保持。</div>
+                </div>`;
+            }
+            
+            // 风险分析
+            const risks = dimensions.filter(dim => record.scores[dim] <= 2);
+            if (risks.length > 0) {
+                html += `<div class="analysis-item risk">
+                    <div class="analysis-label risk">⚠️ 风险</div>
+                    <div class="analysis-text">${risks.map(dim => dimensionNames[dim]).join('、')}得分较低，需重点关注。</div>
+                </div>`;
+            }
+            
+            // 建议分析
+            let suggestions = [];
+            if (record.scores.motive <= 2) suggestions.push('建议明确长期目标，强化内驱力');
+            if (record.scores.cognitive <= 2) suggestions.push('建议练习逻辑推理，检验归因方式');
+            if (record.scores.emotion <= 2) suggestions.push('建议学习情绪调节技巧，增强自我安抚能力');
+            if (record.scores.behavior <= 2) suggestions.push('建议拆解目标为小任务，建立执行习惯');
+            if (record.scores.resource <= 2) suggestions.push('建议盘点可用资源，练习配置优化');
+            
+            if (suggestions.length > 0) {
+                html += `<div class="analysis-item suggestion">
+                    <div class="analysis-label suggestion">💡 建议</div>
+                    <div class="analysis-text">${suggestions.join('；')}。</div>
+                </div>`;
+            }
+            
+            html += '</div>';
+            
+            // 行为记录
+            if (record.notes) {
+                html += `<div class="card">
+                    <div class="card-title">行为记录</div>
+                    <div style="font-size:14px; color:#1c1c1e; line-height:1.6; white-space:pre-wrap;">${record.notes}</div>
+                </div>`;
+            }
+            
+            document.getElementById('analysis-content').innerHTML = html;
+        }
+        
+        // 加载历史
+        function loadHistory() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            const container = document.getElementById('history-list');
+            
+            if (records.length === 0) {
+                container.innerHTML = `<div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div>暂无记录</div>
+                </div>`;
+                return;
+            }
+            
+            let html = '';
+            records.forEach(record => {
+                html += `
+                    <div class="history-item" onclick="viewRecord('${record.id}')">
+                        <div class="history-header">
+                            <span class="history-name">${record.name}</span>
+                            <span class="history-date">${record.date}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="history-score">${record.stability.label}</span>
+                            <span class="history-total">${record.total}/25</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 查看记录
+        function viewRecord(id) {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            const record = records.find(r => r.id === id);
+            if (record) {
+                currentViewingId = id;
+                showAnalysis(record);
+                switchPage('analysis');
+            }
+        }
+        
+        // 复制发给助理
+        function copyForAssistant() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            if (records.length === 0) {
+                showToast('暂无数据');
+                return;
+            }
+            
+            let text = '📊 人格评估数据\n\n';
+            records.forEach(record => {
+                text += `【${record.name}】${record.date}\n`;
+                text += `总分：${record.total}/25 - ${record.stability.label}\n`;
+                text += `动力：${record.scores.motive} | 认知：${record.scores.cognitive} | 情绪：${record.scores.emotion} | 行为：${record.scores.behavior} | 资源：${record.scores.resource}\n`;
+                if (record.notes) text += `备注：${record.notes}\n`;
+                text += '\n';
+            });
+            
+            copyToClipboard(text);
+            showToast('已复制到剪贴板');
+        }
+        
+        // 导出JSON
+        function exportJSON() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            if (records.length === 0) {
+                showToast('暂无数据');
+                return;
+            }
+            
+            const data = {
+                exportDate: new Date().toISOString(),
+                records: records
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `人格评估备份_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('导出成功');
+        }
+        
+        // 导入备份
+        function importBackup() {
+            document.getElementById('import-file').click();
+        }
+        
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.records && Array.isArray(data.records)) {
+                        localStorage.setItem('personality_records', JSON.stringify(data.records));
+                        showToast('导入成功');
+                        loadHistory();
+                    } else {
+                        showToast('文件格式错误');
+                    }
+                } catch (err) {
+                    showToast('导入失败：' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        // 生成Markdown报告
+        function generateMDReport() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            if (records.length === 0) {
+                showToast('暂无数据');
+                return;
+            }
+            
+            let md = '# 人格评估报告\n\n';
+            md += `生成日期：${new Date().toLocaleDateString('zh-CN')}\n\n`;
+            md += '---\n\n';
+            
+            records.forEach(record => {
+                md += `## ${record.name}（${record.date}）\n\n`;
+                md += `**总分：${record.total}/25** - ${record.stability.label}\n\n`;
+                md += '### 五维度评分\n\n';
+                md += '| 维度 | 分数 | 描述 |\n';
+                md += '|------|------|------|\n';
+                md += `| 动力系统 | ${record.scores.motive}/5 | ${scoreDescriptions.motive[record.scores.motive]} |\n`;
+                md += `| 认知系统 | ${record.scores.cognitive}/5 | ${scoreDescriptions.cognitive[record.scores.cognitive]} |\n`;
+                md += `| 情绪系统 | ${record.scores.emotion}/5 | ${scoreDescriptions.emotion[record.scores.emotion]} |\n`;
+                md += `| 行为系统 | ${record.scores.behavior}/5 | ${scoreDescriptions.behavior[record.scores.behavior]} |\n`;
+                md += `| 资源系统 | ${record.scores.resource}/5 | ${scoreDescriptions.resource[record.scores.resource]} |\n\n`;
+                
+                if (record.notes) {
+                    md += '### 行为记录\n\n';
+                    md += record.notes + '\n\n';
+                }
+                
+                md += '---\n\n';
+            });
+            
+            document.getElementById('md-preview').textContent = md;
+            document.getElementById('md-preview').style.display = 'block';
+            
+            copyToClipboard(md);
+            showToast('已复制到剪贴板');
+        }
+        
+        // 清空数据
+        function clearAllData() {
+            if (!confirm('确定要清空所有数据吗？此操作不可恢复。')) return;
+            localStorage.removeItem('personality_records');
+            loadHistory();
+            document.getElementById('analysis-content').innerHTML = `<div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <div>请先录入数据</div>
+            </div>`;
+            showToast('已清空');
+        }
+        
+        // 复制到剪贴板（iOS兼容）
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '200px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            textarea.style.fontSize = '16px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+        
+        // 显示提示
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
