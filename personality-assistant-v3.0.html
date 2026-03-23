@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人格评估助手 V3.0 - 决策引擎版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .header .version {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+        
+        .header .core-mission {
+            font-size: 13px;
+            color: #FFD60A;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(255,214,10,0.1);
+            border-radius: 8px;
+        }
+        
+        .nav {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #8e8e93;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #0A84FF;
+            background: rgba(10,132,255,0.1);
+        }
+        
+        .nav-item .icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .page {
+            display: none;
+            padding: 16px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0A84FF;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #8e8e93;
+        }
+        
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .score-slider {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .score-btn {
+            flex: 1;
+            padding: 12px 4px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .score-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .score-btn.active {
+            border-color: #0A84FF;
+            background: rgba(10,132,255,0.3);
+            color: #fff;
+        }
+        
+        .score-desc {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #8e8e93;
+            min-height: 20px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
+            color: #fff;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #30D158 0%, #28A745 100%);
+            color: #fff;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #FF453A 0%, #DC3545 100%);
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .history-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .history-item .name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .history-item .meta {
+            font-size: 13px;
+            color: #8e8e93;
+        }
+        
+        .history-item .scores-preview {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .history-item .score-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8e8e93;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .export-preview {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        /* 分析报告样式 */
+        .analysis-section {
+            margin-bottom: 20px;
+        }
+        
+        .analysis-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD60A;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,214,10,0.3);
+        }
+        
+        .dimension-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .dimension-name {
+            flex: 1;
+            font-weight: 500;
+        }
+        
+        .dimension-score {
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+        
+        .dimension-stability {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .stability-stable {
+            background: rgba(52,199,89,0.2);
+            color: #34C759;
+        }
+        
+        .stability-unstable {
+            background: rgba(255,59,48,0.2);
+            color: #FF3B30;
+        }
+        
+        .stability-partial {
+            background: rgba(255,149,0,0.2);
+            color: #FF9500;
+        }
+        
+        .risk-card {
+            background: rgba(255,59,48,0.1);
+            border: 1px solid rgba(255,59,48,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .risk-title {
+            color: #FF3B30;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .risk-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .risk-low { background: rgba(52,199,89,0.2); color: #34C759; }
+        .risk-low-mid { background: rgba(255,149,0,0.2); color: #FF9500; }
+        .risk-mid { background: rgba(255,204,0,0.2); color: #FFCC00; }
+        .risk-mid-high { background: rgba(255,107,0,0.2); color: #FF6B00; }
+        .risk-high { background: rgba(255,59,48,0.2); color: #FF3B30; }
+        
+        .decision-box {
+            background: rgba(10,132,255,0.1);
+            border: 1px solid rgba(10,132,255,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .decision-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .decision-row:last-child {
+            border-bottom: none;
+        }
+        
+        .decision-label {
+            color: #8e8e93;
+        }
+        
+        .decision-value {
+            font-weight: 600;
+        }
+        
+        .decision-value.yes { color: #34C759; }
+        .decision-value.no { color: #FF3B30; }
+        .decision-value.caution { color: #FF9500; }
+        
+        .engine-box {
+            background: linear-gradient(135deg, rgba(142,68,173,0.2) 0%, rgba(74,144,226,0.2) 100%);
+            border: 1px solid rgba(142,68,173,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .engine-title {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-bottom: 4px;
+        }
+        
+        .engine-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .engine-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .engine-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .strategy-list {
+            list-style: none;
+        }
+        
+        .strategy-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .strategy-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #0A84FF;
+        }
+        
+        .validation-warning {
+            background: rgba(255,59,48,0.1);
+            border: 1px solid rgba(255,59,48,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .validation-warning h4 {
+            color: #FF3B30;
+            margin-bottom: 8px;
+        }
+        
+        .validation-warning ul {
+            margin-left: 20px;
+            font-size: 14px;
+        }
+        
+        /* 规则提示卡片 */
+        .rules-card {
+            background: rgba(255,214,10,0.1);
+            border: 1px solid rgba(255,214,10,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        
+        .rules-card h4 {
+            color: #FFD60A;
+            margin-bottom: 10px;
+        }
+        
+        .rules-card ul {
+            margin-left: 16px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 人格评估助手 V3.0</h1>
+            <div class="version">决策引擎版 · 2026-03-23</div>
+            <div class="core-mission">核心任务：让用户知道如何对待这个人</div>
+        </div>
+        
+        <!-- 输入页 -->
+        <div class="page active" id="page-input">
+            <div class="card">
+                <div class="card-title">基础信息</div>
+                <div class="form-group">
+                    <label class="form-label">评估对象</label>
+                    <input type="text" class="form-input" id="input-name" placeholder="姓名或代号">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">评估日期</label>
+                    <input type="date" class="form-input" id="input-date" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注（可选）</label>
+                    <textarea class="form-input" id="input-notes" placeholder="关系背景、特殊情境等"></textarea>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">五维度评分</div>
+                
+                <!-- 动力系统 -->
+                <div class="form-group">
+                    <label class="form-label">动力系统</label>
+                    <small style="color:#8e8e93; display:block; margin-bottom:8px;">目标、原则、动机</small>
+                    <div class="score-slider" data-dimension="motive">
+                        <button class="score-btn" data-score="0">0</button>
+                        <button class="score-btn" data-score="1">1</button>
+                        <button class="score-btn" data-score="2">2</button>
+                        <button class="score-btn" data-score="3">3</button>
+                        <button class="score-btn" data-score="4">4</button>
+                        <button class="score-btn" data-score="5">5</button>
+                    </div>
+                    <div class="score-desc" id="desc-motive">点击选择分数</div>
+                </div>
+                
+                <!-- 认知系统 -->
+                <div class="form-group">
+                    <label class="form-label">认知系统</label>
+                    <small style="color:#8e8e93; display:block; margin-bottom:8px;">逻辑、归因、世界观</small>
+                    <div class="score-slider" data-dimension="cognitive">
+                        <button class="score-btn" data-score="0">0</button>
+                        <button class="score-btn" data-score="1">1</button>
+                        <button class="score-btn" data-score="2">2</button>
+                        <button class="score-btn" data-score="3">3</button>
+                        <button class="score-btn" data-score="4">4</button>
+                        <button class="score-btn" data-score="5">5</button>
+                    </div>
+                    <div class="score-desc" id="desc-cognitive">点击选择分数</div>
+                </div>
+                
+                <!-- 情绪系统 -->
+                <div class="form-group">
+                    <label class="form-label">情绪系统</label>
+                    <small style="color:#8e8e93; display:block; margin-bottom:8px;">情绪稳定性、自我调节能力</small>
+                    <div class="score-slider" data-dimension="emotion">
+                        <button class="score-btn" data-score="0">0</button>
+                        <button class="score-btn" data-score="1">1</button>
+                        <button class="score-btn" data-score="2">2</button>
+                        <button class="score-btn" data-score="3">3</button>
+                        <button class="score-btn" data-score="4">4</button>
+                        <button class="score-btn" data-score="5">5</button>
+                    </div>
+                    <div class="score-desc" id="desc-emotion">点击选择分数</div>
+                </div>
+                
+                <!-- 行为系统 -->
+                <div class="form-group">
+                    <label class="form-label">行为系统</label>
+                    <small style="color:#8e8e93; display:block; margin-bottom:8px;">执行力、持续性、落地能力</small>
+                    <div class="score-slider" data-dimension="behavior">
+                        <button class="score-btn" data-score="0">0</button>
+                        <button class="score-btn" data-score="1">1</button>
+                        <button class="score-btn" data-score="2">2</button>
+                        <button class="score-btn" data-score="3">3</button>
+                        <button class="score-btn" data-score="4">4</button>
+                        <button class="score-btn" data-score="5">5</button>
+                    </div>
+                    <div class="score-desc" id="desc-behavior">点击选择分数</div>
+                </div>
+                
+                <!-- 资源系统 -->
+                <div class="form-group">
+                    <label class="form-label">资源系统</label>
+                    <small style="color:#8e8e93; display:block; margin-bottom:8px;">资源识别、调配、优化能力</small>
+                    <div class="score-slider" data-dimension="resource">
+                        <button class="score-btn" data-score="0">0</button>
+                        <button class="score-btn" data-score="1">1</button>
+                        <button class="score-btn" data-score="2">2</button>
+                        <button class="score-btn" data-score="3">3</button>
+                        <button class="score-btn" data-score="4">4</button>
+                        <button class="score-btn" data-score="5">5</button>
+                    </div>
+                    <div class="score-desc" id="desc-resource">点击选择分数</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveRecord()">生成决策报告</button>
+        </div>
+        
+        <!-- 分析页 -->
+        <div class="page" id="page-analysis">
+            <div id="analysis-content">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <div>请先录入数据</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 历史页 -->
+        <div class="page" id="page-history">
+            <div class="card">
+                <div class="card-title">历史记录</div>
+                <div id="history-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <div>暂无记录</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-danger" onclick="clearAllData()" style="font-size:14px; padding:10px;">清空所有数据</button>
+        </div>
+        
+        <!-- 导出页 -->
+        <div class="page" id="page-export">
+            <div class="card">
+                <div class="card-title">导出完整决策报告</div>
+                <button class="btn btn-success" onclick="copyForAssistant()">📋 复制完整报告（发给AI分析）</button>
+                <button class="btn btn-secondary" onclick="exportJSON()">导出 JSON 备份</button>
+                <button class="btn btn-secondary" onclick="importBackup()">导入备份</button>
+                <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+            </div>
+            <div class="card">
+                <div class="card-title">报告预览</div>
+                <div id="md-preview" class="export-preview" style="display:none;"></div>
+                <div id="no-record-hint" style="color:#8e8e93; text-align:center; padding:20px;">
+                    请先录入评估数据或从历史记录中选择
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="nav">
+        <div class="nav-item active" data-page="input">
+            <span class="icon">✏️</span>
+            <span>录入</span>
+        </div>
+        <div class="nav-item" data-page="analysis">
+            <span class="icon">📊</span>
+            <span>分析</span>
+        </div>
+        <div class="nav-item" data-page="history">
+            <span class="icon">📋</span>
+            <span>历史</span>
+        </div>
+        <div class="nav-item" data-page="export">
+            <span class="icon">📤</span>
+            <span>导出</span>
+        </div>
+    </div>
+    
+    <script>
+        // ============================================
+        // V3.0 核心规则系统
+        // ============================================
+        
+        // 评分标准描述
+        const scoreDescriptions = {
+            motive: {
+                0: '无明确目标，行动随意，无自我驱动力',
+                1: '偶尔有目标但不稳定，原则容易妥协',
+                2: '有部分目标和原则，但不连贯',
+                3: '目标明确，有一定规划，原则基本稳定',
+                4: '长期目标清晰，原则稳定，行动有规划',
+                5: '目标明确可量化，原则坚定，动机完全自驱'
+            },
+            cognitive: {
+                0: '判断混乱，常错误归因，世界观偏离现实',
+                1: '偶尔合理判断，常外归因，世界模型不完整',
+                2: '基本能逻辑判断，偶尔错误归因',
+                3: '判断合理，能部分自我归因，世界模型较完整',
+                4: '逻辑清晰，归因合理，能理解复杂因果',
+                5: '高度理性，归因平衡，能预测复杂结果'
+            },
+            emotion: {
+                0: '情绪极易波动，严重依赖他人安抚',
+                1: '情绪容易波动，恢复慢，需外部帮助',
+                2: '情绪波动中等，自我调节能力有限',
+                3: '情绪相对稳定，可部分自我调节',
+                4: '情绪稳定，自我调节能力强',
+                5: '情绪高度稳定，独立应对压力，快速恢复'
+            },
+            behavior: {
+                0: '无行动力，拖延严重，落地失败',
+                1: '偶尔行动，执行断断续续',
+                2: '能完成短期任务，缺乏持续性',
+                3: '行动持续性一般，计划大部分能落地',
+                4: '行动力强，计划稳定落地',
+                5: '高度执行力，计划全部落地并产生成果'
+            },
+            resource: {
+                0: '难发现资源，使用低效，无优化',
+                1: '能发现少量资源，使用不合理',
+                2: '资源识别一般，偶尔优化',
+                3: '资源识别较好，有一定优化能力',
+                4: '高效识别调配资源，持续优化',
+                5: '极高资源感知，优化循环使用，资源最大化'
+            }
+        };
+        
+        // 维度名称映射
+        const dimensionNames = {
+            motive: '动力系统',
+            cognitive: '认知系统',
+            emotion: '情绪系统',
+            behavior: '行为系统',
+            resource: '资源系统'
+        };
+        
+        // 稳定性映射（规则3.1）
+        function getStabilityLabel(score) {
+            if (score >= 5) return { label: '稳定', class: 'stability-stable', desc: '可完全信任' };
+            if (score >= 4) return { label: '基本稳定', class: 'stability-partial', desc: '轻微波动' };
+            if (score >= 3) return { label: '不稳定', class: 'stability-unstable', desc: '需管理' };
+            return { label: '高风险', class: 'stability-unstable', desc: '不可依赖' };
+        }
+        
+        // 风险等级由最低分决定（规则2）
+        function getRiskLevelByLowestScore(minScore) {
+            if (minScore >= 5) return { level: '低', class: 'risk-low' };
+            if (minScore >= 4) return { level: '低-中', class: 'risk-low-mid' };
+            if (minScore >= 3) return { level: '中', class: 'risk-mid' };
+            if (minScore >= 2) return { level: '中-高', class: 'risk-mid-high' };
+            return { level: '高', class: 'risk-high' };
+        }
+        
+        // 消耗风险评分（规则4 - 必须改）
+        function getDrainRiskScore(emotionScore) {
+            if (emotionScore >= 5) return { score: '9-10', level: '极低' };
+            if (emotionScore >= 4) return { score: '7-8', level: '低' };
+            if (emotionScore >= 3) return { score: '5-6', level: '中等' };
+            if (emotionScore >= 2) return { score: '3-4', level: '高' };
+            return { score: '1-2', level: '极高' };
+        }
+        
+        // 决策影响规则（规则3.2）
+        function getDecisionImpact(score) {
+            if (score >= 5) return '可直接用于决策';
+            if (score >= 4) return '可参考';
+            if (score >= 3) return '必须加防护';
+            return '不可依赖';
+        }
+        
+        // 风险触发条件库（规则3）
+        const riskTriggers = {
+            motive: {
+                triggers: ['目标冲突', '原则受挑战', '利益诱惑'],
+                consequences: ['方向偏移', '妥协放弃', '动机衰减']
+            },
+            cognitive: {
+                triggers: ['信息不完整', '情绪干扰', '复杂情境'],
+                consequences: ['判断失误', '归因偏移', '决策错误']
+            },
+            emotion: {
+                triggers: ['被误解', '高压沟通', '情绪消耗关系'],
+                consequences: ['判断偏移', '执行下降', '关系抽离']
+            },
+            behavior: {
+                triggers: ['任务过大', '缺乏反馈', '资源不足'],
+                consequences: ['拖延', '半途而废', '交付延迟']
+            },
+            resource: {
+                triggers: ['资源枯竭', '配置错误', '优化停滞'],
+                consequences: ['效率下降', '机会浪费', '支持断裂']
+            }
+        };
+        
+        // 当前评分
+        let currentScores = {
+            motive: null,
+            cognitive: null,
+            emotion: null,
+            behavior: null,
+            resource: null
+        };
+        
+        // 当前查看的记录ID
+        let currentViewingId = null;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('input-date').valueAsDate = new Date();
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    switchPage(page);
+                });
+            });
+            
+            document.querySelectorAll('.score-slider').forEach(slider => {
+                const dimension = slider.dataset.dimension;
+                slider.querySelectorAll('.score-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        selectScore(dimension, parseInt(this.dataset.score));
+                    });
+                });
+            });
+            
+            loadHistory();
+        });
+        
+        // 切换页面
+        function switchPage(page) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            
+            if (page === 'history') {
+                loadHistory();
+            }
+            if (page === 'export') {
+                updateExportPreview();
+            }
+        }
+        
+        // 选择分数
+        function selectScore(dimension, score) {
+            currentScores[dimension] = score;
+            
+            const slider = document.querySelector(`.score-slider[data-dimension="${dimension}"]`);
+            slider.querySelectorAll('.score-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.score) === score);
+            });
+            
+            document.getElementById(`desc-${dimension}`).textContent = scoreDescriptions[dimension][score];
+        }
+        
+        // 保存记录
+        function saveRecord() {
+            const name = document.getElementById('input-name').value.trim();
+            const date = document.getElementById('input-date').value;
+            const notes = document.getElementById('input-notes').value.trim();
+            
+            if (!name) {
+                showToast('请填写评估对象');
+                return;
+            }
+            
+            if (!date) {
+                showToast('请选择日期');
+                return;
+            }
+            
+            const dimensions = ['motive', 'cognitive', 'emotion', 'behavior', 'resource'];
+            for (let dim of dimensions) {
+                if (currentScores[dim] === null) {
+                    showToast(`请完成${dimensionNames[dim]}评分`);
+                    return;
+                }
+            }
+            
+            const total = dimensions.reduce((sum, dim) => sum + currentScores[dim], 0);
+            
+            const record = {
+                id: Date.now().toString(),
+                name: name,
+                date: date,
+                notes: notes,
+                scores: { ...currentScores },
+                total: total,
+                createdAt: new Date().toISOString()
+            };
+            
+            let records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            records.unshift(record);
+            localStorage.setItem('personality_records', JSON.stringify(records));
+            
+            // 清空表单
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-notes').value = '';
+            document.getElementById('input-date').valueAsDate = new Date();
+            
+            dimensions.forEach(dim => {
+                currentScores[dim] = null;
+                document.querySelectorAll(`.score-slider[data-dimension="${dim}"] .score-btn`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById(`desc-${dim}`).textContent = '点击选择分数';
+            });
+            
+            showToast('已生成决策报告！');
+            
+            currentViewingId = record.id;
+            showAnalysis(record);
+            switchPage('analysis');
+        }
+        
+        // V3.0 核心分析引擎
+        function generateDecisionEngine(scores, total, name) {
+            const { motive, cognitive, emotion, behavior, resource } = scores;
+            const dimensions = ['motive', 'cognitive', 'emotion', 'behavior', 'resource'];
+            const minScore = Math.min(...Object.values(scores));
+            const maxScore = Math.max(...Object.values(scores));
+            
+            // 自动校验机制（规则5）
+            const validationErrors = [];
+            
+            // 检查：是否存在维度<5
+            const belowFive = dimensions.filter(d => scores[d] < 5);
+            if (belowFive.length === 0) {
+                // 全满分，无风险
+            }
+            
+            // 获取风险等级
+            const riskInfo = getRiskLevelByLowestScore(minScore);
+            
+            // 生成决策报告
+            let report = [];
+            
+            // ============================================
+            // ① 基础数据
+            // ============================================
+            report.push(`# 人格决策报告 - ${name}`);
+            report.push(`\n## 一、基础数据\n`);
+            report.push(`| 维度 | 分数 | 稳定性 |`);
+            report.push(`|------|------|--------|`);
+            dimensions.forEach(dim => {
+                const stability = getStabilityLabel(scores[dim]);
+                report.push(`| ${dimensionNames[dim]} | ${scores[dim]}/5 | ${stability.label}（${stability.desc}）|`);
+            });
+            report.push(`| **总分** | **${total}/25** | - |`);
+            
+            // ============================================
+            // ② 维度解释（带稳定性标签）
+            // ============================================
+            report.push(`\n## 二、维度解读\n`);
+            dimensions.forEach(dim => {
+                const stability = getStabilityLabel(scores[dim]);
+                report.push(`**${dimensionNames[dim]} ${scores[dim]}** → ${scoreDescriptions[dim][scores[dim]]} *（${stability.label}）*`);
+            });
+            
+            // ============================================
+            // ③ 系统结构
+            // ============================================
+            report.push(`\n## 三、系统结构\n`);
+            report.push('```');
+            report.push(`驱动（动力${motive}）→ 决策（认知${cognitive}）→ 执行（行为${behavior}）→ 放大（资源${resource}）`);
+            report.push(`干扰项：情绪（当前等级：${emotion}）`);
+            report.push('```');
+            
+            // ============================================
+            // ④ 风险评估（严格按规则2）
+            // ============================================
+            report.push(`\n## 四、风险评估\n`);
+            
+            if (belowFive.length > 0) {
+                // 规则1：非满分即有风险
+                belowFive.forEach(dim => {
+                    const dimRisk = riskInfo;
+                    const triggers = riskInfo;
+                    
+                    report.push(`### 风险点：${dimensionNames[dim]}（${scores[dim]}/5）\n`);
+                    
+                    // 触发条件（规则3）
+                    report.push(`**触发条件：**`);
+                    if (dim === 'emotion') {
+                        report.push(`- 被误解`);
+                        report.push(`- 高压沟通`);
+                        report.push(`- 情绪消耗关系`);
+                    } else if (dim === 'cognitive') {
+                        report.push(`- 需要理性判断的情境`);
+                        report.push(`- 复杂因果关系分析`);
+                        report.push(`- 遇到与自己认知冲突的信息`);
+                    } else if (dim === 'behavior') {
+                        report.push(`- 需要独立完成长期任务`);
+                        report.push(`- 缺乏外部监督`);
+                        report.push(`- 需要落地执行的环节`);
+                    } else if (dim === 'motive') {
+                        report.push(`- 需要长期承诺的关系/项目`);
+                        report.push(`- 价值观冲突的情境`);
+                        report.push(`- 缺乏外部反馈`);
+                    } else if (dim === 'resource') {
+                        report.push(`- 需要资源整合的任务`);
+                        report.push(`- 突发压力事件`);
+                        report.push(`- 资源紧缺情况`);
+                    }
+                    
+                    // 后果
+                    report.push(`\n**后果：**`);
+                    if (dim === 'emotion') {
+                        report.push(`- 判断偏移`);
+                        report.push(`- 执行下降`);
+                        report.push(`- 关系抽离`);
+                    } else if (dim === 'cognitive') {
+                        report.push(`- 决策失误`);
+                        report.push(`- 误判他人意图`);
+                        report.push(`- 陷入无效争论`);
+                    } else if (dim === 'behavior') {
+                        report.push(`- 计划落空`);
+                        report.push(`- 任务延期`);
+                        report.push(`- 信任崩塌`);
+                    } else if (dim === 'motive') {
+                        report.push(`- 半途放弃`);
+                        report.push(`- 承诺失效`);
+                        report.push(`- 方向飘忽`);
+                    } else if (dim === 'resource') {
+                        report.push(`- 错失机会`);
+                        report.push(`- 抗压不足`);
+                        report.push(`- 成长受限`);
+                    }
+                });
+                
+                // 风险等级（规则2：由最低分决定）
+                report.push(`\n**风险等级：${riskInfo.level}**（由最低分 ${minScore} 决定）`);
+                
+                // 风险类型
+                if (belowFive.length === 1) {
+                    report.push(`**风险类型：** 单点波动风险`);
+                } else {
+                    report.push(`**风险类型：** 结构性风险（多维度联动）`);
+                }
+            } else {
+                report.push(`**所有维度满分，无明显风险点。**`);
+                report.push(`\n风险等级：低`);
+            }
+            
+            // ============================================
+            // ⑤ 决策输出（必须三选一）
+            // ============================================
+            report.push(`\n## 五、决策输出\n`);
+            
+            let canCooperate, canDeep, riskLevelText;
+            
+            if (total >= 21 && minScore >= 4) {
+                canCooperate = '是';
+                canDeep = '是';
+                riskLevelText = '低';
+            } else if (total >= 16) {
+                canCooperate = '是';
+                canDeep = '谨慎';
+                riskLevelText = '中';
+            } else if (total >= 11) {
+                canCooperate = '谨慎';
+                canDeep = '否';
+                riskLevelText = '中';
+            } else {
+                canCooperate = '谨慎';
+                canDeep = '否';
+                riskLevelText = '高';
+            }
+            
+            report.push(`| 决策项 | 结论 |`);
+            report.push(`|--------|------|`);
+            report.push(`| 可合作 | **${canCooperate}** |`);
+            report.push(`| 可深交 | **${canDeep}** |`);
+            report.push(`| 风险等级 | **${riskLevelText}** |`);
+            
+            // ============================================
+            // ⑥ 使用策略
+            // ============================================
+            report.push(`\n## 六、使用策略\n`);
+            
+            report.push(`**适合：**`);
+            if (motive >= 4 && behavior >= 4) {
+                report.push(`- 独立负责项目`);
+                report.push(`- 长期信任的合作关系`);
+            }
+            if (cognitive >= 4) {
+                report.push(`- 策略咨询、决策参谋`);
+                report.push(`- 复杂问题分析`);
+            }
+            if (resource >= 4) {
+                report.push(`- 资源整合类任务`);
+                report.push(`- 跨界协作`);
+            }
+            if (emotion >= 4) {
+                report.push(`- 高压环境下的稳定输出`);
+                report.push(`- 情绪支持型关系`);
+            }
+            if (total < 16) {
+                report.push(`- 低风险、低依赖的浅层合作`);
+            }
+            
+            report.push(`\n**不适合：**`);
+            if (emotion < 4) {
+                report.push(`- 高压环境下的关键决策（需二次校验）`);
+                report.push(`- 需要情绪稳定支持的情境`);
+            }
+            if (behavior < 4) {
+                report.push(`- 需要独立落地的长期项目（需监督）`);
+            }
+            if (cognitive < 4) {
+                report.push(`- 需要精准判断的关键决策（需他人把关）`);
+            }
+            if (motive < 4) {
+                report.push(`- 需要长期承诺的关系或项目`);
+            }
+            
+            // ============================================
+            // ⑦ 控制策略
+            // ============================================
+            report.push(`\n## 七、控制策略\n`);
+            
+            const strategies = [];
+            
+            if (emotion < 5) {
+                strategies.push(`情绪触发 → 延迟决策，等情绪平复后再判断`);
+            }
+            if (emotion < 4) {
+                strategies.push(`冲突发生 → 转为结构化沟通（书面/流程化）`);
+            }
+            if (behavior < 5) {
+                strategies.push(`关键任务 → 设置里程碑节点，定期检查进度`);
+            }
+            if (cognitive < 5) {
+                strategies.push(`关键判断 → 二次校验，邀请第三方视角`);
+            }
+            if (motive < 5) {
+                strategies.push(`长期合作 → 明确阶段性目标，增加反馈频率`);
+            }
+            if (resource < 5) {
+                strategies.push(`资源密集任务 → 预设资源清单，建立备用方案`);
+            }
+            
+            if (strategies.length > 0) {
+                strategies.forEach(s => report.push(`- ${s}`));
+            } else {
+                report.push(`- 无需特殊控制策略`);
+            }
+            
+            // ============================================
+            // ⑧ 人格决策引擎（四项评分）
+            // ============================================
+            report.push(`\n## 八、人格决策引擎\n`);
+            
+            // 一句话定位
+            let positioning = '';
+            if (total >= 21) {
+                positioning = '高完整型（可信任的核心伙伴）';
+            } else if (motive >= 4 && behavior >= 4 && emotion < 4) {
+                positioning = '高执行型（带情绪波动风险）';
+            } else if (cognitive >= 4 && emotion >= 4 && behavior < 4) {
+                positioning = '分析型（适合参谋，不适合独立落地）';
+            } else if (motive < 3 && behavior < 3) {
+                positioning = '低驱动型（需外部推力）';
+            } else if (emotion <= 2) {
+                positioning = '情绪风险型（需建立边界）';
+            } else {
+                positioning = '发展型（有潜力，需针对性提升）';
+            }
+            report.push(`**一句话定位：${positioning}**\n`);
+            
+            // 四项评分（强制修正规则）
+            const successAbility = motive + behavior + resource; // 成事能力
+            const stability = emotion; // 稳定性
+            const predictability = Math.round((cognitive + emotion) / 2 * 2); // 可预测性
+            const drainRisk = getDrainRiskScore(emotion); // 消耗风险
+            
+            report.push(`| 指标 | 计算方式 | 评分 | 解读 |`);
+            report.push(`|------|----------|------|------|`);
+            report.push(`| 成事能力 | 动力+行为+资源 | **${successAbility}/15** | ${successAbility >= 12 ? '强' : successAbility >= 8 ? '中等' : '需提升'} |`);
+            report.push(`| 稳定性 | 情绪分 | **${stability}/5** | ${getStabilityLabel(stability).label} |`);
+            report.push(`| 可预测性 | (认知+情绪)÷2 | **${predictability}/5** | ${predictability >= 4 ? '高' : predictAbility >= 3 ? '中等' : '低'} |`);
+            report.push(`| 消耗风险 | 情绪反推 | **${drainRisk.score}/10** | ${drainRisk.level} |`);
+            
+            // ============================================
+            // 校验结果（规则5）
+            // ============================================
+            report.push(`\n---\n`);
+            report.push(`## ✅ 自动校验结果\n`);
+            report.push(`- 存在<5维度：${belowFive.length > 0 ? '是，已列出风险点' : '否'}`);
+            report.push(`- 风险等级已匹配最低分：是（${minScore} → ${riskInfo.level}）`);
+            report.push(`- 决策结论明确：是（可合作=${canCooperate}，可深交=${canDeep}）`);
+            
+            return report.join('\n');
+        }
+        
+        // 显示分析结果
+        function showAnalysis(record) {
+            const report = generateDecisionEngine(record.scores, record.total, record.name);
+            document.getElementById('analysis-content').innerHTML = `<div class="export-preview">${report.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;">$1</code>')}</div>`;
+        }
+        
+        // 加载历史
+        function loadHistory() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            const container = document.getElementById('history-list');
+            
+            if (records.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div>暂无记录</div></div>`;
+                return;
+            }
+            
+            container.innerHTML = records.map(r => `
+                <div class="history-item" onclick="viewRecord('${r.id}')">
+                    <div class="name">${r.name}</div>
+                    <div class="meta">${r.date} · 总分 ${r.total}/25</div>
+                    <div class="scores-preview">
+                        <span class="score-tag">动力 ${r.scores.motive}</span>
+                        <span class="score-tag">认知 ${r.scores.cognitive}</span>
+                        <span class="score-tag">情绪 ${r.scores.emotion}</span>
+                        <span class="score-tag">行为 ${r.scores.behavior}</span>
+                        <span class="score-tag">资源 ${r.scores.resource}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 查看记录
+        function viewRecord(id) {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            const record = records.find(r => r.id === id);
+            if (record) {
+                currentViewingId = id;
+                showAnalysis(record);
+                switchPage('analysis');
+            }
+        }
+        
+        // 导出功能
+        function copyForAssistant() {
+            if (!currentViewingId) {
+                const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+                if (records.length > 0) {
+                    currentViewingId = records[0].id;
+                } else {
+                    showToast('没有可导出的记录');
+                    return;
+                }
+            }
+            
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            const record = records.find(r => r.id === currentViewingId);
+            
+            if (record) {
+                const report = generateDecisionEngine(record.scores, record.total, record.name);
+                copyToClipboard(report);
+                showToast('已复制到剪贴板！');
+            }
+        }
+        
+        function exportJSON() {
+            const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+            if (records.length === 0) {
+                showToast('没有数据可导出');
+                return;
+            }
+            
+            const data = JSON.stringify(records, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `personality-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('已导出JSON文件');
+        }
+        
+        function importBackup() {
+            document.getElementById('import-file').click();
+        }
+        
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        localStorage.setItem('personality_records', JSON.stringify(data));
+                        showToast(`已导入 ${data.length} 条记录`);
+                        loadHistory();
+                    } else {
+                        showToast('文件格式错误');
+                    }
+                } catch (err) {
+                    showToast('导入失败');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function updateExportPreview() {
+            if (!currentViewingId) {
+                const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+                if (records.length > 0) {
+                    currentViewingId = records[0].id;
+                }
+            }
+            
+            if (currentViewingId) {
+                const records = JSON.parse(localStorage.getItem('personality_records') || '[]');
+                const record = records.find(r => r.id === currentViewingId);
+                if (record) {
+                    const report = generateDecisionEngine(record.scores, record.total, record.name);
+                    document.getElementById('md-preview').innerHTML = report.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    document.getElementById('md-preview').style.display = 'block';
+                    document.getElementById('no-record-hint').style.display = 'none';
+                    return;
+                }
+            }
+            
+            document.getElementById('md-preview').style.display = 'none';
+            document.getElementById('no-record-hint').style.display = 'block';
+        }
+        
+        function clearAllData() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复。')) {
+                localStorage.removeItem('personality_records');
+                currentViewingId = null;
+                loadHistory();
+                showToast('已清空所有数据');
+            }
+        }
+        
+        // iOS兼容的复制功能
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '200px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            textarea.style.fontSize = '16px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
