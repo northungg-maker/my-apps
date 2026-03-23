@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成事系统助手 V1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        /* 基本信息 */
+        .info-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        .info-item label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        .info-item input, .info-item select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
+        }
+        .info-item input:focus, .info-item select:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        
+        /* 层级标签 */
+        .layer-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .layer-tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+        .layer-tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .layer-tab.active {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #1a1a2e;
+        }
+        .layer-weight {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-left: 5px;
+        }
+        
+        /* 评分区域 */
+        .scoring-section {
+            display: none;
+        }
+        .scoring-section.active {
+            display: block;
+        }
+        
+        /* 系统卡片 */
+        .system-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .system-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .system-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .system-toggle {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        /* 子指标 */
+        .indicators {
+            display: none;
+        }
+        .indicators.expanded {
+            display: block;
+        }
+        .indicator-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .indicator-row:last-child {
+            border-bottom: none;
+        }
+        .indicator-name {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        .indicator-score-group {
+            display: flex;
+            gap: 5px;
+        }
+        .score-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.1);
+            color: #888;
+        }
+        .score-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        .score-btn.selected {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #1a1a2e;
+        }
+        .score-btn.risk-low { background: #4CAF50; color: #fff; }
+        .score-btn.risk-medium { background: #FF9800; color: #fff; }
+        .score-btn.risk-high { background: #f44336; color: #fff; }
+        
+        /* 结果面板 */
+        .result-panel {
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,255,136,0.1));
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .result-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .result-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .total-score {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .score-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        .score-level {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .level-extreme { background: linear-gradient(90deg, #00d4ff, #00ff88); color: #1a1a2e; }
+        .level-high { background: #4CAF50; color: #fff; }
+        .level-medium { background: #FF9800; color: #fff; }
+        .level-low { background: #f44336; color: #fff; }
+        .level-very-low { background: #9C27B0; color: #fff; }
+        
+        /* 层级分数 */
+        .layer-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .layer-score-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        .layer-score-name {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .layer-score-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .layer-score-weight {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 风险提示 */
+        .risk-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(244,67,54,0.1);
+            border: 1px solid rgba(244,67,54,0.3);
+            border-radius: 12px;
+        }
+        .risk-title {
+            color: #f44336;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .risk-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+            font-size: 0.9rem;
+        }
+        .risk-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .risk-dot.high { background: #f44336; }
+        .risk-dot.medium { background: #FF9800; }
+        
+        /* 按钮 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: #1a1a2e;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-danger {
+            background: rgba(244,67,54,0.2);
+            color: #f44336;
+            border: 1px solid rgba(244,67,54,0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* 历史记录 */
+        .history-section {
+            margin-top: 30px;
+        }
+        .history-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .history-table th {
+            background: rgba(0,0,0,0.3);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .history-table td {
+            font-size: 0.9rem;
+        }
+        .history-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        /* 导出区域 */
+        .export-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .export-title {
+            margin-bottom: 10px;
+        }
+        .export-textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            .layer-tabs { flex-direction: column; }
+            .layer-tab { text-align: center; }
+            .indicator-row { flex-direction: column; align-items: flex-start; }
+            .indicator-score-group { width: 100%; justify-content: space-between; }
+            .score-btn { width: 30px; height: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 成事系统助手 V1.0</h1>
+        <p class="subtitle">成事能力 = 核心人格（驱动） + 可操作能力（手段） + 系统整合能力（战略） + 外部资源放大</p>
+        
+        <!-- 基本信息 -->
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-item">
+                    <label>姓名 / 代号</label>
+                    <input type="text" id="personName" placeholder="输入评估对象名称">
+                </div>
+                <div class="info-item">
+                    <label>评估日期</label>
+                    <input type="date" id="evalDate">
+                </div>
+                <div class="info-item">
+                    <label>评估目的</label>
+                    <select id="evalPurpose">
+                        <option value="自评">自评</option>
+                        <option value="他评">他评</option>
+                        <option value="团队协作">团队协作</option>
+                        <option value="项目评估">项目评估</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 层级标签 -->
+        <div class="layer-tabs">
+            <div class="layer-tab active" data-layer="core">核心层<span class="layer-weight">40%</span></div>
+            <div class="layer-tab" data-layer="support">支撑层<span class="layer-weight">35%</span></div>
+            <div class="layer-tab" data-layer="strategy">战略层<span class="layer-weight">15%</span></div>
+            <div class="layer-tab" data-layer="external">外部层<span class="layer-weight">10%</span></div>
+        </div>
+        
+        <!-- 核心层：人格系统 -->
+        <div class="scoring-section active" id="layer-core">
+            <div class="system-card" data-system="power">
+                <div class="system-header">
+                    <span class="system-title">⚡ 动力系统</span>
+                    <span class="system-score" id="score-power">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="goal"><span class="indicator-name">目标清晰</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="principle"><span class="indicator-name">原则坚定</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="drive"><span class="indicator-name">驱动力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="priority"><span class="indicator-name">优先级判断</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="consistency"><span class="indicator-name">行动一致性</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="cognitive">
+                <div class="system-header">
+                    <span class="system-title">🧠 认知系统</span>
+                    <span class="system-score" id="score-cognitive">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="logic"><span class="indicator-name">逻辑判断</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="attribution"><span class="indicator-name">归因模式</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="worldview"><span class="indicator-name">世界模型</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="prediction"><span class="indicator-name">预测能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="adaptation"><span class="indicator-name">学习适应</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="emotion">
+                <div class="system-header">
+                    <span class="system-title">💫 情绪系统</span>
+                    <span class="system-score" id="score-emotion">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="stability"><span class="indicator-name">情绪稳定性</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="control"><span class="indicator-name">内控力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="resilience"><span class="indicator-name">复原力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="conflict"><span class="indicator-name">冲突管理</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="insight"><span class="indicator-name">情绪洞察</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="behavior">
+                <div class="system-header">
+                    <span class="system-title">💪 行为系统</span>
+                    <span class="system-score" id="score-behavior">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="exec-power"><span class="indicator-name">执行力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="persist"><span class="indicator-name">持续性</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="selfcontrol"><span class="indicator-name">自控力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="flexibility"><span class="indicator-name">灵活性</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="efficiency"><span class="indicator-name">效率</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="resource">
+                <div class="system-header">
+                    <span class="system-title">🔧 资源系统</span>
+                    <span class="system-score" id="score-resource">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="identify"><span class="indicator-name">资源识别</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="allocate"><span class="indicator-name">资源调配</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="optimize"><span class="indicator-name">资源优化</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="leverage"><span class="indicator-name">借力能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="protection"><span class="indicator-name">风险防护</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 支撑层：能力系统 -->
+        <div class="scoring-section" id="layer-support">
+            <div class="system-card" data-system="professional">
+                <div class="system-header">
+                    <span class="system-title">📚 专业能力</span>
+                    <span class="system-score" id="score-professional">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="knowledge"><span class="indicator-name">知识深度</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="skill"><span class="indicator-name">技能熟练度</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="experience"><span class="indicator-name">经验积累</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="innovate"><span class="indicator-name">创新能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="solve"><span class="indicator-name">解决问题</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="learning">
+                <div class="system-header">
+                    <span class="system-title">📖 学习能力</span>
+                    <span class="system-score" id="score-learning">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="absorb"><span class="indicator-name">吸收能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="transfer"><span class="indicator-name">迁移能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="learn-innovate"><span class="indicator-name">学习创新</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="auto-learn"><span class="indicator-name">自主学习</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="summarize"><span class="indicator-name">总结能力</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="decision">
+                <div class="system-header">
+                    <span class="system-title">⚖️ 决策能力</span>
+                    <span class="system-score" id="score-decision">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="priority-decision"><span class="indicator-name">优先级判断</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="risk-weigh"><span class="indicator-name">风险权衡</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="info-integrate"><span class="indicator-name">信息整合</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="speed"><span class="indicator-name">决策速度</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="executable"><span class="indicator-name">可执行性</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="execution">
+                <div class="system-header">
+                    <span class="system-title">🚀 执行能力</span>
+                    <span class="system-score" id="score-execution">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="land"><span class="indicator-name">任务落地</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="timemgt"><span class="indicator-name">时间管理</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="utilize"><span class="indicator-name">资源利用</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="quality"><span class="indicator-name">成果质量</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="auto-exec"><span class="indicator-name">自驱执行</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="collaboration">
+                <div class="system-header">
+                    <span class="system-title">🤝 人际协作</span>
+                    <span class="system-score" id="score-collaboration">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="influence"><span class="indicator-name">影响力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="negotiate"><span class="indicator-name">谈判能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="coordinate"><span class="indicator-name">协调能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="communicate"><span class="indicator-name">沟通能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="trust"><span class="indicator-name">信任建立</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 战略层：系统整合能力 -->
+        <div class="scoring-section" id="layer-strategy">
+            <div class="system-card" data-system="thinking">
+                <div class="system-header">
+                    <span class="system-title">🔄 系统思维</span>
+                    <span class="system-score" id="score-thinking">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="causal"><span class="indicator-name">因果理解</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="node-priority"><span class="indicator-name">节点优先级</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="feedback"><span class="indicator-name">反馈循环</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="process-opt"><span class="indicator-name">流程优化</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="risk-opp"><span class="indicator-name">风险/机会识别</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="integration">
+                <div class="system-header">
+                    <span class="system-title">🌐 资源整合</span>
+                    <span class="system-score" id="score-integration">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="social-res"><span class="indicator-name">社会资源</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="org-res"><span class="indicator-name">组织资源</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="info-res"><span class="indicator-name">信息资源</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="dispatch"><span class="indicator-name">调度效率</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="amplify"><span class="indicator-name">杠杆放大</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="planning">
+                <div class="system-header">
+                    <span class="system-title">📅 长期规划</span>
+                    <span class="system-score" id="score-planning">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="stage-goal"><span class="indicator-name">阶段目标</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="path-opt"><span class="indicator-name">路径优化</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="flex-adjust"><span class="indicator-name">灵活调整</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="measurable"><span class="indicator-name">可衡量性</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="stage-feedback"><span class="indicator-name">阶段反馈</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="risk-mgmt">
+                <div class="system-header">
+                    <span class="system-title">🛡️ 风险管理</span>
+                    <span class="system-score" id="score-risk-mgmt">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="risk-id"><span class="indicator-name">风险识别</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="buffer"><span class="indicator-name">缓冲策略</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="emergency"><span class="indicator-name">应急能力</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="risk-priority"><span class="indicator-name">优先级判断</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="consequence"><span class="indicator-name">后果控制</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="iteration">
+                <div class="system-header">
+                    <span class="system-title">🔁 迭代优化</span>
+                    <span class="system-score" id="score-iteration">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="get-feedback"><span class="indicator-name">反馈获取</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="analyze"><span class="indicator-name">反馈分析</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="implement"><span class="indicator-name">修正实施</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="continuous"><span class="indicator-name">持续改进</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="eff-upgrade"><span class="indicator-name">效率提升</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 外部层：环境与机遇 -->
+        <div class="scoring-section" id="layer-external">
+            <div class="system-card" data-system="social-env">
+                <div class="system-header">
+                    <span class="system-title">🌍 社会环境</span>
+                    <span class="system-score" id="score-social-env">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="industry"><span class="indicator-name">行业环境</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="policy"><span class="indicator-name">政策支持</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="network"><span class="indicator-name">网络生态</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="recognition"><span class="indicator-name">社会认同</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="opportunity"><span class="indicator-name">潜在机会</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="timing">
+                <div class="system-header">
+                    <span class="system-title">⏰ 时间/市场窗口</span>
+                    <span class="system-score" id="score-timing">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="market-opp"><span class="indicator-name">市场机会</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="cycle"><span class="indicator-name">项目周期</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="trend"><span class="indicator-name">市场趋势</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="first-mover"><span class="indicator-name">抢占先机</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="time-sense"><span class="indicator-name">时间敏感</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="connection">
+                <div class="system-header">
+                    <span class="system-title">👥 人脉/信息资源</span>
+                    <span class="system-score" id="score-connection">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="social-net"><span class="indicator-name">社会人脉</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="pro-net"><span class="indicator-name">专业人脉</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="channel"><span class="indicator-name">信息渠道</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="speed-info"><span class="indicator-name">信息速度</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="apply-info"><span class="indicator-name">信息应用</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+            
+            <div class="system-card" data-system="economic">
+                <div class="system-header">
+                    <span class="system-title">💰 经济资源</span>
+                    <span class="system-score" id="score-economic">0.0</span>
+                    <span class="system-toggle">点击展开 ▼</span>
+                </div>
+                <div class="indicators">
+                    <div class="indicator-row" data-indicator="fund"><span class="indicator-name">资金量</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="tools"><span class="indicator-name">工具可用性</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="infrastructure"><span class="indicator-name">基础设施</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="roi"><span class="indicator-name">投入效率</span><div class="indicator-score-group"></div></div>
+                    <div class="indicator-row" data-indicator="flex-fund"><span class="indicator-name">灵活调配</span><div class="indicator-score-group"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 结果面板 -->
+        <div class="result-panel">
+            <div class="result-header">
+                <div class="result-title">宏观成事指数</div>
+                <div class="total-score" id="totalScore">0.00</div>
+                <div class="score-label">满分 5.00</div>
+                <span class="score-level" id="scoreLevel">待评估</span>
+            </div>
+            
+            <div class="layer-scores">
+                <div class="layer-score-card">
+                    <div class="layer-score-name">核心层（人格系统）</div>
+                    <div class="layer-score-value" id="layerCoreScore">0.00</div>
+                    <div class="layer-score-weight">权重 40%</div>
+                </div>
+                <div class="layer-score-card">
+                    <div class="layer-score-name">支撑层（能力系统）</div>
+                    <div class="layer-score-value" id="layerSupportScore">0.00</div>
+                    <div class="layer-score-weight">权重 35%</div>
+                </div>
+                <div class="layer-score-card">
+                    <div class="layer-score-name">战略层（系统整合）</div>
+                    <div class="layer-score-value" id="layerStrategyScore">0.00</div>
+                    <div class="layer-score-weight">权重 15%</div>
+                </div>
+                <div class="layer-score-card">
+                    <div class="layer-score-name">外部层（环境机遇）</div>
+                    <div class="layer-score-value" id="layerExternalScore">0.00</div>
+                    <div class="layer-score-weight">权重 10%</div>
+                </div>
+            </div>
+            
+            <div class="risk-section" id="riskSection" style="display: none;">
+                <div class="risk-title">⚠️ 风险提示</div>
+                <div id="riskList"></div>
+            </div>
+        </div>
+        
+        <!-- 按钮组 -->
+        <div class="btn-group">
+            <button class="btn btn-primary" id="saveBtn">💾 保存记录</button>
+            <button class="btn btn-secondary" id="exportBtn">📋 导出报告</button>
+            <button class="btn btn-secondary" id="exportJsonBtn">📦 导出JSON</button>
+            <button class="btn btn-secondary" id="importBtn">📥 导入数据</button>
+            <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
+        </div>
+        <input type="file" id="importFile" style="display: none;" accept=".json">
+        
+        <!-- 历史记录 -->
+        <div class="history-section">
+            <div class="history-title">📊 历史记录</div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>姓名</th>
+                        <th>核心层</th>
+                        <th>支撑层</th>
+                        <th>战略层</th>
+                        <th>外部层</th>
+                        <th>成事指数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 导出区域 -->
+        <div class="export-section" id="exportSection" style="display: none;">
+            <div class="export-title">📄 报告预览</div>
+            <textarea class="export-textarea" id="exportText" readonly></textarea>
+            <div class="btn-group" style="margin-top: 10px;">
+                <button class="btn btn-secondary" id="copyBtn">📋 复制到剪贴板</button>
+                <button class="btn btn-secondary" id="closeExportBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 数据存储
+        const scores = {};
+        const history = JSON.parse(localStorage.getItem('chengshi_history') || '[]');
+        
+        // 系统到层级的映射
+        const systemToLayer = {
+            'power': 'core', 'cognitive': 'core', 'emotion': 'core', 'behavior': 'core', 'resource': 'core',
+            'professional': 'support', 'learning': 'support', 'decision': 'support', 'execution': 'support', 'collaboration': 'support',
+            'thinking': 'strategy', 'integration': 'strategy', 'planning': 'strategy', 'risk-mgmt': 'strategy', 'iteration': 'strategy',
+            'social-env': 'external', 'timing': 'external', 'connection': 'external', 'economic': 'external'
+        };
+        
+        // 权重设置
+        const layerWeights = {
+            'core': 0.40,
+            'support': 0.35,
+            'strategy': 0.15,
+            'external': 0.10
+        };
+        
+        // 初始化日期
+        document.getElementById('evalDate').valueAsDate = new Date();
+        
+        // 生成评分按钮
+        document.querySelectorAll('.indicator-row').forEach(row => {
+            const group = row.querySelector('.indicator-score-group');
+            for (let i = 0; i <= 5; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'score-btn';
+                btn.textContent = i;
+                btn.onclick = () => selectScore(row, i);
+                group.appendChild(btn);
+            }
+        });
+        
+        // 选择分数
+        function selectScore(row, score) {
+            const indicator = row.dataset.indicator;
+            const parent = row.closest('.system-card');
+            const system = parent.dataset.system;
+            
+            if (!scores[system]) scores[system] = {};
+            scores[system][indicator] = score;
+            
+            // 更新按钮样式
+            row.querySelectorAll('.score-btn').forEach((btn, idx) => {
+                btn.classList.remove('selected', 'risk-low', 'risk-medium', 'risk-high');
+                if (idx === score) {
+                    btn.classList.add('selected');
+                    if (score <= 2) btn.classList.add('risk-high');
+                    else if (score <= 3) btn.classList.add('risk-medium');
+                    else btn.classList.add('risk-low');
+                }
+            });
+            
+            updateSystemScore(system);
+            updateTotalScore();
+        }
+        
+        // 更新系统分数
+        function updateSystemScore(system) {
+            if (!scores[system]) return;
+            const values = Object.values(scores[system]);
+            if (values.length === 0) return;
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            document.getElementById('score-' + system).textContent = avg.toFixed(1);
+        }
+        
+        // 计算层分数
+        function getLayerScore(layer) {
+            const systems = Object.keys(systemToLayer).filter(s => systemToLayer[s] === layer);
+            let total = 0, count = 0;
+            systems.forEach(sys => {
+                if (scores[sys]) {
+                    const values = Object.values(scores[sys]);
+                    if (values.length > 0) {
+                        total += values.reduce((a, b) => a + b, 0) / values.length;
+                        count++;
+                    }
+                }
+            });
+            return count > 0 ? total / count : 0;
+        }
+        
+        // 更新总分
+        function updateTotalScore() {
+            const coreScore = getLayerScore('core');
+            const supportScore = getLayerScore('support');
+            const strategyScore = getLayerScore('strategy');
+            const externalScore = getLayerScore('external');
+            
+            document.getElementById('layerCoreScore').textContent = coreScore.toFixed(2);
+            document.getElementById('layerSupportScore').textContent = supportScore.toFixed(2);
+            document.getElementById('layerStrategyScore').textContent = strategyScore.toFixed(2);
+            document.getElementById('layerExternalScore').textContent = externalScore.toFixed(2);
+            
+            const total = coreScore * layerWeights.core + 
+                         supportScore * layerWeights.support + 
+                         strategyScore * layerWeights.strategy + 
+                         externalScore * layerWeights.external;
+            
+            document.getElementById('totalScore').textContent = total.toFixed(2);
+            
+            // 更新等级
+            const levelEl = document.getElementById('scoreLevel');
+            levelEl.className = 'score-level';
+            if (total >= 4.5) {
+                levelEl.textContent = '极高成事能力';
+                levelEl.classList.add('level-extreme');
+            } else if (total >= 3.5) {
+                levelEl.textContent = '高成事能力';
+                levelEl.classList.add('level-high');
+            } else if (total >= 2.5) {
+                levelEl.textContent = '中等成事能力';
+                levelEl.classList.add('level-medium');
+            } else if (total >= 1.5) {
+                levelEl.textContent = '低成事能力';
+                levelEl.classList.add('level-low');
+            } else {
+                levelEl.textContent = '极低成事能力';
+                levelEl.classList.add('level-very-low');
+            }
+            
+            // 更新风险提示
+            updateRiskWarnings();
+        }
+        
+        // 更新风险提示
+        function updateRiskWarnings() {
+            const risks = [];
+            
+            // 检查各层低分
+            const layers = [
+                { name: '核心层', score: getLayerScore('core'), meaning: '系统不稳定' },
+                { name: '支撑层', score: getLayerScore('support'), meaning: '落地能力不足' },
+                { name: '战略层', score: getLayerScore('strategy'), meaning: '系统整合受限' },
+                { name: '外部层', score: getLayerScore('external'), meaning: '环境限制' }
+            ];
+            
+            layers.forEach(layer => {
+                if (layer.score < 3) {
+                    risks.push({ type: 'medium', text: `${layer.name}分数偏低（${layer.score.toFixed(1)}）：${layer.meaning}` });
+                }
+            });
+            
+            // 检查单个指标低分（≤2）
+            Object.keys(scores).forEach(sys => {
+                Object.keys(scores[sys]).forEach(ind => {
+                    if (scores[sys][ind] <= 2) {
+                        const row = document.querySelector(`[data-indicator="${ind}"]`);
+                        const name = row ? row.querySelector('.indicator-name').textContent : ind;
+                        risks.push({ type: 'high', text: `【${name}】得分仅 ${scores[sys][ind]} 分，需重点关注` });
+                    }
+                });
+            });
+            
+            const riskSection = document.getElementById('riskSection');
+            const riskList = document.getElementById('riskList');
+            
+            if (risks.length > 0) {
+                riskSection.style.display = 'block';
+                riskList.innerHTML = risks.map(r => `
+                    <div class="risk-item">
+                        <span class="risk-dot ${r.type}"></span>
+                        <span>${r.text}</span>
+                    </div>
+                `).join('');
+            } else {
+                riskSection.style.display = 'none';
+            }
+        }
+        
+        // 层级切换
+        document.querySelectorAll('.layer-tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.layer-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const layer = tab.dataset.layer;
+                document.querySelectorAll('.scoring-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('layer-' + layer).classList.add('active');
+            };
+        });
+        
+        // 展开/收起系统
+        document.querySelectorAll('.system-header').forEach(header => {
+            header.onclick = () => {
+                const indicators = header.parentElement.querySelector('.indicators');
+                indicators.classList.toggle('expanded');
+                header.querySelector('.system-toggle').textContent = 
+                    indicators.classList.contains('expanded') ? '点击收起 ▲' : '点击展开 ▼';
+            };
+        });
+        
+        // 保存记录
+        document.getElementById('saveBtn').onclick = () => {
+            const record = {
+                date: document.getElementById('evalDate').value,
+                name: document.getElementById('personName').value || '未命名',
+                purpose: document.getElementById('evalPurpose').value,
+                core: getLayerScore('core'),
+                support: getLayerScore('support'),
+                strategy: getLayerScore('strategy'),
+                external: getLayerScore('external'),
+                total: parseFloat(document.getElementById('totalScore').textContent),
+                scores: JSON.parse(JSON.stringify(scores))
+            };
+            
+            history.push(record);
+            localStorage.setItem('chengshi_history', JSON.stringify(history));
+            renderHistory();
+            alert('记录已保存！');
+        };
+        
+        // 渲染历史
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = history.map((h, idx) => `
+                <tr>
+                    <td>${h.date}</td>
+                    <td>${h.name}</td>
+                    <td>${h.core.toFixed(2)}</td>
+                    <td>${h.support.toFixed(2)}</td>
+                    <td>${h.strategy.toFixed(2)}</td>
+                    <td>${h.external.toFixed(2)}</td>
+                    <td><strong>${h.total.toFixed(2)}</strong></td>
+                    <td>
+                        <button onclick="loadRecord(${idx})" style="padding:5px 10px;border:none;border-radius:4px;cursor:pointer;background:#00d4ff;color:#1a1a2e;">加载</button>
+                        <button onclick="deleteRecord(${idx})" style="padding:5px 10px;border:none;border-radius:4px;cursor:pointer;background:#f44336;color:#fff;margin-left:5px;">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 加载记录
+        window.loadRecord = function(idx) {
+            const record = history[idx];
+            document.getElementById('evalDate').value = record.date;
+            document.getElementById('personName').value = record.name;
+            document.getElementById('evalPurpose').value = record.purpose;
+            
+            // 清空当前分数
+            Object.keys(scores).forEach(k => delete scores[k]);
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                btn.classList.remove('selected', 'risk-low', 'risk-medium', 'risk-high');
+            });
+            
+            // 加载分数
+            Object.keys(record.scores).forEach(sys => {
+                Object.keys(record.scores[sys]).forEach(ind => {
+                    const row = document.querySelector(`[data-indicator="${ind}"]`);
+                    if (row) selectScore(row, record.scores[sys][ind]);
+                });
+            });
+        };
+        
+        // 删除记录
+        window.deleteRecord = function(idx) {
+            if (confirm('确定删除该记录？')) {
+                history.splice(idx, 1);
+                localStorage.setItem('chengshi_history', JSON.stringify(history));
+                renderHistory();
+            }
+        };
+        
+        // 导出报告
+        document.getElementById('exportBtn').onclick = () => {
+            const name = document.getElementById('personName').value || '未命名';
+            const date = document.getElementById('evalDate').value;
+            const purpose = document.getElementById('evalPurpose').value;
+            const total = document.getElementById('totalScore').textContent;
+            
+            let report = `# 成事系统评估报告\n\n`;
+            report += `**对象：** ${name}\n`;
+            report += `**日期：** ${date}\n`;
+            report += `**目的：** ${purpose}\n\n`;
+            report += `---\n\n`;
+            report += `## 宏观成事指数：${total}\n\n`;
+            report += `| 层级 | 分数 | 权重 |\n`;
+            report += `|------|------|------|\n`;
+            report += `| 核心层（人格系统） | ${getLayerScore('core').toFixed(2)} | 40% |\n`;
+            report += `| 支撑层（能力系统） | ${getLayerScore('support').toFixed(2)} | 35% |\n`;
+            report += `| 战略层（系统整合） | ${getLayerScore('strategy').toFixed(2)} | 15% |\n`;
+            report += `| 外部层（环境机遇） | ${getLayerScore('external').toFixed(2)} | 10% |\n\n`;
+            
+            report += `## 详细评分\n\n`;
+            report += `### 核心层\n`;
+            ['power', 'cognitive', 'emotion', 'behavior', 'resource'].forEach(sys => {
+                if (scores[sys]) {
+                    const sysNames = { power: '动力系统', cognitive: '认知系统', emotion: '情绪系统', behavior: '行为系统', resource: '资源系统' };
+                    report += `\n**${sysNames[sys]}：**\n`;
+                    Object.keys(scores[sys]).forEach(ind => {
+                        const row = document.querySelector(`[data-indicator="${ind}"]`);
+                        const name = row ? row.querySelector('.indicator-name').textContent : ind;
+                        report += `- ${name}：${scores[sys][ind]} 分\n`;
+                    });
+                }
+            });
+            
+            document.getElementById('exportText').value = report;
+            document.getElementById('exportSection').style.display = 'block';
+        };
+        
+        // 导出JSON
+        document.getElementById('exportJsonBtn').onclick = () => {
+            const data = {
+                name: document.getElementById('personName').value,
+                date: document.getElementById('evalDate').value,
+                purpose: document.getElementById('evalPurpose').value,
+                scores: scores,
+                layerScores: {
+                    core: getLayerScore('core'),
+                    support: getLayerScore('support'),
+                    strategy: getLayerScore('strategy'),
+                    external: getLayerScore('external')
+                },
+                totalScore: parseFloat(document.getElementById('totalScore').textContent)
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `成事系统_${data.name || '评估'}_${data.date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+        
+        // 导入数据
+        document.getElementById('importBtn').onclick = () => {
+            document.getElementById('importFile').click();
+        };
+        
+        document.getElementById('importFile').onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    document.getElementById('personName').value = data.name || '';
+                    document.getElementById('evalDate').value = data.date || '';
+                    document.getElementById('evalPurpose').value = data.purpose || '自评';
+                    
+                    // 清空当前分数
+                    Object.keys(scores).forEach(k => delete scores[k]);
+                    document.querySelectorAll('.score-btn').forEach(btn => {
+                        btn.classList.remove('selected', 'risk-low', 'risk-medium', 'risk-high');
+                    });
+                    
+                    // 加载分数
+                    if (data.scores) {
+                        Object.keys(data.scores).forEach(sys => {
+                            Object.keys(data.scores[sys]).forEach(ind => {
+                                const row = document.querySelector(`[data-indicator="${ind}"]`);
+                                if (row) selectScore(row, data.scores[sys][ind]);
+                            });
+                        });
+                    }
+                    
+                    alert('导入成功！');
+                } catch (err) {
+                    alert('导入失败：' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        // 复制到剪贴板
+        document.getElementById('copyBtn').onclick = () => {
+            const textarea = document.getElementById('exportText');
+            textarea.select();
+            document.execCommand('copy');
+            
+            // iOS兼容
+            const range = document.createRange();
+            range.selectNodeContents(textarea);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            textarea.setSelectionRange(0, 999999);
+            
+            document.execCommand('copy');
+            alert('已复制到剪贴板！');
+        };
+        
+        // 关闭导出
+        document.getElementById('closeExportBtn').onclick = () => {
+            document.getElementById('exportSection').style.display = 'none';
+        };
+        
+        // 清空
+        document.getElementById('clearBtn').onclick = () => {
+            if (!confirm('确定清空所有评分？')) return;
+            
+            Object.keys(scores).forEach(k => delete scores[k]);
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                btn.classList.remove('selected', 'risk-low', 'risk-medium', 'risk-high');
+            });
+            document.querySelectorAll('.system-score').forEach(el => el.textContent = '0.0');
+            updateTotalScore();
+        };
+        
+        // 初始化
+        renderHistory();
+    </script>
+</body>
+</html>
