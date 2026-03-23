@@ -11,103 +11,96 @@
         .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
         
         /* Header */
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 2em; font-weight: 600; color: #000; margin-bottom: 8px; }
-        .header .subtitle { color: #999; font-size: 0.9em; }
-        .header-actions { margin-top: 20px; }
-        .header-actions button { padding: 10px 20px; margin: 0 5px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #666; cursor: pointer; font-size: 0.9em; }
-        .header-actions button:hover { background: #f5f5f5; border-color: #bbb; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 1.8em; font-weight: 600; color: #000; margin-bottom: 6px; }
+        .header .subtitle { color: #999; font-size: 0.85em; }
+        .header-actions { margin-top: 15px; }
+        .header-actions button { padding: 8px 16px; margin: 0 4px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #666; cursor: pointer; font-size: 0.85em; }
+        .header-actions button:hover { background: #f5f5f5; }
         
         /* Info Section */
-        .info-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .info-item { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
-        .info-item label { display: block; color: #999; font-size: 0.8em; margin-bottom: 6px; }
-        .info-item input, .info-item textarea { width: 100%; border: 1px solid #eee; padding: 8px 10px; border-radius: 4px; font-size: 0.9em; }
-        .info-item input:focus, .info-item textarea:focus { outline: none; border-color: #000; }
+        .info-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .info-item { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
+        .info-item label { display: block; color: #999; font-size: 0.75em; margin-bottom: 5px; }
+        .info-item input, .info-item select { width: 100%; border: 1px solid #eee; padding: 6px 8px; border-radius: 4px; font-size: 0.85em; }
+        .info-item input:focus, .info-item select:focus { outline: none; border-color: #000; }
         
-        /* Chain Visualization */
-        .chain-section { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 30px; border: 1px solid #eee; }
-        .chain-title { font-size: 0.9em; color: #999; margin-bottom: 15px; }
-        .chain-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
-        .chain-node { padding: 12px 20px; border-radius: 8px; text-align: center; min-width: 120px; }
-        .chain-node .name { font-size: 0.85em; color: #666; margin-bottom: 4px; }
-        .chain-node .score { font-size: 1.3em; font-weight: 600; }
-        .chain-node.green { background: #e8f5e9; border: 2px solid #4caf50; }
-        .chain-node.green .score { color: #2e7d32; }
-        .chain-node.yellow { background: #fff8e1; border: 2px solid #ff9800; }
-        .chain-node.yellow .score { color: #e65100; }
-        .chain-node.red { background: #ffebee; border: 2px solid #f44336; }
-        .chain-node.red .score { color: #c62828; }
-        .chain-node.broken { background: #ffcdd2; border: 2px dashed #f44336; opacity: 0.6; }
-        .chain-node.broken .score { color: #999; text-decoration: line-through; }
-        .chain-arrow { color: #ccc; font-size: 1.5em; }
-        .chain-alert { text-align: center; margin-top: 15px; padding: 10px; background: #ffebee; border-radius: 6px; color: #c62828; font-size: 0.9em; }
+        /* Chain Visualization - 简化版 */
+        .chain-section { background: #fff; border-radius: 8px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #eee; text-align: center; }
+        .chain-text { font-size: 0.9em; color: #666; }
+        .chain-node-inline { display: inline-block; padding: 4px 12px; border-radius: 4px; margin: 0 3px; font-weight: 500; }
+        .chain-node-inline.green { background: #e8f5e9; color: #2e7d32; }
+        .chain-node-inline.yellow { background: #fff8e1; color: #e65100; }
+        .chain-node-inline.red { background: #ffebee; color: #c62828; }
+        .chain-node-inline.broken { background: #f5f5f5; color: #999; text-decoration: line-through; }
+        .chain-alert { margin-top: 8px; font-size: 0.85em; }
+        .chain-alert.danger { color: #c62828; }
+        .chain-alert.warning { color: #e65100; }
         
         /* Score Section */
-        .score-section { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 30px; border: 1px solid #eee; }
-        .layer-block { margin-bottom: 25px; }
+        .score-section { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; }
+        .layer-block { margin-bottom: 20px; }
         .layer-block:last-child { margin-bottom: 0; }
-        .layer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #eee; margin-bottom: 15px; }
-        .layer-header h3 { font-size: 1em; font-weight: 600; }
-        .layer-header .weight { color: #999; font-size: 0.85em; font-weight: normal; }
-        .layer-header .layer-score { font-size: 1.1em; font-weight: 600; color: #000; }
+        .layer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #eee; margin-bottom: 12px; }
+        .layer-header h3 { font-size: 0.95em; font-weight: 600; }
+        .layer-header .weight { color: #999; font-size: 0.8em; font-weight: normal; margin-left: 8px; }
+        .layer-header .layer-score { font-size: 1em; font-weight: 600; color: #000; }
         
-        .system-row { margin-bottom: 20px; }
-        .system-name { font-size: 0.9em; color: #666; margin-bottom: 10px; font-weight: 500; }
-        .indicator-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+        .system-row { margin-bottom: 15px; }
+        .system-name { font-size: 0.85em; color: #555; margin-bottom: 8px; font-weight: 500; }
+        .indicator-item { display: flex; align-items: center; padding: 6px 0; border-bottom: 1px solid #f8f8f8; position: relative; }
         .indicator-item:last-child { border-bottom: none; }
-        .indicator-name { flex: 1; font-size: 0.85em; color: #888; position: relative; }
+        .indicator-name { flex: 1; font-size: 0.8em; color: #888; cursor: help; }
         .indicator-name:hover { color: #333; }
         
         /* Score Buttons */
-        .score-btns { display: flex; gap: 3px; }
-        .score-btn { width: 26px; height: 26px; border: 1px solid #ddd; border-radius: 4px; background: #fff; color: #999; cursor: pointer; font-size: 0.8em; transition: all 0.2s; }
-        .score-btn:hover { border-color: #999; background: #f5f5f5; }
-        .score-btn.selected { background: #000; color: #fff; border-color: #000; font-weight: 600; }
+        .score-btns { display: flex; gap: 2px; }
+        .score-btn { width: 22px; height: 22px; border: 1px solid #ddd; border-radius: 3px; background: #fff; color: #999; cursor: pointer; font-size: 0.75em; }
+        .score-btn:hover { border-color: #999; }
+        .score-btn.selected { background: #000; color: #fff; border-color: #000; }
         .score-btn.zero { color: #f44336; border-color: #ffcdd2; }
-        .score-btn.zero:hover { background: #ffebee; }
         .score-btn.zero.selected { background: #f44336; color: #fff; border-color: #f44336; }
         
         /* Score Standard Tooltip */
-        .score-standard { display: none; position: absolute; left: 0; top: 100%; margin-top: 5px; background: #fff; border: 1px solid #eee; border-radius: 6px; padding: 10px; font-size: 0.75em; z-index: 100; min-width: 300px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .score-standard { display: none; position: absolute; left: 0; bottom: 100%; margin-bottom: 5px; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 0.7em; z-index: 100; min-width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: left; }
         .indicator-item:hover .score-standard { display: block; }
-        .score-standard-row { padding: 3px 0; color: #666; }
-        .score-standard-row span { display: inline-block; width: 20px; color: #999; }
-        .score-standard-row.s0 { color: #f44336; }
-        .score-standard-row.s1 { color: #ff5722; }
+        .score-standard-row { padding: 2px 0; color: #666; }
+        .score-standard-row span { display: inline-block; width: 18px; color: #999; }
+        .score-standard-row.s0, .score-standard-row.s1 { color: #f44336; }
         .score-standard-row.s2 { color: #ff9800; }
         .score-standard-row.s3 { color: #ffc107; }
         .score-standard-row.s4 { color: #8bc34a; }
-        .score-standard-row.s5 { color: #4caf50; font-weight: 500; }
+        .score-standard-row.s5 { color: #4caf50; }
         
         /* Total Score */
-        .total-section { background: #000; border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 30px; color: #fff; }
-        .total-label { font-size: 0.9em; color: #999; margin-bottom: 5px; }
-        .total-score { font-size: 3.5em; font-weight: 700; }
-        .total-status { margin-top: 10px; font-size: 0.9em; }
+        .total-section { background: #000; border-radius: 10px; padding: 25px; text-align: center; margin-bottom: 20px; color: #fff; }
+        .total-label { font-size: 0.8em; color: #999; margin-bottom: 4px; }
+        .total-score { font-size: 3em; font-weight: 700; }
+        .total-status { margin-top: 8px; font-size: 0.85em; }
         
         /* Analysis Section */
-        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .analysis-card { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #eee; }
-        .analysis-card h4 { font-size: 0.9em; color: #000; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .analysis-card .content { font-size: 0.85em; line-height: 1.7; color: #666; }
-        .tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.85em; margin-right: 6px; margin-bottom: 6px; }
+        .analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .analysis-card { background: #fff; border-radius: 8px; padding: 15px; border: 1px solid #eee; }
+        .analysis-card h4 { font-size: 0.85em; color: #000; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+        .analysis-card .content { font-size: 0.8em; line-height: 1.6; color: #555; }
+        
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 3px; font-size: 0.8em; margin-right: 5px; margin-bottom: 5px; }
         .tag-danger { background: #ffebee; color: #c62828; }
         .tag-warning { background: #fff8e1; color: #e65100; }
         .tag-success { background: #e8f5e9; color: #2e7d32; }
         .tag-info { background: #e3f2fd; color: #1565c0; }
         
-        .alert-box { padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.85em; }
+        .alert-box { padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 0.8em; }
         .alert-danger { background: #ffebee; color: #c62828; border-left: 3px solid #f44336; }
         .alert-warning { background: #fff8e1; color: #e65100; border-left: 3px solid #ff9800; }
         .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 3px solid #4caf50; }
         
         /* Decision Grid */
-        .decision-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-        .decision-item { padding: 15px; border-radius: 8px; background: #f5f5f5; }
-        .decision-item h5 { font-size: 0.75em; color: #999; margin-bottom: 6px; font-weight: normal; }
-        .decision-item .value { font-size: 1em; font-weight: 600; color: #333; }
-        .decision-item .reason { font-size: 0.75em; color: #999; margin-top: 4px; }
+        .decision-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .decision-item { padding: 12px; border-radius: 6px; background: #f8f8f8; text-align: center; }
+        .decision-item h5 { font-size: 0.7em; color: #999; margin-bottom: 4px; font-weight: normal; }
+        .decision-item .value { font-size: 0.85em; font-weight: 600; color: #333; }
+        .decision-item .reason { font-size: 0.7em; color: #999; margin-top: 3px; }
         .decision-item.danger { background: #ffebee; }
         .decision-item.danger .value { color: #c62828; }
         .decision-item.warning { background: #fff8e1; }
@@ -116,46 +109,46 @@
         .decision-item.success .value { color: #2e7d32; }
         
         /* Strategy */
-        .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .strategy-col h5 { font-size: 0.85em; margin-bottom: 10px; }
+        .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .strategy-col h5 { font-size: 0.8em; margin-bottom: 8px; }
         .strategy-col.fit h5 { color: #4caf50; }
         .strategy-col.unfit h5 { color: #f44336; }
-        .strategy-col ul { list-style: none; font-size: 0.85em; color: #666; }
-        .strategy-col li { padding: 4px 0; }
+        .strategy-col ul { list-style: none; font-size: 0.8em; color: #666; }
+        .strategy-col li { padding: 3px 0; }
         
         /* Buttons */
-        .action-buttons { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 500; }
+        .action-buttons { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em; }
         .btn-primary { background: #000; color: #fff; }
         .btn-primary:hover { background: #333; }
         .btn-secondary { background: #fff; color: #333; border: 1px solid #ddd; }
         .btn-secondary:hover { background: #f5f5f5; }
         
         /* Export */
-        .export-section { display: none; background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #eee; }
-        .export-section textarea { width: 100%; height: 200px; border: 1px solid #eee; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 0.85em; resize: vertical; }
-        .export-buttons { margin-top: 15px; display: flex; gap: 10px; }
+        .export-section { display: none; background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 20px; border: 1px solid #eee; }
+        .export-section textarea { width: 100%; height: 180px; border: 1px solid #eee; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.8em; resize: vertical; }
+        .export-buttons { margin-top: 10px; display: flex; gap: 8px; }
         
         /* History */
-        .history-section { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #eee; }
-        .history-section h4 { font-size: 0.9em; margin-bottom: 15px; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        .history-table th, .history-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #f5f5f5; }
+        .history-section { background: #fff; border-radius: 8px; padding: 15px; border: 1px solid #eee; }
+        .history-section h4 { font-size: 0.85em; margin-bottom: 12px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8em; }
+        .history-table th, .history-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #f5f5f5; }
         .history-table th { color: #999; font-weight: normal; }
-        .history-table button { padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 0.85em; }
-        .history-table button:hover { background: #f5f5f5; }
+        .history-table button { padding: 3px 8px; border: 1px solid #ddd; border-radius: 3px; background: #fff; cursor: pointer; font-size: 0.8em; margin-right: 3px; }
         
         /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal.show { display: flex; }
-        .modal-content { background: #fff; border-radius: 12px; padding: 25px; max-width: 800px; max-height: 80vh; overflow-y: auto; width: 100%; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { font-size: 1.1em; }
-        .modal-close { background: none; border: none; font-size: 1.5em; cursor: pointer; color: #999; }
+        .modal-content { background: #fff; border-radius: 10px; padding: 20px; max-width: 700px; max-height: 80vh; overflow-y: auto; width: 100%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-header h3 { font-size: 1em; }
+        .modal-close { background: none; border: none; font-size: 1.3em; cursor: pointer; color: #999; }
         
         @media (max-width: 768px) {
-            .chain-flow { flex-direction: column; }
-            .chain-arrow { transform: rotate(90deg); }
+            .info-section { grid-template-columns: repeat(2, 1fr); }
+            .analysis-grid { grid-template-columns: 1fr; }
+            .decision-grid { grid-template-columns: repeat(3, 1fr); }
             .strategy-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -164,10 +157,10 @@
     <div class="container">
         <div class="header">
             <h1>成事系统 V3.1</h1>
-            <div class="subtitle">简约版 · 动力链可视化 · 评分标准可见</div>
+            <div class="subtitle">底线规则 + 动力链可视化 + 评分标准可见</div>
             <div class="header-actions">
                 <button onclick="showStandardsModal()">📋 评分标准</button>
-                <button onclick="clearAll()">🗑️ 清空重评</button>
+                <button onclick="clearAll()">🗑️ 清空</button>
             </div>
         </div>
         
@@ -178,11 +171,18 @@
             </div>
             <div class="info-item">
                 <label>评估对象</label>
-                <input type="text" id="personName" placeholder="姓名或代号">
+                <input type="text" id="personName" placeholder="姓名">
             </div>
             <div class="info-item">
                 <label>评估目的</label>
-                <input type="text" id="evalPurpose" placeholder="合作/招聘/交往/自评">
+                <select id="evalPurpose">
+                    <option value="">选择目的</option>
+                    <option value="合作">合作评估</option>
+                    <option value="招聘">招聘筛选</option>
+                    <option value="交往">交往判断</option>
+                    <option value="自评">自我评估</option>
+                    <option value="复盘">复盘分析</option>
+                </select>
             </div>
             <div class="info-item">
                 <label>备注</label>
@@ -190,66 +190,41 @@
             </div>
         </div>
         
-        <!-- 动力链可视化 -->
+        <!-- 动力链可视化 - 简化版 -->
         <div class="chain-section">
-            <div class="chain-title">系统动力链</div>
-            <div class="chain-flow" id="chainFlow">
-                <div class="chain-node" id="chain-core">
-                    <div class="name">核心层</div>
-                    <div class="score">—</div>
-                </div>
-                <div class="chain-arrow">→</div>
-                <div class="chain-node" id="chain-support">
-                    <div class="name">支撑层</div>
-                    <div class="score">—</div>
-                </div>
-                <div class="chain-arrow">→</div>
-                <div class="chain-node" id="chain-strategy">
-                    <div class="name">战略层</div>
-                    <div class="score">—</div>
-                </div>
-                <div class="chain-arrow">→</div>
-                <div class="chain-node" id="chain-external">
-                    <div class="name">外部层</div>
-                    <div class="score">—</div>
-                </div>
-            </div>
+            <div class="chain-text" id="chainText">核心层 → 支撑层 → 战略层 → 外部层</div>
             <div id="chainAlert"></div>
         </div>
         
         <!-- 评分区域 -->
         <div class="score-section">
-            <!-- 核心层 -->
             <div class="layer-block">
                 <div class="layer-header">
-                    <h3>核心层（人格系统） <span class="weight">权重 40%</span></h3>
+                    <h3>核心层（人格系统）<span class="weight">40%</span></h3>
                     <span class="layer-score" id="coreTotal">0.00</span>
                 </div>
                 <div id="coreContent"></div>
             </div>
             
-            <!-- 支撑层 -->
             <div class="layer-block">
                 <div class="layer-header">
-                    <h3>支撑层（能力系统） <span class="weight">权重 35%</span></h3>
+                    <h3>支撑层（能力系统）<span class="weight">35%</span></h3>
                     <span class="layer-score" id="supportTotal">0.00</span>
                 </div>
                 <div id="supportContent"></div>
             </div>
             
-            <!-- 战略层 -->
             <div class="layer-block">
                 <div class="layer-header">
-                    <h3>战略层（系统整合） <span class="weight">权重 15%</span></h3>
+                    <h3>战略层（系统整合）<span class="weight">15%</span></h3>
                     <span class="layer-score" id="strategyTotal">0.00</span>
                 </div>
                 <div id="strategyContent"></div>
             </div>
             
-            <!-- 外部层 -->
             <div class="layer-block">
                 <div class="layer-header">
-                    <h3>外部层（环境机遇） <span class="weight">权重 10%</span></h3>
+                    <h3>外部层（环境机遇）<span class="weight">10%</span></h3>
                     <span class="layer-score" id="externalTotal">0.00</span>
                 </div>
                 <div id="externalContent"></div>
@@ -284,7 +259,7 @@
         </div>
         
         <!-- 决策引擎 -->
-        <div class="analysis-card" style="margin-bottom:30px;">
+        <div class="analysis-card" style="margin-bottom:20px;">
             <h4>决策引擎</h4>
             <div class="decision-grid">
                 <div class="decision-item" id="decision-coop-item">
@@ -316,7 +291,7 @@
         </div>
         
         <!-- 使用策略 -->
-        <div class="analysis-card" style="margin-bottom:30px;">
+        <div class="analysis-card" style="margin-bottom:20px;">
             <h4>使用策略</h4>
             <div class="strategy-grid">
                 <div class="strategy-col fit">
@@ -332,12 +307,11 @@
         
         <!-- 操作按钮 -->
         <div class="action-buttons">
-            <button class="btn btn-primary" onclick="saveRecord()">💾 保存记录</button>
-            <button class="btn btn-secondary" onclick="exportReport()">📄 导出报告</button>
-            <button class="btn btn-secondary" onclick="exportJSON()">📦 导出JSON</button>
+            <button class="btn btn-primary" onclick="saveRecord()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="exportReport()">📄 报告</button>
+            <button class="btn btn-secondary" onclick="exportJSON()">📦 JSON</button>
         </div>
         
-        <!-- 导出区域 -->
         <div class="export-section" id="exportSection">
             <textarea id="exportText" readonly></textarea>
             <div class="export-buttons">
@@ -346,32 +320,19 @@
             </div>
         </div>
         
-        <!-- 历史记录 -->
         <div class="history-section">
             <h4>历史记录</h4>
             <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>日期</th>
-                        <th>对象</th>
-                        <th>核心</th>
-                        <th>支撑</th>
-                        <th>战略</th>
-                        <th>外部</th>
-                        <th>总分</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>日期</th><th>对象</th><th>核心</th><th>支撑</th><th>战略</th><th>外部</th><th>总分</th><th>操作</th></tr></thead>
                 <tbody id="historyBody"></tbody>
             </table>
         </div>
     </div>
     
-    <!-- 评分标准弹窗 -->
     <div class="modal" id="standardsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📋 核心维度评分标准</h3>
+                <h3>📋 核心层评分标准</h3>
                 <button class="modal-close" onclick="closeStandardsModal()">×</button>
             </div>
             <div id="standardsContent"></div>
@@ -382,59 +343,53 @@
         // ==================== 数据结构 ====================
         const systems = {
             core: {
-                name: '核心层',
-                weight: 0.4,
+                name: '核心层', weight: 0.4,
                 systems: {
                     power: {
-                        name: '动力系统',
-                        indicators: ['目标清晰度', '原则稳定性', '动机方向', '自驱强度', '目标一致性'],
+                        name: '动力系统', indicators: ['目标清晰度', '原则稳定性', '动机方向', '自驱强度', '目标一致性'],
                         standards: [
-                            ['无任何目标，完全被动', '偶尔有模糊想法', '有短期目标但不稳定', '有较清晰目标', '有长期目标并持续行动', '目标清晰可量化，完全自驱'],
-                            ['无原则，遇利则变', '原则模糊，容易妥协', '有原则但不够坚定', '原则基本稳定', '原则坚定，言行一致', '原则不可动摇，始终如一'],
-                            ['被动驱动，无自主意愿', '外部压力下才有动力', '有动机但易受影响', '有一定自主方向', '动机明确且稳定', '动机完全自驱，方向清晰'],
-                            ['完全无自驱力', '偶尔主动，需外部刺激', '能主动但不持续', '自我驱动中等稳定', '自驱力强且稳定', '完全自驱，持续优化'],
-                            ['目标与行动完全脱节', '偶尔对齐', '部分一致', '基本一致性', '高度一致', '目标行动完美对齐']
+                            ['无目标', '模糊想法', '短期目标不稳定', '较清晰目标', '长期目标持续行动', '目标清晰完全自驱'],
+                            ['无原则', '原则模糊', '有原则不坚定', '原则基本稳定', '原则坚定', '原则不可动摇'],
+                            ['被动驱动', '压力下有动力', '有动机易受影响', '有自主方向', '动机明确稳定', '完全自驱'],
+                            ['无自驱力', '偶尔主动', '能主动不持续', '自我驱动中等', '自驱力强', '完全自驱持续优化'],
+                            ['目标行动脱节', '偶尔对齐', '部分一致', '基本一致', '高度一致', '完美对齐']
                         ]
                     },
                     cognitive: {
-                        name: '认知系统',
-                        indicators: ['逻辑判断', '归因方式', '世界模型', '信息处理', '认知深度'],
+                        name: '认知系统', indicators: ['逻辑判断', '归因方式', '世界模型', '信息处理', '认知深度'],
                         standards: [
-                            ['逻辑混乱，无法判断', '经常判断错误', '能做简单判断', '判断基本合理', '逻辑清晰准确', '高度理性，预测精准'],
-                            ['完全错误归因', '经常外归因', '归因不稳定', '基本能正确归因', '归因平衡合理', '归因精准，深刻洞察'],
-                            ['世界观严重偏离', '世界模型不完整', '模型部分正确', '模型较完整', '能理解复杂关系', '高度贴合现实'],
-                            ['无法处理信息', '信息处理粗糙', '处理能力有限', '能基本处理', '高效处理整合', '信息处理能力极强'],
+                            ['逻辑混乱', '经常判断错', '能简单判断', '判断合理', '逻辑清晰', '高度理性预测精准'],
+                            ['完全错误归因', '经常外归因', '归因不稳定', '基本正确归因', '归因平衡', '归因精准深刻'],
+                            ['世界观偏离', '模型不完整', '模型部分正确', '模型较完整', '能理解复杂关系', '高度贴合现实'],
+                            ['无法处理信息', '处理粗糙', '能力有限', '基本能处理', '高效处理', '处理能力极强'],
                             ['认知极浅', '理解表层', '有一定深度', '能深入思考', '认知深刻', '洞察本质']
                         ]
                     },
                     emotion: {
-                        name: '情绪系统',
-                        indicators: ['情绪稳定性', '自我调节', '抗压能力', '恢复速度', '情绪表达'],
+                        name: '情绪系统', indicators: ['情绪稳定性', '自我调节', '抗压能力', '恢复速度', '情绪表达'],
                         standards: [
-                            ['情绪完全失控', '极易波动', '波动明显', '相对稳定', '情绪稳定', '高度稳定不受影响'],
-                            ['无法自我调节', '需他人安抚', '调节能力有限', '能部分调节', '自我调节能力强', '调节迅速有效'],
-                            ['无法承受压力', '压力下崩溃', '承受力弱', '能承受一定压力', '抗压能力强', '压力下表现更好'],
-                            ['极慢，长期影响', '恢复很慢', '恢复较慢', '恢复一般', '恢复较快', '快速恢复并学习'],
-                            ['表达混乱极端', '表达不当', '表达不稳定', '表达基本得当', '表达清晰有效', '表达精准有感染力']
+                            ['完全失控', '极易波动', '波动明显', '相对稳定', '情绪稳定', '高度稳定不受影响'],
+                            ['无法调节', '需他人安抚', '调节能力有限', '能部分调节', '自我调节强', '调节迅速有效'],
+                            ['无法承受压力', '压力下崩溃', '承受力弱', '能承受一定', '抗压能力强', '压力下表现更好'],
+                            ['极慢', '恢复很慢', '恢复较慢', '恢复一般', '恢复较快', '快速恢复并学习'],
+                            ['表达混乱', '表达不当', '表达不稳定', '基本得当', '清晰有效', '精准有感染力']
                         ]
                     },
                     behavior: {
-                        name: '行为系统',
-                        indicators: ['执行力', '持续性', '落地能力', '行动质量', '反馈响应'],
+                        name: '行为系统', indicators: ['执行力', '持续性', '落地能力', '行动质量', '反馈响应'],
                         standards: [
                             ['完全不执行', '极少执行', '偶尔执行', '能执行大部分', '执行力强', '持续高效执行'],
-                            ['无一件事能持续', '经常半途而废', '持续性一般', '能持续一定时间', '持续性强', '长期持续不断'],
-                            ['无一件事能落地', '偶有落地', '落地能力弱', '能基本落地', '稳定落地', '完美落地产出'],
-                            ['行动质量极差', '质量不稳定', '质量一般', '质量较好', '质量高', '质量持续提升'],
-                            ['无视反馈', '偶尔响应', '响应不稳定', '基本能响应', '积极响应改进', '快速响应并优化']
+                            ['无一能持续', '经常半途而废', '持续性一般', '能持续一定时间', '持续性强', '长期持续不断'],
+                            ['无一能落地', '偶有落地', '落地能力弱', '能基本落地', '稳定落地', '完美落地产出'],
+                            ['质量极差', '质量不稳定', '质量一般', '质量较好', '质量高', '质量持续提升'],
+                            ['无视反馈', '偶尔响应', '响应不稳定', '基本能响应', '积极响应', '快速响应优化']
                         ]
                     },
                     resource: {
-                        name: '资源系统',
-                        indicators: ['资源识别', '调配能力', '优化能力', '资源渠道', '资源转化'],
+                        name: '资源系统', indicators: ['资源识别', '调配能力', '优化能力', '资源渠道', '资源转化'],
                         standards: [
-                            ['完全无法识别', '识别极少', '识别部分', '识别较好', '高效识别', '极高敏感度'],
-                            ['完全无法调配', '调配极差', '调配能力弱', '能基本调配', '高效调配', '调配精准最大化'],
+                            ['无法识别', '识别极少', '识别部分', '识别较好', '高效识别', '极高敏感度'],
+                            ['无法调配', '调配极差', '调配能力弱', '能基本调配', '高效调配', '调配精准最大化'],
                             ['无优化意识', '偶尔优化', '优化能力有限', '有一定优化', '持续优化', '优化循环最大化'],
                             ['无渠道', '渠道极少', '渠道有限', '有一定渠道', '渠道丰富', '渠道广泛高质量'],
                             ['无法转化', '转化极低', '转化能力弱', '能基本转化', '高效转化', '转化率极高']
@@ -443,8 +398,7 @@
                 }
             },
             support: {
-                name: '支撑层',
-                weight: 0.35,
+                name: '支撑层', weight: 0.35,
                 systems: {
                     professional: { name: '专业能力', indicators: ['专业技能', '行业认知', '问题解决', '创新能力', '经验积累'] },
                     learning: { name: '学习能力', indicators: ['学习速度', '知识迁移', '方法优化', '知识整合', '持续学习'] },
@@ -454,8 +408,7 @@
                 }
             },
             strategy: {
-                name: '战略层',
-                weight: 0.15,
+                name: '战略层', weight: 0.15,
                 systems: {
                     thinking: { name: '系统思维', indicators: ['整体观', '关联分析', '动态思考', '结构认知', '长期视角'] },
                     integration: { name: '资源整合', indicators: ['跨域整合', '时机把握', '杠杆效应', '协同优化', '价值放大'] },
@@ -465,8 +418,7 @@
                 }
             },
             external: {
-                name: '外部层',
-                weight: 0.1,
+                name: '外部层', weight: 0.1,
                 systems: {
                     environment: { name: '社会环境', indicators: ['政策利好', '行业趋势', '社会资源', '法律环境', '文化环境'] },
                     timing: { name: '时间窗口', indicators: ['时机匹配', '窗口长度', '竞争态势', '先发优势', '转换成本'] },
@@ -489,7 +441,6 @@
             });
         });
         
-        // 历史记录
         let history = JSON.parse(localStorage.getItem('chengshi_v31_history') || '[]');
         
         // ==================== 初始化 ====================
@@ -497,14 +448,12 @@
             document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
             renderAllLayers();
             renderStandardsModal();
-            updateAll();
             renderHistory();
+            updateAll();
         }
         
         function renderAllLayers() {
-            ['core', 'support', 'strategy', 'external'].forEach(layer => {
-                renderLayer(layer);
-            });
+            ['core', 'support', 'strategy', 'external'].forEach(layer => renderLayer(layer));
         }
         
         function renderLayer(layer) {
@@ -513,35 +462,27 @@
             
             Object.keys(systems[layer].systems).forEach(sys => {
                 const sysData = systems[layer].systems[sys];
-                html += `<div class="system-row">
-                    <div class="system-name">${sysData.name}</div>`;
+                html += `<div class="system-row"><div class="system-name">${sysData.name}</div>`;
                 
                 sysData.indicators.forEach((ind, idx) => {
                     const standards = sysData.standards ? sysData.standards[idx] : null;
-                    html += `<div class="indicator-item">
-                        <span class="indicator-name">${ind}`;
+                    html += `<div class="indicator-item"><span class="indicator-name">${ind}`;
                     
-                    // 添加评分标准tooltip（仅核心层有详细标准）
+                    // 核心层显示评分标准tooltip
                     if (standards) {
-                        html += `<div class="score-standard">
-                            <div style="font-weight:500;margin-bottom:5px;color:#333;">${ind}：</div>`;
+                        html += `<div class="score-standard"><div style="font-weight:500;margin-bottom:4px;color:#333;">${ind}：</div>`;
                         for (let i = 0; i <= 5; i++) {
                             html += `<div class="score-standard-row s${i}"><span>${i}:</span> ${standards[i]}</div>`;
                         }
                         html += `</div>`;
                     }
                     
-                    html += `</span>
-                        <div class="score-btns">`;
-                    
+                    html += `</span><div class="score-btns">`;
                     for (let i = 0; i <= 5; i++) {
-                        const btnClass = i === 0 ? 'score-btn zero' : 'score-btn';
-                        html += `<button class="${btnClass}" onclick="selectScore('${layer}', '${sys}', ${idx}, ${i})">${i}</button>`;
+                        html += `<button class="${i === 0 ? 'score-btn zero' : 'score-btn'}" onclick="selectScore('${layer}', '${sys}', ${idx}, ${i})">${i}</button>`;
                     }
-                    
                     html += `</div></div>`;
                 });
-                
                 html += `</div>`;
             });
             
@@ -552,7 +493,6 @@
         function selectScore(layer, sys, idx, score) {
             scores[layer][sys][idx] = score;
             
-            // 更新按钮状态
             const container = document.getElementById(layer + 'Content');
             const systemRows = container.querySelectorAll('.system-row');
             const sysIdx = Object.keys(systems[layer].systems).indexOf(sys);
@@ -563,18 +503,24 @@
             updateAll();
         }
         
-        // ==================== 计算 ====================
+        // ==================== 计算（修复NaN问题）====================
         function getSystemAvg(layer, sys) {
-            const sysScores = Object.values(scores[layer][sys]);
-            return sysScores.reduce((a, b) => a + b, 0) / sysScores.length;
+            if (!scores[layer] || !scores[layer][sys]) return 0;
+            const vals = Object.values(scores[layer][sys]);
+            if (vals.length === 0) return 0;
+            const sum = vals.reduce((a, b) => (isNaN(a) ? 0 : a) + (isNaN(b) ? 0 : b), 0);
+            return sum / vals.length;
         }
         
         function getLayerScore(layer) {
+            if (!scores[layer]) return 0;
             let total = 0, count = 0;
             Object.values(scores[layer]).forEach(sys => {
                 Object.values(sys).forEach(score => {
-                    total += score;
-                    count++;
+                    if (!isNaN(score)) {
+                        total += score;
+                        count++;
+                    }
                 });
             });
             return count > 0 ? total / count : 0;
@@ -588,7 +534,7 @@
             return total * 20;
         }
         
-        // ==================== 核心系统检测 ====================
+        // ==================== 核心检测 ====================
         function checkCoreFailure() {
             const coreScores = {
                 power: getSystemAvg('core', 'power'),
@@ -599,7 +545,7 @@
             };
             
             const zeroCount = Object.values(coreScores).filter(s => s === 0).length;
-            const lowCount = Object.values(coreScores).filter(s => s <= 2).length;
+            const lowCount = Object.values(coreScores).filter(s => s > 0 && s <= 2).length;
             
             return {
                 zeroCount,
@@ -622,13 +568,16 @@
             updateStrategy();
         }
         
-        // ==================== 动力链可视化 ====================
+        // ==================== 动力链可视化（简化版）====================
         function updateChainVisualization() {
             const layers = ['core', 'support', 'strategy', 'external'];
+            const layerNames = ['核心层', '支撑层', '战略层', '外部层'];
             const layerScores = layers.map(l => getLayerScore(l));
             
-            // 检测断裂点
+            // 检测断裂
             let brokenAt = -1;
+            const behaviorScore = getSystemAvg('core', 'behavior');
+            
             for (let i = 0; i < layerScores.length; i++) {
                 if (layerScores[i] === 0) {
                     brokenAt = i;
@@ -636,43 +585,43 @@
                 }
             }
             
-            // 核心层行为=0也断裂
-            const behaviorScore = getSystemAvg('core', 'behavior');
-            if (behaviorScore === 0 && brokenAt === -1) {
-                brokenAt = 0; // 核心层断裂
-            }
-            
+            // 构建链路文本
+            let chainHtml = '';
             layers.forEach((layer, idx) => {
-                const node = document.getElementById('chain-' + layer);
                 const score = layerScores[idx];
+                const isBroken = brokenAt !== -1 && idx >= brokenAt;
+                const isCurrentBreak = brokenAt === idx;
                 
-                node.querySelector('.score').textContent = score.toFixed(1);
-                node.className = 'chain-node';
-                
-                if (brokenAt !== -1) {
-                    if (idx === brokenAt) {
-                        node.classList.add('red');
-                    } else if (idx > brokenAt) {
-                        node.classList.add('broken');
-                    } else {
-                        node.classList.add(layerScores[idx] <= 2 ? 'red' : layerScores[idx] <= 3 ? 'yellow' : 'green');
-                    }
+                let cls = '';
+                if (isBroken) {
+                    cls = 'broken';
+                } else if (score === 0 || score <= 2) {
+                    cls = 'red';
+                } else if (score <= 3) {
+                    cls = 'yellow';
                 } else {
-                    node.classList.add(score <= 2 ? 'red' : score <= 3 ? 'yellow' : 'green');
+                    cls = 'green';
+                }
+                
+                chainHtml += `<span class="chain-node-inline ${cls}">${layerNames[idx]}(${score.toFixed(1)})</span>`;
+                if (idx < layers.length - 1) {
+                    chainHtml += ` → `;
                 }
             });
             
-            // 断裂提示
+            document.getElementById('chainText').innerHTML = chainHtml;
+            
+            // 警告提示
             const alertDiv = document.getElementById('chainAlert');
             if (brokenAt !== -1) {
-                alertDiv.innerHTML = `<div class="chain-alert">⚠️ ${layers[brokenAt]}评分为0，动力链在此断裂，后续环节失效</div>`;
-            } else {
+                alertDiv.innerHTML = `<div class="chain-alert danger">⚠️ ${layerNames[brokenAt]}评分为0，动力链断裂，后续环节失效</div>`;
+            } else if (behaviorScore === 0) {
+                alertDiv.innerHTML = `<div class="chain-alert danger">⚠️ 行为系统=0，动力链断裂</div>`;
+            } else if (layerScores.filter(s => s <= 2).length > 0) {
                 const lowLayers = layers.filter((l, i) => layerScores[i] <= 2);
-                if (lowLayers.length > 0) {
-                    alertDiv.innerHTML = `<div class="chain-alert" style="background:#fff8e1;color:#e65100;">⚠️ ${lowLayers.join('、')}评分≤2，存在明显短板</div>`;
-                } else {
-                    alertDiv.innerHTML = '';
-                }
+                alertDiv.innerHTML = `<div class="chain-alert warning">⚠️ ${lowLayers.map((l, i) => layerNames[layers.indexOf(l)]).join('、')}评分≤2</div>`;
+            } else {
+                alertDiv.innerHTML = '';
             }
         }
         
@@ -686,48 +635,44 @@
             const total = getTotalScore();
             document.getElementById('totalScore').textContent = total.toFixed(2);
             
-            // 总分状态
             const status = document.getElementById('totalStatus');
-            if (total >= 80) {
-                status.textContent = '🌟 优秀 · 成事能力强';
-            } else if (total >= 60) {
-                status.textContent = '✅ 良好 · 具备成事基础';
-            } else if (total >= 40) {
-                status.textContent = '⚖️ 中等 · 存在明显短板';
-            } else if (total >= 20) {
-                status.textContent = '⚠️ 较弱 · 需要重点提升';
-            } else {
-                status.textContent = '❌ 失效 · 系统性缺陷';
-            }
+            if (total >= 80) status.textContent = '🌟 优秀';
+            else if (total >= 60) status.textContent = '✅ 良好';
+            else if (total >= 40) status.textContent = '⚖️ 中等';
+            else if (total >= 20) status.textContent = '⚠️ 较弱';
+            else status.textContent = '❌ 失效';
         }
         
-        // ==================== 类型识别 ====================
+        // ==================== 类型识别（修复undefined）====================
         function updateTypeRecognition() {
             const failure = checkCoreFailure();
             const { powerScore, cognitiveScore, emotionScore, behaviorScore, resourceScore } = failure.scores;
-            const avg = Object.values(failure.scores).reduce((a, b) => a + b, 0) / 5;
+            
+            // 确保所有分数有效
+            const validScores = [powerScore, cognitiveScore, emotionScore, behaviorScore, resourceScore].filter(s => !isNaN(s));
+            const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
             
             let html = '';
             
-            // 系统失效型
+            // 系统失效型（最高优先级）
             if (failure.isFailed) {
                 html = `<span class="tag tag-danger">系统失效型</span>`;
-                html += `<div class="alert-box alert-danger">${failure.zeroCount}个核心系统评分为0，人格系统存在严重结构性缺陷。</div>`;
+                html += `<div class="alert-box alert-danger">${failure.zeroCount}个核心系统为0，人格系统严重缺陷</div>`;
             }
             // 动力链断裂
             else if (behaviorScore === 0) {
                 html = `<span class="tag tag-danger">动力链断裂型</span>`;
-                html += `<div class="alert-box alert-danger">行为系统=0，无法执行任何目标，动力链完全断裂。</div>`;
+                html += `<div class="alert-box alert-danger">行为系统=0，无法执行任何目标</div>`;
             }
             // 动力缺失
             else if (powerScore === 0) {
                 html = `<span class="tag tag-danger">动力缺失型</span>`;
-                html += `<div class="alert-box alert-danger">动力系统=0，无目标无自驱力，只能被动响应。</div>`;
+                html += `<div class="alert-box alert-danger">动力系统=0，无自驱力只能被动响应</div>`;
             }
             // 多短板型
-            else if (failure.lowCount >= 3) {
+            else if (failure.lowCount + failure.zeroCount >= 3) {
                 html = `<span class="tag tag-warning">多短板型</span>`;
-                html += `<div class="alert-box alert-warning">${failure.lowCount}个系统≤2分，存在多个明显短板。</div>`;
+                html += `<div class="alert-box alert-warning">${failure.lowCount + failure.zeroCount}个系统≤2分</div>`;
             }
             // 正常判定
             else {
@@ -737,14 +682,20 @@
                 const min = Math.min(...scores);
                 const diff = max - min;
                 
+                // 优势维度：分数 > 平均 + 1
+                const advantages = scores.map((s, i) => s > avg + 1 ? names[i] : null).filter(Boolean);
+                // 短板维度：分数 < 平均 - 1
+                const weaknesses = scores.map((s, i) => s < avg - 1 ? names[i] : null).filter(Boolean);
+                
                 if (diff <= 1) {
                     html = `<span class="tag tag-success">均衡型</span>`;
-                    html += `<div style="margin-top:8px;">五大系统均衡发展，无明显短板。</div>`;
+                    html += `<div>五大系统均衡，无突出短板</div>`;
                 } else {
                     const maxIdx = scores.indexOf(max);
-                    const minIdx = scores.indexOf(min);
                     html = `<span class="tag tag-info">${names[maxIdx]}主导型</span>`;
-                    html += `<div style="margin-top:8px;">优势：${names[maxIdx]}(${max.toFixed(1)}) | 短板：${names[minIdx]}(${min.toFixed(1)})</div>`;
+                    if (advantages.length > 0) html += `<div>优势：${advantages.join('、')} | `;
+                    if (weaknesses.length > 0) html += `短板：${weaknesses.join('、')}</div>`;
+                    else html += `</div>`;
                 }
             }
             
@@ -754,25 +705,21 @@
         // ==================== 结构解释 ====================
         function updateStructureAnalysis() {
             const failure = checkCoreFailure();
-            const avg = Object.values(failure.scores).reduce((a, b) => a + b, 0) / 5;
             const scores = Object.values(failure.scores);
+            const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
             const max = Math.max(...scores);
             const min = Math.min(...scores);
             
             let html = '';
             
             if (failure.isFailed) {
-                html = `<div class="alert-box alert-danger">结构类型：系统失效<br>${failure.zeroCount}个系统为0，需要根本性重建。</div>`;
+                html = `<div class="alert-box alert-danger">结构：系统失效<br>需根本性重建</div>`;
             } else if (failure.hasZero) {
-                html = `<div class="alert-box alert-danger">结构类型：关键缺失<br>存在评分为0的系统，需首先修复。</div>`;
+                html = `<div class="alert-box alert-danger">结构：关键缺失<br>需优先修复失效系统</div>`;
             } else {
                 const diff = max - min;
-                html = `结构类型：${diff <= 1 ? '均衡结构' : '非均衡结构'}<br>`;
-                html += `核心层均值：${avg.toFixed(2)}<br>`;
-                if (diff > 1) {
-                    const names = ['动力', '认知', '情绪', '行为', '资源'];
-                    html += `强弱差异：${diff.toFixed(1)}分`;
-                }
+                html = `结构：${diff <= 1 ? '均衡' : '非均衡'}<br>核心层均值：${avg.toFixed(2)}`;
+                if (diff > 1) html += `<br>强弱差异：${diff.toFixed(1)}分`;
             }
             
             document.getElementById('structureContent').innerHTML = html;
@@ -782,25 +729,24 @@
         function updateCompensate() {
             const failure = checkCoreFailure();
             const scores = Object.entries(failure.scores);
+            const names = { power: '动力', cognitive: '认知', emotion: '情绪', behavior: '行为', resource: '资源' };
+            
             const highs = scores.filter(([k, v]) => v >= 4);
             const lows = scores.filter(([k, v]) => v >= 0 && v <= 2);
-            const names = { power: '动力', cognitive: '认知', emotion: '情绪', behavior: '行为', resource: '资源' };
             
             let html = '';
             
             if (failure.isFailed) {
-                html = `<div class="alert-box alert-danger">系统失效，补偿机制无法发挥作用。</div>`;
+                html = `<div class="alert-box alert-danger">系统失效，补偿无效</div>`;
             } else if (lows.length > 0 && highs.length > 0) {
-                html = `<div class="alert-box alert-success">存在可补偿结构</div>`;
-                html += `<div style="margin-top:8px;">`;
-                html += `<strong>优势：</strong>${highs.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}<br>`;
-                html += `<strong>短板：</strong>${lows.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}`;
-                html += `</div>`;
+                html = `<div class="alert-box alert-success">可补偿结构</div>`;
+                html += `<div style="margin-top:6px;">优势：${highs.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}</div>`;
+                html += `<div>短板：${lows.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}</div>`;
             } else if (lows.length > 0) {
-                html = `<div class="alert-box alert-warning">存在短板但无优势可补偿</div>`;
-                html += `<div style="margin-top:8px;">短板：${lows.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}</div>`;
+                html = `<div class="alert-box alert-warning">有短板无优势可补</div>`;
+                html += `<div style="margin-top:6px;">短板：${lows.map(([k, v]) => names[k] + '(' + v.toFixed(1) + ')').join('、')}</div>`;
             } else {
-                html = `✅ 无明显短板，补偿机制暂未激活。`;
+                html = `✅ 无明显短板`;
             }
             
             document.getElementById('compensateContent').innerHTML = html;
@@ -811,23 +757,21 @@
             const failure = checkCoreFailure();
             const names = { power: '动力', cognitive: '认知', emotion: '情绪', behavior: '行为', resource: '资源' };
             const translations = {
-                power: ['完全无目标无方向', '目标感弱需外部督促'],
-                cognitive: ['逻辑混乱无法判断', '判断容易出错'],
-                emotion: ['情绪完全失控', '情绪波动明显'],
-                behavior: ['完全无法执行', '执行力不足'],
-                resource: ['无法识别资源', '资源利用低效']
+                power: { 0: '完全无目标无方向', low: '目标感弱需督促' },
+                cognitive: { 0: '逻辑混乱无法判断', low: '判断容易出错' },
+                emotion: { 0: '情绪完全失控', low: '情绪波动明显' },
+                behavior: { 0: '完全无法执行', low: '执行力不足' },
+                resource: { 0: '无法识别资源', low: '资源利用低效' }
             };
             
             let html = '';
             const risks = [];
             
             Object.entries(failure.scores).forEach(([sys, score]) => {
-                if (score >= 0 && score <= 2) {
-                    risks.push({
-                        name: names[sys],
-                        score,
-                        text: score === 0 ? translations[sys][0] : translations[sys][1]
-                    });
+                if (score === 0) {
+                    risks.push({ name: names[sys], score, text: translations[sys][0], level: 'danger' });
+                } else if (score <= 2) {
+                    risks.push({ name: names[sys], score, text: translations[sys].low, level: 'warning' });
                 }
             });
             
@@ -836,7 +780,7 @@
             }
             
             if (risks.length > 0) {
-                html += risks.map(r => `<div class="alert-box ${r.score === 0 ? 'alert-danger' : 'alert-warning'}">${r.name}(${r.score.toFixed(1)})：${r.text}</div>`).join('');
+                html += risks.map(r => `<div class="alert-box alert-${r.level}">${r.name}(${r.score.toFixed(1)})：${r.text}</div>`).join('');
             } else {
                 html = `✅ 无高风险维度`;
             }
@@ -847,8 +791,8 @@
         // ==================== 决策引擎 ====================
         function updateDecisionEngine() {
             const failure = checkCoreFailure();
-            const avg = Object.values(failure.scores).reduce((a, b) => a + b, 0) / 5;
             const { powerScore, cognitiveScore, emotionScore, behaviorScore, resourceScore } = failure.scores;
+            const avg = Object.values(failure.scores).reduce((a, b) => a + b, 0) / 5;
             
             // 可合作
             const coopItem = document.getElementById('decision-coop-item');
@@ -858,7 +802,7 @@
             if (failure.isFailed) {
                 coopItem.className = 'decision-item danger';
                 coopValue.textContent = '❌ 不建议';
-                coopReason.textContent = '系统失效';
+                coopReason.textContent = `${failure.zeroCount}系统失效`;
             } else if (failure.hasZero) {
                 coopItem.className = 'decision-item danger';
                 coopValue.textContent = '❌ 高风险';
@@ -867,10 +811,14 @@
                 coopItem.className = 'decision-item success';
                 coopValue.textContent = '✅ 适合';
                 coopReason.textContent = '整体良好';
-            } else {
+            } else if (avg >= 2.5) {
                 coopItem.className = 'decision-item warning';
                 coopValue.textContent = '⚖️ 视情况';
                 coopReason.textContent = '需评估匹配度';
+            } else {
+                coopItem.className = 'decision-item warning';
+                coopValue.textContent = '⚠️ 需支持';
+                coopReason.textContent = '存在明显短板';
             }
             
             // 可深交
@@ -885,15 +833,15 @@
             } else if (emotionScore >= 4 && cognitiveScore >= 4) {
                 deepItem.className = 'decision-item success';
                 deepValue.textContent = '✅ 可深交';
-                deepReason.textContent = '情绪认知良好';
+                deepReason.textContent = '情绪认知稳定';
             } else if (emotionScore <= 2) {
                 deepItem.className = 'decision-item warning';
                 deepValue.textContent = '⚠️ 需谨慎';
                 deepReason.textContent = '情绪波动风险';
             } else {
                 deepItem.className = 'decision-item warning';
-                deepValue.textContent = '⚖️ 普通';
-                deepReason.textContent = '正常社交';
+                deepValue.textContent = '⚖️ 普通交往';
+                deepReason.textContent = '可维持正常社交';
             }
             
             // 可托付
@@ -904,12 +852,12 @@
             if (failure.isFailed || behaviorScore === 0) {
                 trustItem.className = 'decision-item danger';
                 trustValue.textContent = '❌ 不可';
-                trustReason.textContent = '无法执行';
+                trustReason.textContent = '无法执行承诺';
             } else if (powerScore === 0) {
                 trustItem.className = 'decision-item danger';
                 trustValue.textContent = '❌ 风险高';
                 trustReason.textContent = '无自驱力';
-            } else if (behaviorScore >= 4 && resourceScore >= 3) {
+            } else if (behaviorScore >= 4 && resourceScore >= 3 && cognitiveScore >= 3) {
                 trustItem.className = 'decision-item success';
                 trustValue.textContent = '✅ 可托付';
                 trustReason.textContent = '执行力强有资源';
@@ -920,7 +868,7 @@
             } else {
                 trustItem.className = 'decision-item warning';
                 trustValue.textContent = '⚖️ 视情况';
-                trustReason.textContent = '需评估难度';
+                trustReason.textContent = '需评估任务难度';
             }
             
             // 风险等级
@@ -935,7 +883,7 @@
             } else if (failure.hasZero) {
                 riskItem.className = 'decision-item danger';
                 riskValue.textContent = '🔴 高';
-                riskReason.textContent = '关键缺失';
+                riskReason.textContent = '关键系统缺失';
             } else if (failure.lowCount >= 3) {
                 riskItem.className = 'decision-item warning';
                 riskValue.textContent = '🟠 中高';
@@ -957,11 +905,11 @@
             
             if (failure.isFailed || behaviorScore === 0) {
                 roleItem.className = 'decision-item danger';
-                roleValue.textContent = '无适合角色';
-                roleReason.textContent = '需先修复';
-            } else if (powerScore >= 4 && cognitiveScore >= 4) {
+                roleValue.textContent = '无适合';
+                roleReason.textContent = '需先修复系统';
+            } else if (powerScore >= 4 && cognitiveScore >= 4 && behaviorScore >= 3) {
                 roleItem.className = 'decision-item success';
-                roleValue.textContent = '战略决策者';
+                roleValue.textContent = '战略决策';
                 roleReason.textContent = '目标清晰判断准';
             } else if (behaviorScore >= 4) {
                 roleItem.className = 'decision-item success';
@@ -987,26 +935,21 @@
             const fitList = document.getElementById('strategyFit');
             const unfitList = document.getElementById('strategyUnfit');
             
-            let fitHtml = '';
-            let unfitHtml = '';
+            let fitHtml = '', unfitHtml = '';
             
             if (failure.isFailed) {
                 fitHtml = '<li>无（需先修复）</li>';
                 unfitHtml = '<li>独立任务</li><li>关键岗位</li><li>长期合作</li>';
             } else if (behaviorScore === 0) {
-                fitHtml = '<li>顾问/咨询</li>';
+                fitHtml = '<li>纯顾问咨询</li>';
                 unfitHtml = '<li>独立执行</li><li>项目主导</li>';
             } else if (powerScore === 0) {
                 fitHtml = '<li>执行型岗位</li><li>辅助角色</li>';
-                unfitHtml = '<li>自主创新工作</li><li>创业主导</li>';
+                unfitHtml = '<li>自主创新</li><li>创业主导</li>';
             } else {
-                if (avg >= 4) {
-                    fitHtml = '<li>高复杂任务</li><li>团队领导</li><li>长期合作</li>';
-                } else if (avg >= 3) {
-                    fitHtml = '<li>常规任务</li><li>团队协作</li>';
-                } else {
-                    fitHtml = '<li>简单任务</li><li>有指导的工作</li>';
-                }
+                if (avg >= 4) fitHtml = '<li>高复杂任务</li><li>团队领导</li><li>长期合作</li>';
+                else if (avg >= 3) fitHtml = '<li>常规任务</li><li>团队协作</li>';
+                else fitHtml = '<li>简单任务</li><li>有指导工作</li>';
                 
                 if (emotionScore <= 2) unfitHtml += '<li>高压环境</li>';
                 if (cognitiveScore <= 2) unfitHtml += '<li>复杂决策</li>';
@@ -1049,10 +992,7 @@
                     <td>${h.strategy.toFixed(2)}</td>
                     <td>${h.external.toFixed(2)}</td>
                     <td><strong>${h.total.toFixed(2)}</strong></td>
-                    <td>
-                        <button onclick="loadRecord(${idx})">加载</button>
-                        <button onclick="deleteRecord(${idx})">删除</button>
-                    </td>
+                    <td><button onclick="loadRecord(${idx})">加载</button><button onclick="deleteRecord(${idx})">删</button></td>
                 </tr>
             `).join('');
         }
@@ -1064,7 +1004,6 @@
             document.getElementById('evalPurpose').value = record.purpose || '';
             document.getElementById('evalNote').value = record.note || '';
             
-            // 重置分数
             Object.keys(systems).forEach(layer => {
                 Object.keys(systems[layer].systems).forEach(sys => {
                     systems[layer].systems[sys].indicators.forEach((ind, i) => {
@@ -1072,10 +1011,8 @@
                     });
                 });
             });
-            
             document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
             
-            // 加载分数
             if (record.scores) {
                 Object.keys(record.scores).forEach(layer => {
                     Object.keys(record.scores[layer]).forEach(sys => {
@@ -1098,18 +1035,22 @@
         function exportReport() {
             const name = document.getElementById('personName').value || '未命名';
             const date = document.getElementById('evalDate').value;
-            let report = `# 成事系统评估报告 V3.1\n\n对象：${name} | 日期：${date}\n\n`;
-            report += `## 总分：${getTotalScore().toFixed(2)}\n\n`;
+            const purpose = document.getElementById('evalPurpose').value;
+            
+            let report = `# 成事系统评估报告 V3.1\n\n**对象：** ${name}  \n**日期：** ${date}  \n**目的：** ${purpose || '未指定'}\n\n`;
+            report += `---\n\n## 总分：${getTotalScore().toFixed(2)}\n\n`;
             report += `| 层级 | 分数 |\n|------|------|\n`;
             report += `| 核心层 | ${getLayerScore('core').toFixed(2)} |\n`;
             report += `| 支撑层 | ${getLayerScore('support').toFixed(2)} |\n`;
             report += `| 战略层 | ${getLayerScore('strategy').toFixed(2)} |\n`;
             report += `| 外部层 | ${getLayerScore('external').toFixed(2)} |\n\n`;
             report += `## 类型识别\n${document.getElementById('typeContent').innerText}\n\n`;
-            report += `## 决策引擎\n可合作：${document.getElementById('decision-coop').textContent}\n`;
-            report += `可深交：${document.getElementById('decision-deep').textContent}\n`;
-            report += `可托付：${document.getElementById('decision-trust').textContent}\n`;
-            report += `风险等级：${document.getElementById('decision-risk').textContent}\n`;
+            report += `## 决策引擎\n`;
+            report += `- 可合作：${document.getElementById('decision-coop').textContent}（${document.getElementById('decision-coop-reason').textContent}）\n`;
+            report += `- 可深交：${document.getElementById('decision-deep').textContent}（${document.getElementById('decision-deep-reason').textContent}）\n`;
+            report += `- 可托付：${document.getElementById('decision-trust').textContent}（${document.getElementById('decision-trust-reason').textContent}）\n`;
+            report += `- 风险等级：${document.getElementById('decision-risk').textContent}\n`;
+            report += `- 适合角色：${document.getElementById('decision-role').textContent}\n`;
             
             document.getElementById('exportText').value = report;
             document.getElementById('exportSection').style.display = 'block';
@@ -1120,6 +1061,7 @@
                 version: '3.1',
                 date: document.getElementById('evalDate').value,
                 name: document.getElementById('personName').value,
+                purpose: document.getElementById('evalPurpose').value,
                 layers: { core: getLayerScore('core'), support: getLayerScore('support'), strategy: getLayerScore('strategy'), external: getLayerScore('external') },
                 total: getTotalScore(),
                 scores
@@ -1135,12 +1077,10 @@
             alert('已复制！');
         }
         
-        function closeExport() {
-            document.getElementById('exportSection').style.display = 'none';
-        }
+        function closeExport() { document.getElementById('exportSection').style.display = 'none'; }
         
         function clearAll() {
-            if (!confirm('确定清空？')) return;
+            if (!confirm('确定清空所有评分？')) return;
             Object.keys(systems).forEach(layer => {
                 Object.keys(systems[layer].systems).forEach(sys => {
                     systems[layer].systems[sys].indicators.forEach((ind, i) => {
@@ -1159,16 +1099,15 @@
             
             Object.keys(coreSystems).forEach(sys => {
                 const data = coreSystems[sys];
-                html += `<div style="margin-bottom:25px;">
-                    <h4 style="margin-bottom:12px;color:#333;border-bottom:1px solid #eee;padding-bottom:8px;">${data.name}</h4>`;
+                html += `<div style="margin-bottom:20px;">
+                    <h4 style="margin-bottom:10px;color:#333;border-bottom:1px solid #eee;padding-bottom:6px;">${data.name}</h4>`;
                 
                 data.indicators.forEach((ind, idx) => {
-                    html += `<div style="margin-bottom:12px;">
-                        <div style="font-weight:500;color:#666;margin-bottom:6px;">${ind}</div>
-                        <div style="font-size:0.8em;color:#888;">`;
+                    html += `<div style="margin-bottom:10px;">
+                        <div style="font-weight:500;color:#555;margin-bottom:4px;font-size:0.85em;">${ind}</div>
+                        <div style="font-size:0.75em;color:#666;">`;
                     for (let i = 0; i <= 5; i++) {
-                        const colorClass = i === 0 ? 'color:#f44336' : i === 5 ? 'color:#4caf50' : '';
-                        html += `<div style="padding:3px 0;${colorClass}">${i}: ${data.standards[idx][i]}</div>`;
+                        html += `<div style="padding:2px 0;">${i}: ${data.standards[idx][i]}</div>`;
                     }
                     html += `</div></div>`;
                 });
@@ -1178,15 +1117,9 @@
             document.getElementById('standardsContent').innerHTML = html;
         }
         
-        function showStandardsModal() {
-            document.getElementById('standardsModal').classList.add('show');
-        }
+        function showStandardsModal() { document.getElementById('standardsModal').classList.add('show'); }
+        function closeStandardsModal() { document.getElementById('standardsModal').classList.remove('show'); }
         
-        function closeStandardsModal() {
-            document.getElementById('standardsModal').classList.remove('show');
-        }
-        
-        // 初始化
         init();
     </script>
 </body>
