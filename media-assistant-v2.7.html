@@ -178,6 +178,14 @@
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 12px;
+            <div id="reminder-panel" class="card" style="margin-bottom:12px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:none;display:none;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:18px;">📅</span>
+                    <span style="font-weight:600;color:#92400e;">待录入提醒</span>
+                </div>
+                <div id="reminder-list" style="font-size:13px;color:#78350f;line-height:1.8;"></div>
+            </div>
+
             font-weight: 500;
         }
         .tag-valid { background: #e8f5e9; color: var(--success); }
@@ -308,6 +316,9 @@
                         <option value="抖音">抖音</option>
                         <option value="小红书">小红书</option>
                         <option value="B站">B站</option>
+                        <option value="快手">快手</option>
+                        <option value="微博">微博</option>
+                        <option value="TikTok">TikTok</option>
                     </select>
                 </div>
                 <div class="stat-row">
@@ -635,6 +646,19 @@
                 }
             } else if (daysSince <= 7 && daysSince % 2 === 1) {
                 needRecord = true;
+    function previewSave() {
+        const title = document.getElementById("record-title").value.trim();
+        const platform = document.getElementById("record-platform").value;
+        if (!title) { alert("请输入标题"); return; }
+        const records = getData("records");
+        const existing = records.filter(r => r.title === title && r.platform === platform);
+        if (existing.length > 0) {
+            alert("「" + title + "」已存在" + existing.length + "条记录\n\n保存时会追加数据");
+        } else {
+            alert("「" + title + "」是新标题\n\n保存时会创建新记录");
+        }
+    }
+
                 reason = `第${daysSince + 1}天`;
             }
 
