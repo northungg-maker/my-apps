@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>自媒体数据助手 v2.6</title>
+    <title>自媒体数据助手 v2.8</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -83,6 +83,10 @@
             outline: none;
             border-color: var(--accent);
             background: var(--card);
+        }
+        input[type="date"] {
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .form-select {
             width: 100%;
@@ -276,7 +280,13 @@
                     <div class="label">有效内容</div>
                 </div>
             </div>
-            
+
+            <!-- 待录入提醒 -->
+            <div id="reminder-panel" class="tip-box" style="display:none;margin-bottom:16px;background:#fff8e1;border:1px solid #ffc107;">
+                <div style="font-weight:600;margin-bottom:8px;color:#f57c00;">📋 今日待录入</div>
+                <div id="reminder-list"></div>
+            </div>
+
             <div class="section-title">录入数据</div>
             <div class="card">
                 <div class="form-group">
@@ -285,7 +295,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">标题</label>
-                    <input type="text" id="record-title" class="form-input" placeholder="内容标题">
+                    <input type="text" id="record-title" class="form-input" placeholder="内容标题" oninput="checkTitleDup()">
+                    <p id="title-hint" style="font-size:12px;color:var(--text2);margin-top:4px;display:none;"></p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">方向</label>
@@ -307,6 +318,9 @@
                         <option value="抖音">抖音</option>
                         <option value="小红书">小红书</option>
                         <option value="B站">B站</option>
+                        <option value="快手">快手</option>
+                        <option value="微博">微博</option>
+                        <option value="TikTok">TikTok</option>
                     </select>
                 </div>
                 <div class="stat-row">
@@ -581,8 +595,96 @@
         document.getElementById('record-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('home-total').textContent = records.length;
         document.getElementById('home-valid').textContent = records.filter(r => r.isValid).length;
+        renderReminder(); // 待录入提醒
+    }
+
+    // 标题重复检测
+    function checkTitleDup() {
+        const title = document.getElementById('record-title').value.trim();
+        const hint = document.getElementById('title-hint');
+        if (!title) {
+            hint.style.display = 'none';
+            return;
+        }
+        const records = getData('records');
+        const existing = records.filter(r => r.title === title);
+        if (existing.length > 0) {
+            hint.textContent = `已有${existing.length}条记录，保存时将追加数据`;
+            hint.style.display = 'block';
+        } else {
+            hint.textContent = '新标题，保存时创建新记录';
+            hint.style.display = 'block';
+        }
     }
     
+    // 预览检测结果
+    function previewSave() {
+        const title = document.getElementById('record-title').value.trim();
+        const platform = document.getElementById('record-platform').value;
+        const views = document.getElementById('record-views').value;
+        const comments = document.getElementById('record-comments').value;
+
+        if (!title) { alert('请输入标题'); return; }
+
+        const records = getData('records');
+        const existing = records.filter(r => r.title === title && r.platform === platform);
+
+        if (existing.length > 0) {
+            alert(`「${title}」已存在${existing.length}条记录\n\n保存时会追加数据到该标题下`);
+        } else {
+            alert(`「${title}」是新标题\n\n保存时会创建新记录`);
+        }
+    }
+
+    // 待录入提醒
+    function renderReminder() {
+        const records = getData('records');
+        const today = new Date().toISOString().split('T')[0];
+        const panel = document.getElementById('reminder-panel');
+        const list = document.getElementById('reminder-list');
+
+        // 按标题分组
+        const titleMap = new Map();
+        records.forEach(r => {
+            if (!titleMap.has(r.title)) {
+                titleMap.set(r.title, { title: r.title, firstDate: r.date, platform: r.platform });
+            } else {
+                const existing = titleMap.get(r.title);
+                if (r.date < existing.firstDate) existing.firstDate = r.date;
+            }
+        });
+
+        const reminders = [];
+        titleMap.forEach((info, title) => {
+            const firstDate = new Date(info.firstDate);
+            const daysSince = Math.floor((new Date(today) - firstDate) / (1000 * 60 * 60 * 24));
+            let needRecord = false, reason = '';
+
+            if (daysSince <= 3) {
+                const todayRecords = records.filter(r => r.title === title && r.date === today);
+                if (todayRecords.length === 0) {
+                    needRecord = true;
+                    reason = `第${daysSince + 1}天`;
+                }
+            } else if (daysSince <= 7 && daysSince % 2 === 1) {
+                needRecord = true;
+                reason = `第${daysSince + 1}天`;
+            }
+
+            if (needRecord) reminders.push({ ...info, reason });
+        });
+
+        if (reminders.length === 0) { panel.style.display = 'none'; return; }
+
+        panel.style.display = 'block';
+        list.innerHTML = reminders.slice(0, 5).map(r =>
+            `<div onclick="document.getElementById('record-title').value='${r.title.replace(/'/g, "\\'")}';" style="cursor:pointer;padding:4px 0;border-bottom:1px dashed #d97706;display:flex;justify-content:space-between;">
+                <span style="text-decoration:underline;">${r.title}</span>
+                <span style="font-size:11px;">${r.reason}</span>
+            </div>`
+        ).join('');
+    }
+
     function saveRecord() {
         const record = {
             id: Date.now(),
