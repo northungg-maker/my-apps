@@ -584,6 +584,74 @@
         document.getElementById('home-valid').textContent = records.filter(r => r.isValid).length;
     }
     
+    // 预览检测结果
+    function previewSave() {
+        const title = document.getElementById('record-title').value.trim();
+        const platform = document.getElementById('record-platform').value;
+        const views = document.getElementById('record-views').value;
+        const comments = document.getElementById('record-comments').value;
+
+        if (!title) { alert('请输入标题'); return; }
+
+        const records = getData('records');
+        const existing = records.filter(r => r.title === title && r.platform === platform);
+
+        if (existing.length > 0) {
+            alert(`「${title}」已存在${existing.length}条记录\n\n保存时会追加数据到该标题下`);
+        } else {
+            alert(`「${title}」是新标题\n\n保存时会创建新记录`);
+        }
+    }
+
+    // 待录入提醒
+    function renderReminder() {
+        const records = getData('records');
+        const today = new Date().toISOString().split('T')[0];
+        const panel = document.getElementById('reminder-panel');
+        const list = document.getElementById('reminder-list');
+
+        // 按标题分组
+        const titleMap = new Map();
+        records.forEach(r => {
+            if (!titleMap.has(r.title)) {
+                titleMap.set(r.title, { title: r.title, firstDate: r.date, platform: r.platform });
+            } else {
+                const existing = titleMap.get(r.title);
+                if (r.date < existing.firstDate) existing.firstDate = r.date;
+            }
+        });
+
+        const reminders = [];
+        titleMap.forEach((info, title) => {
+            const firstDate = new Date(info.firstDate);
+            const daysSince = Math.floor((new Date(today) - firstDate) / (1000 * 60 * 60 * 24));
+            let needRecord = false, reason = '';
+
+            if (daysSince <= 3) {
+                const todayRecords = records.filter(r => r.title === title && r.date === today);
+                if (todayRecords.length === 0) {
+                    needRecord = true;
+                    reason = `第${daysSince + 1}天`;
+                }
+            } else if (daysSince <= 7 && daysSince % 2 === 1) {
+                needRecord = true;
+                reason = `第${daysSince + 1}天`;
+            }
+
+            if (needRecord) reminders.push({ ...info, reason });
+        });
+
+        if (reminders.length === 0) { panel.style.display = 'none'; return; }
+
+        panel.style.display = 'block';
+        list.innerHTML = reminders.slice(0, 5).map(r =>
+            `<div onclick="document.getElementById('record-title').value='${r.title.replace(/'/g, "\\'")}';" style="cursor:pointer;padding:4px 0;border-bottom:1px dashed #d97706;display:flex;justify-content:space-between;">
+                <span style="text-decoration:underline;">${r.title}</span>
+                <span style="font-size:11px;">${r.reason}</span>
+            </div>`
+        ).join('');
+    }
+
     function saveRecord() {
         const record = {
             id: Date.now(),
