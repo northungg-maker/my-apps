@@ -345,6 +345,13 @@
                 card.classList.toggle('collapsed');
             });
         });
+        // 折叠功能
+        document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
+            h3.addEventListener('click', () => {
+                const card = h3.parentElement;
+                card.classList.toggle('collapsed');
+            });
+        });
         // 初始化 layer-content 的 max-height
         // ==================== 全部四层评分标准 ====================
         const systems = {
