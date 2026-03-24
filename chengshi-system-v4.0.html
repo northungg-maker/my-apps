@@ -22,8 +22,7 @@
         .info-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
         .info-item { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #eee; min-width: 0; overflow: hidden; }
         .info-item label { display: block; color: #999; font-size: 0.7em; margin-bottom: 4px; }
-        .info-item input, .info-item select { width: 100%; max-width: 160px; border: 1px solid #eee; padding: 5px 6px; border-radius: 3px; font-size: 0.8em; box-sizing: border-box; }
-        .info-item input[type="date"] { min-width: 0; max-width: 160px; }
+        .info-item input, .info-item select { border: 1px solid #eee; padding: 5px 6px; border-radius: 3px; font-size: 0.8em; box-sizing: border-box; }
         
         /* Chain - 动力链增强 */
         .chain-section { background: #fff; border-radius: 6px; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eee; }
@@ -166,15 +165,15 @@
         <div class="info-section">
             <div class="info-item">
                 <label>评估日期</label>
-                <input type="date" id="evalDate" style="width:140px;max-width:140px;">
+                <input type="date" id="evalDate">
             </div>
             <div class="info-item">
                 <label>评估对象</label>
-                <input type="text" id="personName" placeholder="姓名" style="width:140px;max-width:140px;">
+                <input type="text" id="personName" placeholder="姓名">
             </div>
             <div class="info-item">
                 <label>评估目的</label>
-                <select id="evalPurpose" style="width:140px;max-width:140px;">
+                <select id="evalPurpose">
                     <option value="">选择目的</option>
                     <option value="合作">合作评估</option>
                     <option value="招聘">招聘筛选</option>
