@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成事系统 V3.5</title>
+    <title>成事系统 V4.0</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafafa; color: #333; min-height: 100vh; }
@@ -634,8 +634,8 @@
             const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
             
             return {
-                strengths: allScores.filter(s => s.score > avg + 0.5).sort((a, b) => b.score - a.score),
-                weaknesses: allScores.filter(s => s.score < avg - 0.5 && s.score > 0).sort((a, b) => a.score - b.score),
+                strengths: allScores.filter(s => s.score > avg + 0.3).sort((a, b) => b.score - a.score),
+                weaknesses: allScores.filter(s => s.score < avg - 0.3 && s.score > 0).sort((a, b) => a.score - b.score),
                 avg
             };
         }
@@ -1353,13 +1353,13 @@
             // 优势短板
             report += `\n---\n\n## 三、优势/短板维度\n\n**系统均值：** ${avg.toFixed(2)}\n\n`;
             if (strengths.length > 0) {
-                report += `**优势维度（>均值+0.5）：**\n`;
+                report += `**优势维度（>均值+0.3）：**\n`;
                 strengths.forEach(s => report += `- ${s.sysName}：${s.score.toFixed(2)}\n`);
             } else {
                 report += `**优势维度：** 无明显优势维度\n`;
             }
             if (weaknesses.length > 0) {
-                report += `\n**短板维度（<均值-0.5）：**\n`;
+                report += `\n**短板维度（<均值-0.3）：**\n`;
                 weaknesses.forEach(s => report += `- ${s.sysName}：${s.score.toFixed(2)}\n`);
             } else {
                 report += `\n**短板维度：** 无明显短板维度\n`;
