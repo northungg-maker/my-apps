@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成事系统 V4.0</title>
+    <title>成事系统 V3.5</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafafa; color: #333; min-height: 100vh; }
@@ -155,7 +155,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>成事系统 V4.0</h1>
+            <h1>成事系统 V3.4</h1>
             <div class="subtitle">输出层优化：动力链增强+优势短板可视化+决策依据显示</div>
             <div class="header-actions">
                 <button onclick="showStandardsModal()">📋 评分标准</button>
@@ -255,12 +255,6 @@
         </div>
         
         <div class="analysis-card" style="margin-bottom:18px;">
-            <!-- 第一层：核心判断（V4.0 一句话定性） -->
-            <div id="coreJudgmentBox" style="margin-bottom:15px;padding:15px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:10px;color:#fff;box-shadow:0 2px 8px rgba(102,126,234,0.3);">
-                <div style="font-size:13px;opacity:0.9;margin-bottom:6px;">💡 核心判断</div>
-                <div id="coreJudgmentText" style="font-size:15px;font-weight:500;line-height:1.5;">（评分后自动生成）</div>
-            </div>
-            
             <h4>决策引擎</h4>
             <div class="decision-grid">
                 <div class="decision-item" id="decision-coop-item">
@@ -631,154 +625,19 @@
             return result;
         }
         
-        // 获取优势/短板（V4.0 改进：阈值±0.3，强制输出Top1/Bottom1）
+        // 获取优势/短板
         function getStrengthsAndWeaknesses() {
             const allScores = getAllSubsystemScores();
-            if (allScores.length === 0) return { strengths: [], weaknesses: [], avg: 0 };
+            if (allScores.length === 0) return { strengths: [], weaknesses: [] };
             
-            // 只考虑已评分的子系统
-            const scoredOnly = allScores.filter(s => s.score > 0);
-            if (scoredOnly.length === 0) return { strengths: [], weaknesses: [], avg: 0 };
-            
-            const scores = scoredOnly.map(s => s.score);
+            const scores = allScores.map(s => s.score);
             const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-            const threshold = 0.3;
             
-            let strengths = scoredOnly.filter(s => s.score >= avg + threshold).sort((a, b) => b.score - a.score);
-            let weaknesses = scoredOnly.filter(s => s.score <= avg - threshold).sort((a, b) => a.score - b.score);
-            
-            // V4.0 强制输出：没有明显差异时，输出最高和最低
-            if (strengths.length === 0 && scoredOnly.length > 0) {
-                strengths = [scoredOnly.reduce((a, b) => a.score > b.score ? a : b)];
-            }
-            if (weaknesses.length === 0 && scoredOnly.length > 0) {
-                weaknesses = [scoredOnly.reduce((a, b) => a.score < b.score ? a : b)];
-            }
-            
-            return { strengths, weaknesses, avg };
-        }
-        
-        // ==================== V4.0 新增基础设施函数 ====================
-        
-        /**
-         * 短板类型分类
-         * @param {number} score - 子系统分数 (0-5)
-         * @returns {object} { type: 'functional'|'limiting'|'structural', label: string, color: string }
-         */
-        function classifyShortcomingType(score) {
-            if (score <= 2.0) {
-                return { type: 'structural', label: '结构性短板', color: '#c62828' };
-            } else if (score <= 2.5) {
-                return { type: 'limiting', label: '限制性短板', color: '#e65100' };
-            } else if (score <= 3.0) {
-                return { type: 'functional', label: '功能性短板', color: '#ff9800' };
-            }
-            return { type: 'none', label: '无明显短板', color: '#4caf50' };
-        }
-        
-        /**
-         * 获取系统类别（用于补偿判定）
-         */
-        function getSystemCategory(sys) {
-            const categories = {
-                driver: ['power', 'emotion'],
-                cognitive: ['cognitive'],
-                action: ['behavior', 'resource'],
-                skill: ['professional', 'learning'],
-                decide: ['decision', 'execution'],
-                team: ['collaboration'],
-                strategy: ['thinking', 'planning', 'integration', 'risk', 'iteration'],
-                external: ['environment', 'timing', 'network', 'economic', 'info']
-            };
-            for (const [cat, systems] of Object.entries(categories)) {
-                if (systems.includes(sys)) return cat;
-            }
-            return 'other';
-        }
-        
-        /**
-         * 统一风险等级判定（V4.0 核心规则）
-         * @returns {object} { level: 'extreme'|'high'|'medium'|'low', icon: string, label: string, color: string, reason: string }
-         */
-        function getRiskLevel() {
-            const allScores = getAllSubsystemScores();
-            const minScore = Math.min(...allScores.map(s => s.score));
-            const zeroScores = allScores.filter(s => s.score === 0);
-            const lowScores = allScores.filter(s => s.score > 0 && s.score <= 2);
-            
-            // 极高风险：存在失效系统（0分）
-            if (zeroScores.length > 0) {
-                return {
-                    level: 'extreme',
-                    icon: '🚨',
-                    label: '极高',
-                    color: '#c62828',
-                    reason: '系统失效',
-                    detail: `失效：${zeroScores.map(z => z.sysName).join('、')}`,
-                    minScore: minScore
-                };
-            }
-            // 高风险：最低分 ≤ 2.0
-            if (minScore <= 2.0) {
-                return {
-                    level: 'high',
-                    icon: '🔴',
-                    label: '高',
-                    color: '#e65100',
-                    reason: `最低分${minScore.toFixed(1)}≤2`,
-                    detail: `短板(${lowScores.length})：${lowScores.map(l => l.sysName).join('、')}`,
-                    minScore: minScore
-                };
-            }
-            // 中风险：最低分 2.0-3.0
-            if (minScore <= 3.0) {
-                return {
-                    level: 'medium',
-                    icon: '🟡',
-                    label: '中',
-                    color: '#ff9800',
-                    reason: `最低分${minScore.toFixed(1)}`,
-                    detail: '可通过支持弥补',
-                    minScore: minScore
-                };
-            }
-            // 低风险：最低分 ≥ 3.0
             return {
-                level: 'low',
-                icon: '🟢',
-                label: '低',
-                color: '#2e7d32',
-                reason: '系统良好',
-                detail: '各系统≥3分，正常合作',
-                minScore: minScore
+                strengths: allScores.filter(s => s.score > avg + 0.5).sort((a, b) => b.score - a.score),
+                weaknesses: allScores.filter(s => s.score < avg - 0.5 && s.score > 0).sort((a, b) => a.score - b.score),
+                avg
             };
-        }
-        
-        /**
-         * 优势覆盖短板判定
-         * @param {object} strength - 优势子系统 { layer, sys, sysName, score }
-         * @param {object} weakness - 短板子系统
-         * @returns {object} { canCover: boolean, reason: string }
-         */
-        function canStrengthCoverWeakness(strength, weakness) {
-            const sameCategory = getSystemCategory(strength.sys) === getSystemCategory(weakness.sys);
-            const scoreGap = strength.score - weakness.score;
-            
-            // 核心层内部同类别可补偿
-            if (strength.layer === 'core' && weakness.layer === 'core' && sameCategory) {
-                if (scoreGap >= 2) {
-                    return { canCover: true, reason: `${strength.sysName}可补偿${weakness.sysName}` };
-                }
-            }
-            
-            // 战略层强优势可支撑核心短板
-            if (strength.layer === 'strategy' && weakness.layer === 'core') {
-                if (scoreGap >= 2.5 && strength.score >= 4) {
-                    return { canCover: true, reason: `${strength.sysName}可支撑${weakness.sysName}` };
-                }
-            }
-            
-            return { canCover: false, reason: '无法覆盖' };
         }
         
         // 核心检测
@@ -1103,7 +962,7 @@
             return comp.includes(weakSys);
         }
         
-        // ==================== 风险转译（V4.0 统一风险源）====================
+        // ==================== 风险转译（增强版）====================
         function updateRiskTranslate() {
             const failure = checkCoreFailure();
             const allScores = getAllSubsystemScores();
@@ -1112,25 +971,34 @@
             
             let html = '';
             
-            // 使用统一风险等级
-            const risk = getRiskLevel();
+            // 风险等级由最低分决定
+            const minScore = Math.min(...allScores.map(s => s.score));
             
             if (zeroScores.length > 0) {
-                html += `<div class="alert-box alert-danger">🚨 系统性失效</div>`;
+                html += `<div class="alert-box alert-danger">🚨 系统性失效（最低分=${minScore.toFixed(1)}）</div>`;
                 html += `<div class="sub-info">失效：${zeroScores.map(z => z.sysName).join('、')}</div>`;
             }
             
             if (risks.length > 0) {
                 html += `<div class="alert-box alert-warning">⚠️ 高风险维度（≤2分）</div>`;
+                // 风险转译为现实表现
                 risks.forEach(r => {
                     const trans = getRiskTranslation(r.sys, r.score);
                     html += `<div class="sub-item weak">${r.sysName}(${r.score.toFixed(1)})：${trans}</div>`;
                 });
             }
             
-            // 风险等级总结（统一来源）
+            // 风险等级总结
             html += `<div style="margin-top:6px;padding-top:6px;border-top:1px dashed #ddd;font-size:0.75em;">`;
-            html += `<span style="color:${risk.color};font-weight:500;">风险等级：${risk.label}</span> | ${risk.reason}`;
+            if (minScore === 0) {
+                html += `<span style="color:#c62828;font-weight:500;">风险等级：极高</span> | 必须修复失效系统`;
+            } else if (minScore <= 2) {
+                html += `<span style="color:#e65100;font-weight:500;">风险等级：高</span> | 需要支持和监督`;
+            } else if (minScore <= 3) {
+                html += `<span style="color:#ff9800;font-weight:500;">风险等级：中</span> | 可正常合作`;
+            } else {
+                html += `<span style="color:#4caf50;font-weight:500;">风险等级：低</span> | 正常合作`;
+            }
             html += `</div>`;
             
             document.getElementById('riskContent').innerHTML = html || '✅ 无高风险维度';
@@ -1164,85 +1032,8 @@
             return `${t.text}${t.impact ? ' → ' + t.impact : ''}`;
         }
         
-        
-        // ==================== 决策引擎数据（V4.0 结构化，支撑+限制）====================
-        function getDecisionData() {
-            const risk = getRiskLevel();
-            const failure = checkCoreFailure();
-            const { strengths, weaknesses } = getStrengthsAndWeaknesses();
-            const { power, cognitive, emotion, behavior, resource } = failure.scores;
-            
-            const validScores = [power, cognitive, emotion, behavior, resource].filter(s => typeof s === 'number' && !isNaN(s) && s > 0);
-            const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
-            
-            // 可合作
-            let coop = { 结论: '', 支撑: '', 限制: '' };
-            if (failure.isFailed || failure.hasZero) {
-                coop.结论 = '不建议';
-                coop.限制 = `核心系统缺陷：${failure.failed.map(f => f.name).join('、')}`;
-            } else if (avg >= 3.5) {
-                coop.结论 = '适合';
-                coop.支撑 = `核心层均值 ${avg.toFixed(1)}`;
-            } else if (avg >= 2.5) {
-                coop.结论 = '视情况';
-                coop.支撑 = strengths.length > 0 ? strengths.map(s => s.sysName).join('、') : '';
-                coop.限制 = weaknesses.length > 0 ? weaknesses.map(w => w.sysName).join('、') : '';
-            } else {
-                coop.结论 = '需支持';
-                coop.限制 = `核心均值 ${avg.toFixed(1)} 偏低`;
-            }
-            
-            // 可深交
-            let deep = { 结论: '', 支撑: '', 限制: '' };
-            if (failure.isFailed || power === 0 || behavior === 0) {
-                deep.结论 = '不建议';
-                deep.限制 = `${power === 0 ? '动力' : '行为'}=0，关系难以维系`;
-            } else if (risk.level === 'high' || risk.level === 'extreme') {
-                deep.结论 = '不建议';
-                deep.限制 = `风险${risk.label}：${risk.detail}`;
-            } else if (emotion >= 4 && cognitive >= 4) {
-                deep.结论 = '可深交';
-                deep.支撑 = `情绪${emotion.toFixed(1)}+认知${cognitive.toFixed(1)}均≥4`;
-            } else if (emotion <= 2.5) {
-                deep.结论 = '需谨慎';
-                deep.限制 = `情绪${emotion.toFixed(1)}≤2.5`;
-            } else {
-                deep.结论 = '浅交';
-                deep.支撑 = '未达深交标准';
-            }
-            
-            // 可托付
-            let trust = { 结论: '', 支撑: '', 限制: '' };
-            if (failure.isFailed || behavior === 0) {
-                trust.结论 = '不可';
-                trust.限制 = '行为=0，承诺无法落地';
-            } else if (risk.level === 'extreme' || risk.level === 'high') {
-                trust.结论 = '授权有限';
-                trust.限制 = `风险${risk.label}：${risk.detail}`;
-            } else if (behavior >= 4 && resource >= 3.5 && power >= 3.5) {
-                trust.结论 = '可托付';
-                trust.支撑 = `行为${behavior.toFixed(1)}≥4 + 资源${resource.toFixed(1)}+动力${power.toFixed(1)}≥3.5`;
-            } else if (behavior <= 2.5) {
-                trust.结论 = '小事可托';
-                trust.限制 = `行为${behavior.toFixed(1)}≤2.5`;
-            } else {
-                trust.结论 = '中等';
-                trust.支撑 = '执行能力一般';
-            }
-            
-            return {
-                风险: { 等级: risk.label, 来源: risk.detail },
-                可合作: coop,
-                可深交: deep,
-                可托付: trust,
-                优势: strengths.map(s => ({ 名称: s.sysName, 分值: s.score.toFixed(1) })),
-                短板: weaknesses.map(w => ({ 名称: w.sysName, 分值: w.score.toFixed(1) })),
-                核心均值: avg.toFixed(2)
-            };
-        }
-        
-        // ==================== 核心判断模块（V4.0 一句话定性）====================
-        function getCoreJudgment() {
+        // ==================== 决策引擎（增强版，显示依据）====================
+        function updateDecisionEngine() {
             const failure = checkCoreFailure();
             const { power, cognitive, emotion, behavior, resource } = failure.scores;
             const validScores = [power, cognitive, emotion, behavior, resource].filter(s => typeof s === 'number' && !isNaN(s));
@@ -1282,76 +1073,60 @@
                 coopDetail.innerHTML = `<div style="color:#c62828;">限制：核心均值${avg.toFixed(1)}偏低</div><div>建议：提供${weaknesses.map(w => w.sysName).join('、')}支持</div>`;
             }
             
-            // 可深交（V4.0 精简版）
+            // 可深交
             const deepItem = document.getElementById('decision-deep-item');
             const deepValue = document.getElementById('decision-deep');
             const deepReason = document.getElementById('decision-deep-reason');
             const deepDetail = document.getElementById('decision-deep-detail');
             
-            // 使用统一风险等级
-            const riskInfo = getRiskLevel();
-            
             if (failure.isFailed || power === 0 || behavior === 0) {
                 deepItem.className = 'decision-item danger';
                 deepValue.textContent = '❌ 不建议';
                 deepReason.textContent = '系统缺陷';
-                deepDetail.innerHTML = `<div style="color:#c62828;">原因：${power === 0 ? '动力' : '行为'}=0，关系难以维系</div>`;
-            } else if (riskInfo.level === 'high' || riskInfo.level === 'extreme') {
-                deepItem.className = 'decision-item danger';
-                deepValue.textContent = '❌ 不建议';
-                deepReason.textContent = `风险${riskInfo.label}`;
-                deepDetail.innerHTML = `<div style="color:#c62828;">限制：${riskInfo.detail}</div>`;
+                deepDetail.innerHTML = `<div style="color:#c62828;">原因：动力或行为=0，关系难以维系</div>`;
             } else if (emotion >= 4 && cognitive >= 4) {
                 deepItem.className = 'decision-item success';
                 deepValue.textContent = '✅ 可深交';
-                deepReason.textContent = '核心稳定';
-                deepDetail.innerHTML = `<div style="color:#2e7d32;">支撑：情绪${emotion.toFixed(1)}+认知${cognitive.toFixed(1)}均≥4</div>`;
-            } else if (emotion <= 2.5) {
+                deepReason.textContent = '情绪稳定';
+                deepDetail.innerHTML = `<div style="color:#2e7d32;">支撑：情绪${emotion.toFixed(1)}+认知${cognitive.toFixed(1)}</div>`;
+            } else if (emotion <= 2) {
                 deepItem.className = 'decision-item warning';
                 deepValue.textContent = '⚠️ 需谨慎';
                 deepReason.textContent = '情绪波动';
-                deepDetail.innerHTML = `<div style="color:#e65100;">限制：情绪${emotion.toFixed(1)}≤2.5，关系中可能情绪化</div>`;
+                deepDetail.innerHTML = `<div style="color:#c62828;">限制：情绪${emotion.toFixed(1)}≤2，关系中可能情绪化</div>`;
             } else {
                 deepItem.className = 'decision-item warning';
-                deepValue.textContent = '⚖️ 浅交';
-                deepReason.textContent = '普通社交';
-                deepDetail.innerHTML = `<div>情绪${emotion.toFixed(1)}+认知${cognitive.toFixed(1)}未达深交标准</div>`;
+                deepValue.textContent = '⚖️ 普通';
+                deepReason.textContent = '正常社交';
+                deepDetail.innerHTML = `<div>可维持正常社交关系</div>`;
             }
             
-            // 可托付（V4.0 精简版）
+            // 可托付
             const trustItem = document.getElementById('decision-trust-item');
             const trustValue = document.getElementById('decision-trust');
             const trustReason = document.getElementById('decision-trust-reason');
             const trustDetail = document.getElementById('decision-trust-detail');
             
-            const trustRisk = getRiskLevel();
-            
             if (failure.isFailed || behavior === 0) {
                 trustItem.className = 'decision-item danger';
-                trustValue.textContent = '❌ 不可托付';
-                trustReason.textContent = '行为失效';
-                trustDetail.innerHTML = `<div style="color:#c62828;">原因：行为=0，承诺无法落地</div>`;
-            } else if (trustRisk.level === 'extreme' || trustRisk.level === 'high') {
+                trustValue.textContent = '❌ 不可';
+                trustReason.textContent = '行为=0';
+                trustDetail.innerHTML = `<div style="color:#c62828;">原因：无法执行任何任务</div>`;
+            } else if (power === 0) {
                 trustItem.className = 'decision-item danger';
-                trustValue.textContent = '❌ 授权有限';
-                trustReason.textContent = `风险${trustRisk.label}`;
-                trustDetail.innerHTML = `<div style="color:#c62828;">限制：${trustRisk.detail}</div>`;
-            } else if (behavior >= 4 && resource >= 3.5 && power >= 3.5) {
+                trustValue.textContent = '❌ 风险高';
+                trustReason.textContent = '动力=0';
+                trustDetail.innerHTML = `<div style="color:#c62828;">原因：无自驱力，需持续外部推动</div>`;
+            } else if (behavior >= 4 && resource >= 3 && cognitive >= 3) {
                 trustItem.className = 'decision-item success';
                 trustValue.textContent = '✅ 可托付';
-                trustReason.textContent = '执行可靠';
-                trustDetail.innerHTML = `<div style="color:#2e7d32;">支撑：行为${behavior.toFixed(1)}≥4 + 资源${resource.toFixed(1)}+动力${power.toFixed(1)}≥3.5</div>`;
-            } else if (behavior <= 2.5) {
+                trustReason.textContent = '执行强';
+                trustDetail.innerHTML = `<div style="color:#2e7d32;">支撑：行为${behavior.toFixed(1)}+认知${cognitive.toFixed(1)}+资源${resource.toFixed(1)}</div>`;
+            } else if (behavior >= 3) {
                 trustItem.className = 'decision-item warning';
-                trustValue.textContent = '⚠️ 小事可托';
-                trustReason.textContent = '执行一般';
-                trustDetail.innerHTML = `<div style="color:#e65100;">限制：行为${behavior.toFixed(1)}≤2.5，只能托付小事</div>`;
-            } else {
-                trustItem.className = 'decision-item warning';
-                trustValue.textContent = '⚖️ 常规事务';
+                trustValue.textContent = '⚖️ 简单事项';
                 trustReason.textContent = '需监督';
-                trustDetail.innerHTML = `<div>行为${behavior.toFixed(1)}未达高托付标准，建议流程监督</div>`;
-            }
+                trustDetail.innerHTML = `<div>行为${behavior.toFixed(1)}中等，复杂任务需跟进</div>${weaknesses.length > 0 ? `<div style="color:#e65100;">需关注：${weaknesses.map(w => w.sysName).join('、')}</div>` : ''}`;
             } else {
                 trustItem.className = 'decision-item warning';
                 trustValue.textContent = '⚖️ 视情况';
@@ -1359,23 +1134,37 @@
                 trustDetail.innerHTML = `<div>行为${behavior.toFixed(1)}偏低，需评估任务难度</div>`;
             }
             
-            // 风险等级（V4.0 统一来源）
+            // 风险等级
             const riskItem = document.getElementById('decision-risk-item');
             const riskValue = document.getElementById('decision-risk');
             const riskReason = document.getElementById('decision-risk-reason');
             const riskDetail = document.getElementById('decision-risk-detail');
             
-            const risk = getRiskLevel();
-            riskValue.textContent = risk.icon + ' ' + risk.label;
-            riskReason.textContent = risk.reason;
-            riskDetail.innerHTML = `<div style="color:${risk.color};">${risk.detail}</div>`;
+            const allScoresArr = getAllSubsystemScores();
+            const minScore = Math.min(...allScoresArr.map(s => s.score));
+            const zeroScoresArr = allScoresArr.filter(s => s.score === 0);
+            const lowScoresArr = allScoresArr.filter(s => s.score > 0 && s.score <= 2);
             
-            if (risk.level === 'extreme' || risk.level === 'high') {
+            if (failure.isFailed || zeroScoresArr.length > 0) {
                 riskItem.className = 'decision-item danger';
-            } else if (risk.level === 'medium') {
+                riskValue.textContent = '🚨 极高';
+                riskReason.textContent = '系统失效';
+                riskDetail.innerHTML = `<div style="color:#c62828;">失效：${zeroScoresArr.map(z => z.sysName).join('、')}</div>`;
+            } else if (lowScoresArr.length >= 3) {
+                riskItem.className = 'decision-item danger';
+                riskValue.textContent = '🔴 高';
+                riskReason.textContent = '多短板';
+                riskDetail.innerHTML = `<div style="color:#c62828;">短板(${lowScoresArr.length})：${lowScoresArr.map(l => l.sysName).join('、')}</div>`;
+            } else if (lowScoresArr.length >= 1) {
                 riskItem.className = 'decision-item warning';
+                riskValue.textContent = '🟡 中';
+                riskReason.textContent = '有短板';
+                riskDetail.innerHTML = `<div style="color:#e65100;">短板：${lowScoresArr.map(l => l.sysName + '(' + l.score.toFixed(1) + ')').join('、')}</div><div>可通过支持弥补</div>`;
             } else {
                 riskItem.className = 'decision-item success';
+                riskValue.textContent = '🟢 低';
+                riskReason.textContent = '系统良好';
+                riskDetail.innerHTML = `<div style="color:#2e7d32;">各系统≥3分，正常合作</div>`;
             }
             
             // 适合角色
