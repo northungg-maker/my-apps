@@ -46,14 +46,6 @@
         .layer-header h3 { font-size: 0.9em; font-weight: 600; }
         .layer-header .weight { color: #999; font-size: 0.75em; font-weight: normal; margin-left: 6px; }
         .layer-header .layer-score { font-size: 0.95em; font-weight: 600; color: #000; }
-        .layer-block.collapsed .layer-header { border-bottom: none; margin-bottom: 0; }
-        .layer-block.collapsed #coreContent,
-        .layer-block.collapsed #supportContent,
-        .layer-block.collapsed #strategyContent,
-        .layer-block.collapsed #externalContent { display: none; }
-        .layer-header:hover { background: rgba(0,0,0,0.02); }
-        .layer-header::after { content: '▼'; font-size: 0.7em; color: #999; margin-left: 8px; transition: transform 0.2s; }
-        .layer-block.collapsed .layer-header::after { content: '▶'; }
         
         .system-row { margin-bottom: 12px; }
         .system-name { font-size: 0.8em; color: #555; margin-bottom: 6px; font-weight: 500; }
@@ -203,7 +195,7 @@
         </div>
         
         <div class="score-section">
-            <div class="layer-block" data-layer="core">
+            <div class="layer-block">
                 <div class="layer-header">
                     <h3>核心层（人格系统）<span class="weight">40%</span></h3>
                     <span class="layer-score" id="coreTotal">0.00</span>
@@ -211,7 +203,7 @@
                 <div id="coreContent"></div>
             </div>
             
-            <div class="layer-block" data-layer="support">
+            <div class="layer-block">
                 <div class="layer-header">
                     <h3>支撑层（能力系统）<span class="weight">35%</span></h3>
                     <span class="layer-score" id="supportTotal">0.00</span>
@@ -219,7 +211,7 @@
                 <div id="supportContent"></div>
             </div>
             
-            <div class="layer-block" data-layer="strategy">
+            <div class="layer-block">
                 <div class="layer-header">
                     <h3>战略层（系统整合）<span class="weight">15%</span></h3>
                     <span class="layer-score" id="strategyTotal">0.00</span>
@@ -227,7 +219,7 @@
                 <div id="strategyContent"></div>
             </div>
             
-            <div class="layer-block" data-layer="external">
+            <div class="layer-block">
                 <div class="layer-header">
                     <h3>外部层（环境机遇）<span class="weight">10%</span></h3>
                     <span class="layer-score" id="externalTotal">0.00</span>
@@ -348,12 +340,25 @@
     <script>
         // 折叠功能
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.layer-block[data-layer] .layer-header').forEach(header => {
-                header.style.cursor = 'pointer';
-                header.addEventListener('click', () => {
-                    const block = header.parentElement;
-                    block.classList.toggle('collapsed');
+            document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
+                h3.addEventListener('click', () => {
+                    const card = h3.parentElement;
+                    card.classList.toggle('collapsed');
                 });
+            });
+        });
+        // 折叠功能
+        document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
+            h3.addEventListener('click', () => {
+                const card = h3.parentElement;
+                card.classList.toggle('collapsed');
+            });
+        });
+        // 折叠功能
+        document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
+            h3.addEventListener('click', () => {
+                const card = h3.parentElement;
+                card.classList.toggle('collapsed');
             });
         });
         // 初始化 layer-content 的 max-height
