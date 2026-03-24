@@ -253,9 +253,10 @@
                 <div class="content" id="riskContent">等待评分...</div>
             </div>
         </div>
-        
+
         <div class="analysis-card" style="margin-bottom:18px;">
             <h4>决策引擎</h4>
+            <div id="core-judgment-display" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 16px; font-weight: bold; text-align: center;">—</div>
             <div class="decision-grid">
                 <div class="decision-item" id="decision-coop-item">
                     <h5>可合作</h5>
@@ -1032,6 +1033,15 @@
             return `${t.text}${t.impact ? ' → ' + t.impact : ''}`;
         }
         
+        // ==================== 核心判断模块 ====================
+        function getCoreJudgment(avgScore) {
+            if (avgScore >= 4.0) return '🎯 高度可靠，可托付核心任务';
+            if (avgScore >= 3.5) return '✅ 可合作，适合辅助支持角色';
+            if (avgScore >= 3.0) return '⚠️ 需监督，适合明确指令类任务';
+            if (avgScore >= 2.5) return '🔶 高风险，需紧密辅导';
+            return '❌ 不建议合作，风险过高';
+        }
+
         // ==================== 决策引擎（增强版，显示依据）====================
         function updateDecisionEngine() {
             const failure = checkCoreFailure();
@@ -1039,7 +1049,10 @@
             const validScores = [power, cognitive, emotion, behavior, resource].filter(s => typeof s === 'number' && !isNaN(s));
             const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
             const { strengths, weaknesses } = getStrengthsAndWeaknesses();
-            
+
+            // 核心判断显示
+            document.getElementById('core-judgment-display').textContent = getCoreJudgment(avg);
+
             // 可合作
             const coopItem = document.getElementById('decision-coop-item');
             const coopValue = document.getElementById('decision-coop');
