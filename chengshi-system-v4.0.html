@@ -1162,22 +1162,22 @@
                 riskItem.className = 'decision-item danger';
                 riskValue.textContent = '🚨 极高';
                 riskReason.textContent = '系统失效';
-                riskDetail.innerHTML = `<div style="color:#c62828;">失效：${zeroScoresArr.map(z => z.sysName).join('、')}</div>`;
+                riskDetail.innerHTML = `<div style="color:#c62828;">限制：${zeroScoresArr.map(z => z.sysName).join('、')}失效</div>`;
             } else if (lowScoresArr.length >= 3) {
                 riskItem.className = 'decision-item danger';
                 riskValue.textContent = '🔴 高';
                 riskReason.textContent = '多短板';
-                riskDetail.innerHTML = `<div style="color:#c62828;">短板(${lowScoresArr.length})：${lowScoresArr.map(l => l.sysName).join('、')}</div>`;
+                riskDetail.innerHTML = `<div style="color:#c62828;">限制：${lowScoresArr.length}个短板(${lowScoresArr.map(l => l.sysName).join('、')})</div>`;
             } else if (lowScoresArr.length >= 1) {
                 riskItem.className = 'decision-item warning';
                 riskValue.textContent = '🟡 中';
                 riskReason.textContent = '有短板';
-                riskDetail.innerHTML = `<div style="color:#e65100;">短板：${lowScoresArr.map(l => l.sysName + '(' + l.score.toFixed(1) + ')').join('、')}</div><div>可通过支持弥补</div>`;
+                riskDetail.innerHTML = `<div style="color:#e65100;">限制：${lowScoresArr.map(l => l.sysName).join('、')}偏低</div><div style="color:#2e7d32;">支撑：可通过支持弥补</div>`;
             } else {
                 riskItem.className = 'decision-item success';
                 riskValue.textContent = '🟢 低';
                 riskReason.textContent = '系统良好';
-                riskDetail.innerHTML = `<div style="color:#2e7d32;">各系统≥3分，正常合作</div>`;
+                riskDetail.innerHTML = `<div style="color:#2e7d32;">支撑：各系统≥3分</div>`;
             }
             
             // 适合角色
@@ -1190,7 +1190,7 @@
                 roleItem.className = 'decision-item danger';
                 roleValue.textContent = '无适合';
                 roleReason.textContent = '需先修复';
-                roleDetail.innerHTML = `<div style="color:#c62828;">系统缺陷，无法承担角色</div>`;
+                roleDetail.innerHTML = `<div style="color:#c62828;">限制：系统缺陷，无法承担角色</div>`;
             } else if (power >= 4 && cognitive >= 4 && behavior >= 3) {
                 roleItem.className = 'decision-item success';
                 roleValue.textContent = '战略决策';
@@ -1210,7 +1210,7 @@
                 roleItem.className = 'decision-item warning';
                 roleValue.textContent = '辅助支持';
                 roleReason.textContent = '需指导';
-                roleDetail.innerHTML = `<div>核心能力中等，需配合指导</div>`;
+                roleDetail.innerHTML = `<div style="color:#e65100;">限制：核心能力中等</div><div style="color:#2e7d32;">支撑：需配合指导</div>`;
             }
         }
         
