@@ -47,16 +47,6 @@
             font-size: 12px;
             color: #8e8e93;
         }
-        
-        .header .core-mission {
-            font-size: 13px;
-            color: #FFD60A;
-            margin-top: 8px;
-            padding: 8px 12px;
-            background: rgba(255,214,10,0.1);
-            border-radius: 8px;
-        }
-        
         .nav {
             display: flex;
             background: rgba(255,255,255,0.05);
@@ -142,8 +132,13 @@
             box-sizing: border-box;
             -webkit-appearance: none;
             appearance: none;
+            color: #333 !important;
+            color-scheme: light;
         }
-        input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+        input[type="date"]::-webkit-date-and-time-value { text-align: left; color: #333 !important; }
+        input[type="date"]::-webkit-datetime-edit { color: #333 !important; }
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #333 !important; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.3); }
         
         .form-input:focus {
             outline: none;
@@ -527,7 +522,7 @@
         <div class="header">
             <h1>🎯 人格评估助手 V3.0</h1>
             <div class="version">人格量化，决策有据</div>
-            <div class="core-mission"></div>
+
         </div>
         
         <!-- 输入页 -->
