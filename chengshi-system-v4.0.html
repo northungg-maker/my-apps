@@ -339,6 +339,15 @@
     
     <script>
         // 折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
+                h3.addEventListener('click', () => {
+                    const card = h3.parentElement;
+                    card.classList.toggle('collapsed');
+                });
+            });
+        });
+        // 折叠功能
         document.querySelectorAll('.card[data-layer] h3').forEach(h3 => {
             h3.addEventListener('click', () => {
                 const card = h3.parentElement;
