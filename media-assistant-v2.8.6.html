@@ -817,7 +817,7 @@
             return;
         }
         const records = getData('records');
-        const record = records.find(r => r.id === recordId);
+        const record = records.find(r => String(r.id) === String(recordId));
         if (record && record.commentCounts) {
             document.getElementById('count-need').value = record.commentCounts.need || '';
             document.getElementById('count-approve').value = record.commentCounts.approve || '';
@@ -879,7 +879,7 @@
         // 保存数字到 record
         if (recordId) {
             const records = getData('records');
-            const recordIndex = records.findIndex(r => r.id === recordId);
+            const recordIndex = records.findIndex(r => String(r.id) === String(recordId));
             if (recordIndex !== -1) {
                 records[recordIndex].commentCounts = {
                     need: needCount,       // 需求 → 信号分析-需求
@@ -1359,7 +1359,7 @@
         let diagnosis;
         
         // L1 方向层
-        if (record.views < 500 && videoComments.length < 5) {
+        if (record.views < 500 && totalCommentCount < 5) {
             diagnosis = { level: 'L1 方向层', levelNum: 1, conclusion: '选题不受众', advice: '考虑换选题，验证用户需求', color: 'var(--danger)' };
         }
         // L2 钩子层
