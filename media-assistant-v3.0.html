@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自媒体数据助手 V3.0</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --secondary: #FF9800;
+            --danger: #e53935;
+            --success: #43a047;
+            --warning: #fb8c00;
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text1: #212121;
+            --text2: #757575;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text1);
+            font-size: 14px;
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1976D2);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; }
+        .header p { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 56px;
+            z-index: 99;
+            overflow-x: auto;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text2);
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+        .content { padding: 16px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text2);
+            margin-bottom: 4px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--card);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: var(--text2); }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            cursor: pointer;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tag-valid { background: rgba(67,160,71,0.15); color: var(--success); }
+        .tag-invalid { background: rgba(229,57,53,0.15); color: var(--danger); }
+        .record-item {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .record-title { font-weight: 500; }
+        .record-meta {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 13px;
+            color: var(--text2);
+            margin: 16px 0 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-group .btn { flex: 1; padding: 10px; }
+        .comment-item {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .comment-item .type {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .comment-item .type.demand { background: rgba(229,57,53,0.15); color: #e53935; }
+        .comment-item .type.approve { background: rgba(67,160,71,0.15); color: #43a047; }
+        .comment-item .type.neutral { background: rgba(117,117,117,0.15); color: #757575; }
+        .comment-item .type.doubt { background: rgba(251,140,0,0.15); color: #fb8c00; }
+        .comment-item .content { flex: 1; }
+        
+        /* 诊断卡片样式 */
+        .diagnosis-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        .diagnosis-card.alert { border-left-color: var(--danger); }
+        .diagnosis-card.success { border-left-color: var(--success); }
+        .diagnosis-card.warning { border-left-color: var(--warning); }
+        .diagnosis-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .diagnosis-conclusion {
+            font-size: 13px;
+            color: var(--text1);
+            padding: 8px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+        .diagnosis-action {
+            font-size: 12px;
+            color: var(--primary);
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(33,150,243,0.1);
+            border-radius: 6px;
+        }
+        
+        /* 趋势指示器 */
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .trend.up { color: var(--success); }
+        .trend.down { color: var(--danger); }
+        .trend.flat { color: var(--text2); }
+        
+        /* 对比卡片 */
+        .compare-card {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .compare-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-row:last-child { border-bottom: none; }
+        .compare-label { font-size: 12px; color: var(--text2); }
+        .compare-values {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .compare-values .current { font-weight: 600; }
+        .compare-values .previous { color: var(--text2); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 自媒体数据助手 V3.0</h1>
+        <p>诊断框架 + 纵向对比</p>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" data-tab="home">首页</div>
+        <div class="tab" data-tab="record">记录</div>
+        <div class="tab" data-tab="comment">评论</div>
+        <div class="tab" data-tab="direction">方向</div>
+        <div class="tab" data-tab="diagnosis">诊断</div>
+        <div class="tab" data-tab="compare">对比</div>
+        <div class="tab" data-tab="weekly">周复盘</div>
+        <div class="tab" data-tab="io">导入导出</div>
+    </div>
+    
+    <div class="content">
+        <!-- 首页 -->
+        <div id="section-home" class="section active">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="home-total">0</div>
+                    <div class="stat-label">总内容</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="home-valid">0</div>
+                    <div class="stat-label">有效内容</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="home-rate">0%</div>
+                    <div class="stat-label">有效率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="home-comments">0</div>
+                    <div class="stat-label">评论样本</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🚀 快速操作</div>
+                <div class="btn-group">
+                    <button class="btn" onclick="showTab('record')">+ 记录内容</button>
+                    <button class="btn btn-secondary" onclick="showTab('diagnosis')">📊 诊断</button>
+                </div>
+            </div>
+            
+            <div id="home-quick-diagnosis"></div>
+        </div>
+        
+        <!-- 记录 -->
+        <div id="section-record" class="section">
+            <div class="card">
+                <div class="card-title">📝 内容记录</div>
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" id="record-title" placeholder="内容标题">
+                </div>
+                <div class="form-group">
+                    <label>日期</label>
+                    <input type="date" id="record-date">
+                </div>
+                <div class="form-group">
+                    <label>方向</label>
+                    <select id="record-direction">
+                        <option value="认知">认知</option>
+                        <option value="财富">财富</option>
+                        <option value="成长">成长</option>
+                        <option value="情感">情感</option>
+                        <option value="社会">社会</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>平台</label>
+                    <select id="record-platform">
+                        <option value="小红书">小红书</option>
+                        <option value="抖音">抖音</option>
+                        <option value="视频号">视频号</option>
+                        <option value="B站">B站</option>
+                        <option value="公众号">公众号</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>数据（播放/评论/收藏）</label>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                        <input type="number" id="record-views" placeholder="播放">
+                        <input type="number" id="record-comments" placeholder="评论">
+                        <input type="number" id="record-saves" placeholder="收藏">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>是否有效内容</label>
+                    <select id="record-valid">
+                        <option value="1">✅ 有效</option>
+                        <option value="0">⏳ 待验证</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="saveRecord()">保存记录</button>
+            </div>
+            
+            <div id="history-list"></div>
+        </div>
+        
+        <!-- 评论分类 -->
+        <div id="section-comment" class="section">
+            <div class="card">
+                <div class="card-title">💬 评论分类</div>
+                <div class="form-group">
+                    <label>评论内容</label>
+                    <textarea id="comment-text" placeholder="粘贴评论内容"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <select id="comment-type">
+                        <option value="需求">🔴 需求（求方法/求教程）</option>
+                        <option value="认可">🟢 认可（夸/共鸣/期待）</option>
+                        <option value="中立">⚪ 中立（无意义）</option>
+                        <option value="质疑">🟠 质疑（反对/挑刺）</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="saveComment()">保存评论</button>
+            </div>
+            
+            <div id="comment-stats"></div>
+            <div id="comment-list"></div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="exportComments()">导出评论</button>
+            </div>
+        </div>
+        
+        <!-- 方向验证 -->
+        <div id="section-direction" class="section">
+            <div class="card">
+                <div class="card-title">🧭 方向验证</div>
+                <div class="form-group">
+                    <label>方向名称</label>
+                    <input type="text" id="direction-name" placeholder="如：职场沟通技巧">
+                </div>
+                <div class="form-group">
+                    <label>测试数量</label>
+                    <input type="number" id="direction-count" placeholder="这个方向发了多少条？">
+                </div>
+                <div class="form-group">
+                    <label>有效数量</label>
+                    <input type="number" id="direction-valid" placeholder="其中几条有效？">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="direction-note" placeholder="观察/结论"></textarea>
+                </div>
+                <button class="btn" onclick="saveDirection()">保存验证</button>
+            </div>
+            <div id="direction-list"></div>
+        </div>
+        
+        <!-- 诊断面板（V3.0 新增） -->
+        <div id="section-diagnosis" class="section">
+            <div class="card">
+                <div class="card-title">🔍 智能诊断</div>
+                <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">
+                    基于收集的数据自动生成诊断结论
+                </p>
+                <button class="btn" onclick="runDiagnosis()">生成诊断报告</button>
+            </div>
+            <div id="diagnosis-results"></div>
+        </div>
+        
+        <!-- 纵向对比（V3.0 新增） -->
+        <div id="section-compare" class="section">
+            <div class="card">
+                <div class="card-title">📈 周对比</div>
+                <div class="form-group">
+                    <label>本周周期</label>
+                    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+                        <input type="date" id="compare-week-start">
+                        <span style="color:var(--text2);">~</span>
+                        <input type="date" id="compare-week-end">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>上周周期（对比基准）</label>
+                    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+                        <input type="date" id="compare-last-start">
+                        <span style="color:var(--text2);">~</span>
+                        <input type="date" id="compare-last-end">
+                    </div>
+                </div>
+                <button class="btn" onclick="runCompare()">开始对比</button>
+            </div>
+            <div id="compare-results"></div>
+        </div>
+        
+        <!-- 周复盘 -->
+        <div id="section-weekly" class="section">
+            <div class="card">
+                <div class="card-title">📅 周复盘</div>
+                <div class="form-group">
+                    <label>周期</label>
+                    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+                        <input type="date" id="week-start">
+                        <span style="color:var(--text2);">~</span>
+                        <input type="date" id="week-end">
+                    </div>
+                </div>
+                <div id="weekly-stats" style="padding:12px;background:var(--bg);border-radius:8px;margin-bottom:12px;">
+                    选择周期后自动统计
+                </div>
+                <div class="form-group">
+                    <label>本周重点内容（可选）</label>
+                    <textarea id="week-focus" placeholder="本周发了哪些重点内容？"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>有效内容分析（可选）</label>
+                    <textarea id="week-analysis" placeholder="分析有效内容为什么有效"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>下周计划（可选）</label>
+                    <textarea id="week-plan" placeholder="下一步行动"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="saveWeekly()">保存复盘</button>
+                    <button class="btn btn-secondary" onclick="exportWeekly()">导出</button>
+                </div>
+            </div>
+            <div id="weekly-history"></div>
+        </div>
+        
+        <!-- 导入导出 -->
+        <div id="section-io" class="section">
+            <div class="card">
+                <div class="card-title">📦 数据管理</div>
+                <div style="margin-bottom:12px;">
+                    <strong>当前数据</strong><br>
+                    <span id="valid-count">0</span> / <span id="total-count">0</span> 条有效
+                </div>
+                <div class="btn-group" style="flex-direction:column;">
+                    <button class="btn" onclick="copyAllData()">复制全量报告</button>
+                    <button class="btn btn-secondary" onclick="exportData()">导出备份</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">导入数据</button>
+                    <input type="file" id="import-file" accept=".json" multiple style="display:none" onchange="importData(event)">
+                    <button class="btn btn-danger" onclick="clearAllData()">清空数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ========== 数据存储 ==========
+    const KEYS = {
+        records: 'media_records_v3',
+        comments: 'media_comments_v3',
+        directions: 'media_directions_v3',
+        weeklyReviews: 'media_weekly_v3'
+    };
+    
+    const DIRECTIONS = ['认知', '财富', '成长', '情感', '社会', '其他'];
+    
+    function getData(key) {
+        try {
+            return JSON.parse(localStorage.getItem(KEYS[key]) || '[]');
+        } catch { return []; }
+    }
+    
+    function saveData(key, data) {
+        localStorage.setItem(KEYS[key], JSON.stringify(data));
+    }
+    
+    function formatNumber(n) {
+        if (!n) return '0';
+        if (n >= 10000) return (n/10000).toFixed(1) + 'w';
+        if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+        return n.toString();
+    }
+    
+    function showTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
+        document.getElementById(`section-${name}`).classList.add('active');
+        
+        // 切换到特定标签时的初始化
+        if (name === 'home') updateHome();
+        if (name === 'record') loadHistory();
+        if (name === 'comment') { loadComments(); updateCommentStats(); }
+        if (name === 'direction') loadDirections();
+        if (name === 'weekly') { loadWeeklyStats(); loadWeeklyHistory(); }
+        if (name === 'io') updateExportStats();
+    }
+    
+    // ========== 首页 ==========
+    function updateHome() {
+        const records = getData('records');
+        const comments = getData('comments');
+        const valid = records.filter(r => r.isValid);
+        
+        document.getElementById('home-total').textContent = records.length;
+        document.getElementById('home-valid').textContent = valid.length;
+        document.getElementById('home-rate').textContent = records.length > 0 
+            ? Math.round(valid.length / records.length * 100) + '%' : '0%';
+        document.getElementById('home-comments').textContent = comments.length;
+        
+        // 快速诊断
+        updateQuickDiagnosis();
+    }
+    
+    function updateQuickDiagnosis() {
+        const records = getData('records');
+        const comments = getData('comments');
+        const container = document.getElementById('home-quick-diagnosis');
+        
+        if (records.length < 5) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        // 最近7天数据
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const recentRecords = records.filter(r => new Date(r.date) >= weekAgo);
+        const recentValid = recentRecords.filter(r => r.isValid);
+        
+        let alerts = [];
+        
+        // 有效率预警
+        if (recentRecords.length >= 3) {
+            const rate = recentValid.length / recentRecords.length;
+            if (rate < 0.3) {
+                alerts.push({
+                    type: 'alert',
+                    title: '⚠️ 有效率偏低',
+                    conclusion: `近7天有效率仅 ${Math.round(rate*100)}%，低于30%警戒线`,
+                    action: '建议检查内容方向或选题质量'
+                });
+            }
+        }
+        
+        // 评论信号
+        if (comments.length >= 5) {
+            const demand = comments.filter(c => c.type === '需求').length;
+            const doubt = comments.filter(c => c.type === '质疑').length;
+            const demandRate = demand / comments.length;
+            const doubtRate = doubt / comments.length;
+            
+            if (demandRate > 0.3) {
+                alerts.push({
+                    type: 'success',
+                    title: '💡 需求信号强烈',
+                    conclusion: `${Math.round(demandRate*100)}% 评论是需求信号`,
+                    action: '可考虑围绕这些需求做系列内容'
+                });
+            }
+            if (doubtRate > 0.2) {
+                alerts.push({
+                    type: 'warning',
+                    title: '⚠️ 质疑比例偏高',
+                    conclusion: `${Math.round(doubtRate*100)}% 评论是质疑`,
+                    action: '建议检查内容准确性或观点支撑'
+                });
+            }
+        }
+        
+        if (alerts.length === 0) {
+            container.innerHTML = `
+                <div class="card" style="border-left:4px solid var(--success);">
+                    <div style="font-size:13px;">✅ 数据状态良好，暂无明显预警</div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = alerts.map(a => `
+            <div class="card diagnosis-card ${a.type}">
+                <div class="diagnosis-title">${a.title}</div>
+                <div class="diagnosis-conclusion">${a.conclusion}</div>
+                <div class="diagnosis-action">👉 ${a.action}</div>
+            </div>
+        `).join('');
+    }
+    
+    // ========== 记录管理 ==========
+    function saveRecord() {
+        const views = parseInt(document.getElementById('record-views').value) || 0;
+        const comments = parseInt(document.getElementById('record-comments').value) || 0;
+        const saves = parseInt(document.getElementById('record-saves').value) || 0;
+        
+        const record = {
+            id: Date.now(),
+            title: document.getElementById('record-title').value,
+            date: document.getElementById('record-date').value,
+            direction: document.getElementById('record-direction').value,
+            platform: document.getElementById('record-platform').value,
+            views,
+            comments,
+            saves,
+            commentRate: views > 0 ? (comments / views * 100).toFixed(1) : 0,
+            saveRate: views > 0 ? (saves / views * 100).toFixed(1) : 0,
+            isValid: document.getElementById('record-valid').value === '1',
+            createdAt: new Date().toISOString()
+        };
+        
+        if (!record.title || !record.date) {
+            alert('请填写标题和日期');
+            return;
+        }
+        
+        const records = getData('records');
+        records.push(record);
+        saveData('records', records);
+        
+        document.getElementById('record-title').value = '';
+        document.getElementById('record-views').value = '';
+        document.getElementById('record-comments').value = '';
+        document.getElementById('record-saves').value = '';
+        
+        loadHistory();
+        alert('已保存');
+    }
+    
+    function loadHistory() {
+        const records = getData('records');
+        const container = document.getElementById('history-list');
+        
+        if (records.length === 0) {
+            container.innerHTML = '<div class="card" style="text-align:center;color:var(--text2);">暂无记录</div>';
+            return;
+        }
+        
+        let html = '<div class="section-title">历史记录</div>';
+        records.slice().reverse().forEach(r => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${r.title}</span>
+                    <button class="btn-small" onclick="deleteRecord(${r.id})">删除</button>
+                </div>
+                <div class="record-meta">
+                    ${r.date} | ${r.direction || '-'} | ${r.platform} | 播放${formatNumber(r.views)}
+                    ${r.isValid ? '<span class="tag tag-valid">有效</span>' : '<span class="tag tag-invalid">待验证</span>'}
+                </div>
+                <div class="record-meta">
+                    评论率${r.commentRate}% | 收藏率${r.saveRate}%
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteRecord(id) {
+        if (!confirm('确定删除？')) return;
+        let records = getData('records');
+        records = records.filter(r => r.id !== id);
+        saveData('records', records);
+        loadHistory();
+    }
+    
+    // ========== 评论管理 ==========
+    function saveComment() {
+        const comment = {
+            id: Date.now(),
+            text: document.getElementById('comment-text').value,
+            type: document.getElementById('comment-type').value,
+            createdAt: new Date().toISOString()
+        };
+        
+        if (!comment.text) {
+            alert('请输入评论内容');
+            return;
+        }
+        
+        const comments = getData('comments');
+        comments.push(comment);
+        saveData('comments', comments);
+        
+        document.getElementById('comment-text').value = '';
+        loadComments();
+        updateCommentStats();
+        alert('已保存');
+    }
+    
+    function loadComments() {
+        const comments = getData('comments');
+        const container = document.getElementById('comment-list');
+        
+        if (comments.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="section-title">评论列表</div>';
+        comments.slice().reverse().slice(0, 20).forEach(c => {
+            html += `<div class="comment-item">
+                <span class="type ${c.type === '需求' ? 'demand' : c.type === '认可' ? 'approve' : c.type === '质疑' ? 'doubt' : 'neutral'}">${c.type}</span>
+                <span class="content">${c.text.substring(0, 50)}${c.text.length > 50 ? '...' : ''}</span>
+                <button class="btn-small" onclick="deleteComment(${c.id})">删除</button>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteComment(id) {
+        let comments = getData('comments');
+        comments = comments.filter(c => c.id !== id);
+        saveData('comments', comments);
+        loadComments();
+        updateCommentStats();
+    }
+    
+    function updateCommentStats() {
+        const comments = getData('comments');
+        const container = document.getElementById('comment-stats');
+        
+        if (comments.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        const types = { '需求': 0, '认可': 0, '中立': 0, '质疑': 0 };
+        comments.forEach(c => {
+            if (types[c.type] !== undefined) types[c.type]++;
+        });
+        
+        container.innerHTML = `
+            <div class="card">
+                <div style="font-size:14px;font-weight:600;margin-bottom:8px;">📊 评论信号统计</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+                    <div style="padding:8px;background:rgba(229,57,53,0.1);border-radius:6px;">
+                        <div style="font-size:12px;color:var(--text2);">需求</div>
+                        <div style="font-size:18px;font-weight:600;color:#e53935;">${types['需求']}</div>
+                    </div>
+                    <div style="padding:8px;background:rgba(67,160,71,0.1);border-radius:6px;">
+                        <div style="font-size:12px;color:var(--text2);">认可</div>
+                        <div style="font-size:18px;font-weight:600;color:#43a047;">${types['认可']}</div>
+                    </div>
+                    <div style="padding:8px;background:rgba(117,117,117,0.1);border-radius:6px;">
+                        <div style="font-size:12px;color:var(--text2);">中立</div>
+                        <div style="font-size:18px;font-weight:600;color:#757575;">${types['中立']}</div>
+                    </div>
+                    <div style="padding:8px;background:rgba(251,140,0,0.1);border-radius:6px;">
+                        <div style="font-size:12px;color:var(--text2);">质疑</div>
+                        <div style="font-size:18px;font-weight:600;color:#fb8c00;">${types['质疑']}</div>
+                    </div>
+                </div>
+                <div style="font-size:12px;color:var(--text2);margin-top:8px;">总计 <strong>${comments.length}</strong> 条评论</div>
+            </div>
+        `;
+    }
+    
+    function exportComments() {
+        const comments = getData('comments');
+        if (comments.length === 0) {
+            alert('没有评论可导出');
+            return;
+        }
+        
+        const demand = comments.filter(c => c.type === '需求');
+        const approve = comments.filter(c => c.type === '认可');
+        const neutral = comments.filter(c => c.type === '中立');
+        const doubt = comments.filter(c => c.type === '质疑');
+        
+        let output = '# 评论分类报告\n\n';
+        
+        if (demand.length > 0) {
+            output += `## 需求信号（${demand.length}条）\n`;
+            demand.forEach(c => output += `- ${c.text}\n`);
+            output += '\n';
+        }
+        if (approve.length > 0) {
+            output += `## 认可信号（${approve.length}条）\n`;
+            approve.forEach(c => output += `- ${c.text}\n`);
+            output += '\n';
+        }
+        if (neutral.length > 0) {
+            output += `## 中立（${neutral.length}条）\n`;
+            neutral.forEach(c => output += `- ${c.text}\n`);
+            output += '\n';
+        }
+        if (doubt.length > 0) {
+            output += `## 质疑（${doubt.length}条）\n`;
+            doubt.forEach(c => output += `- ${c.text}\n`);
+            output += '\n';
+        }
+        
+        const textarea = document.createElement('textarea');
+        textarea.value = output.trim();
+        textarea.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:200px;opacity:1;zIndex:9999;fontSize:16px;';
+        document.body.appendChild(textarea);
+        textarea.select();
+        textarea.setSelectionRange(0, 9999);
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        alert('已复制到剪贴板');
+    }
+    
+    // ========== 方向验证 ==========
+    function saveDirection() {
+        const direction = {
+            id: Date.now(),
+            name: document.getElementById('direction-name').value,
+            count: parseInt(document.getElementById('direction-count').value) || 0,
+            valid: parseInt(document.getElementById('direction-valid').value) || 0,
+            note: document.getElementById('direction-note').value,
+            createdAt: new Date().toISOString()
+        };
+        
+        direction.validRate = direction.count > 0 ? (direction.valid / direction.count * 100).toFixed(0) : 0;
+        
+        if (!direction.name) {
+            alert('请输入方向名称');
+            return;
+        }
+        
+        const directions = getData('directions');
+        directions.push(direction);
+        saveData('directions', directions);
+        
+        document.getElementById('direction-name').value = '';
+        document.getElementById('direction-count').value = '';
+        document.getElementById('direction-valid').value = '';
+        document.getElementById('direction-note').value = '';
+        
+        loadDirections();
+        alert('已保存');
+    }
+    
+    function loadDirections() {
+        const directions = getData('directions');
+        const container = document.getElementById('direction-list');
+        
+        if (directions.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="section-title">验证记录</div>';
+        directions.slice(-10).reverse().forEach(d => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${d.name}</span>
+                    <button class="btn-small" onclick="deleteDirection(${d.id})">删除</button>
+                </div>
+                <div class="record-meta">
+                    有效率 ${d.validRate}% | ${d.valid}/${d.count}条
+                    ${d.validRate >= 50 ? '<span class="tag tag-valid">有效</span>' : '<span class="tag tag-invalid">待观察</span>'}
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteDirection(id) {
+        if (!confirm('确定删除？')) return;
+        let directions = getData('directions');
+        directions = directions.filter(d => d.id !== id);
+        saveData('directions', directions);
+        loadDirections();
+    }
+    
+    // ========== V3.0 智能诊断 ==========
+    function runDiagnosis() {
+        const records = getData('records');
+        const comments = getData('comments');
+        const directions = getData('directions');
+        const container = document.getElementById('diagnosis-results');
+        
+        if (records.length < 3) {
+            container.innerHTML = '<div class="card">数据量不足，至少需要3条记录才能诊断</div>';
+            return;
+        }
+        
+        let diagnoses = [];
+        
+        // 1. 播放量诊断
+        const avgViews = records.reduce((s, r) => s + (r.views || 0), 0) / records.length;
+        const recentRecords = records.slice(-10);
+        const recentAvgViews = recentRecords.reduce((s, r) => s + (r.views || 0), 0) / recentRecords.length;
+        
+        if (recentAvgViews < avgViews * 0.5) {
+            diagnoses.push({
+                type: 'alert',
+                title: '📉 播放量异常下降',
+                conclusion: `近期平均播放 ${formatNumber(recentAvgViews)}，低于历史平均 ${formatNumber(avgViews)} 的50%`,
+                possibleReasons: ['平台推送变化', '选题吸引力下降', '发布时间问题'],
+                action: '检查近期内容选题是否有变化，确认平台推送是否正常'
+            });
+        } else if (recentAvgViews > avgViews * 1.5) {
+            diagnoses.push({
+                type: 'success',
+                title: '📈 播放量显著提升',
+                conclusion: `近期平均播放 ${formatNumber(recentAvgViews)}，超过历史平均 50%+`,
+                action: '找出近期高播放内容的共性，继续复制'
+            });
+        }
+        
+        // 2. 评论率诊断
+        const validRecords = records.filter(r => r.isValid);
+        if (validRecords.length >= 3) {
+            const avgCommentRate = validRecords.reduce((s, r) => s + parseFloat(r.commentRate || 0), 0) / validRecords.length;
+            
+            if (avgCommentRate < 0.5) {
+                diagnoses.push({
+                    type: 'warning',
+                    title: '💬 评论率偏低',
+                    conclusion: `有效内容平均评论率 ${avgCommentRate.toFixed(2)}%，低于0.5%基准`,
+                    possibleReasons: ['内容缺少互动钩子', '选题太干燥', '结尾没有引导'],
+                    action: '尝试在开头/结尾增加互动引导，选题增加争议性'
+                });
+            } else if (avgCommentRate > 1) {
+                diagnoses.push({
+                    type: 'success',
+                    title: '💬 评论率优秀',
+                    conclusion: `有效内容平均评论率 ${avgCommentRate.toFixed(2)}%，超过1%基准`,
+                    action: '保持当前互动策略'
+                });
+            }
+        }
+        
+        // 3. 评论信号诊断
+        if (comments.length >= 5) {
+            const demand = comments.filter(c => c.type === '需求').length;
+            const approve = comments.filter(c => c.type === '认可').length;
+            const doubt = comments.filter(c => c.type === '质疑').length;
+            const total = comments.length;
+            
+            const demandRate = demand / total;
+            const approveRate = approve / total;
+            const doubtRate = doubt / total;
+            
+            // 综合信号分析
+            if (demandRate > 0.3 && doubtRate < 0.1) {
+                diagnoses.push({
+                    type: 'success',
+                    title: '💡 市场需求信号强烈',
+                    conclusion: `需求信号 ${Math.round(demandRate*100)}%，质疑仅 ${Math.round(doubtRate*100)}%`,
+                    action: '需求明确，可围绕这些问题做系列内容'
+                });
+            } else if (doubtRate > 0.2) {
+                diagnoses.push({
+                    type: 'alert',
+                    title: '⚠️ 质疑比例偏高',
+                    conclusion: `质疑评论占比 ${Math.round(doubtRate*100)}%，超过20%警戒线`,
+                    possibleReasons: ['观点说服力不足', '论据站不住脚', '表达引起误解'],
+                    action: '检查被质疑的内容，强化论据或调整表达方式'
+                });
+            } else if (approveRate > 0.5) {
+                diagnoses.push({
+                    type: 'success',
+                    title: '❤️ 认可度高',
+                    conclusion: `${Math.round(approveRate*100)}% 评论是认可信号`,
+                    action: '当前方向受众喜欢，可继续深耕'
+                });
+            }
+            
+            // 具体建议
+            if (demand >= 3) {
+                diagnoses.push({
+                    type: 'info',
+                    title: '📋 内容选题建议',
+                    conclusion: `收集到 ${demand} 条需求信号`,
+                    action: '导出评论查看具体需求，作为选题来源'
+                });
+            }
+        }
+        
+        // 4. 方向验证诊断
+        if (directions.length >= 2) {
+            const validDirs = directions.filter(d => d.validRate >= 50);
+            const invalidDirs = directions.filter(d => d.validRate < 30);
+            
+            if (validDirs.length > 0) {
+                const bestDir = directions.reduce((a, b) => a.validRate > b.validRate ? a : b);
+                diagnoses.push({
+                    type: 'success',
+                    title: '🎯 找到有效方向',
+                    conclusion: `"${bestDir.name}" 有效率 ${bestDir.validRate}%`,
+                    action: '优先在该方向产出更多内容'
+                });
+            }
+            
+            if (invalidDirs.length > 0) {
+                diagnoses.push({
+                    type: 'warning',
+                    title: '⚠️ 有方向验证失败',
+                    conclusion: `${invalidDirs.length} 个方向有效率低于30%`,
+                    action: '考虑放弃或调整这些方向'
+                });
+            }
+        }
+        
+        // 5. 整体有效率诊断
+        if (records.length >= 5) {
+            const totalValid = records.filter(r => r.isValid).length;
+            const validRate = totalValid / records.length;
+            
+            if (validRate < 0.3) {
+                diagnoses.push({
+                    type: 'alert',
+                    title: '⚠️ 整体有效率偏低',
+                    conclusion: `有效率 ${Math.round(validRate*100)}%，低于30%警戒线`,
+                    possibleReasons: ['方向选择问题', '选题质量问题', '执行质量问题'],
+                    action: '从方向验证入手，找出无效内容共同点'
+                });
+            } else if (validRate > 0.6) {
+                diagnoses.push({
+                    type: 'success',
+                    title: '✅ 整体表现良好',
+                    conclusion: `有效率 ${Math.round(validRate*100)}%，超过60%`,
+                    action: '当前策略有效，继续复制'
+                });
+            }
+        }
+        
+        // 输出结果
+        if (diagnoses.length === 0) {
+            container.innerHTML = `
+                <div class="card diagnosis-card success">
+                    <div class="diagnosis-title">✅ 数据状态良好</div>
+                    <div class="diagnosis-conclusion">各项指标正常，暂无明显问题</div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = diagnoses.map(d => `
+            <div class="card diagnosis-card ${d.type}">
+                <div class="diagnosis-title">${d.title}</div>
+                <div class="diagnosis-conclusion">${d.conclusion}</div>
+                ${d.possibleReasons ? `
+                    <div style="margin-top:8px;font-size:12px;color:var(--text2);">
+                        可能原因：${d.possibleReasons.join('、')}
+                    </div>
+                ` : ''}
+                <div class="diagnosis-action">👉 ${d.action}</div>
+            </div>
+        `).join('');
+    }
+    
+    // ========== V3.0 纵向对比 ==========
+    function runCompare() {
+        const thisStart = document.getElementById('compare-week-start').value;
+        const thisEnd = document.getElementById('compare-week-end').value;
+        const lastStart = document.getElementById('compare-last-start').value;
+        const lastEnd = document.getElementById('compare-last-end').value;
+        
+        if (!thisStart || !thisEnd || !lastStart || !lastEnd) {
+            alert('请选择完整周期');
+            return;
+        }
+        
+        const records = getData('records');
+        const container = document.getElementById('compare-results');
+        
+        // 筛选两个周期的数据
+        const thisWeek = records.filter(r => r.date >= thisStart && r.date <= thisEnd);
+        const lastWeek = records.filter(r => r.date >= lastStart && r.date <= lastEnd);
+        
+        // 计算各项指标
+        function calcMetrics(arr) {
+            const total = arr.length;
+            const valid = arr.filter(r => r.isValid).length;
+            const totalViews = arr.reduce((s, r) => s + (r.views || 0), 0);
+            const totalComments = arr.reduce((s, r) => s + (r.comments || 0), 0);
+            const totalSaves = arr.reduce((s, r) => s + (r.saves || 0), 0);
+            
+            return {
+                total,
+                valid,
+                validRate: total > 0 ? (valid / total * 100) : 0,
+                avgViews: total > 0 ? Math.round(totalViews / total) : 0,
+                avgCommentRate: totalViews > 0 ? (totalComments / totalViews * 100) : 0,
+                avgSaveRate: totalViews > 0 ? (totalSaves / totalViews * 100) : 0
+            };
+        }
+        
+        const thisMetrics = calcMetrics(thisWeek);
+        const lastMetrics = calcMetrics(lastWeek);
+        
+        // 计算变化趋势
+        function calcTrend(current, previous) {
+            if (previous === 0) return { change: 0, direction: 'flat' };
+            const change = ((current - previous) / previous * 100).toFixed(0);
+            return {
+                change: Math.abs(change),
+                direction: current > previous ? 'up' : current < previous ? 'down' : 'flat'
+            };
+        }
+        
+        const trends = {
+            total: calcTrend(thisMetrics.total, lastMetrics.total),
+            valid: calcTrend(thisMetrics.valid, lastMetrics.valid),
+            validRate: calcTrend(thisMetrics.validRate, lastMetrics.validRate),
+            avgViews: calcTrend(thisMetrics.avgViews, lastMetrics.avgViews),
+            avgCommentRate: calcTrend(thisMetrics.avgCommentRate, lastMetrics.avgCommentRate)
+        };
+        
+        // 生成趋势标签
+        function trendLabel(trend, current, previous, unit = '') {
+            const arrow = trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→';
+            const color = trend.direction === 'up' ? 'var(--success)' : trend.direction === 'down' ? 'var(--danger)' : 'var(--text2)';
+            const changeText = trend.direction !== 'flat' ? `${arrow} ${trend.change}%` : '→ 持平';
+            return `<span class="trend ${trend.direction}" style="color:${color}">${changeText}</span>`;
+        }
+        
+        // 各方向对比
+        const directions = {};
+        records.forEach(r => {
+            if (!r.direction) return;
+            if (!directions[r.direction]) directions[r.direction] = { this: 0, last: 0, thisValid: 0, lastValid: 0 };
+            if (r.date >= thisStart && r.date <= thisEnd) {
+                directions[r.direction].this++;
+                if (r.isValid) directions[r.direction].thisValid++;
+            }
+            if (r.date >= lastStart && r.date <= lastEnd) {
+                directions[r.direction].last++;
+                if (r.isValid) directions[r.direction].lastValid++;
+            }
+        });
+        
+        let dirRows = '';
+        Object.keys(directions).forEach(dir => {
+            const d = directions[dir];
+            const thisRate = d.this > 0 ? Math.round(d.thisValid / d.this * 100) : 0;
+            const lastRate = d.last > 0 ? Math.round(d.lastValid / d.last * 100) : 0;
+            const t = calcTrend(thisRate, lastRate);
+            dirRows += `
+                <div class="compare-row">
+                    <span class="compare-label">${dir}</span>
+                    <div class="compare-values">
+                        <span class="current">${d.this}条(${thisRate}%)</span>
+                        <span class="previous">vs ${d.last}条(${lastRate}%)</span>
+                        ${trendLabel(t)}
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = `
+            <div class="card">
+                <div class="card-title">📊 整体对比</div>
+                <div class="compare-card">
+                    <div class="compare-row">
+                        <span class="compare-label">内容数量</span>
+                        <div class="compare-values">
+                            <span class="current">${thisMetrics.total}条</span>
+                            <span class="previous">vs ${lastMetrics.total}条</span>
+                            ${trendLabel(trends.total, thisMetrics.total, lastMetrics.total)}
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">有效内容</span>
+                        <div class="compare-values">
+                            <span class="current">${thisMetrics.valid}条</span>
+                            <span class="previous">vs ${lastMetrics.valid}条</span>
+                            ${trendLabel(trends.valid, thisMetrics.valid, lastMetrics.valid)}
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">有效率</span>
+                        <div class="compare-values">
+                            <span class="current">${Math.round(thisMetrics.validRate)}%</span>
+                            <span class="previous">vs ${Math.round(lastMetrics.validRate)}%</span>
+                            ${trendLabel(trends.validRate, thisMetrics.validRate, lastMetrics.validRate)}
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">平均播放</span>
+                        <div class="compare-values">
+                            <span class="current">${formatNumber(thisMetrics.avgViews)}</span>
+                            <span class="previous">vs ${formatNumber(lastMetrics.avgViews)}</span>
+                            ${trendLabel(trends.avgViews, thisMetrics.avgViews, lastMetrics.avgViews)}
+                        </div>
+                    </div>
+                    <div class="compare-row">
+                        <span class="compare-label">平均评论率</span>
+                        <div class="compare-values">
+                            <span class="current">${thisMetrics.avgCommentRate.toFixed(2)}%</span>
+                            <span class="previous">vs ${lastMetrics.avgCommentRate.toFixed(2)}%</span>
+                            ${trendLabel(trends.avgCommentRate, thisMetrics.avgCommentRate, lastMetrics.avgCommentRate)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🧭 各方向对比</div>
+                <div class="compare-card">
+                    ${dirRows || '<div style="color:var(--text2);text-align:center;">无数据</div>'}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📋 诊断结论</div>
+                <div id="compare-diagnosis"></div>
+            </div>
+        `;
+        
+        // 自动生成对比诊断
+        generateCompareDiagnosis(thisMetrics, lastMetrics, trends);
+    }
+    
+    function generateCompareDiagnosis(thisM, lastM, trends) {
+        const container = document.getElementById('compare-diagnosis');
+        let conclusions = [];
+        
+        if (trends.validRate.direction === 'up' && trends.validRate.change > 20) {
+            conclusions.push('✅ 有效率显著提升，策略调整见效');
+        } else if (trends.validRate.direction === 'down' && trends.validRate.change > 20) {
+            conclusions.push('⚠️ 有效率下降明显，需检查近期选题或方向');
+        }
+        
+        if (trends.avgViews.direction === 'up' && trends.avgViews.change > 30) {
+            conclusions.push('📈 平均播放大涨，内容传播力增强');
+        } else if (trends.avgViews.direction === 'down' && trends.avgViews.change > 30) {
+            conclusions.push('📉 平均播放下滑，可能推送或选题出问题');
+        }
+        
+        if (trends.total.direction === 'down' && trends.total.change > 30) {
+            conclusions.push('⚠️ 产出量下降，注意执行纪律');
+        }
+        
+        if (conclusions.length === 0) {
+            conclusions.push('数据无明显变化，保持观察');
+        }
+        
+        container.innerHTML = conclusions.map(c => `<div style="padding:6px 0;font-size:13px;">${c}</div>`).join('');
+    }
+    
+    // ========== 周复盘 ==========
+    function loadWeeklyStats() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        const container = document.getElementById('weekly-stats');
+        
+        if (!start || !end) {
+            container.innerHTML = '选择周期后自动统计';
+            return;
+        }
+        
+        const records = getData('records');
+        let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+        
+        DIRECTIONS.forEach(dir => {
+            const filtered = records.filter(r => r.direction === dir && r.date >= start && r.date <= end);
+            const valid = filtered.filter(r => r.isValid).length;
+            
+            html += `<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px;">
+                <div style="font-size:11px;color:var(--text2)">${dir}</div>
+                <div style="font-size:16px;font-weight:600">${filtered.length}</div>
+                <small style="color:var(--text2)">有效${valid}</small>
+            </div>`;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        loadWeeklyHistory();
+    }
+    
+    function saveWeekly() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        if (!start || !end) {
+            alert('请选择周期');
+            return;
+        }
+        
+        const reviews = getData('weeklyReviews');
+        reviews.push({
+            id: Date.now(),
+            weekStart: start,
+            weekEnd: end,
+            focus: document.getElementById('week-focus').value,
+            analysis: document.getElementById('week-analysis').value,
+            plan: document.getElementById('week-plan').value,
+            createdAt: new Date().toISOString()
+        });
+        saveData('weeklyReviews', reviews);
+        
+        document.getElementById('week-focus').value = '';
+        document.getElementById('week-analysis').value = '';
+        document.getElementById('week-plan').value = '';
+        
+        loadWeeklyHistory();
+        alert('已保存');
+    }
+    
+    function exportWeekly() {
+        const start = document.getElementById('week-start').value;
+        const end = document.getElementById('week-end').value;
+        const focus = document.getElementById('week-focus').value;
+        const analysis = document.getElementById('week-analysis').value;
+        const plan = document.getElementById('week-plan').value;
+        const stats = document.getElementById('weekly-stats').innerText;
+        
+        let output = `# 周复盘报告\n\n`;
+        output += `## 周期: ${start || '未选择'} ~ ${end || '未选择'}\n\n`;
+        output += `### 数据统计\n${stats}\n\n`;
+        if (focus) output += `### 本周重点内容\n${focus}\n\n`;
+        if (analysis) output += `### 有效内容分析\n${analysis}\n\n`;
+        if (plan) output += `### 下周计划\n${plan}\n\n`;
+        
+        const textarea = document.createElement('textarea');
+        textarea.value = output;
+        textarea.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:200px;opacity:1;z-index:9999;font-size:16px;';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            alert('已复制到剪贴板');
+        } catch (e) {
+            alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
+    }
+    
+    function loadWeeklyHistory() {
+        const container = document.getElementById('weekly-history');
+        const reviews = getData('weeklyReviews');
+        
+        if (reviews.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="section-title">历史周复盘</div>';
+        reviews.slice(-5).reverse().forEach(r => {
+            html += `<div class="record-item">
+                <div class="record-header">
+                    <span class="record-title">${r.weekStart} ~ ${r.weekEnd}</span>
+                    <button class="btn-small" onclick="deleteWeekly(${r.id})">删除</button>
+                </div>
+                <div class="record-meta">${r.focus || '无重点'}</div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function deleteWeekly(id) {
+        if (!confirm('确定删除？')) return;
+        let reviews = getData('weeklyReviews');
+        reviews = reviews.filter(r => r.id !== id);
+        saveData('weeklyReviews', reviews);
+        loadWeeklyHistory();
+    }
+    
+    // ========== 导入导出 ==========
+    function copyAllData() {
+        const data = {
+            records: getData('records'),
+            comments: getData('comments'),
+            directions: getData('directions'),
+            weeklyReviews: getData('weeklyReviews')
+        };
+        
+        const stats = {
+            总记录数: data.records.length,
+            有效内容: data.records.filter(r => r.isValid).length,
+            评论数: data.comments.length,
+            方向验证: data.directions.length,
+            周复盘: data.weeklyReviews.length
+        };
+        
+        let text = `📊 自媒体数据报告 V3.0\n`;
+        text += `📅 ${new Date().toLocaleDateString('zh-CN')}\n\n`;
+        text += `=== 统计 ===\n`;
+        Object.entries(stats).forEach(([k, v]) => text += `${k}: ${v}\n`);
+        
+        text += `\n=== 内容记录 ===\n`;
+        data.records.forEach(r => {
+            text += `\n【${r.title}】\n`;
+            text += `${r.date} | ${r.direction} | ${r.platform}\n`;
+            text += `播放${r.views} | 评论${r.comments}(${r.commentRate}%) | 收藏${r.saves}(${r.saveRate}%)\n`;
+            text += `${r.isValid ? '✅有效' : '⏳待验证'}\n`;
+        });
+        
+        text += `\n=== 评论 ===\n`;
+        const commentTypes = {};
+        data.comments.forEach(c => {
+            commentTypes[c.type] = (commentTypes[c.type] || 0) + 1;
+        });
+        Object.entries(commentTypes).forEach(([k, v]) => text += `${k}: ${v}条\n`);
+        
+        text += `\n=== JSON ===\n`;
+        text += JSON.stringify(data, null, 2);
+        
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:200px;opacity:1;z-index:9999;font-size:16px;';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            alert('✅ 已复制！粘贴发给我分析入库。');
+        } catch (err) {
+            alert('复制失败，请手动选择复制');
+        }
+        
+        document.body.removeChild(textarea);
+    }
+    
+    function exportData() {
+        const data = {
+            version: '3.0',
+            exportTime: new Date().toISOString(),
+            records: getData('records'),
+            comments: getData('comments'),
+            directions: getData('directions'),
+            weeklyReviews: getData('weeklyReviews')
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `media-backup-v3-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('已导出');
+    }
+    
+    function importData(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        
+        let mergedData = {
+            records: [],
+            comments: [],
+            directions: [],
+            weeklyReviews: []
+        };
+        let successCount = 0;
+        let failCount = 0;
+        
+        const readPromises = files.map(file => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        resolve({ success: true, data });
+                    } catch (err) {
+                        resolve({ success: false, filename: file.name });
+                    }
+                };
+                reader.onerror = () => resolve({ success: false, filename: file.name });
+                reader.readAsText(file);
+            });
+        });
+        
+        Promise.all(readPromises).then(results => {
+            results.forEach(result => {
+                if (result.success) {
+                    const d = result.data;
+                    if (d.records) mergedData.records.push(...d.records);
+                    if (d.comments) mergedData.comments.push(...d.comments);
+                    if (d.directions) mergedData.directions.push(...d.directions);
+                    if (d.weeklyReviews) mergedData.weeklyReviews.push(...d.weeklyReviews);
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+            });
+            
+            const mergeById = (existing, newItems, key = 'id') => {
+                const map = new Map();
+                existing.forEach(item => map.set(item[key], item));
+                newItems.forEach(item => {
+                    const existing = map.get(item[key]);
+                    if (!existing || (item.timestamp && existing.timestamp && new Date(item.timestamp) > new Date(existing.timestamp))) {
+                        map.set(item[key], item);
+                    } else if (!existing) {
+                        map.set(item[key], item);
+                    }
+                });
+                return Array.from(map.values());
+            };
+            
+            const existingRecords = getData('records');
+            const existingComments = getData('comments');
+            const existingDirections = getData('directions');
+            const existingWeekly = getData('weeklyReviews');
+            
+            const finalRecords = mergeById(existingRecords, mergedData.records);
+            const finalComments = mergeById(existingComments, mergedData.comments, 'id');
+            const finalDirections = mergeById(existingDirections, mergedData.directions, 'id');
+            const finalWeekly = mergeById(existingWeekly, mergedData.weeklyReviews, 'id');
+            
+            saveData('records', finalRecords);
+            saveData('comments', finalComments);
+            saveData('directions', finalDirections);
+            saveData('weeklyReviews', finalWeekly);
+            
+            event.target.value = '';
+            
+            alert(`导入完成！\n成功：${successCount}个文件\n失败：${failCount}个文件\n\n合并后：${finalRecords.length}条记录`);
+            location.reload();
+        });
+    }
+    
+    function updateExportStats() {
+        const records = getData('records');
+        document.getElementById('valid-count').textContent = records.filter(r => r.isValid).length;
+        document.getElementById('total-count').textContent = records.length;
+    }
+    
+    function clearAllData() {
+        if (!confirm('确定清空所有数据？')) return;
+        if (!confirm('真的要清空吗？此操作不可恢复！')) return;
+        
+        localStorage.removeItem(KEYS.records);
+        localStorage.removeItem(KEYS.comments);
+        localStorage.removeItem(KEYS.directions);
+        localStorage.removeItem(KEYS.weeklyReviews);
+        
+        alert('已清空');
+        location.reload();
+    }
+    
+    // ========== 初始化 ==========
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => showTab(tab.dataset.tab));
+    });
+    
+    // 设置默认日期
+    document.getElementById('record-date').valueAsDate = new Date();
+    
+    // 周期选择自动触发统计
+    ['week-start', 'week-end'].forEach(id => {
+        document.getElementById(id).addEventListener('change', loadWeeklyStats);
+    });
+    
+    ['compare-week-start', 'compare-week-end', 'compare-last-start', 'compare-last-end'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+            // 自动填充上周周期
+            const thisStart = document.getElementById('compare-week-start').value;
+            const thisEnd = document.getElementById('compare-week-end').value;
+            if (thisStart && thisEnd && !document.getElementById('compare-last-start').value) {
+                const lastStart = new Date(thisStart);
+                lastStart.setDate(lastStart.getDate() - 7);
+                const lastEnd = new Date(thisEnd);
+                lastEnd.setDate(lastEnd.getDate() - 7);
+                document.getElementById('compare-last-start').value = lastStart.toISOString().split('T')[0];
+                document.getElementById('compare-last-end').value = lastEnd.toISOString().split('T')[0];
+            }
+        });
+    });
+    
+    updateHome();
+</script>
+</body>
+</html>
