@@ -809,20 +809,34 @@
     function loadCommentCounts() {
         const recordId = document.getElementById('comment-record').value;
         if (!recordId) {
-            // 清空数字框
+            // 清空数字框和文本框
             document.getElementById('count-need').value = '';
             document.getElementById('count-approve').value = '';
             document.getElementById('count-neutral').value = '';
             document.getElementById('count-doubt').value = '';
+            document.getElementById('comment-need').value = '';
+            document.getElementById('comment-approve').value = '';
+            document.getElementById('comment-neutral').value = '';
+            document.getElementById('comment-doubt').value = '';
             return;
         }
         const records = getData('records');
         const record = records.find(r => String(r.id) === String(recordId));
-        if (record && record.commentCounts) {
-            document.getElementById('count-need').value = record.commentCounts.need || '';
-            document.getElementById('count-approve').value = record.commentCounts.approve || '';
-            document.getElementById('count-neutral').value = record.commentCounts.neutral || '';
-            document.getElementById('count-doubt').value = record.commentCounts.doubt || '';
+        if (record) {
+            // 回显数字
+            if (record.commentCounts) {
+                document.getElementById('count-need').value = record.commentCounts.need || '';
+                document.getElementById('count-approve').value = record.commentCounts.approve || '';
+                document.getElementById('count-neutral').value = record.commentCounts.neutral || '';
+                document.getElementById('count-doubt').value = record.commentCounts.doubt || '';
+            }
+            // 回显评论内容
+            if (record.comments) {
+                document.getElementById('comment-need').value = (record.comments.need || []).join('\n');
+                document.getElementById('comment-approve').value = (record.comments.approve || []).join('\n');
+                document.getElementById('comment-neutral').value = (record.comments.neutral || []).join('\n');
+                document.getElementById('comment-doubt').value = (record.comments.doubt || []).join('\n');
+            }
         }
     }
     
@@ -876,7 +890,7 @@
             saveData('comments', [...comments, ...newComments]);
         }
 
-        // 保存数字到 record
+        // 保存数字和评论内容到 record
         if (recordId) {
             const records = getData('records');
             const recordIndex = records.findIndex(r => String(r.id) === String(recordId));
@@ -885,6 +899,13 @@
                     need: needCount,       // 需求 → 信号分析-需求
                     approve: approveCount, // 认可 → 信号分析-共鸣
                     doubt: doubtCount      // 质疑 → 信号分析-偏差
+                };
+                // 保存评论内容（按分类）
+                records[recordIndex].comments = {
+                    need: needText.split('\n').map(l => l.trim()).filter(l => l),
+                    approve: approveText.split('\n').map(l => l.trim()).filter(l => l),
+                    neutral: neutralText.split('\n').map(l => l.trim()).filter(l => l),
+                    doubt: doubtText.split('\n').map(l => l.trim()).filter(l => l)
                 };
                 saveData('records', records);
             }
