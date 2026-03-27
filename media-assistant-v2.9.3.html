@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自媒体数据助手 v2.9.3</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f7; padding: 16px; color: #1d1d1f; }
+        .container { max-width: 680px; margin: 0 auto; }
+        .header { text-align: center; padding: 20px 0; position: relative; }
+        .header-actions { position: absolute; right: 0; top: 20px; display: flex; gap: 8px; }
+        .refresh-btn { background: none; border: none; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; }
+        .refresh-btn:hover { background: #e5e5e7; }
+        .refresh-btn.refreshing svg { animation: spin 1s linear; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .header h1 { font-size: 24px; font-weight: 600; color: #1d1d1f; }
+        .header p { color: #86868b; font-size: 14px; margin-top: 4px; }
+        
+        .section { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1d1d1f; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 13px; color: #86868b; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; border: 1px solid #e5e5e7; border-radius: 8px; font-size: 15px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #007AFF; }
+        
+        .btn { background: #007AFF; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #0056CC; }
+        .btn-secondary { background: #f5f5f7; color: #1d1d1f; }
+        .btn-secondary:hover { background: #e5e5e7; }
+        .btn-small { padding: 8px 12px; font-size: 13px; }
+        .btn-danger { background: #FF3B30; }
+        .btn-danger:hover { background: #CC2F26; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        
+        .history-item { background: #f9f9f9; border-radius: 12px; padding: 12px; margin-bottom: 8px; position: relative; }
+        .history-item:last-child { margin-bottom: 0; }
+        .history-title { font-weight: 500; margin-bottom: 4px; }
+        .history-meta { font-size: 12px; color: #86868b; display: flex; gap: 8px; flex-wrap: wrap; }
+        .history-stats { font-size: 12px; color: #86868b; margin-top: 6px; }
+        .history-actions { position: absolute; right: 12px; top: 12px; display: flex; gap: 4px; }
+        .action-btn { background: none; border: none; cursor: pointer; padding: 4px 8px; font-size: 11px; color: #86868b; border-radius: 4px; }
+        .action-btn:hover { background: #e5e5e7; color: #1d1d1f; }
+        .platform-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 500; margin-right: 4px; }
+        .platform-xhs { background: #FF2442; color: white; }
+        .platform-dy { background: #000; color: white; }
+        .platform-other { background: #86868b; color: white; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .stat-card { background: #f9f9f9; padding: 16px; border-radius: 12px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: 600; }
+        .stat-label { font-size: 12px; color: #86868b; margin-top: 4px; }
+        
+        .diagnosis-card { background: #f9f9f9; border-radius: 12px; margin-top: 12px; overflow: hidden; display: none; }
+        .diagnosis-card.show { display: block; }
+        .diagnosis-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #e5e5e7; }
+        .health-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .health-good { background: #E3F9E5; color: #1D7A33; }
+        .health-warning { background: #FFF4E5; color: #B86E00; }
+        .health-error { background: #FFE5E5; color: #C41E3A; }
+        .diagnosis-level { font-size: 12px; color: #86868b; }
+        .diagnosis-body { padding: 12px 16px; font-size: 14px; }
+        .diagnosis-row { margin-bottom: 8px; }
+        .diagnosis-label { color: #86868b; }
+        .diagnosis-divider { height: 1px; background: #e5e5e7; margin: 12px 0; }
+        .diagnosis-stats { display: flex; gap: 16px; }
+        .stat-item { font-size: 12px; }
+        
+        .direction-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f9f9f9; border-radius: 8px; margin-bottom: 6px; }
+        .direction-name { font-size: 14px; }
+        .direction-count { font-size: 12px; color: #86868b; }
+        
+        .comment-item { background: #f9f9f9; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+        .comment-video { font-size: 12px; color: #007AFF; margin-bottom: 4px; }
+        .comment-content { font-size: 14px; line-height: 1.4; margin-bottom: 4px; }
+        .comment-type { display: inline-block; padding: 2px 8px; background: #e5e5e7; border-radius: 4px; font-size: 11px; color: #666; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: #fff; border-radius: 16px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #e5e5e7; }
+        .modal-title { font-size: 16px; font-weight: 600; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #86868b; padding: 0 4px; }
+        .modal-body { padding: 20px; }
+        
+        .empty-state { text-align: center; color: #86868b; padding: 20px; font-size: 14px; }
+        
+        .standards-info { background: #f9f9f9; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+        .standards-info h4 { font-size: 14px; margin-bottom: 8px; }
+        .standards-list { font-size: 13px; color: #666; line-height: 1.6; }
+        
+        /* 多平台录入样式 */
+        .platform-entry { background: #f5f5f7; border-radius: 8px; padding: 12px; margin-bottom: 8px; position: relative; }
+        .platform-entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .remove-platform-btn { background: none; border: none; color: #FF3B30; cursor: pointer; font-size: 20px; padding: 0 4px; }
+        .add-platform-btn { background: #E5E5E7; color: #1d1d1f; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 8px; }
+        .add-platform-btn:hover { background: #D1D1D6; }
+        
+        /* 视频详情中的平台列表 */
+        .video-platforms { margin-top: 8px; }
+        .platform-stat-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; padding: 4px 0; }
+        .platform-stat-row .platform-tag { margin-right: 4px; }
+        
+        /* 统计切换按钮 */
+        .stats-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+        .toggle-btn { background: #e5e5e7; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; color: #666; }
+        .toggle-btn.active { background: #007AFF; color: white; }
+        
+        /* 备注样式 */
+        .remark-text { font-size: 12px; color: #666; margin-top: 6px; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 自媒体数据助手</h1>
+            <p>v2.9.3 | 一视频多平台</p>
+            <div class="header-actions">
+                <button class="refresh-btn" onclick="refreshAll()" title="刷新数据">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab 导航 -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="toggle-btn active" onclick="switchTab('record')">录入</button>
+            <button class="toggle-btn" onclick="switchTab('history')">历史</button>
+            <button class="toggle-btn" onclick="switchTab('comments')">评论</button>
+            <button class="toggle-btn" onclick="switchTab('stats')">统计</button>
+        </div>
+        
+        <!-- 录入页面 -->
+        <div id="recordTab">
+            <!-- 视频基础信息 -->
+            <div class="section">
+                <div class="section-title">🎬 视频基础信息</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>视频标题 *</label>
+                        <input type="text" id="videoTitle" placeholder="视频标题">
+                    </div>
+                    <div class="form-group">
+                        <label>内容方向</label>
+                        <select id="contentDirection"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>是否有效</label>
+                        <select id="isValid">
+                            <option value="待判断">待判断</option>
+                            <option value="有效">有效</option>
+                            <option value="无效">无效</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>备注</label>
+                        <textarea id="videoRemark" rows="2" placeholder="备注（所有平台共享）"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 平台数据 -->
+            <div class="section">
+                <div class="section-title">📱 平台数据</div>
+                <div id="platformEntries">
+                    <!-- 默认一个平台输入 -->
+                </div>
+                <button class="add-platform-btn" onclick="addPlatformEntry()">+ 添加平台</button>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn" onclick="saveRecord()">保存视频记录</button>
+                <button class="btn btn-secondary" onclick="clearForm()">清空表单</button>
+            </div>
+            
+            <!-- 保存后诊断卡片 -->
+            <div id="quickDiagnosis" class="diagnosis-card">
+                <div class="diagnosis-header">
+                    <span id="diagnosisHealthBadge" class="health-badge"></span>
+                    <span id="diagnosisLevel" class="diagnosis-level"></span>
+                </div>
+                <div class="diagnosis-body">
+                    <div class="diagnosis-row">
+                        <span class="diagnosis-label">问题：</span>
+                        <span id="diagnosisProblem"></span>
+                    </div>
+                    <div class="diagnosis-row">
+                        <span class="diagnosis-label">原因：</span>
+                        <span id="diagnosisReason"></span>
+                    </div>
+                    <div class="diagnosis-row">
+                        <span class="diagnosis-label">建议：</span>
+                        <span id="diagnosisSuggestion"></span>
+                    </div>
+                    <div class="diagnosis-divider"></div>
+                    <div class="diagnosis-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">总播放：</span>
+                            <span id="diagViewCount" class="stat-value"></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">平均评论率：</span>
+                            <span id="diagCommentRate" class="stat-value"></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">平均收藏率：</span>
+                            <span id="diagCollectRate" class="stat-value"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 历史记录页面 -->
+        <div id="historyTab" style="display:none;">
+            <div class="section">
+                <div class="section-title">📋 历史记录</div>
+                <div id="historyList"></div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-small" onclick="exportData()">导出数据</button>
+                    <button class="btn btn-secondary btn-small" onclick="copyReport()">复制报告</button>
+                    <button class="btn btn-secondary btn-small" onclick="exportMarkdown()">导出MD</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 评论页面 -->
+        <div id="commentsTab" style="display:none;">
+            <div class="section">
+                <div class="section-title">💬 评论录入</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>关联视频</label>
+                        <select id="commentVideo">
+                            <option value="">选择视频</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>评论内容</label>
+                        <textarea id="commentContent" rows="2" placeholder="粘贴评论内容"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>评论类型</label>
+                        <select id="commentType">
+                            <option value="共鸣类">共鸣类 (认同/被打动)</option>
+                            <option value="求方法类">求方法类 (想要解决方案)</option>
+                            <option value="提问类">提问类 (有问题)</option>
+                            <option value="争议类">争议类 (不同意见)</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn" onclick="saveComment()">保存评论</button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">📝 评论列表</div>
+                <div id="commentList" class="empty-state">暂无评论记录</div>
+            </div>
+        </div>
+        
+        <!-- 统计页面 -->
+        <div id="statsTab" style="display:none;">
+            <div class="section">
+                <div class="section-title">📊 统计概览</div>
+                <div class="stats-toggle">
+                    <button class="toggle-btn active" id="statsByVideo" onclick="toggleStatsMode('video')">按视频统计</button>
+                    <button class="toggle-btn" id="statsByPlatform" onclick="toggleStatsMode('platform')">按平台统计</button>
+                </div>
+                <div id="statsOverview" class="stats-grid"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">🎯 方向管理</div>
+                <div class="form-grid">
+                    <div class="form-group" style="flex: 1;">
+                        <input type="text" id="newDirection" placeholder="输入新方向">
+                    </div>
+                    <button class="btn" onclick="addDirection()">添加方向</button>
+                </div>
+                <div id="directionList" style="margin-top: 12px;"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">📖 评价标准</div>
+                <div class="standards-info">
+                    <h4>L1-L5 分层诊断</h4>
+                    <div class="standards-list">
+                        <strong>L1 方向层</strong>：选题不受众，播放<500 + 评论<5<br>
+                        <strong>L2 钩子层</strong>：前3秒没抓住人，播放≥500 + 评论率<1%<br>
+                        <strong>L3 表达层</strong>：讲完了没打透，评论率1-3% + 共鸣<3<br>
+                        <strong>L4 情绪层</strong>：有娱乐没痛点，评论率≥3% + 需求=0<br>
+                        <strong>L5 转化层</strong>：有痛点没给解法，需求>3 + 有效<30%<br>
+                        <strong>✅ 有效</strong>：方向正确，需求>0 + 需求<共鸣*1.5
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据导入 -->
+        <div class="section" id="importSection">
+            <div class="section-title">📥 数据导入</div>
+            <div class="form-group">
+                <textarea id="importData" rows="3" placeholder="粘贴之前导出的JSON数据"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="importData()">导入数据</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 诊断详情弹窗 -->
+    <div id="diagnosisModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">📊 详细诊断</span>
+                <button class="modal-close" onclick="closeDiagnosisModal()">×</button>
+            </div>
+            <div id="diagnosisModalBody"></div>
+        </div>
+    </div>
+    
+    <!-- 添加评论弹窗 -->
+    <div id="addCommentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">💬 添加评论</span>
+                <button class="modal-close" onclick="closeAddCommentModal()">×</button>
+            </div>
+            <div id="addCommentForm">
+                <input type="hidden" id="addCommentVideoTitle">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>视频</label>
+                    <input type="text" id="addCommentVideoDisplay" readonly style="opacity: 0.7;">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>评论内容</label>
+                    <textarea id="addCommentContent" rows="3" placeholder="粘贴评论内容"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>评论类型</label>
+                    <select id="addCommentType">
+                        <option value="共鸣类">共鸣类 (认同/被打动)</option>
+                        <option value="求方法类">求方法类 (想要解决方案)</option>
+                        <option value="提问类">提问类 (有问题)</option>
+                        <option value="争议类">争议类 (不同意见)</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="submitAddComment()">保存评论</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑平台数据弹窗 -->
+    <div id="editPlatformModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">📱 编辑平台数据</span>
+                <button class="modal-close" onclick="closeEditPlatformModal()">×</button>
+            </div>
+            <div id="editPlatformForm" class="modal-body">
+                <input type="hidden" id="editVideoId">
+                <input type="hidden" id="editPlatformIndex">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>平台</label>
+                    <select id="editPlatform">
+                        <option value="小红书">小红书</option>
+                        <option value="抖音">抖音</option>
+                        <option value="视频号">视频号</option>
+                        <option value="B站">B站</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>发布日期</label>
+                    <input type="date" id="editDate">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>播放量</label>
+                    <input type="number" id="editViews" placeholder="播放量">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>评论数</label>
+                    <input type="number" id="editComments" placeholder="评论数">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label>收藏数</label>
+                    <input type="number" id="editCollects" placeholder="收藏数">
+                </div>
+                <button class="btn" onclick="savePlatformEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 数据结构 ==========
+        // videos: [{ id, title, direction, valid, remark, createdAt, platforms: [] }]
+        // platforms: [{ platform, date, views, comments, collects }]
+        let videos = [];
+        let comments = [];
+        let directions = ['职场干货', '生活感悟', '情感关系', '认知提升'];
+        let statsMode = 'video'; // 'video' | 'platform'
+        let platformEntryCount = 0;
+        
+        // ========== 初始化 ==========
+        function init() {
+            loadData();
+            updateDirectionSelect();
+            renderHistory();
+            renderComments();
+            renderDirections();
+            renderStats();
+            updateCommentVideoSelect();
+            
+            // 默认添加一个平台输入
+            addPlatformEntry();
+        }
+        
+        function loadData() {
+            const savedVideos = localStorage.getItem('mediaVideos');
+            const savedComments = localStorage.getItem('mediaComments');
+            const savedDirections = localStorage.getItem('mediaDirections');
+            
+            if (savedVideos) videos = JSON.parse(savedVideos);
+            if (savedComments) comments = JSON.parse(savedComments);
+            if (savedDirections) directions = JSON.parse(savedDirections);
+        }
+        
+        function saveData() {
+            localStorage.setItem('mediaVideos', JSON.stringify(videos));
+            localStorage.setItem('mediaComments', JSON.stringify(comments));
+            localStorage.setItem('mediaDirections', JSON.stringify(directions));
+        }
+        
+        // ========== Tab 切换 ==========
+        function switchTab(tab) {
+            document.querySelectorAll('[id$="Tab"]').forEach(el => el.style.display = 'none');
+            document.getElementById(tab + 'Tab'). style.display = 'block';
+            
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 切换时刷新
+            if (tab === 'history') renderHistory();
+            if (tab === 'stats') renderStats();
+            if (tab === 'comments') renderComments();
+        }
+        
+        // ========== 平台数据录入 ==========
+        function addPlatformEntry() {
+            platformEntryCount++;
+            const container = document.getElementById('platformEntries');
+            const entry = document.createElement('div');
+            entry.className = 'platform-entry';
+            entry.id = `platform-entry-${platformEntryCount}`;
+            entry.innerHTML = `
+                <div class="platform-entry-header">
+                    <span style="font-weight:500;">平台 ${platformEntryCount}</span>
+                    <button class="remove-platform-btn" onclick="removePlatformEntry(${platformEntryCount})">×</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>平台</label>
+                        <select class="platform-select">
+                            <option value="小红书">小红书</option>
+                            <option value="抖音">抖音</option>
+                            <option value="视频号">视频号</option>
+                            <option value="B站">B站</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>发布日期</label>
+                        <input type="date" class="platform-date" value="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    <div class="form-group">
+                        <label>播放量 *</label>
+                        <input type="number" class="platform-views" placeholder="播放量">
+                    </div>
+                    <div class="form-group">
+                        <label>评论数 *</label>
+                        <input type="number" class="platform-comments" placeholder="评论数">
+                    </div>
+                    <div class="form-group">
+                        <label>收藏数</label>
+                        <input type="number" class="platform-collects" placeholder="收藏数">
+                    </div>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+        
+        function removePlatformEntry(id) {
+            const entry = document.getElementById(`platform-entry-${id}`);
+            if (entry && document.querySelectorAll('.platform-entry').length > 1) {
+                entry.remove();
+            }
+        }
+        
+        // ========== 保存视频记录 ==========
+        function saveRecord() {
+            const title = document.getElementById('videoTitle').value.trim();
+            const direction = document.getElementById('contentDirection').value;
+            const valid = document.getElementById('isValid').value;
+            const remark = document.getElementById('videoRemark').value.trim();
+            
+            if (!title) {
+                alert('请填写视频标题');
+                return;
+            }
+            
+            // 收集平台数据
+            const platforms = [];
+            const entries = document.querySelectorAll('.platform-entry');
+            let hasValidData = false;
+            
+            entries.forEach(entry => {
+                const platform = entry.querySelector('.platform-select').value;
+                const date = entry.querySelector('.platform-date').value;
+                const views = parseInt(entry.querySelector('.platform-views').value) || 0;
+                const commentCount = parseInt(entry.querySelector('.platform-comments').value) || 0;
+                const collects = parseInt(entry.querySelector('.platform-collects').value) || 0;
+                
+                if (views > 0) {
+                    hasValidData = true;
+                    platforms.push({ platform, date, views, comments: commentCount, collects });
+                }
+            });
+            
+            if (!hasValidData) {
+                alert('请至少填写一个平台的播放量');
+                return;
+            }
+            
+            const video = {
+                id: Date.now(),
+                title,
+                direction,
+                valid,
+                remark,
+                platforms,
+                createdAt: new Date().toISOString()
+            };
+            
+            videos.unshift(video);
+            saveData();
+            
+            // 显示快速诊断
+            showQuickDiagnosis(video);
+            
+            // 更新页面
+            renderHistory();
+            renderDirections();
+            renderStats();
+            updateCommentVideoSelect();
+            
+            clearForm();
+        }
+        
+        // ========== 快速诊断 ==========
+        function showQuickDiagnosis(video) {
+            const diagnosis = diagnoseVideo(video);
+            const card = document.getElementById('quickDiagnosis');
+            
+            const healthBadge = document.getElementById('diagnosisHealthBadge');
+            if (diagnosis.level === '有效') {
+                healthBadge.className = 'health-badge health-good';
+                healthBadge.textContent = '✅ 方向正确';
+            } else if (diagnosis.level.startsWith('L1') || diagnosis.level.startsWith('L2')) {
+                healthBadge.className = 'health-badge health-error';
+                healthBadge.textContent = '❌ ' + diagnosis.level;
+            } else {
+                healthBadge.className = 'health-badge health-warning';
+                healthBadge.textContent = '⚠️ ' + diagnosis.level;
+            }
+            
+            document.getElementById('diagnosisLevel').textContent = diagnosis.levelName;
+            document.getElementById('diagnosisProblem').textContent = diagnosis.problem;
+            document.getElementById('diagnosisReason').textContent = diagnosis.reason;
+            document.getElementById('diagnosisSuggestion').textContent = diagnosis.suggestion;
+            
+            // 计算汇总数据
+            const totalViews = video.platforms.reduce((sum, p) => sum + p.views, 0);
+            const totalComments = video.platforms.reduce((sum, p) => sum + p.comments, 0);
+            const totalCollects = video.platforms.reduce((sum, p) => sum + p.collects, 0);
+            const avgCommentRate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+            const avgCollectRate = totalViews > 0 ? (totalCollects / totalViews * 100).toFixed(2) : 0;
+            
+            document.getElementById('diagViewCount').textContent = totalViews;
+            document.getElementById('diagCommentRate').textContent = avgCommentRate + '%';
+            document.getElementById('diagCollectRate').textContent = avgCollectRate + '%';
+            
+            card.classList.add('show');
+        }
+        
+        // ========== 诊断逻辑（保持不变） ==========
+        function diagnoseVideo(video) {
+            // 计算汇总数据
+            const totalViews = video.platforms.reduce((sum, p) => sum + p.views, 0);
+            const totalComments = video.platforms.reduce((sum, p) => sum + p.comments, 0);
+            const totalCollects = video.platforms.reduce((sum, p) => sum + p.collects, 0);
+            
+            const commentRate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+            const collectRate = totalViews > 0 ? (totalCollects / totalViews * 100).toFixed(2) : 0;
+            
+            // 获取该视频的评论信号
+            const videoComments = comments.filter(c => c.videoTitle === video.title);
+            const resonance = videoComments.filter(c => c.type === '共鸣类').length;
+            const demand = videoComments.filter(c => c.type === '求方法类' || c.type === '提问类').length;
+            const deviation = videoComments.filter(c => c.type === '争议类').length;
+            
+            let level, levelName, problem, reason, suggestion;
+            
+            if (totalViews < 500 && totalComments < 5) {
+                level = 'L1';
+                levelName = '方向层问题';
+                problem = '选题不受众，几乎没人看';
+                reason = '内容可能太冷门，或标题/封面不够吸引';
+                suggestion = '考虑换选题方向，或优化标题封面让目标受众一眼就知道内容是什么';
+            } else if (totalViews >= 500 && parseFloat(commentRate) < 1) {
+                level = 'L2';
+                levelName = '钩子层问题';
+                problem = '用户在前3秒划走了';
+                reason = '开头没有给价值，没有抓住注意力';
+                suggestion = '开头3秒要给一个强钩子（问题/反差/好奇心/痛点），让用户想继续看';
+            } else if (parseFloat(commentRate) >= 1 && parseFloat(commentRate) < 3 && resonance < 3) {
+                level = 'L3';
+                levelName = '表达层问题';
+                problem = '讲完了但没打透';
+                reason = '内容有信息量，但情绪冲击不够';
+                suggestion = '增加痛点描绘、案例细节或金句总结，让内容更打动人';
+            } else if (parseFloat(commentRate) >= 3 && demand === 0 && resonance > 0) {
+                level = 'L4';
+                levelName = '情绪层问题';
+                problem = '有娱乐感但没有刺中痛点';
+                reason = '用户看了觉得有意思，但没有被真正触动';
+                suggestion = '找到用户的核心痛点，用更强烈的方式呈现问题';
+            } else if (demand > 3 && video.valid === '无效') {
+                level = 'L5';
+                levelName = '转化层问题';
+                problem = '有痛点但没给解法';
+                reason = '用户在评论区找方法，说明需求没被满足';
+                suggestion = '在内容中给出具体的方法或行动建议，让用户有收获';
+            } else {
+                level = '有效';
+                levelName = '方向正确';
+                problem = '内容在正确的轨道上';
+                reason = '有播放、有互动、有信号反馈';
+                suggestion = demand > resonance * 1.5 
+                    ? '用户需求强烈，可以深化这个方向给更具体的解决方案'
+                    : '继续优化内容质量，保持这个方向的探索';
+            }
+            
+            return { 
+                level, levelName, problem, reason, suggestion,
+                commentRate, collectRate, resonance, demand, deviation
+            };
+        }
+        
+        // ========== 历史记录渲染 ==========
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (videos.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无数据记录</div>';
+                return;
+            }
+            
+            container.innerHTML = videos.map(video => {
+                const totalViews = video.platforms.reduce((sum, p) => sum + p.views, 0);
+                const totalComments = video.platforms.reduce((sum, p) => sum + p.comments, 0);
+                const totalCollects = video.platforms.reduce((sum, p) => sum + p.collects, 0);
+                const commentRate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+                
+                const platformTags = video.platforms.map(p => {
+                    const tagClass = p.platform === '小红书' ? 'platform-xhs' : 
+                                     p.platform === '抖音' ? 'platform-dy' : 'platform-other';
+                    return `<span class="platform-tag ${tagClass}">${p.platform}</span>`;
+                }).join('');
+                
+                const platformStats = video.platforms.map(p => {
+                    const rate = p.views > 0 ? (p.comments / p.views * 100).toFixed(1) : 0;
+                    return `<div class="platform-stat-row">
+                        <span class="platform-tag ${p.platform === '小红书' ? 'platform-xhs' : p.platform === '抖音' ? 'platform-dy' : 'platform-other'}">${p.platform}</span>
+                        <span>播放 ${p.views} | 评论 ${p.comments} | 收藏 ${p.collects}</span>
+                    </div>`;
+                }).join('');
+                
+                return `
+                    <div class="history-item">
+                        <div class="history-title">${video.title}</div>
+                        <div class="history-meta">
+                            ${platformTags}
+                            <span>方向：${video.direction || '未分类'}</span>
+                            <span>${video.valid}</span>
+                        </div>
+                        <div class="history-stats">
+                            总播放 ${totalViews} | 总评论 ${totalComments} | 评论率 ${commentRate}%
+                        </div>
+                        <div class="video-platforms">${platformStats}</div>
+                        ${video.remark ? `<div class="remark-text">📝 ${video.remark}</div>` : ''}
+                        <div class="history-actions">
+                            <button class="action-btn" onclick="showDiagnosis(${video.id})">诊断</button>
+                            <button class="action-btn" onclick="openAddCommentModal('${video.title}')">+评论</button>
+                            <button class="action-btn" onclick="deleteVideo(${video.id})">删除</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ========== 统计渲染 ==========
+        function toggleStatsMode(mode) {
+            statsMode = mode;
+            document.getElementById('statsByVideo').classList.toggle('active', mode === 'video');
+            document.getElementById('statsByPlatform').classList.toggle('active', mode === 'platform');
+            renderStats();
+        }
+        
+        function renderStats() {
+            const container = document.getElementById('statsOverview');
+            
+            if (statsMode === 'video') {
+                // 按视频统计（去重）
+                const totalVideos = videos.length;
+                const totalViews = videos.reduce((sum, v) => 
+                    sum + v.platforms.reduce((s, p) => s + p.views, 0), 0);
+                const totalComments = videos.reduce((sum, v) => 
+                    sum + v.platforms.reduce((s, p) => s + p.comments, 0), 0);
+                const totalCollects = videos.reduce((sum, v) => 
+                    sum + v.platforms.reduce((s, p) => s + p.collects, 0), 0);
+                const avgCommentRate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+                
+                container.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${totalVideos}</div>
+                        <div class="stat-label">视频总数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatNumber(totalViews)}</div>
+                        <div class="stat-label">总播放</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${avgCommentRate}%</div>
+                        <div class="stat-label">平均评论率</div>
+                    </div>
+                `;
+            } else {
+                // 按平台统计
+                const platformStats = {};
+                videos.forEach(v => {
+                    v.platforms.forEach(p => {
+                        if (!platformStats[p.platform]) {
+                            platformStats[p.platform] = { videos: 0, views: 0, comments: 0, collects: 0 };
+                        }
+                        platformStats[p.platform].videos++;
+                        platformStats[p.platform].views += p.views;
+                        platformStats[p.platform].comments += p.comments;
+                        platformStats[p.platform].collects += p.collects;
+                    });
+                });
+                
+                const platforms = Object.keys(platformStats);
+                if (platforms.length === 0) {
+                    container.innerHTML = '<div class="empty-state">暂无数据</div>';
+                    return;
+                }
+                
+                container.innerHTML = platforms.map(platform => {
+                    const stats = platformStats[platform];
+                    const rate = stats.views > 0 ? (stats.comments / stats.views * 100).toFixed(1) : 0;
+                    return `
+                        <div class="stat-card">
+                            <div class="stat-value">${stats.videos}</div>
+                            <div class="stat-label">${platform} 视频</div>
+                            <div style="font-size:11px;color:#86868b;margin-top:4px;">
+                                播放 ${formatNumber(stats.views)} | 评论率 ${rate}%
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            renderDirections();
+        }
+        
+        function formatNumber(num) {
+            if (num >= 10000) return (num / 10000).toFixed(1) + 'w';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num;
+        }
+        
+        // ========== 方向管理 ==========
+        function updateDirectionSelect() {
+            const selects = [document.getElementById('contentDirection')];
+            selects.forEach(select => {
+                if (!select) return;
+                select.innerHTML = directions.map(d => `<option value="${d}">${d}</option>`).join('');
+            });
+        }
+        
+        function renderDirections() {
+            const container = document.getElementById('directionList');
+            if (!container) return;
+            
+            container.innerHTML = directions.map(dir => {
+                const count = videos.filter(v => v.direction === dir).length;
+                return `
+                    <div class="direction-item">
+                        <span class="direction-name">${dir}</span>
+                        <span class="direction-count">${count} 个视频</span>
+                        <button class="action-btn" onclick="deleteDirection('${dir}')">删除</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function addDirection() {
+            const input = document.getElementById('newDirection');
+            const name = input.value.trim();
+            if (!name) return;
+            if (directions.includes(name)) {
+                alert('该方向已存在');
+                return;
+            }
+            directions.push(name);
+            saveData();
+            updateDirectionSelect();
+            renderDirections();
+            input.value = '';
+        }
+        
+        function deleteDirection(name) {
+            if (!confirm(`确定删除方向「${name}」？`)) return;
+            directions = directions.filter(d => d !== name);
+            saveData();
+            updateDirectionSelect();
+            renderDirections();
+        }
+        
+        // ========== 评论功能 ==========
+        function updateCommentVideoSelect() {
+            const select = document.getElementById('commentVideo');
+            if (!select) return;
+            select.innerHTML = '<option value="">选择视频</option>' + 
+                videos.map(v => `<option value="${v.title}">${v.title}</option>`).join('');
+        }
+        
+        function saveComment() {
+            const videoTitle = document.getElementById('commentVideo').value;
+            const content = document.getElementById('commentContent').value.trim();
+            const type = document.getElementById('commentType').value;
+            
+            if (!videoTitle || !content) {
+                alert('请选择视频并填写评论内容');
+                return;
+            }
+            
+            comments.push({
+                id: Date.now(),
+                videoTitle,
+                content,
+                type,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveData();
+            renderComments();
+            
+            document.getElementById('commentContent').value = '';
+            alert('评论已保存');
+        }
+        
+        function renderComments() {
+            const container = document.getElementById('commentList');
+            if (!container) return;
+            
+            if (comments.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无评论记录</div>';
+                return;
+            }
+            
+            container.innerHTML = comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-video">${c.videoTitle}</div>
+                    <div class="comment-content">${c.content}</div>
+                    <span class="comment-type">${c.type}</span>
+                    <button class="action-btn" onclick="deleteComment(${c.id})" style="float:right;">删除</button>
+                </div>
+            `).join('');
+        }
+        
+        function deleteComment(id) {
+            comments = comments.filter(c => c.id !== id);
+            saveData();
+            renderComments();
+        }
+        
+        // ========== 弹窗 ==========
+        function showDiagnosis(videoId) {
+            const video = videos.find(v => v.id === videoId);
+            if (!video) return;
+            
+            const diagnosis = diagnoseVideo(video);
+            const totalViews = video.platforms.reduce((sum, p) => sum + p.views, 0);
+            const totalComments = video.platforms.reduce((sum, p) => sum + p.comments, 0);
+            const totalCollects = video.platforms.reduce((sum, p) => sum + p.collects, 0);
+            
+            document.getElementById('diagnosisModalBody').innerHTML = `
+                <div class="modal-body">
+                    <h3 style="margin-bottom:8px;">${video.title}</h3>
+                    <div class="diagnosis-header" style="background:#f5f5f7;border-radius:8px;padding:12px;margin-bottom:16px;">
+                        <span class="health-badge ${diagnosis.level === '有效' ? 'health-good' : diagnosis.level.startsWith('L1') || diagnosis.level.startsWith('L2') ? 'health-error' : 'health-warning'}">${diagnosis.level}</span>
+                        <span class="diagnosis-level">${diagnosis.levelName}</span>
+                    </div>
+                    
+                    <div style="margin-bottom:16px;">
+                        <div class="diagnosis-row"><span class="diagnosis-label">问题：</span>${diagnosis.problem}</div>
+                        <div class="diagnosis-row"><span class="diagnosis-label">原因：</span>${diagnosis.reason}</div>
+                        <div class="diagnosis-row"><span class="diagnosis-label">建议：</span>${diagnosis.suggestion}</div>
+                    </div>
+                    
+                    <div class="diagnosis-divider"></div>
+                    
+                    <h4 style="margin:16px 0 8px;">数据汇总</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-value">${formatNumber(totalViews)}</div><div class="stat-label">总播放</div></div>
+                        <div class="stat-card"><div class="stat-value">${diagnosis.commentRate}%</div><div class="stat-label">评论率</div></div>
+                        <div class="stat-card"><div class="stat-value">${diagnosis.collectRate}%</div><div class="stat-label">收藏率</div></div>
+                    </div>
+                    
+                    <h4 style="margin:16px 0 8px;">信号分析</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-value">${diagnosis.resonance}</div><div class="stat-label">共鸣信号</div></div>
+                        <div class="stat-card"><div class="stat-value">${diagnosis.demand}</div><div class="stat-label">需求信号</div></div>
+                        <div class="stat-card"><div class="stat-value">${diagnosis.deviation}</div><div class="stat-label">偏差信号</div></div>
+                    </div>
+                    
+                    ${video.remark ? `<div style="margin-top:16px;padding:12px;background:#f5f5f7;border-radius:8px;font-size:13px;"><strong>备注：</strong>${video.remark}</div>` : ''}
+                </div>
+            `;
+            
+            document.getElementById('diagnosisModal').classList.add('show');
+        }
+        
+        function closeDiagnosisModal() {
+            document.getElementById('diagnosisModal').classList.remove('show');
+        }
+        
+        function openAddCommentModal(videoTitle) {
+            document.getElementById('addCommentVideoTitle').value = videoTitle;
+            document.getElementById('addCommentVideoDisplay').value = videoTitle;
+            document.getElementById('addCommentContent').value = '';
+            document.getElementById('addCommentModal').classList.add('show');
+        }
+        
+        function closeAddCommentModal() {
+            document.getElementById('addCommentModal').classList.remove('show');
+        }
+        
+        function submitAddComment() {
+            const videoTitle = document.getElementById('addCommentVideoTitle').value;
+            const content = document.getElementById('addCommentContent').value.trim();
+            const type = document.getElementById('addCommentType').value;
+            
+            if (!content) {
+                alert('请填写评论内容');
+                return;
+            }
+            
+            comments.push({
+                id: Date.now(),
+                videoTitle,
+                content,
+                type,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveData();
+            renderComments();
+            closeAddCommentModal();
+            alert('评论已添加');
+        }
+        
+        // ========== 数据导入导出 ==========
+        function exportData() {
+            const data = { videos, comments, directions };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `media-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importData() {
+            const input = document.getElementById('importData').value.trim();
+            if (!input) {
+                alert('请粘贴数据');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(input);
+                
+                // 兼容旧格式（records -> videos）
+                if (data.records && !data.videos) {
+                    // 旧数据转换为新格式
+                    data.videos = data.records.map(r => ({
+                        id: r.id,
+                        title: r.title,
+                        direction: r.direction,
+                        valid: r.valid,
+                        remark: r.remark || '',
+                        platforms: [{
+                            platform: r.platform,
+                            date: r.date,
+                            views: r.views,
+                            comments: r.comments,
+                            collects: r.collects
+                        }],
+                        createdAt: r.createdAt
+                    }));
+                }
+                
+                if (data.videos) videos = data.videos;
+                if (data.comments) comments = data.comments;
+                if (data.directions) directions = data.directions;
+                
+                saveData();
+                renderHistory();
+                renderComments();
+                renderDirections();
+                renderStats();
+                updateCommentVideoSelect();
+                
+                alert('数据导入成功');
+                document.getElementById('importData').value = '';
+            } catch (e) {
+                alert('数据格式错误：' + e.message);
+            }
+        }
+        
+        function copyReport() {
+            let report = '📊 自媒体数据报告\n\n';
+            
+            videos.slice(0, 10).forEach(v => {
+                const totalViews = v.platforms.reduce((sum, p) => sum + p.views, 0);
+                const totalComments = v.platforms.reduce((sum, p) => sum + p.comments, 0);
+                const rate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+                const platforms = v.platforms.map(p => p.platform).join('/');
+                const diagnosis = diagnoseVideo(v);
+                
+                report += `【${v.title}】\n`;
+                report += `平台：${platforms}\n`;
+                report += `播放：${totalViews} | 评论率：${rate}%\n`;
+                report += `诊断：${diagnosis.levelName} - ${diagnosis.problem}\n`;
+                if (v.remark) report += `备注：${v.remark}\n`;
+                report += '\n';
+            });
+            
+            navigator.clipboard.writeText(report).then(() => alert('报告已复制'));
+        }
+        
+        function exportMarkdown() {
+            let md = '# 自媒体数据报告\n\n';
+            md += '| 视频标题 | 平台 | 播放 | 评论率 | 诊断 | 备注 |\n';
+            md += '|---------|------|------|-------|------|------|\n';
+            
+            videos.forEach(v => {
+                const totalViews = v.platforms.reduce((sum, p) => sum + p.views, 0);
+                const totalComments = v.platforms.reduce((sum, p) => sum + p.comments, 0);
+                const rate = totalViews > 0 ? (totalComments / totalViews * 100).toFixed(2) : 0;
+                const platforms = v.platforms.map(p => p.platform).join('/');
+                const diagnosis = diagnoseVideo(v);
+                
+                md += `| ${v.title} | ${platforms} | ${totalViews} | ${rate}% | ${diagnosis.levelName} | ${v.remark || '-'} |\n`;
+            });
+            
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `media-report-${new Date().toISOString().split('T')[0]}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // ========== 工具函数 ==========
+        function clearForm() {
+            document.getElementById('videoTitle').value = '';
+            document.getElementById('videoRemark').value = '';
+            document.getElementById('isValid').value = '待判断';
+            
+            // 重置平台输入
+            document.getElementById('platformEntries').innerHTML = '';
+            platformEntryCount = 0;
+            addPlatformEntry();
+            
+            document.getElementById('quickDiagnosis').classList.remove('show');
+        }
+        
+        function deleteVideo(id) {
+            if (!confirm('确定删除这条记录？')) return;
+            videos = videos.filter(v => v.id !== id);
+            saveData();
+            renderHistory();
+            renderDirections();
+            renderStats();
+            updateCommentVideoSelect();
+        }
+        
+        function refreshAll() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('refreshing');
+            
+            setTimeout(() => {
+                loadData();
+                renderHistory();
+                renderComments();
+                renderDirections();
+                renderStats();
+                updateCommentVideoSelect();
+                btn.classList.remove('refreshing');
+            }, 500);
+        }
+        
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
