@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投资评分系统 V1</title>
+    <title>投资判断系统</title>
     <style>
         * {
             margin: 0;
@@ -30,10 +30,24 @@
             margin-bottom: 8px;
         }
 
+        .slogan {
+            color: #0071e3;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
         .subtitle {
             color: #666;
-            margin-bottom: 32px;
+            margin-bottom: 8px;
             font-size: 14px;
+        }
+
+        .philosophy {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 32px;
         }
 
         /* 输入区 */
@@ -88,6 +102,25 @@
             background: #e8e8e8;
         }
 
+        .btn-copy {
+            background: #34c759;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #2db84e;
+            background: #e8e8e8;
+        }
+
+        .btn-copy {
+            background: #34c759;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #2db84e;
+        }
+
         /* 模块卡片 */
         .module-card {
             background: white;
@@ -129,12 +162,12 @@
         }
 
         .module-content.open {
-            max-height: 1000px;
+            max-height: 2000px;
             padding: 20px;
         }
 
         .question-item {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .question-item:last-child {
@@ -190,11 +223,29 @@
         }
 
         .slider-value {
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 4px;
+            padding: 0 46px;
             min-width: 36px;
             text-align: center;
             font-weight: 600;
             font-size: 14px;
             color: #0071e3;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 4px;
+            padding: 0 46px;
         }
 
         /* 输出区 */
@@ -274,6 +325,11 @@
             font-size: 15px;
             max-width: 500px;
             margin: 0 auto;
+        }
+
+        .copy-section {
+            margin-bottom: 24px;
+            text-align: center;
         }
 
         .report-modules {
@@ -397,6 +453,26 @@
             color: #1a1a1a;
         }
 
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
         /* 响应式 */
         @media (max-width: 600px) {
             .report-modules {
@@ -435,7 +511,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>投资评分系统</h1>
+        <div class="slogan">让每一次投资，都有原则可依</div>
+        <h1>投资判断系统</h1>
+        <p class="philosophy">先避免犯错，再谈收益</p>
         <p class="subtitle">基于巴菲特、芒格、段永平投资原则构建的决策辅助工具</p>
 
         <!-- 输入区 -->
@@ -458,6 +536,11 @@
                 <div class="module-content open">
                     <!-- F1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">
                             F1：是否理解该公司商业模式？
                             <span class="kill-badge">否决项</span>
@@ -467,9 +550,19 @@
                             <input type="range" min="0" max="10" value="5" id="qF1" oninput="updateValue(this)">
                             <span class="slider-value" id="vF1">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=完全不懂</span>
+                            <span>5=有一定了解</span>
+                            <span>10=非常清晰</span>
+                        </div>
                     </div>
                     <!-- F2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">
                             F2：是否在能力圈内？
                             <span class="kill-badge">否决项</span>
@@ -478,6 +571,11 @@
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="qF2" oninput="updateValue(this)">
                             <span class="slider-value" id="vF2">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=完全陌生</span>
+                            <span>5=有基础认知</span>
+                            <span>10=深度研究过</span>
                         </div>
                     </div>
                 </div>
@@ -495,65 +593,135 @@
                 <div class="module-content open">
                     <!-- 1.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">1.1 业务复杂度如何？</div>
                         <div class="question-hint">公司业务是否足够简单透明？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q11" oninput="updateValue(this)">
                             <span class="slider-value" id="v11">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=极复杂难懂</span>
+                            <span>5=中等复杂度</span>
+                            <span>10=非常简单清晰</span>
+                        </div>
                     </div>
                     <!-- 1.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">1.2 收入来源是否清晰？</div>
                         <div class="question-hint">能否明确说出主要收入来源及其占比？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q12" oninput="updateValue(this)">
                             <span class="slider-value" id="v12">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=完全不清楚</span>
+                            <span>5=大致知道</span>
+                            <span>10=非常清晰明确</span>
+                        </div>
                     </div>
                     <!-- 2.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">2.1 产品/服务变化频率？</div>
                         <div class="question-hint">公司核心产品是否需要持续创新才能生存？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q21" oninput="updateValue(this)">
                             <span class="slider-value" id="v21">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=需持续颠覆式创新</span>
+                            <span>5=适度迭代</span>
+                            <span>10=长期稳定不变</span>
+                        </div>
                     </div>
                     <!-- 2.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">2.2 商业模式被颠覆风险？</div>
                         <div class="question-hint">未来5-10年，该商业模式是否可能被技术或模式创新颠覆？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q22" oninput="updateValue(this)">
                             <span class="slider-value" id="v22">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=极大可能被颠覆</span>
+                            <span>5=有一定风险</span>
+                            <span>10=几乎不可能被颠覆</span>
+                        </div>
                     </div>
                     <!-- 3.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">3.1 自由现金流状况？</div>
                         <div class="question-hint">过去5年自由现金流是否持续为正？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q31" oninput="updateValue(this)">
                             <span class="slider-value" id="v31">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=经常为负</span>
+                            <span>5=时正时负</span>
+                            <span>10=持续为正且增长</span>
+                        </div>
                     </div>
                     <!-- 3.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">3.2 现金流与利润匹配度？</div>
                         <div class="question-hint">经营现金流净额与净利润的比值是否接近或大于1？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q32" oninput="updateValue(this)">
                             <span class="slider-value" id="v32">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=严重不匹配</span>
+                            <span>5=基本匹配</span>
+                            <span>10=现金流远超利润</span>
+                        </div>
                     </div>
                     <!-- 3.3 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">3.3 ROE水平及稳定性？</div>
                         <div class="question-hint">过去5年平均ROE是否>15%且波动小？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q33" oninput="updateValue(this)">
                             <span class="slider-value" id="v33">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=<10%或波动大</span>
+                            <span>5=10-15%</span>
+                            <span>10=>15%且稳定</span>
                         </div>
                     </div>
                 </div>
@@ -571,47 +739,97 @@
                 <div class="module-content">
                     <!-- 4.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">4.1 护城河类型是否明确？</div>
                         <div class="question-hint">公司是否有品牌、专利、网络效应、成本优势、转换成本等壁垒？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q41" oninput="updateValue(this)">
                             <span class="slider-value" id="v41">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=无明显护城河</span>
+                            <span>5=有1-2种壁垒</span>
+                            <span>10=多重深厚壁垒</span>
+                        </div>
                     </div>
                     <!-- 4.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">4.2 护城河变化趋势？</div>
                         <div class="question-hint">过去3-5年护城河是在变宽、稳定还是被侵蚀？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q42" oninput="updateValue(this)">
                             <span class="slider-value" id="v42">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=明显被侵蚀</span>
+                            <span>5=基本稳定</span>
+                            <span>10=持续变宽</span>
+                        </div>
                     </div>
                     <!-- 4.3 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">4.3 竞争对手能否轻易复制？</div>
                         <div class="question-hint">如果现在有巨头携巨资进入，能否撼动其地位？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q43" oninput="updateValue(this)">
                             <span class="slider-value" id="v43">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=容易被复制颠覆</span>
+                            <span>5=有一定难度</span>
+                            <span>10=几乎无法复制</span>
+                        </div>
                     </div>
                     <!-- 5.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">5.1 是否有定价权？</div>
                         <div class="question-hint">公司能否提价而不明显影响销量？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q51" oninput="updateValue(this)">
                             <span class="slider-value" id="v51">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=提价就流失客户</span>
+                            <span>5=小幅提价可接受</span>
+                            <span>10=可自由提价</span>
+                        </div>
                     </div>
                     <!-- 5.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">5.2 品牌认知度？</div>
                         <div class="question-hint">在目标品类中，品牌是否是消费者首选？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q52" oninput="updateValue(this)">
                             <span class="slider-value" id="v52">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=品牌默默无闻</span>
+                            <span>5=有一定知名度</span>
+                            <span>10=品牌=品类代名词</span>
                         </div>
                     </div>
                 </div>
@@ -629,29 +847,59 @@
                 <div class="module-content">
                     <!-- 6.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">6.1 行业竞争激烈程度？</div>
                         <div class="question-hint">行业是否内卷严重、价格战频发？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q61" oninput="updateValue(this)">
                             <span class="slider-value" id="v61">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=极度内卷价格战</span>
+                            <span>5=适度竞争</span>
+                            <span>10=竞争格局稳定</span>
+                        </div>
                     </div>
                     <!-- 6.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">6.2 行业长期存在性？</div>
                         <div class="question-hint">该行业未来10-20年是否大概率继续存在？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q62" oninput="updateValue(this)">
                             <span class="slider-value" id="v62">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=可能消失</span>
+                            <span>5=大概率存在</span>
+                            <span>10=必然长期存在</span>
+                        </div>
                     </div>
                     <!-- 6.3 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">6.3 行业增长空间？</div>
                         <div class="question-hint">行业整体是否还在增长？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q63" oninput="updateValue(this)">
                             <span class="slider-value" id="v63">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=负增长/萎缩</span>
+                            <span>5=低速增长</span>
+                            <span>10=快速增长</span>
                         </div>
                     </div>
                 </div>
@@ -669,15 +917,30 @@
                 <div class="module-content">
                     <!-- 7.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">7.1 管理层是否兑现承诺？</div>
                         <div class="question-hint">过去3年管理层公开承诺的目标达成情况如何？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q71" oninput="updateValue(this)">
                             <span class="slider-value" id="v71">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=经常食言</span>
+                            <span>5=部分达成</span>
+                            <span>10=言出必行</span>
+                        </div>
                     </div>
                     <!-- 7.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">
                             7.2 是否有侵害股东利益的历史？
                             <span class="kill-badge">否决项</span>
@@ -687,41 +950,86 @@
                             <input type="range" min="0" max="10" value="5" id="q72" oninput="updateValue(this)">
                             <span class="slider-value" id="v72">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=有明显侵害行为</span>
+                            <span>5=有存疑但无实锤</span>
+                            <span>10=清白无瑕疵</span>
+                        </div>
                     </div>
                     <!-- 8.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">8.1 过往业绩表现？</div>
                         <div class="question-hint">管理层任职期间，公司业绩（收入、利润、市值）增长如何？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q81" oninput="updateValue(this)">
                             <span class="slider-value" id="v81">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=业绩下滑</span>
+                            <span>5=平稳增长</span>
+                            <span>10=卓越增长</span>
+                        </div>
                     </div>
                     <!-- 8.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">8.2 战略清晰度？</div>
                         <div class="question-hint">管理层是否有清晰的长期战略并能有效执行？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q82" oninput="updateValue(this)">
                             <span class="slider-value" id="v82">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=战略混乱</span>
+                            <span>5=有战略但执行一般</span>
+                            <span>10=战略清晰执行到位</span>
+                        </div>
                     </div>
                     <!-- 9.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">9.1 回购/分红决策是否合理？</div>
                         <div class="question-hint">公司在股价低估时是否回购？分红是否持续稳定？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q91" oninput="updateValue(this)">
                             <span class="slider-value" id="v91">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=高估时回购/不分红</span>
+                            <span>5=偶尔回购分红</span>
+                            <span>10=精准回购稳定分红</span>
+                        </div>
                     </div>
                     <!-- 9.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">9.2 再投资回报率？</div>
                         <div class="question-hint">公司留存利润的再投资回报率是否高于股东自行投资的回报？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q92" oninput="updateValue(this)">
                             <span class="slider-value" id="v92">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=远低于股东回报</span>
+                            <span>5=接近股东回报</span>
+                            <span>10=远高于股东回报</span>
                         </div>
                     </div>
                 </div>
@@ -739,15 +1047,30 @@
                 <div class="module-content">
                     <!-- 10.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">10.1 资产负债率水平？</div>
                         <div class="question-hint">公司资产负债率是否在合理区间？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q101" oninput="updateValue(this)">
                             <span class="slider-value" id="v101">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=负债率>70%</span>
+                            <span>5=50%左右</span>
+                            <span>10=<30%非常健康</span>
+                        </div>
                     </div>
                     <!-- 10.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">
                             10.2 是否有财务风险隐患？
                             <span class="kill-badge">否决项</span>
@@ -757,23 +1080,48 @@
                             <input type="range" min="0" max="10" value="5" id="q102" oninput="updateValue(this)">
                             <span class="slider-value" id="v102">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=有重大风险</span>
+                            <span>5=有小风险可控</span>
+                            <span>10=无风险隐患</span>
+                        </div>
                     </div>
                     <!-- 11.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">11.1 利润率趋势？</div>
                         <div class="question-hint">毛利率、净利率过去5年趋势如何？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q111" oninput="updateValue(this)">
                             <span class="slider-value" id="v111">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=持续下滑</span>
+                            <span>5=基本稳定</span>
+                            <span>10=持续提升</span>
+                        </div>
                     </div>
                     <!-- 11.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">11.2 盈利来源稳定性？</div>
                         <div class="question-hint">盈利是否依赖一次性收益、政府补贴、投资收益等非经常性项目？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q112" oninput="updateValue(this)">
                             <span class="slider-value" id="v112">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=严重依赖非经常性</span>
+                            <span>5=有小部分依赖</span>
+                            <span>10=纯主业盈利</span>
                         </div>
                     </div>
                 </div>
@@ -791,24 +1139,49 @@
                 <div class="module-content">
                     <!-- 12.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">12.1 当前估值是否合理？</div>
                         <div class="question-hint">PE、PB、PEG等指标是否在合理区间？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q121" oninput="updateValue(this)">
                             <span class="slider-value" id="v121">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=明显高估</span>
+                            <span>5=估值合理</span>
+                            <span>10=明显低估</span>
+                        </div>
                     </div>
                     <!-- 12.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">12.2 安全边际是否充足？</div>
                         <div class="question-hint">当前价格与内在价值相比是否有足够折扣？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q122" oninput="updateValue(this)">
                             <span class="slider-value" id="v122">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=无折扣溢价买入</span>
+                            <span>5=有一定折扣</span>
+                            <span>10=大幅折扣</span>
+                        </div>
                     </div>
                     <!-- 13.1 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">
                             13.1 是否存在财务造假迹象？
                             <span class="kill-badge">否决项</span>
@@ -818,14 +1191,29 @@
                             <input type="range" min="0" max="10" value="5" id="q131" oninput="updateValue(this)">
                             <span class="slider-value" id="v131">5</span>
                         </div>
+                        <div class="slider-labels">
+                            <span>0=有多项造假信号</span>
+                            <span>5=有轻微疑点</span>
+                            <span>10=无任何信号</span>
+                        </div>
                     </div>
                     <!-- 13.2 -->
                     <div class="question-item">
+                        <div class="slider-labels">
+                            <span>0=最低程度</span>
+                            <span>5=中等程度</span>
+                            <span>10=最高程度</span>
+                        </div>
                         <div class="question-label">13.2 是否存在致命风险？</div>
                         <div class="question-hint">是否存在监管风险、诉讼风险、大客户依赖、单一产品依赖等致命问题？</div>
                         <div class="slider-container">
                             <input type="range" min="0" max="10" value="5" id="q132" oninput="updateValue(this)">
                             <span class="slider-value" id="v132">5</span>
+                        </div>
+                        <div class="slider-labels">
+                            <span>0=有致命风险</span>
+                            <span>5=有可控风险</span>
+                            <span>10=无重大风险</span>
                         </div>
                     </div>
                 </div>
@@ -835,6 +1223,13 @@
         <!-- 输出区 -->
         <div class="output-section" id="outputSection">
             <div class="report-card">
+                <div class="copy-section">
+                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
+                </div>
+                <div class="copy-section">
+                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
+                </div>
+                
                 <div class="report-header">
                     <div class="company-name" id="outCompany">Apple</div>
                     <div class="score-display" id="outScore">--</div>
@@ -873,7 +1268,13 @@
         </div>
     </div>
 
+    <!-- Toast提示 -->
+    <div class="toast" id="toast">已复制到剪贴板</div>
+
     <script>
+        // 全局变量存储报告数据
+        let reportData = {};
+
         // 更新滑块显示值
         function updateValue(slider) {
             const valueSpan = document.getElementById(slider.id.replace('q', 'v'));
@@ -907,6 +1308,104 @@
         function calcModuleAvg(ids) {
             const sum = ids.reduce((acc, id) => acc + getScore(id), 0);
             return sum / ids.length;
+        }
+
+        // 显示Toast
+        // 一键复制报告
+        function copyReport() {
+            const text = generateReportText();
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("已复制到剪贴板");
+            }).catch(err => {
+                showToast("复制失败，请手动复制");
+            });
+        }
+
+        // 生成报告文本
+        function generateReportText() {
+            const company = document.getElementById("outCompany").textContent;
+            const score = document.getElementById("outScore").textContent;
+            const conclusion = document.getElementById("outConclusion").textContent;
+            const oneLiner = document.getElementById("outOneLiner").textContent;
+            const final = document.getElementById("outFinal").textContent;
+            
+            let text = "";
+            text += "━━━━━━━━━━━━━━━━━━━━\n";
+            text += "【投资判断系统】\n";
+            text += "让每一次投资，都有原则可依\n";
+            text += "━━━━━━━━━━━━━━━━━━━━\n\n";
+            text += "企业：" + company + "\n";
+            text += "评分：" + score + " / 100\n";
+            text += "结论：" + conclusion + "\n\n";
+            text += "一句话判断：\n" + oneLiner + "\n\n";
+            text += "最终建议：\n" + final + "\n";
+            return text;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 一键复制报告
+        function copyReport() {
+            if (!reportData.companyName) {
+                showToast('请先进行评估');
+                return;
+            }
+
+            const text = generateReportText();
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制到剪贴板');
+            }).catch(err => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('已复制到剪贴板');
+            });
+        }
+
+        // 生成报告文本
+        function generateReportText() {
+            let text = '';
+            text += '━━━━━━━━━━━━━━━━━━━━\n';
+            text += '【投资判断系统】\n';
+            text += '让每一次投资，都有原则可依\n';
+            text += '基于巴菲特、芒格、段永平投资原则构建\n';
+            text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+            
+            text += '企业：' + reportData.companyName + '\n';
+            text += '评分：' + reportData.score + ' / 100\n';
+            text += '结论：' + reportData.conclusion + '\n\n';
+            
+            text += '一句话判断：\n' + reportData.oneLiner + '\n\n';
+            
+            text += '━━━ 模块评分 ━━━\n';
+            for (const key in reportData.modules) {
+                text += reportData.modules[key].name + '：' + Math.round(reportData.modules[key].score) + '分\n';
+            }
+            
+            text += '\n━━━ 优势 ━━━\n';
+            reportData.pros.forEach(p => text += '+ ' + p + '\n');
+            
+            text += '\n━━━ 风险 ━━━\n';
+            reportData.cons.forEach(c => text += '- ' + c + '\n');
+            
+            text += '\n━━━ 否决机制 ━━━\n';
+            text += reportData.killSwitchStatus + '\n';
+            
+            text += '\n━━━ 最终建议 ━━━\n';
+            text += reportData.finalRecommendation + '\n';
+            
+            text += '\n━━━━━━━━━━━━━━━━━━━━\n';
+            
+            return text;
         }
 
         // 主计算函数
@@ -1036,6 +1535,20 @@
                 document.getElementById('outCons').innerHTML = '<li>' + killReason + '</li>';
                 document.getElementById('outKillSwitch').innerHTML = '<span style="color: #dc3545; font-weight: 600;">已触发：' + killReason + '</span>';
                 document.getElementById('outFinal').textContent = '该公司触发了否决机制，不建议投资。';
+
+                // 存储报告数据
+                reportData = {
+                    companyName: company,
+                    score: '--',
+                    conclusion: '不建议投资（触发否决）',
+                    oneLiner: '',
+                    modules: {},
+                    pros: ['-'],
+                    cons: [killReason],
+                    killSwitchStatus: '已触发：' + killReason,
+                    finalRecommendation: '该公司触发了否决机制，不建议投资。'
+                };
+
                 window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
                 return;
             }
@@ -1100,6 +1613,19 @@
                 finalRecommendation = '不建议投资。这家公司存在较多问题，风险大于机会。';
             }
             document.getElementById('outFinal').textContent = finalRecommendation;
+
+            // 存储报告数据
+            reportData = {
+                companyName: company,
+                score: score,
+                conclusion: conclusion,
+                oneLiner: oneLiner,
+                modules: modules,
+                pros: prosCons.pros,
+                cons: prosCons.cons,
+                killSwitchStatus: '未触发',
+                finalRecommendation: finalRecommendation
+            };
 
             // 滚动到结果
             window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
