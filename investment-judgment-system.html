@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Judgment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slogan {
+            color: #0071e3;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .philosophy {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 32px;
+        }
+
+        .input-section {
+            margin-bottom: 40px;
+        }
+
+        .company-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .company-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .company-input input:focus {
+            border-color: #0071e3;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0071e3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0077ed;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e5e5;
+        }
+
+        .btn-danger {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff453a;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-bottom: 40px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .progress-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0071e3;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34c759, #0071e3);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-stages {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #888;
+        }
+
+        /* Modules */
+        .module {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f8f8f8;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .module-header:hover {
+            background: #f0f0f0;
+        }
+
+        .module-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .module-title h2 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .module-weight {
+            font-size: 12px;
+            color: #666;
+            background: #e8e8e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .module-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .module-score {
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .module-pass {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pass-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pass-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .module-toggle {
+            font-size: 20px;
+            color: #888;
+            transition: transform 0.3s;
+        }
+
+        .module-header.collapsed .module-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .module-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .module-content.open {
+            display: block;
+        }
+
+        /* Questions */
+        .question-item {
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .question-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kill-badge {
+            font-size: 10px;
+            background: #ff3b30;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .question-hint {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-container input[type="range"] {
+            order: 2;
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #0071e3;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,113,227,0.3);
+        }
+
+        .slider-value {
+            order: 1;
+            font-size: 12px;
+            font-weight: 500;
+            color: #0071e3;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        /* Footer Actions */
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        /* Report Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #888;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+
+        .close-btn:hover {
+            color: #1a1a1a;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Report Styles */
+        .report-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .report-company {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .report-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .report-total-score {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #0071e3, #5856d6);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .report-total-score .score {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .report-total-score .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .report-verdict {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .verdict-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .verdict-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .report-section {
+            margin-bottom: 24px;
+        }
+
+        .report-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0071e3;
+            color: #0071e3;
+        }
+
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .report-item .label {
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .report-item .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0071e3;
+        }
+
+        .report-item .desc {
+            font-size: 12px;
+            color: #888;
+            max-width: 60%;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                max-width: 100%;
+            }
+            .input-section, .progress-section, .actions, .btn {
+                display: none !important;
+            }
+            .module {
+                break-inside: avoid;
+            }
+            .modal-overlay {
+                position: static;
+                background: white;
+            }
+            .modal {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="slogan">Invest Smarter, Not Harder</p>
+        <h1>Investment Judgment System</h1>
+        <p class="subtitle">A framework for rational investment decisions • Avoid mistakes first, then seek returns</p>
+        <p class="philosophy">"The first rule of investing: don't lose money. The second rule: never forget the first." — Warren Buffett</p>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="company-input">
+                <input type="text" id="companyName" placeholder="Enter company name...">
+                <button class="btn btn-primary" onclick="resetAll()">Start Analysis</button>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Overall Score</span>
+                <span class="progress-score" id="totalScore">0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-stages">
+                <span>Avoid</span>
+                <span>Risky</span>
+                <span>Cautious</span>
+                <span>Good</span>
+                <span>Excellent</span>
+            </div>
+        </div>
+
+        <!-- Module 0: Circle of Competence -->
+        <div class="module" id="mod0">
+            <div class="module-header collapsed" onclick="toggleModule('mod0')">
+                <div class="module-title">
+                    <h2>0. Circle of Competence Pre-check</h2>
+                    <span class="module-weight">Gatekeeper Module</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score0">-</span>
+                    <span class="module-pass pass-no" id="pass0">FAIL</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        Q1: Do you understand this business model?
+                    </div>
+                    <div class="question-hint">Can you explain how this company makes money in one sentence?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v01">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q01" oninput="updateCircleCompetence()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        Q2: Are you familiar with this industry?
+                    </div>
+                    <div class="question-hint">Do you understand the industry's competitive landscape and key drivers?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v02">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q02" oninput="updateCircleCompetence()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 1: Business Model -->
+        <div class="module" id="mod1">
+            <div class="module-header collapsed" onclick="toggleModule('mod1')">
+                <div class="module-title">
+                    <h2>1. Business Model Assessment</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score1">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        F1: Is the business model simple and clear?
+                    </div>
+                    <div class="question-hint">Can you understand how they make money?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v11">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q11" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        F2: Profit model transparency
+                    </div>
+                    <div class="question-hint">Is it clear where every dollar comes from?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v12">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q12" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 2: Competitive Advantage -->
+        <div class="module" id="mod2">
+            <div class="module-header collapsed" onclick="toggleModule('mod2')">
+                <div class="module-title">
+                    <h2>2. Competitive Advantage</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score2">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        H1: Economic moat strength
+                    </div>
+                    <div class="question-hint">Does the company have durable competitive advantages?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v21">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q21" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        H2: Moat sustainability trend
+                    </div>
+                    <div class="question-hint">Is the competitive advantage strengthening or weakening?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v22">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q22" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 3: Profit Quality -->
+        <div class="module" id="mod3">
+            <div class="module-header collapsed" onclick="toggleModule('mod3')">
+                <div class="module-title">
+                    <h2>3. Profit Quality</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score3">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        Y1: Cash flow quality
+                    </div>
+                    <div class="question-hint">Are profits backed by actual cash flow?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v31">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q31" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        Y2: Earnings sustainability
+                    </div>
+                    <div class="question-hint">Are the earnings repeatable and sustainable?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v32">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q32" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: Industry Quality -->
+        <div class="module" id="mod4">
+            <div class="module-header collapsed" onclick="toggleModule('mod4')">
+                <div class="module-title">
+                    <h2>4. Industry Quality</h2>
+                    <span class="module-weight">Weight: 10%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score4">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        I1: Industry health
+                    </div>
+                    <div class="question-hint">Is this a good industry to be in?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v41">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q41" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        I2: Industry stability
+                    </div>
+                    <div class="question-hint">How stable and predictable is the industry?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v42">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q42" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 5: Management & Governance -->
+        <div class="module" id="mod5">
+            <div class="module-header collapsed" onclick="toggleModule('mod5')">
+                <div class="module-title">
+                    <h2>5. Management & Governance</h2>
+                    <span class="module-weight">Weight: 10%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score5">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        M1: Management integrity
+                    </div>
+                    <div class="question-hint">Are the executives trustworthy and ethical?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v51">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q51" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        M2: Corporate governance
+                    </div>
+                    <div class="question-hint">Is the company transparent and well-governed?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v52">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q52" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 6: Valuation & Safety -->
+        <div class="module" id="mod6">
+            <div class="module-header collapsed" onclick="toggleModule('mod6')">
+                <div class="module-title">
+                    <h2>6. Valuation & Safety Margin</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score6">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        G1: Valuation reasonableness
+                    </div>
+                    <div class="question-hint">Is the stock reasonably or attractively priced?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v61">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q61" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        G2: Safety margin
+                    </div>
+                    <div class="question-hint">Is there enough margin for error in your analysis?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v62">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q62" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 7: Deal Breakers -->
+        <div class="module" id="mod7">
+            <div class="module-header collapsed" onclick="toggleModule('mod7')">
+                <div class="module-title">
+                    <h2>7. Deal Breakers</h2>
+                    <span class="module-weight">Must Pass to Continue</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score7">-</span>
+                    <span class="module-pass pass-no" id="pass7">FAIL</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        D1: Debt level
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Is the debt-to-asset ratio at a safe level?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v71">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q71" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D2: Hidden risks
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any off-balance sheet liabilities or hidden risks?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v72">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q72" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D3: Financial fraud risk
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any red flags or suspicious accounting?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v81">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q81" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D4: Fatal risks
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any risks that could bankrupt the company?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v82">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q82" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+            <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Investment Analysis Report</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="reportContent">
+                <!-- Report content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Score labels - text descriptions for each value 0-10
+        const scoreLabels = {
+            // 0. Circle of Competence
+            v01: {
+                0: "Completely clueless, can't explain how they make money",
+                1: "Only know the name, nothing else",
+                2: "Know the industry but not the company",
+                3: "Heard basic info about the company",
+                4: "Slightly understand core business",
+                5: "Moderate understanding, can describe main business",
+                6: "Clear, understand business model and competitive advantages",
+                7: "Very clear, understand financials and industry position",
+                8: "Very familiar, have tracked for some time",
+                9: "Extremely clear, have researched for years",
+                10: "Expert level, could write an analytical report"
+            },
+            v02: {
+                0: "Completely unfamiliar, never encountered this industry",
+                1: "Very unfamiliar, only heard some concepts",
+                2: "Unfamiliar, understand basic concepts",
+                3: "Know a little, some peripheral understanding",
+                4: "Basic understanding, know how the industry works",
+                5: "Moderate, have followed this industry",
+                6: "Decent, understand competitive landscape",
+                7: "Familiar, track industry dynamics",
+                8: "Very familiar, understand core industry logic",
+                9: "Extremely familiar, have done deep research",
+                10: "Deep research, could write industry analysis"
+            },
+            // Module 1: Business Model
+            v11: {
+                0: "Extremely complex, impossible to understand how they make money",
+                1: "Very complex, most is incomprehensible",
+                2: "Complex, can only understand a small part",
+                3: "Fairly complex, many parts are unclear",
+                4: "Slightly complex, can roughly understand",
+                5: "Moderate, can basically explain",
+                6: "Fairly simple, can clearly describe",
+                7: "Simple, clear at a glance",
+                8: "Very simple, can explain in one sentence",
+                9: "Extremely simple, anyone can understand",
+                10: "Dead simple, a fool could understand"
+            },
+            v12: {
+                0: "Extremely opaque, black box operations",
+                1: "Very non-transparent",
+                2: "Quite opaque, most parts unclear",
+                3: "Not very transparent",
+                4: "Slightly complex",
+                5: "Moderate, can understand main logic",
+                6: "Fairly transparent",
+                7: "Transparent, clear logic",
+                8: "Very transparent, clear at a glance",
+                9: "Extremely transparent",
+                10: "Perfectly clear, every dollar is traceable"
+            },
+            // Module 2: Competitive Advantage
+            v21: {
+                0: "None at all, could be disrupted anytime",
+                1: "Almost none",
+                2: "Very weak",
+                3: "Weak",
+                4: "Slight moat",
+                5: "Moderate, some advantages",
+                6: "Decent, have some moat",
+                7: "Strong moat",
+                8: "Strong moat",
+                9: "Very strong moat",
+                10: "Powerful and solid, hard to shake"
+            },
+            v22: {
+                0: "Rapidly deteriorating, advantages disappearing fast",
+                1: "Fast deterioration",
+                2: "Clearly weakening",
+                3: "Gradually weakening",
+                4: "Slightly weakening",
+                5: "Stable, maintaining status quo",
+                6: "Slightly strengthening",
+                7: "Gradually strengthening",
+                8: "Clearly strengthening",
+                9: "Rapidly strengthening",
+                10: "Continuously strengthening, growing advantage"
+            },
+            // Module 3: Profit Quality
+            v31: {
+                0: "Extremely poor, long-term negative cash flow",
+                1: "Very poor",
+                2: "Poor",
+                3: "Below average",
+                4: "Weak",
+                5: "Moderate",
+                6: "Decent",
+                7: "Good",
+                8: "Very good",
+                9: "Excellent",
+                10: "Outstanding, abundant and stable cash flow"
+            },
+            v32: {
+                0: "Completely unsustainable, relies on one-time gains",
+                1: "Very hard to sustain",
+                2: "Hard to sustain",
+                3: "Uncertain sustainability",
+                4: "Slightly uncertain",
+                5: "Moderate, basically sustainable",
+                6: "Fairly sustainable",
+                7: "Easily sustainable",
+                8: "Very easily sustainable",
+                9: "Highly sustainable",
+                10: "Strong and stable, almost certainly sustainable"
+            },
+            // Module 4: Industry Quality
+            v41: {
+                0: "No health at all, cutthroat competition",
+                1: "Extremely unhealthy",
+                2: "Very unhealthy",
+                3: "Unhealthy",
+                4: "Slightly problematic",
+                5: "Moderate",
+                6: "Relatively healthy",
+                7: "Healthy",
+                8: "Very healthy",
+                9: "Extremely healthy",
+                10: "Perfectly healthy, positive competition"
+            },
+            v42: {
+                0: "Extremely unstable, dramatic changes",
+                1: "Very unstable",
+                2: "Quite unstable",
+                3: "Unstable",
+                4: "Slightly unstable",
+                5: "Moderate",
+                6: "Relatively stable",
+                7: "Stable",
+                8: "Very stable",
+                9: "Extremely stable",
+                10: "Perfectly stable, slow changing"
+            },
+            // Module 5: Management & Governance
+            v51: {
+                0: "Extremely unethical, serious misconduct records",
+                1: "Very suspicious",
+                2: "Quite suspicious",
+                3: "Controversial",
+                4: "Average reputation",
+                5: "Neutral",
+                6: "Decent",
+                7: "Good",
+                8: "Very good",
+                9: "Excellent",
+                10: "Highly ethical, trustworthy"
+            },
+            v52: {
+                0: "Extremely opaque, black box operations",
+                1: "Very non-transparent",
+                2: "Quite opaque",
+                3: "Not transparent",
+                4: "Slightly opaque",
+                5: "Neutral",
+                6: "Relatively transparent",
+                7: "Transparent",
+                8: "Very transparent",
+                9: "Extremely transparent",
+                10: "Highly transparent, excellent governance"
+            },
+            // Module 6: Valuation & Safety
+            v61: {
+                0: "Extremely overvalued, severe bubble",
+                1: "Very overvalued",
+                2: "Quite overvalued",
+                3: "Overvalued",
+                4: "Slightly overvalued",
+                5: "Fair valuation",
+                6: "Slightly undervalued",
+                7: "Undervalued",
+                8: "Quite undervalued",
+                9: "Very undervalued",
+                10: "Extremely undervalued, dirt cheap"
+            },
+            v62: {
+                0: "None at all, buy and lose immediately",
+                1: "Almost none",
+                2: "Very small",
+                3: "Small",
+                4: "Slightly small",
+                5: "Moderate",
+                6: "Decent",
+                7: "Adequate",
+                8: "Good",
+                9: "Very good",
+                10: "Huge safety margin"
+            },
+            // Deal Breakers
+            v71: {
+                0: "Debt-to-asset >70%, extremely dangerous",
+                1: "65-70%",
+                2: "60-65%",
+                3: "55-60%",
+                4: "50-55%",
+                5: "Around 50%, moderate",
+                6: "45-50%",
+                7: "40-45%",
+                8: "35-40%",
+                9: "30-35%",
+                10: "<30%, very healthy"
+            },
+            v72: {
+                0: "Major risks exist, large off-balance sheet liabilities",
+                1: "Very risky",
+                2: "Quite risky",
+                3: "Some risks",
+                4: "Slightly risky",
+                5: "Basically none",
+                6: "Fairly safe",
+                7: "Safe",
+                8: "Very safe",
+                9: "Extremely safe",
+                10: "Perfectly safe, no hidden risks"
+            },
+            v81: {
+                0: "Clear fraud, many red flags",
+                1: "Highly suspicious",
+                2: "Very suspicious",
+                3: "Fairly suspicious",
+                4: "Slightly suspicious",
+                5: "No obvious signs",
+                6: "Fairly clean",
+                7: "Clean",
+                8: "Very clean",
+                9: "Extremely clean",
+                10: "Perfectly clean, financials credible"
+            },
+            v82: {
+                0: "Fatal risk exists, could blow up anytime",
+                1: "Extreme risk",
+                2: "Very high risk",
+                3: "High risk",
+                4: "Risky",
+                5: "No obvious fatal risk",
+                6: "Low risk",
+                7: "Small risk",
+                8: "Very small risk",
+                9: "Minimal risk",
+                10: "No fatal risk, completely safe"
+            }
+        };
+
+        // Global report data
+        let reportData = {};
+
+        // Update slider display value
+        function updateValue(slider) {
+            const valueSpan = document.getElementById(slider.id.replace('q', 'v'));
+            const val = parseInt(slider.value);
+            const labels = scoreLabels[valueSpan.id];
+            if (labels && labels[val]) {
+                valueSpan.textContent = val + " - " + labels[val];
+            } else {
+                valueSpan.textContent = val;
+            }
+        }
+
+        // Initialize all sliders on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                updateValue(slider);
+            });
+        });
+
+        // Toggle module
+        function toggleModule(modId) {
+            const header = document.querySelector('#' + modId + ' .module-header');
+            const content = document.querySelector('#' + modId + ' .module-content');
+            header.classList.toggle('collapsed');
+            content.classList.toggle('open');
+        }
+
+        // Update Circle of Competence
+        function updateCircleCompetence() {
+            const q1 = parseInt(document.getElementById('q01').value);
+            const q2 = parseInt(document.getElementById('q02').value);
+            const avg = (q1 + q2) / 2;
+            
+            document.getElementById('v01').textContent = q1 + " - " + scoreLabels.v01[q1];
+            document.getElementById('v02').textContent = q2 + " - " + scoreLabels.v02[q2];
+            document.getElementById('score0').textContent = avg.toFixed(1);
+            
+            const passed = avg >= 6;
+            const passEl = document.getElementById('pass0');
+            passEl.textContent = passed ? 'PASS' : 'FAIL';
+            passEl.className = 'module-pass ' + (passed ? 'pass-yes' : 'pass-no');
+            
+            reportData.circle = { q1, q2, avg, passed };
+            updateTotalScore();
+        }
+
+        // Update Deal Breakers
+        function updateDealBreakers() {
+            const q71 = parseInt(document.getElementById('q71').value);
+            const q72 = parseInt(document.getElementById('q72').value);
+            const q81 = parseInt(document.getElementById('q81').value);
+            const q82 = parseInt(document.getElementById('q82').value);
+            
+            document.getElementById('v71').textContent = q71 + " - " + scoreLabels.v71[q71];
+            document.getElementById('v72').textContent = q72 + " - " + scoreLabels.v72[q72];
+            document.getElementById('v81').textContent = q81 + " - " + scoreLabels.v81[q81];
+            document.getElementById('v82').textContent = q82 + " - " + scoreLabels.v82[q82];
+            
+            const allPassed = q71 >= 5 && q72 >= 5 && q81 >= 5 && q82 >= 5;
+            const avgScore = (q71 + q72 + q81 + q82) / 4;
+            
+            document.getElementById('score7').textContent = avgScore.toFixed(1);
+            const passEl = document.getElementById('pass7');
+            passEl.textContent = allPassed ? 'PASS' : 'FAIL';
+            passEl.className = 'module-pass ' + (allPassed ? 'pass-yes' : 'pass-no');
+            
+            reportData.dealbreakers = { q71, q72, q81, q82, avgScore, passed: allPassed };
+            updateTotalScore();
+        }
+
+        // Update all scores
+        function updateScore() {
+            const modules = [
+                { id: '1', qs: ['q11', 'q12'], weight: 0.20 },
+                { id: '2', qs: ['q21', 'q22'], weight: 0.20 },
+                { id: '3', qs: ['q31', 'q32'], weight: 0.20 },
+                { id: '4', qs: ['q41', 'q42'], weight: 0.10 },
+                { id: '5', qs: ['q51', 'q52'], weight: 0.10 },
+                { id: '6', qs: ['q61', 'q62'], weight: 0.20 }
+            ];
+            
+            let totalWeightedScore = 0;
+            
+            modules.forEach(mod => {
+                const values = mod.qs.map(q => parseInt(document.getElementById(q).value));
+                const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                
+                // Update display labels
+                values.forEach((val, i) => {
+                    const valId = mod.qs[i].replace('q', 'v');
+                    document.getElementById(valId).textContent = val + " - " + scoreLabels[valId][val];
+                });
+                
+                document.getElementById('score' + mod.id).textContent = avg.toFixed(1);
+                totalWeightedScore += avg * mod.weight;
+                
+                reportData['mod' + mod.id] = { values, avg, weight: mod.weight };
+            });
+            
+            reportData.weightedBase = totalWeightedScore;
+            updateTotalScore();
+        }
+
+        // Update total score
+        function updateTotalScore() {
+            updateCircleCompetence();
+            updateScore();
+            updateDealBreakers();
+            
+            const circlePassed = reportData.circle && reportData.circle.passed;
+            const dealbreakersPassed = reportData.dealbreakers && reportData.dealbreakers.passed;
+            const baseScore = reportData.weightedBase || 0;
+            
+            let totalScore = 0;
+            if (circlePassed && dealbreakersPassed) {
+                totalScore = baseScore;
+            } else if (!circlePassed) {
+                totalScore = 0;
+            } else if (!dealbreakersPassed) {
+                totalScore = baseScore * 0.3;
+            }
+            
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+            document.getElementById('progressFill').style.width = (totalScore * 10) + '%';
+            
+            reportData.totalScore = totalScore;
+            reportData.circlePassed = circlePassed;
+            reportData.dealbreakersPassed = dealbreakersPassed;
+        }
+
+        // Reset all
+        function resetAll() {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                slider.value = 5;
+                updateValue(slider);
+            });
+            document.getElementById('companyName').value = '';
+            reportData = {};
+            updateTotalScore();
+        }
+
+        // Generate report
+        function generateReport() {
+            const company = document.getElementById('companyName').value || 'Unknown Company';
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const totalScore = reportData.totalScore || 0;
+            const circlePassed = reportData.circlePassed;
+            const dbPassed = reportData.dealbreakersPassed;
+            
+            let verdict, verdictClass;
+            if (!circlePassed) {
+                verdict = '❌ OUTSIDE CIRCLE OF COMPETENCE - Do Not Invest';
+                verdictClass = 'verdict-fail';
+            } else if (!dbPassed) {
+                verdict = '⚠️ DEAL BREAKER DETECTED - High Risk';
+                verdictClass = 'verdict-fail';
+            } else if (totalScore >= 7) {
+                verdict = '✅ GOOD INVESTMENT OPPORTUNITY';
+                verdictClass = 'verdict-pass';
+            } else if (totalScore >= 5) {
+                verdict = '⚡ CAUTION - Need More Research';
+                verdictClass = 'verdict-fail';
+            } else {
+                verdict = '❌ AVOID - Insufficient Quality';
+                verdictClass = 'verdict-fail';
+            }
+
+            const reportHTML = \`
+                <div class="report-header">
+                    <div class="report-company">\${company}</div>
+                    <div class="report-date">Analysis Date: \${date}</div>
+                </div>
+                
+                <div class="report-total-score">
+                    <div class="label">Total Score</div>
+                    <div class="score">\${totalScore.toFixed(1)}/10</div>
+                </div>
+                
+                <div class="report-verdict \${verdictClass}">
+                    \${verdict}
+                </div>
+                
+                <div class="report-section">
+                    <h3>0. Circle of Competence</h3>
+                    <div class="report-item">
+                        <span class="label">Business Understanding</span>
+                        <span class="value">\${reportData.circle?.q1 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Industry Familiarity</span>
+                        <span class="value">\${reportData.circle?.q2 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Status</span>
+                        <span class="value">\${circlePassed ? '✅ PASS' : '❌ FAIL'}</span>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h3>Core Assessment Modules</h3>
+                    <div class="report-item">
+                        <span class="label">1. Business Model</span>
+                        <span class="value">\${reportData.mod1?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">2. Competitive Advantage</span>
+                        <span class="value">\${reportData.mod2?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">3. Profit Quality</span>
+                        <span class="value">\${reportData.mod3?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">4. Industry Quality</span>
+                        <span class="value">\${reportData.mod4?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">5. Management & Governance</span>
+                        <span class="value">\${reportData.mod5?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">6. Valuation & Safety</span>
+                        <span class="value">\${reportData.mod6?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h3>7. Deal Breakers</h3>
+                    <div class="report-item">
+                        <span class="label">Debt Level</span>
+                        <span class="value">\${reportData.dealbreakers?.q71 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Hidden Risks</span>
+                        <span class="value">\${reportData.dealbreakers?.q72 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Fraud Risk</span>
+                        <span class="value">\${reportData.dealbreakers?.q81 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Fatal Risks</span>
+                        <span class="value">\${reportData.dealbreakers?.q82 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Status</span>
+                        <span class="value">\${dbPassed ? '✅ PASS' : '❌ FAIL'}</span>
+                    </div>
+                </div>
+            \`;
+            
+            document.getElementById('reportContent').innerHTML = reportHTML;
+            document.getElementById('reportModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('reportModal').classList.remove('active');
+        }
+
+        // Initialize on load
+        updateTotalScore();
+    </script>
+</body>
+</html>
