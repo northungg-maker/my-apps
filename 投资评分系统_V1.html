@@ -518,7 +518,6 @@
             <div class="company-input">
                 <input type="text" id="companyName" placeholder="输入公司名称（如：Apple）">
                 <button class="btn btn-secondary" onclick="clearAll()">清空</button>
-                <button class="btn btn-primary" onclick="calculate()">开始评估</button>
             </div>
 
             <!-- 前置过滤器 -->
@@ -907,12 +906,14 @@
             </div>
         </div>
 
+        <!-- 生成评估报告按钮 -->
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="btn btn-primary" onclick="calculate()" style="padding: 16px 48px; font-size: 18px;">生成评估报告</button>
+        </div>
+
         <!-- 输出区 -->
         <div class="output-section" id="outputSection">
             <div class="report-card">
-                <div class="copy-section">
-                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
-                </div>
                 <div class="copy-section">
                     <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
                 </div>
@@ -1257,37 +1258,6 @@
         }
 
         // 显示Toast
-        // 一键复制报告
-        function copyReport() {
-            const text = generateReportText();
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("已复制到剪贴板");
-            }).catch(err => {
-                showToast("复制失败，请手动复制");
-            });
-        }
-
-        // 生成报告文本
-        function generateReportText() {
-            const company = document.getElementById("outCompany").textContent;
-            const score = document.getElementById("outScore").textContent;
-            const conclusion = document.getElementById("outConclusion").textContent;
-            const oneLiner = document.getElementById("outOneLiner").textContent;
-            const final = document.getElementById("outFinal").textContent;
-            
-            let text = "";
-            text += "━━━━━━━━━━━━━━━━━━━━\n";
-            text += "【投资判断系统】\n";
-            text += "让每一次投资，都有原则可依\n";
-            text += "━━━━━━━━━━━━━━━━━━━━\n\n";
-            text += "企业：" + company + "\n";
-            text += "评分：" + score + " / 100\n";
-            text += "结论：" + conclusion + "\n\n";
-            text += "一句话判断：\n" + oneLiner + "\n\n";
-            text += "最终建议：\n" + final + "\n";
-            return text;
-        }
-
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1427,18 +1397,19 @@
                 }
             };
 
-            // 加权总分
+            // 加权总分（转为百分制）
             let totalScore = 0;
             for (const key in modules) {
                 totalScore += modules[key].score * modules[key].weight;
             }
+            totalScore = totalScore * 10; // 转为百分制
 
             // 短板惩罚
             let penalty = 0;
             for (const key in modules) {
-                if (modules[key].score < 50) {
+                if (modules[key].score < 5) {
                     penalty += 10;
-                } else if (modules[key].score < 65) {
+                } else if (modules[key].score < 6.5) {
                     penalty += 5;
                 }
             }
