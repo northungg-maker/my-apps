@@ -2032,47 +2032,30 @@
             const slider = document.getElementById(id);
             if (!slider) return null;
 
-            const container = slider.closest('.slider-container') || slider.closest('.question-group');
+            // 修正：使用 .question-item 作为容器，而不是 .slider-container
+            const container = slider.closest('.question-item') || slider.closest('.question-group');
             if (!container) return null;
 
             // 题目标题
             const labelEl = container.querySelector('.question-label');
             const title = labelEl ? labelEl.textContent.trim() : id;
 
-            // 题目描述
-            const descEl = container.querySelector('.question-desc');
-            const desc = descEl ? descEl.textContent.trim() : '';
+            // 题目描述（修正：使用 .question-hint，而不是 .question-desc）
+            const hintEl = container.querySelector('.question-hint');
+            const hint = hintEl ? hintEl.textContent.trim() : '';
 
             // 当前分数
             const value = parseInt(slider.value) || 0;
 
-            // 分数含义标签
-            const labelsContainer = container.querySelector('.slider-labels');
-            let meaning = '';
-            if (labelsContainer) {
-                const labels = labelsContainer.querySelectorAll('span');
-                const labelMap = [
-                    { val: 1, idx: 0 },
-                    { val: 3, idx: 1 },
-                    { val: 5, idx: 2 },
-                    { val: 7, idx: 3 },
-                    { val: 10, idx: 4 }
-                ];
-                let closest = labelMap[0];
-                let minDiff = Math.abs(value - closest.val);
-                labelMap.forEach(m => {
-                    const diff = Math.abs(value - m.val);
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        closest = m;
-                    }
-                });
-                if (labels[closest.idx]) {
-                    meaning = labels[closest.idx].textContent.trim();
-                }
-            }
+            // 根据分数判断评级
+            let rating = '';
+            if (value >= 9) rating = '优秀';
+            else if (value >= 7) rating = '良好';
+            else if (value >= 5) rating = '一般';
+            else if (value >= 3) rating = '较差';
+            else rating = '极差';
 
-            return { title, desc, value, meaning };
+            return { title, hint, value, rating };
         }
 
         // 格式化题目输出
@@ -2081,8 +2064,8 @@
             if (!detail) return '';
 
             let text = `${detail.title}\n`;
-            if (detail.desc) text += `${detail.desc}\n`;
-            text += `${detail.value} - ${detail.meaning}\n`;
+            if (detail.hint) text += `${detail.hint}\n`;
+            text += `得分：${detail.value} (${detail.rating})\n`;
 
             return text;
         }
