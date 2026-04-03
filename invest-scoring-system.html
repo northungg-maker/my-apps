@@ -614,6 +614,79 @@
         .icon-finance { background: #fce7f3; color: #be185d; }
         .icon-risk { background: #fee2e2; color: #b91c1c; }
         .icon-filter { background: #f1f5f9; color: #475569; }
+
+        /* 保存记录区样式 */
+        .save-history-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .save-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .save-history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .save-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .save-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(59,130,246,0.1);
+        }
+        .save-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        .save-company { font-weight: 500; color: #1f2937; }
+        .save-score { font-size: 13px; color: #3b82f6; font-weight: 500; }
+        .save-date { font-size: 12px; color: #9ca3af; margin-left: auto; }
+        .btn-delete-save {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+        .btn-delete-save:hover {
+            opacity: 1;
+            background: #fee2e2;
+        }
+        .btn-clear-history {
+            background: transparent;
+            border: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-clear-history:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -1037,10 +1110,7 @@
         <!-- 输出区 -->
         <div class="output-section" id="outputSection">
             <div class="report-card">
-                <div class="copy-section">
-                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
-                </div>
-                
+                <!-- 报告头部：公司信息 -->
                 <div class="report-header">
                     <div class="company-name" id="outCompany">Apple</div>
                     <div class="score-display" id="outScore">--</div>
@@ -1072,6 +1142,7 @@
                     <div id="outKillSwitch">--</div>
                 </div>
 
+                <!-- 最终建议 -->
                 <div class="final-recommendation">
                     <p id="outFinal">--</p>
                 </div>
@@ -1081,6 +1152,7 @@
                     <button class="btn btn-save" onclick="manualSave()">💾 保存</button>
                     <button class="btn btn-export" onclick="exportData()">📤 导出</button>
                     <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 导入</button>
+                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制</button>
                     <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
                 </div>
 
@@ -1088,7 +1160,7 @@
                 <div class="save-history-section" id="saveHistorySection" style="display: none;">
                     <div class="save-history-header">
                         <span>📋 保存记录</span>
-                        <button class="btn-clear-history" onclick="clearSaveHistory()">清空记录</button>
+                        <button class="btn-clear-history" onclick="clearSaveHistory()">清空全部</button>
                     </div>
                     <div class="save-history-list" id="saveHistoryList"></div>
                 </div>
@@ -1640,20 +1712,33 @@
             const saves = JSON.parse(localStorage.getItem('investSaves') || '[]');
             const section = document.getElementById('saveHistorySection');
             const list = document.getElementById('saveHistoryList');
-            
+
             if (saves.length === 0) {
                 section.style.display = 'none';
                 return;
             }
-            
+
             section.style.display = 'block';
             list.innerHTML = saves.map(s => `
-                <div class="save-item" onclick="loadSave(${s.id})">
-                    <span class="save-company">${s.companyName}</span>
-                    <span class="save-score">${s.score}分</span>
-                    <span class="save-date">${s.date}</span>
+                <div class="save-item">
+                    <div class="save-item-info" onclick="loadSave(${s.id})">
+                        <span class="save-company">${s.companyName}</span>
+                        <span class="save-score">${s.score}分</span>
+                        <span class="save-date">${s.date}</span>
+                    </div>
+                    <button class="btn-delete-save" onclick="event.stopPropagation(); deleteSave(${s.id})">🗑️</button>
                 </div>
             `).join('');
+        }
+
+        // 单独删除一条保存记录
+        function deleteSave(id) {
+            if (!confirm('确定删除这条记录？')) return;
+            let saves = JSON.parse(localStorage.getItem('investSaves') || '[]');
+            saves = saves.filter(s => s.id !== id);
+            localStorage.setItem('investSaves', JSON.stringify(saves));
+            renderSaveHistory();
+            showToast('已删除');
         }
 
         // 加载保存的记录
@@ -2181,16 +2266,41 @@
             // 否决机制状态（未触发时不显示提示）
             document.getElementById('outKillSwitch').innerHTML = '--';
 
-            // 最终建议
+            // 最终建议（统一逻辑：综合考虑分数+风险数+否决机制）
+            const riskCount = prosCons.cons.filter(c => c !=='暂无明显重大风险').length;
+            const killTriggered = reportData.killSwitchTriggered || false;
             let finalRecommendation = '';
-            if (score >= 85) {
-                finalRecommendation = '强烈建议关注。这是一家各方面表现优异的公司，值得深入研究后考虑建仓。';
-            } else if (score >= 70) {
-                finalRecommendation = '可以投资，但建议关注短板。好公司不等于好价格，等待更好的买入时机会更安全。';
-            } else if (score >= 60) {
-                finalRecommendation = '谨慎观察。这家公司有一定价值，但存在明显短板，建议先观察再决定。';
+
+            if (killTriggered) {
+                finalRecommendation = '触发一项或多项目标否决机制，建议直接放弃。';
+            } else if (riskCount >= 3) {
+                finalRecommendation = '存在多项重大风险，建议谨慎观望或回避。';
+            } else if (riskCount >= 2) {
+                if (score >= 70) {
+                    finalRecommendation = '虽有亮点，但风险不容忽视，需深入研究后再做决定。';
+                } else {
+                    finalRecommendation = '风险因素较多，建议谨慎评估后决定是否继续关注。';
+                }
+            } else if (riskCount === 1) {
+                if (score >= 75) {
+                    finalRecommendation = '整体表现良好，但存在一项潜在风险，建议关注后持续跟踪。';
+                } else if (score >= 60) {
+                    finalRecommendation = '有一定潜力，但需关注风险点，深入研究后再做判断。';
+                } else {
+                    finalRecommendation = '综合表现一般且存在风险，建议谨慎对待。';
+                }
             } else {
-                finalRecommendation = '不建议投资。这家公司存在较多问题，风险大于机会。';
+                if (score >= 80) {
+                    finalRecommendation = '这是一家各方面表现优异的公司，值得深入研究后考虑建仓。';
+                } else if (score >= 70) {
+                    finalRecommendation = '整体表现良好，值得关注并持续跟踪研究。';
+                } else if (score >= 60) {
+                    finalRecommendation = '表现中等，建议进一步研究后再做投资决策。';
+                } else if (score >= 50) {
+                    finalRecommendation = '存在较多疑虑，建议谨慎评估或暂缓决策。';
+                } else {
+                    finalRecommendation = '综合表现不佳，建议暂不考虑或寻找其他机会。';
+                }
             }
             document.getElementById('outFinal').textContent = finalRecommendation;
 
@@ -2284,24 +2394,24 @@
             const pros = [];
             const cons = [];
 
-            // 基于模块分数生成（阈值对齐：>=70为优势，<60为风险）
-            if (modules.biz.score >= 70) pros.push('商业模式清晰');
-            else if (modules.biz.score < 60) cons.push('商业模式存疑');
+            // 基于模块分数生成（模块分0-10，阈值对齐：>=7为优势，<6为风险）
+            if (modules.biz.score >= 7) pros.push('商业模式清晰');
+            else if (modules.biz.score < 6) cons.push('商业模式存疑');
 
-            if (modules.compete.score >= 70) pros.push('竞争优势稳固');
-            else if (modules.compete.score < 60) cons.push('竞争优势弱');
+            if (modules.compete.score >= 7) pros.push('竞争优势稳固');
+            else if (modules.compete.score < 6) cons.push('竞争优势弱');
 
-            if (modules.industry.score >= 70) pros.push('行业环境友好');
-            else if (modules.industry.score < 60) cons.push('行业环境差');
+            if (modules.industry.score >= 7) pros.push('行业环境友好');
+            else if (modules.industry.score < 6) cons.push('行业环境差');
 
-            if (modules.mgmt.score >= 70) pros.push('管理层值得信任');
-            else if (modules.mgmt.score < 60) cons.push('管理层存疑');
+            if (modules.mgmt.score >= 7) pros.push('管理层值得信任');
+            else if (modules.mgmt.score < 6) cons.push('管理层存疑');
 
-            if (modules.finance.score >= 70) pros.push('财务健康');
-            else if (modules.finance.score < 60) cons.push('财务有隐患');
+            if (modules.finance.score >= 7) pros.push('财务健康');
+            else if (modules.finance.score < 6) cons.push('财务有隐患');
 
-            if (modules.risk.score >= 70) pros.push('估值合理风险可控');
-            else if (modules.risk.score < 60) cons.push('估值或风险有问题');
+            if (modules.risk.score >= 7) pros.push('估值合理风险可控');
+            else if (modules.risk.score < 6) cons.push('估值或风险有问题');
 
             // 如果没有生成，添加默认
             if (pros.length === 0) pros.push('暂无明显优势');
