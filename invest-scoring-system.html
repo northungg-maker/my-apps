@@ -1637,6 +1637,8 @@
             document.querySelectorAll('input[type="range"]').forEach(slider => {
                 updateValue(slider);
             });
+            // 页面加载时显示已有历史记录
+            renderSaveHistory();
         });
 
         // 切换模块展开/收起
