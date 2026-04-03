@@ -2032,30 +2032,32 @@
             const slider = document.getElementById(id);
             if (!slider) return null;
 
-            // 修正：使用 .question-item 作为容器，而不是 .slider-container
             const container = slider.closest('.question-item') || slider.closest('.question-group');
             if (!container) return null;
 
-            // 题目标题
+            // 题目标题（从 .question-label 获取）
             const labelEl = container.querySelector('.question-label');
-            const title = labelEl ? labelEl.textContent.trim() : id;
+            let title = labelEl ? labelEl.textContent.trim() : id;
 
-            // 题目描述（修正：使用 .question-hint，而不是 .question-desc）
+            // 检查是否有否决项标签
+            const killBadge = container.querySelector('.kill-badge');
+            const isVeto = !!killBadge;
+            // 从标题中移除"否决项"字样（如果有）
+            title = title.replace('否决项', '').trim();
+
+            // 题目描述
             const hintEl = container.querySelector('.question-hint');
             const hint = hintEl ? hintEl.textContent.trim() : '';
 
             // 当前分数
             const value = parseInt(slider.value) || 0;
 
-            // 根据分数判断评级
-            let rating = '';
-            if (value >= 9) rating = '优秀';
-            else if (value >= 7) rating = '良好';
-            else if (value >= 5) rating = '一般';
-            else if (value >= 3) rating = '较差';
-            else rating = '极差';
+            // 从 scoreLabels 获取精确评级（id: qF1 -> vF1, q11 -> v11）
+            const labelKey = 'v' + id.substring(1);
+            const labels = scoreLabels[labelKey];
+            const rating = (labels && labels[value]) ? labels[value] : '';
 
-            return { title, hint, value, rating };
+            return { title, hint, value, rating, isVeto };
         }
 
         // 格式化题目输出
@@ -2063,9 +2065,14 @@
             const detail = getQuestionDetail(id);
             if (!detail) return '';
 
+            // 格式：题目标题
             let text = `${detail.title}\n`;
+            // 如果是否决项，单独一行显示
+            if (detail.isVeto) text += `否决项\n`;
+            // 描述
             if (detail.hint) text += `${detail.hint}\n`;
-            text += `得分：${detail.value} (${detail.rating})\n`;
+            // 分数 + 精确评级
+            text += `\n${detail.value} - ${detail.rating}\n`;
 
             return text;
         }
@@ -2146,17 +2153,32 @@
             
             text += '一句话判断：\n' + reportData.oneLiner + '\n\n';
             
-            text += '━━━ 模块评分 ━━━\n';
+            // 前置过滤器（F1、F2）
+            text += '━━━ 前置过滤器 ━━━\n';
+            text += formatQuestionOutput('qF1');
+            text += formatQuestionOutput('qF2');
+            
+            text += '\n━━━ 模块评分 ━━━\n';
             for (const key in reportData.modules) {
                 const mod = reportData.modules[key];
-                text += '\n【' + mod.name + '】' + Math.round(mod.score) + '分\n';
+                // 模块标题 + 权重
+                const iconMap = {
+                    'biz': '📦',
+                    'compete': '🏰',
+                    'industry': '🏭',
+                    'mgmt': '👥',
+                    'price': '💰'
+                };
+                const icon = iconMap[key] || '📊';
+                text += `\n${icon} ${mod.name}\n`;
+                text += `权重 ${Math.round(mod.weight * 100)}%\n`;
 
                 // 展开每道题的详细信息
                 if (mod.questions && mod.questions.length > 0) {
                     mod.questions.forEach(qid => {
                         const qText = formatQuestionOutput('q' + qid);
                         if (qText) {
-                            text += '\n  ' + qText.split('\n').join('\n  ').trim() + '\n';
+                            text += '\n' + qText;
                         }
                     });
                 }
