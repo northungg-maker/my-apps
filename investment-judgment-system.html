@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投资判断系统</title>
+    <title>Investment Judgment System</title>
     <style>
         * {
             margin: 0;
@@ -50,7 +50,6 @@
             margin-bottom: 32px;
         }
 
-        /* 输入区 */
         .input-section {
             margin-bottom: 40px;
         }
@@ -99,44 +98,80 @@
         }
 
         .btn-secondary:hover {
-            background: #e8e8e8;
+            background: #e5e5e5;
         }
 
-        .btn-copy {
-            background: #34c759;
+        .btn-danger {
+            background: #ff3b30;
             color: white;
         }
 
-        .btn-copy:hover {
-            background: #2db84e;
-            background: #e8e8e8;
+        .btn-danger:hover {
+            background: #ff453a;
         }
 
-        .btn-copy {
-            background: #34c759;
-            color: white;
+        /* Progress Bar */
+        .progress-section {
+            margin-bottom: 40px;
         }
 
-        .btn-copy:hover {
-            background: #2db84e;
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        /* 模块卡片 */
-        .module-card {
+        .progress-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .progress-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0071e3;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #34c759, #0071e3);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-stages {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #888;
+        }
+
+        /* Modules */
+        .module {
             background: white;
             border-radius: 12px;
             margin-bottom: 16px;
-            border: 1px solid #e8e8e8;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
         .module-header {
-            padding: 16px 20px;
-            background: #f8f8f8;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 16px 20px;
+            background: #f8f8f8;
+            cursor: pointer;
             user-select: none;
         }
 
@@ -145,51 +180,101 @@
         }
 
         .module-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .module-title h2 {
+            font-size: 16px;
             font-weight: 600;
-            font-size: 15px;
         }
 
         .module-weight {
             font-size: 12px;
+            color: #666;
+            background: #e8e8e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .module-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .module-score {
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .module-pass {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pass-yes {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pass-no {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .module-toggle {
+            font-size: 20px;
             color: #888;
+            transition: transform 0.3s;
+        }
+
+        .module-header.collapsed .module-toggle {
+            transform: rotate(-90deg);
         }
 
         .module-content {
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+            padding: 20px;
+            display: none;
         }
 
         .module-content.open {
-            max-height: 2000px;
-            padding: 20px;
+            display: block;
         }
 
+        /* Questions */
         .question-item {
             margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .question-item:last-child {
             margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .question-label {
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 4px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .kill-badge {
+            font-size: 10px;
             background: #ff3b30;
             color: white;
-            font-size: 10px;
             padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
+            border-radius: 3px;
+            font-weight: 500;
         }
 
         .question-hint {
@@ -205,6 +290,22 @@
 
         .slider-container input[type="range"] {
             order: 2;
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #0071e3;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,113,227,0.3);
         }
 
         .slider-value {
@@ -216,1313 +317,819 @@
             line-height: 1.4;
         }
 
-        .slider-container input[type="range"] {
-            width: 100%;
-            height: 6px;
-            -webkit-appearance: none;
-            background: #e0e0e0;
-            border-radius: 3px;
-            outline: none;
-            order: 2;
-        }
-
-        .slider-container input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #0071e3;
-            cursor: pointer;
-        }
-
-        .slider-value {
-            font-size: 12px;
-            font-weight: 500;
-            color: #0071e3;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-            color: #0071e3;
-        }
-
-        /* 输出区 */
-        .output-section {
-            display: none;
+        /* Footer Actions */
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
 
-        .output-section.show {
-            display: block;
+        /* Report Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
-        .report-card {
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
             background: white;
             border-radius: 16px;
-            padding: 32px;
-            border: 1px solid #e8e8e8;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #888;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+
+        .close-btn:hover {
+            color: #1a1a1a;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* Report Styles */
         .report-header {
             text-align: center;
             margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #f0f0f0;
         }
 
-        .company-name {
-            font-size: 20px;
+        .report-company {
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .score-display {
-            font-size: 48px;
-            font-weight: 800;
-            color: #0071e3;
             margin-bottom: 8px;
         }
 
-        .conclusion-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 16px;
+        .report-date {
+            font-size: 12px;
+            color: #888;
         }
 
-        .conclusion-strong {
+        .report-total-score {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #0071e3, #5856d6);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .report-total-score .score {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .report-total-score .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .report-verdict {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .verdict-pass {
             background: #d4edda;
             color: #155724;
         }
 
-        .conclusion-good {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .conclusion-caution {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .conclusion-avoid {
+        .verdict-fail {
             background: #f8d7da;
             color: #721c24;
         }
 
-        .conclusion-kill {
-            background: #dc3545;
-            color: white;
-        }
-
-        .one-liner {
-            font-style: italic;
-            color: #666;
-            font-size: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .copy-section {
+        .report-section {
             margin-bottom: 24px;
-            text-align: center;
         }
 
-        .report-modules {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .module-score-card {
-            background: #f8f8f8;
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        .module-score-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .module-score-name {
+        .report-section h3 {
+            font-size: 16px;
             font-weight: 600;
-            font-size: 13px;
-        }
-
-        .module-score-value {
-            font-weight: 700;
-            font-size: 18px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0071e3;
             color: #0071e3;
         }
 
-        .module-score-summary {
-            font-size: 12px;
-            color: #666;
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .report-pros-cons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+        .report-item:last-child {
+            border-bottom: none;
         }
 
-        .pros-card, .cons-card {
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        .pros-card {
-            background: #f0f9ff;
-        }
-
-        .cons-card {
-            background: #fef2f2;
-        }
-
-        .pros-card h4, .cons-card h4 {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .pros-card h4 {
-            color: #0369a1;
-        }
-
-        .cons-card h4 {
-            color: #b91515;
-        }
-
-        .pros-card ul, .cons-card ul {
-            list-style: none;
-            font-size: 13px;
-        }
-
-        .pros-card li, .cons-card li {
-            padding: 4px 0;
-            padding-left: 16px;
-            position: relative;
-        }
-
-        .pros-card li::before {
-            content: "+";
-            position: absolute;
-            left: 0;
-            color: #0369a1;
-        }
-
-        .cons-card li::before {
-            content: "-";
-            position: absolute;
-            left: 0;
-            color: #b91515;
-        }
-
-        .kill-switch-check {
-            background: #f8f8f8;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            font-size: 13px;
-        }
-
-        .kill-switch-check h4 {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .final-recommendation {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-        }
-
-        .final-recommendation p {
-            font-size: 15px;
+        .report-item .label {
+            font-size: 14px;
             color: #1a1a1a;
         }
 
-        /* Toast提示 */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
+        .report-item .value {
             font-size: 14px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
+            font-weight: 600;
+            color: #0071e3;
         }
 
-        .toast.show {
-            opacity: 1;
-        }
-
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .report-modules {
-                grid-template-columns: 1fr;
-            }
-
-            .report-pros-cons {
-                grid-template-columns: 1fr;
-            }
-
-            .company-input {
-                flex-direction: column;
-            }
-        }
-
-        /* 模块图标 */
-        .module-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .report-item .desc {
             font-size: 12px;
-            margin-right: 8px;
+            color: #888;
+            max-width: 60%;
         }
 
-        .icon-biz { background: #dbeafe; color: #1e40af; }
-        .icon-compete { background: #dcfce7; color: #166534; }
-        .icon-industry { background: #fef3c7; color: #92400e; }
-        .icon-mgmt { background: #f3e8ff; color: #7c3aed; }
-        .icon-finance { background: #fce7f3; color: #be185d; }
-        .icon-risk { background: #fee2e2; color: #b91c1c; }
-        .icon-filter { background: #f1f5f9; color: #475569; }
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                max-width: 100%;
+            }
+            .input-section, .progress-section, .actions, .btn {
+                display: none !important;
+            }
+            .module {
+                break-inside: avoid;
+            }
+            .modal-overlay {
+                position: static;
+                background: white;
+            }
+            .modal {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="slogan">让每一次投资，都有原则可依</div>
-        <h1>投资判断系统</h1>
-        <p class="philosophy">先避免犯错，再谈收益</p>
-        <p class="subtitle">基于巴菲特、芒格、段永平投资原则构建的决策辅助工具</p>
+        <p class="slogan">Invest Smarter, Not Harder</p>
+        <h1>Investment Judgment System</h1>
+        <p class="subtitle">A framework for rational investment decisions • Avoid mistakes first, then seek returns</p>
+        <p class="philosophy">"The first rule of investing: don't lose money. The second rule: never forget the first." — Warren Buffett</p>
 
-        <!-- 输入区 -->
+        <!-- Input Section -->
         <div class="input-section">
             <div class="company-input">
-                <input type="text" id="companyName" placeholder="输入公司名称（如：Apple）" oninput="saveToStorage()">
-                <button class="btn btn-secondary" onclick="clearAll()">清空</button>
-                <button class="btn btn-secondary" onclick="exportData()">导出</button>
-                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">导入</button>
-                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-                <span id="saveStatus" style="color: #34c759; font-size: 12px; margin-left: 8px;"></span>
+                <input type="text" id="companyName" placeholder="Enter company name...">
+                <button class="btn btn-primary" onclick="resetAll()">Start Analysis</button>
             </div>
+        </div>
 
-            <!-- 前置过滤器 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-filter">🔍</span>
-                        <span class="module-title">前置过滤器</span>
-                    </div>
-                    <span class="module-weight">必须通过才能继续</span>
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Overall Score</span>
+                <span class="progress-score" id="totalScore">0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-stages">
+                <span>Avoid</span>
+                <span>Risky</span>
+                <span>Cautious</span>
+                <span>Good</span>
+                <span>Excellent</span>
+            </div>
+        </div>
+
+        <!-- Module 0: Circle of Competence -->
+        <div class="module" id="mod0">
+            <div class="module-header collapsed" onclick="toggleModule('mod0')">
+                <div class="module-title">
+                    <h2>0. Circle of Competence Pre-check</h2>
+                    <span class="module-weight">Gatekeeper Module</span>
                 </div>
-                <div class="module-content open">
-                    <!-- F1 -->
-                    <div class="question-item">
-                        <div class="question-label">
-                            F1：是否理解该公司商业模式？
-                            <span class="kill-badge">否决项</span>
-                        </div>
-                        <div class="question-hint">能否用一句话说清楚这公司怎么赚钱？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="qF1" oninput="updateValue(this)">
-                            <span class="slider-value" id="vF1">5</span>
-                        </div>
-                    </div>
-                    <!-- F2 -->
-                    <div class="question-item">
-                        <div class="question-label">
-                            F2：是否在能力圈内？
-                            <span class="kill-badge">否决项</span>
-                        </div>
-                        <div class="question-hint">对该行业是否有足够的研究和认知积累？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="qF2" oninput="updateValue(this)">
-                            <span class="slider-value" id="vF2">5</span>
-                        </div>
-                    </div>
+                <div class="module-info">
+                    <span class="module-score" id="score0">-</span>
+                    <span class="module-pass pass-no" id="pass0">FAIL</span>
+                    <span class="module-toggle">▼</span>
                 </div>
             </div>
-
-            <!-- 模块1：商业模式 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-biz">📦</span>
-                        <span class="module-title">商业模式</span>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        Q1: Do you understand this business model?
                     </div>
-                    <span class="module-weight">权重 25%</span>
-                </div>
-                <div class="module-content open">
-                    <!-- 1.1 -->
-                    <div class="question-item">
-                        <div class="question-label">1.1 业务复杂度如何？</div>
-                        <div class="question-hint">公司业务是否足够简单透明？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q11" oninput="updateValue(this)">
-                            <span class="slider-value" id="v11">5</span>
-                        </div>
-                    </div>
-                    <!-- 1.2 -->
-                    <div class="question-item">
-                        <div class="question-label">1.2 收入来源是否清晰？</div>
-                        <div class="question-hint">能否明确说出主要收入来源及其占比？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q12" oninput="updateValue(this)">
-                            <span class="slider-value" id="v12">5</span>
-                        </div>
-                    </div>
-                    <!-- 2.1 -->
-                    <div class="question-item">
-                        <div class="question-label">2.1 产品/服务变化频率？</div>
-                        <div class="question-hint">公司核心产品是否需要持续创新才能生存？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q21" oninput="updateValue(this)">
-                            <span class="slider-value" id="v21">5</span>
-                        </div>
-                    </div>
-                    <!-- 2.2 -->
-                    <div class="question-item">
-                        <div class="question-label">2.2 商业模式被颠覆风险？</div>
-                        <div class="question-hint">未来5-10年，该商业模式是否可能被技术或模式创新颠覆？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q22" oninput="updateValue(this)">
-                            <span class="slider-value" id="v22">5</span>
-                        </div>
-                    </div>
-                    <!-- 3.1 -->
-                    <div class="question-item">
-                        <div class="question-label">3.1 自由现金流状况？</div>
-                        <div class="question-hint">过去5年自由现金流是否持续为正？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q31" oninput="updateValue(this)">
-                            <span class="slider-value" id="v31">5</span>
-                        </div>
-                    </div>
-                    <!-- 3.2 -->
-                    <div class="question-item">
-                        <div class="question-label">3.2 现金流与利润匹配度？</div>
-                        <div class="question-hint">经营现金流净额与净利润的比值是否接近或大于1？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q32" oninput="updateValue(this)">
-                            <span class="slider-value" id="v32">5</span>
-                        </div>
-                    </div>
-                    <!-- 3.3 -->
-                    <div class="question-item">
-                        <div class="question-label">3.3 ROE水平及稳定性？</div>
-                        <div class="question-hint">过去5年平均ROE是否>15%且波动小？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q33" oninput="updateValue(this)">
-                            <span class="slider-value" id="v33">5</span>
-                        </div>
+                    <div class="question-hint">Can you explain how this company makes money in one sentence?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v01">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q01" oninput="updateCircleCompetence()">
                     </div>
                 </div>
-            </div>
-
-            <!-- 模块2：竞争优势 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-compete">🏰</span>
-                        <span class="module-title">竞争优势</span>
+                <div class="question-item">
+                    <div class="question-label">
+                        Q2: Are you familiar with this industry?
                     </div>
-                    <span class="module-weight">权重 20%</span>
-                </div>
-                <div class="module-content">
-                    <!-- 4.1 -->
-                    <div class="question-item">
-                        <div class="question-label">4.1 护城河类型是否明确？</div>
-                        <div class="question-hint">公司是否有品牌、专利、网络效应、成本优势、转换成本等壁垒？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q41" oninput="updateValue(this)">
-                            <span class="slider-value" id="v41">5</span>
-                        </div>
-                    </div>
-                    <!-- 4.2 -->
-                    <div class="question-item">
-                        <div class="question-label">4.2 护城河变化趋势？</div>
-                        <div class="question-hint">过去3-5年护城河是在变宽、稳定还是被侵蚀？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q42" oninput="updateValue(this)">
-                            <span class="slider-value" id="v42">5</span>
-                        </div>
-                    </div>
-                    <!-- 4.3 -->
-                    <div class="question-item">
-                        <div class="question-label">4.3 竞争对手能否轻易复制？</div>
-                        <div class="question-hint">如果现在有巨头携巨资进入，能否撼动其地位？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q43" oninput="updateValue(this)">
-                            <span class="slider-value" id="v43">5</span>
-                        </div>
-                    </div>
-                    <!-- 5.1 -->
-                    <div class="question-item">
-                        <div class="question-label">5.1 是否有定价权？</div>
-                        <div class="question-hint">公司能否提价而不明显影响销量？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q51" oninput="updateValue(this)">
-                            <span class="slider-value" id="v51">5</span>
-                        </div>
-                    </div>
-                    <!-- 5.2 -->
-                    <div class="question-item">
-                        <div class="question-label">5.2 品牌认知度？</div>
-                        <div class="question-hint">在目标品类中，品牌是否是消费者首选？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q52" oninput="updateValue(this)">
-                            <span class="slider-value" id="v52">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 模块3：行业结构 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-industry">🏭</span>
-                        <span class="module-title">行业结构</span>
-                    </div>
-                    <span class="module-weight">权重 10%</span>
-                </div>
-                <div class="module-content">
-                    <!-- 6.1 -->
-                    <div class="question-item">
-                        <div class="question-label">6.1 行业竞争激烈程度？</div>
-                        <div class="question-hint">行业是否内卷严重、价格战频发？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q61" oninput="updateValue(this)">
-                            <span class="slider-value" id="v61">5</span>
-                        </div>
-                    </div>
-                    <!-- 6.2 -->
-                    <div class="question-item">
-                        <div class="question-label">6.2 行业长期存在性？</div>
-                        <div class="question-hint">该行业未来10-20年是否大概率继续存在？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q62" oninput="updateValue(this)">
-                            <span class="slider-value" id="v62">5</span>
-                        </div>
-                    </div>
-                    <!-- 6.3 -->
-                    <div class="question-item">
-                        <div class="question-label">6.3 行业增长空间？</div>
-                        <div class="question-hint">行业整体是否还在增长？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q63" oninput="updateValue(this)">
-                            <span class="slider-value" id="v63">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 模块4：管理层 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-mgmt">👔</span>
-                        <span class="module-title">管理层</span>
-                    </div>
-                    <span class="module-weight">权重 15%</span>
-                </div>
-                <div class="module-content">
-                    <!-- 7.1 -->
-                    <div class="question-item">
-                        <div class="question-label">7.1 管理层是否兑现承诺？</div>
-                        <div class="question-hint">过去3年管理层公开承诺的目标达成情况如何？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q71" oninput="updateValue(this)">
-                            <span class="slider-value" id="v71">5</span>
-                        </div>
-                    </div>
-                    <!-- 7.2 -->
-                    <div class="question-item">
-                        <div class="question-label">
-                            7.2 是否有侵害股东利益的历史？
-                            <span class="kill-badge">否决项</span>
-                        </div>
-                        <div class="question-hint">是否存在关联交易、高价收购劣质资产、过度股权激励等问题？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q72" oninput="updateValue(this)">
-                            <span class="slider-value" id="v72">5</span>
-                        </div>
-                    </div>
-                    <!-- 8.1 -->
-                    <div class="question-item">
-                        <div class="question-label">8.1 过往业绩表现？</div>
-                        <div class="question-hint">管理层任职期间，公司业绩（收入、利润、市值）增长如何？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q81" oninput="updateValue(this)">
-                            <span class="slider-value" id="v81">5</span>
-                        </div>
-                    </div>
-                    <!-- 8.2 -->
-                    <div class="question-item">
-                        <div class="question-label">8.2 战略清晰度？</div>
-                        <div class="question-hint">管理层是否有清晰的长期战略并能有效执行？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q82" oninput="updateValue(this)">
-                            <span class="slider-value" id="v82">5</span>
-                        </div>
-                    </div>
-                    <!-- 9.1 -->
-                    <div class="question-item">
-                        <div class="question-label">9.1 回购/分红决策是否合理？</div>
-                        <div class="question-hint">公司在股价低估时是否回购？分红是否持续稳定？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q91" oninput="updateValue(this)">
-                            <span class="slider-value" id="v91">5</span>
-                        </div>
-                    </div>
-                    <!-- 9.2 -->
-                    <div class="question-item">
-                        <div class="question-label">9.2 再投资回报率？</div>
-                        <div class="question-hint">公司留存利润的再投资回报率是否高于股东自行投资的回报？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q92" oninput="updateValue(this)">
-                            <span class="slider-value" id="v92">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 模块5：财务质量 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-finance">💰</span>
-                        <span class="module-title">财务质量</span>
-                    </div>
-                    <span class="module-weight">权重 15%</span>
-                </div>
-                <div class="module-content">
-                    <!-- 10.1 -->
-                    <div class="question-item">
-                        <div class="question-label">10.1 资产负债率水平？</div>
-                        <div class="question-hint">公司资产负债率是否在合理区间？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q101" oninput="updateValue(this)">
-                            <span class="slider-value" id="v101">5</span>
-                        </div>
-                    </div>
-                    <!-- 10.2 -->
-                    <div class="question-item">
-                        <div class="question-label">
-                            10.2 是否有财务风险隐患？
-                            <span class="kill-badge">否决项</span>
-                        </div>
-                        <div class="question-hint">是否存在大额待还债务、表外负债、担保等风险？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q102" oninput="updateValue(this)">
-                            <span class="slider-value" id="v102">5</span>
-                        </div>
-                    </div>
-                    <!-- 11.1 -->
-                    <div class="question-item">
-                        <div class="question-label">11.1 利润率趋势？</div>
-                        <div class="question-hint">毛利率、净利率过去5年趋势如何？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q111" oninput="updateValue(this)">
-                            <span class="slider-value" id="v111">5</span>
-                        </div>
-                    </div>
-                    <!-- 11.2 -->
-                    <div class="question-item">
-                        <div class="question-label">11.2 盈利来源稳定性？</div>
-                        <div class="question-hint">盈利是否依赖一次性收益、政府补贴、投资收益等非经常性项目？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q112" oninput="updateValue(this)">
-                            <span class="slider-value" id="v112">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 模块6：估值与风险 -->
-            <div class="module-card">
-                <div class="module-header" onclick="toggleModule(this)">
-                    <div>
-                        <span class="module-icon icon-risk">⚠️</span>
-                        <span class="module-title">估值与风险</span>
-                    </div>
-                    <span class="module-weight">权重 15%</span>
-                </div>
-                <div class="module-content">
-                    <!-- 12.1 -->
-                    <div class="question-item">
-                        <div class="question-label">12.1 当前估值是否合理？</div>
-                        <div class="question-hint">PE、PB、PEG等指标是否在合理区间？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q121" oninput="updateValue(this)">
-                            <span class="slider-value" id="v121">5</span>
-                        </div>
-                    </div>
-                    <!-- 12.2 -->
-                    <div class="question-item">
-                        <div class="question-label">12.2 安全边际是否充足？</div>
-                        <div class="question-hint">当前价格与内在价值相比是否有足够折扣？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q122" oninput="updateValue(this)">
-                            <span class="slider-value" id="v122">5</span>
-                        </div>
-                    </div>
-                    <!-- 13.1 -->
-                    <div class="question-item">
-                        <div class="question-label">
-                            13.1 是否存在财务造假迹象？
-                            <span class="kill-badge">否决项</span>
-                        </div>
-                        <div class="question-hint">是否有利润与现金流严重背离、存货异常、关联交易异常等信号？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q131" oninput="updateValue(this)">
-                            <span class="slider-value" id="v131">5</span>
-                        </div>
-                    </div>
-                    <!-- 13.2 -->
-                    <div class="question-item">
-                        <div class="question-label">13.2 是否存在致命风险？</div>
-                        <div class="question-hint">是否存在监管风险、诉讼风险、大客户依赖、单一产品依赖等致命问题？</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="10" value="5" id="q132" oninput="updateValue(this)">
-                            <span class="slider-value" id="v132">5</span>
-                        </div>
+                    <div class="question-hint">Do you understand the industry's competitive landscape and key drivers?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v02">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q02" oninput="updateCircleCompetence()">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 生成评估报告按钮 -->
-        <div style="text-align: center; margin: 40px 0;">
-            <button class="btn btn-primary" onclick="calculate()" style="padding: 16px 48px; font-size: 18px;">生成评估报告</button>
+        <!-- Module 1: Business Model -->
+        <div class="module" id="mod1">
+            <div class="module-header collapsed" onclick="toggleModule('mod1')">
+                <div class="module-title">
+                    <h2>1. Business Model Assessment</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score1">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        F1: Is the business model simple and clear?
+                    </div>
+                    <div class="question-hint">Can you understand how they make money?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v11">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q11" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        F2: Profit model transparency
+                    </div>
+                    <div class="question-hint">Is it clear where every dollar comes from?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v12">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q12" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 输出区 -->
-        <div class="output-section" id="outputSection">
-            <div class="report-card">
-                <div class="copy-section">
-                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
+        <!-- Module 2: Competitive Advantage -->
+        <div class="module" id="mod2">
+            <div class="module-header collapsed" onclick="toggleModule('mod2')">
+                <div class="module-title">
+                    <h2>2. Competitive Advantage</h2>
+                    <span class="module-weight">Weight: 20%</span>
                 </div>
-                
-                <div class="report-header">
-                    <div class="company-name" id="outCompany">Apple</div>
-                    <div class="score-display" id="outScore">--</div>
-                    <div class="conclusion-badge" id="outConclusion">--</div>
-                    <div class="one-liner" id="outOneLiner">--</div>
+                <div class="module-info">
+                    <span class="module-score" id="score2">-</span>
+                    <span class="module-toggle">▼</span>
                 </div>
-
-                <div class="report-modules" id="outModules">
-                    <!-- 动态生成 -->
-                </div>
-
-                <div class="report-pros-cons">
-                    <div class="pros-card">
-                        <h4>优势</h4>
-                        <ul id="outPros">
-                            <!-- 动态生成 -->
-                        </ul>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        H1: Economic moat strength
                     </div>
-                    <div class="cons-card">
-                        <h4>风险</h4>
-                        <ul id="outCons">
-                            <!-- 动态生成 -->
-                        </ul>
+                    <div class="question-hint">Does the company have durable competitive advantages?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v21">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q21" oninput="updateScore()">
                     </div>
                 </div>
-
-                <div class="kill-switch-check">
-                    <h4>否决机制检查</h4>
-                    <div id="outKillSwitch">--</div>
+                <div class="question-item">
+                    <div class="question-label">
+                        H2: Moat sustainability trend
+                    </div>
+                    <div class="question-hint">Is the competitive advantage strengthening or weakening?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v22">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q22" oninput="updateScore()">
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="final-recommendation">
-                    <p id="outFinal">--</p>
+        <!-- Module 3: Profit Quality -->
+        <div class="module" id="mod3">
+            <div class="module-header collapsed" onclick="toggleModule('mod3')">
+                <div class="module-title">
+                    <h2>3. Profit Quality</h2>
+                    <span class="module-weight">Weight: 20%</span>
                 </div>
+                <div class="module-info">
+                    <span class="module-score" id="score3">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        Y1: Cash flow quality
+                    </div>
+                    <div class="question-hint">Are profits backed by actual cash flow?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v31">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q31" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        Y2: Earnings sustainability
+                    </div>
+                    <div class="question-hint">Are the earnings repeatable and sustainable?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v32">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q32" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: Industry Quality -->
+        <div class="module" id="mod4">
+            <div class="module-header collapsed" onclick="toggleModule('mod4')">
+                <div class="module-title">
+                    <h2>4. Industry Quality</h2>
+                    <span class="module-weight">Weight: 10%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score4">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        I1: Industry health
+                    </div>
+                    <div class="question-hint">Is this a good industry to be in?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v41">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q41" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        I2: Industry stability
+                    </div>
+                    <div class="question-hint">How stable and predictable is the industry?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v42">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q42" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 5: Management & Governance -->
+        <div class="module" id="mod5">
+            <div class="module-header collapsed" onclick="toggleModule('mod5')">
+                <div class="module-title">
+                    <h2>5. Management & Governance</h2>
+                    <span class="module-weight">Weight: 10%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score5">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        M1: Management integrity
+                    </div>
+                    <div class="question-hint">Are the executives trustworthy and ethical?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v51">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q51" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        M2: Corporate governance
+                    </div>
+                    <div class="question-hint">Is the company transparent and well-governed?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v52">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q52" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 6: Valuation & Safety -->
+        <div class="module" id="mod6">
+            <div class="module-header collapsed" onclick="toggleModule('mod6')">
+                <div class="module-title">
+                    <h2>6. Valuation & Safety Margin</h2>
+                    <span class="module-weight">Weight: 20%</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score6">-</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        G1: Valuation reasonableness
+                    </div>
+                    <div class="question-hint">Is the stock reasonably or attractively priced?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v61">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q61" oninput="updateScore()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        G2: Safety margin
+                    </div>
+                    <div class="question-hint">Is there enough margin for error in your analysis?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v62">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q62" oninput="updateScore()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 7: Deal Breakers -->
+        <div class="module" id="mod7">
+            <div class="module-header collapsed" onclick="toggleModule('mod7')">
+                <div class="module-title">
+                    <h2>7. Deal Breakers</h2>
+                    <span class="module-weight">Must Pass to Continue</span>
+                </div>
+                <div class="module-info">
+                    <span class="module-score" id="score7">-</span>
+                    <span class="module-pass pass-no" id="pass7">FAIL</span>
+                    <span class="module-toggle">▼</span>
+                </div>
+            </div>
+            <div class="module-content">
+                <div class="question-item">
+                    <div class="question-label">
+                        D1: Debt level
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Is the debt-to-asset ratio at a safe level?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v71">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q71" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D2: Hidden risks
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any off-balance sheet liabilities or hidden risks?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v72">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q72" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D3: Financial fraud risk
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any red flags or suspicious accounting?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v81">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q81" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+                <div class="question-item">
+                    <div class="question-label">
+                        D4: Fatal risks
+                        <span class="kill-badge">Deal Breaker</span>
+                    </div>
+                    <div class="question-hint">Any risks that could bankrupt the company?</div>
+                    <div class="slider-container">
+                        <span class="slider-value" id="v82">5</span>
+                        <input type="range" min="0" max="10" value="5" id="q82" oninput="updateDealBreakers()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+            <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Investment Analysis Report</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="reportContent">
+                <!-- Report content will be generated here -->
             </div>
         </div>
     </div>
 
-    <!-- Toast提示 -->
-    <div class="toast" id="toast">已复制到剪贴板</div>
-
     <script>
-        // 评分标准 - 每个问题的0-10对应的文字描述
-        // ========== scoreLabels 定义 ==========
-        window.scoreLabels = {
-            // 0. 能力圈预判
+        // Score labels - text descriptions for each value 0-10
+        const scoreLabels = {
+            // 0. Circle of Competence
             v01: {
-                0: "完全不懂，连业务模式都说不清",
-                1: "只知道名字，其他都没听过",
-                2: "知道行业，但对公司不了解",
-                3: "听过公司基本情况",
-                4: "略懂核心业务",
-                5: "一般了解，能说出主要业务",
-                6: "较清晰，理解商业模式和竞争优势",
-                7: "清晰，了解财务状况和行业地位",
-                8: "很清晰，跟踪过一段时间",
-                9: "非常清晰，研究过多年",
-                10: "专业深度，可以写报告分析"
+                0: "Completely clueless, can't explain how they make money",
+                1: "Only know the name, nothing else",
+                2: "Know the industry but not the company",
+                3: "Heard basic info about the company",
+                4: "Slightly understand core business",
+                5: "Moderate understanding, can describe main business",
+                6: "Clear, understand business model and competitive advantages",
+                7: "Very clear, understand financials and industry position",
+                8: "Very familiar, have tracked for some time",
+                9: "Extremely clear, have researched for years",
+                10: "Expert level, could write an analytical report"
             },
             v02: {
-                0: "完全陌生，从未接触过这个行业",
-                1: "很生疏，只听说过一些概念",
-                2: "生疏，了解基本概念",
-                3: "略知，有些边缘了解",
-                4: "基础了解，知道行业运作方式",
-                5: "一般，关注过这个行业",
-                6: "还行，了解行业竞争格局",
-                7: "较熟悉，跟踪行业动态",
-                8: "熟悉，理解行业核心逻辑",
-                9: "很熟悉，有深入研究",
-                10: "深度研究，可以写行业分析"
+                0: "Completely unfamiliar, never encountered this industry",
+                1: "Very unfamiliar, only heard some concepts",
+                2: "Unfamiliar, understand basic concepts",
+                3: "Know a little, some peripheral understanding",
+                4: "Basic understanding, know how the industry works",
+                5: "Moderate, have followed this industry",
+                6: "Decent, understand competitive landscape",
+                7: "Familiar, track industry dynamics",
+                8: "Very familiar, understand core industry logic",
+                9: "Extremely familiar, have done deep research",
+                10: "Deep research, could write industry analysis"
             },
-            // 前置过滤（否决项）
-            vF1: {
-                0: "完全不理解",
-                1: "几乎不懂",
-                2: "只知道皮毛",
-                3: "了解很少",
-                4: "略知一二",
-                5: "基本理解",
-                6: "较理解",
-                7: "理解清楚",
-                8: "理解透彻",
-                9: "深度理解",
-                10: "完全理解，如数家珍"
-            },
-            vF2: {
-                0: "完全不在能力圈",
-                1: "离能力圈很远",
-                2: "远超能力圈",
-                3: "明显超出能力圈",
-                4: "略超能力圈",
-                5: "勉强在能力圈边缘",
-                6: "在能力圈内",
-                7: "明确在能力圈内",
-                8: "深度在能力圈内",
-                9: "核心能力圈",
-                10: "绝对核心能力圈"
-            },
-            // 模块1：商业模式
+            // Module 1: Business Model
             v11: {
-                0: "极度复杂，完全理不清赚钱逻辑",
-                1: "非常复杂，大部分看不懂",
-                2: "很复杂，只能理解一小部分",
-                3: "比较复杂，看不懂的部分较多",
-                4: "略复杂，大致能理解",
-                5: "适中，基本能说清",
-                6: "比较简单，能清晰描述",
-                7: "简单，一目了然",
-                8: "很简单，一句话能说清",
-                9: "非常简单，任何人都能理解",
-                10: "极度简单，傻瓜都能懂"
+                0: "Extremely complex, impossible to understand how they make money",
+                1: "Very complex, most is incomprehensible",
+                2: "Complex, can only understand a small part",
+                3: "Fairly complex, many parts are unclear",
+                4: "Slightly complex, can roughly understand",
+                5: "Moderate, can basically explain",
+                6: "Fairly simple, can clearly describe",
+                7: "Simple, clear at a glance",
+                8: "Very simple, can explain in one sentence",
+                9: "Extremely simple, anyone can understand",
+                10: "Dead simple, a fool could understand"
             },
             v12: {
-                0: "极度难懂，黑箱操作",
-                1: "非常不透明",
-                2: "很不透明，大部分搞不懂",
-                3: "不太透明",
-                4: "略显复杂",
-                5: "适中，能看懂主要逻辑",
-                6: "比较透明",
-                7: "透明，逻辑清晰",
-                8: "很透明，一目了然",
-                9: "非常透明",
-                10: "极度清晰，每分钱都清楚"
+                0: "Extremely opaque, black box operations",
+                1: "Very non-transparent",
+                2: "Quite opaque, most parts unclear",
+                3: "Not very transparent",
+                4: "Slightly complex",
+                5: "Moderate, can understand main logic",
+                6: "Fairly transparent",
+                7: "Transparent, clear logic",
+                8: "Very transparent, clear at a glance",
+                9: "Extremely transparent",
+                10: "Perfectly clear, every dollar is traceable"
             },
-            // 模块2：竞争优势
+            // Module 2: Competitive Advantage
             v21: {
-                0: "完全没有，随时可能被颠覆",
-                1: "几乎没有",
-                2: "很弱",
-                3: "较弱",
-                4: "略有护城河",
-                5: "一般，有一些优势",
-                6: "尚可，具备一定护城河",
-                7: "较强护城河",
-                8: "强护城河",
-                9: "很强护城河",
-                10: "强大稳固，难以撼动"
+                0: "None at all, could be disrupted anytime",
+                1: "Almost none",
+                2: "Very weak",
+                3: "Weak",
+                4: "Slight moat",
+                5: "Moderate, some advantages",
+                6: "Decent, have some moat",
+                7: "Strong moat",
+                8: "Strong moat",
+                9: "Very strong moat",
+                10: "Powerful and solid, hard to shake"
             },
             v22: {
-                0: "极速恶化，优势在快速消失",
-                1: "快速恶化",
-                2: "明显削弱",
-                3: "逐渐削弱",
-                4: "略微削弱",
-                5: "稳定，维持现状",
-                6: "略微增强",
-                7: "逐渐强化",
-                8: "明显强化",
-                9: "快速强化",
-                10: "持续强化，优势越来越大"
+                0: "Rapidly deteriorating, advantages disappearing fast",
+                1: "Fast deterioration",
+                2: "Clearly weakening",
+                3: "Gradually weakening",
+                4: "Slightly weakening",
+                5: "Stable, maintaining status quo",
+                6: "Slightly strengthening",
+                7: "Gradually strengthening",
+                8: "Clearly strengthening",
+                9: "Rapidly strengthening",
+                10: "Continuously strengthening, growing advantage"
             },
-            // 模块3：盈利质量
+            // Module 3: Profit Quality
             v31: {
-                0: "极差，长期现金流为负",
-                1: "很差",
-                2: "差",
-                3: "较差",
-                4: "偏弱",
-                5: "一般",
-                6: "尚可",
-                7: "良好",
-                8: "很好",
-                9: "优秀",
-                10: "极优，现金流充沛稳定"
+                0: "Extremely poor, long-term negative cash flow",
+                1: "Very poor",
+                2: "Poor",
+                3: "Below average",
+                4: "Weak",
+                5: "Moderate",
+                6: "Decent",
+                7: "Good",
+                8: "Very good",
+                9: "Excellent",
+                10: "Outstanding, abundant and stable cash flow"
             },
             v32: {
-                0: "完全不可持续，靠一次性收益",
-                1: "很难持续",
-                2: "较难持续",
-                3: "存在不确定性",
-                4: "稍有不确定",
-                5: "一般，基本可持续",
-                6: "较易持续",
-                7: "容易持续",
-                8: "很容易持续",
-                9: "高度可持续",
-                10: "强大稳定，几乎确定可持续"
+                0: "Completely unsustainable, relies on one-time gains",
+                1: "Very hard to sustain",
+                2: "Hard to sustain",
+                3: "Uncertain sustainability",
+                4: "Slightly uncertain",
+                5: "Moderate, basically sustainable",
+                6: "Fairly sustainable",
+                7: "Easily sustainable",
+                8: "Very easily sustainable",
+                9: "Highly sustainable",
+                10: "Strong and stable, almost certainly sustainable"
             },
-            v33: {
-                0: "ROE极低且波动剧烈",
-                1: "ROE很低，不稳定",
-                2: "ROE偏低，波动大",
-                3: "ROE略低，较不稳定",
-                4: "ROE一般，有波动",
-                5: "ROE中等，基本稳定",
-                6: "ROE较好，相对稳定",
-                7: "ROE良好，稳定",
-                8: "ROE优秀，很稳定",
-                9: "ROE卓越，高度稳定",
-                10: "ROE极高且长期稳定"
-            },
-            // 模块4：行业质量
+            // Module 4: Industry Quality
             v41: {
-                0: "完全没有健康度，恶性竞争",
-                1: "极度不健康",
-                2: "很不健康",
-                3: "不健康",
-                4: "略有问题",
-                5: "一般",
-                6: "相对健康",
-                7: "健康",
-                8: "很健康",
-                9: "非常健康",
-                10: "极度健康，良性竞争"
+                0: "No health at all, cutthroat competition",
+                1: "Extremely unhealthy",
+                2: "Very unhealthy",
+                3: "Unhealthy",
+                4: "Slightly problematic",
+                5: "Moderate",
+                6: "Relatively healthy",
+                7: "Healthy",
+                8: "Very healthy",
+                9: "Extremely healthy",
+                10: "Perfectly healthy, positive competition"
             },
             v42: {
-                0: "极度不稳定，剧烈变化",
-                1: "非常不稳定",
-                2: "很不稳定",
-                3: "不稳定",
-                4: "略不稳定",
-                5: "适中",
-                6: "相对稳定",
-                7: "稳定",
-                8: "很稳定",
-                9: "非常稳定",
-                10: "极度稳定，变化缓慢"
+                0: "Extremely unstable, dramatic changes",
+                1: "Very unstable",
+                2: "Quite unstable",
+                3: "Unstable",
+                4: "Slightly unstable",
+                5: "Moderate",
+                6: "Relatively stable",
+                7: "Stable",
+                8: "Very stable",
+                9: "Extremely stable",
+                10: "Perfectly stable, slow changing"
             },
-            v43: {
-                0: "极易复制，毫无壁垒",
-                1: "很容易复制",
-                2: "较易复制",
-                3: "可以复制",
-                4: "有一定复制难度",
-                5: "复制有难度",
-                6: "复制较困难",
-                7: "复制很困难",
-                8: "极难复制",
-                9: "几乎无法复制",
-                10: "完全无法复制，绝对壁垒"
-            },
-            // 模块5：管理层与治理
+            // Module 5: Management & Governance
             v51: {
-                0: "极度不道德，有严重不良记录",
-                1: "非常可疑",
-                2: "很可疑",
-                3: "有争议",
-                4: "评价一般",
-                5: "中立",
-                6: "尚可",
-                7: "良好",
-                8: "很好",
-                9: "非常好",
-                10: "高度道德，值得信赖"
+                0: "Extremely unethical, serious misconduct records",
+                1: "Very suspicious",
+                2: "Quite suspicious",
+                3: "Controversial",
+                4: "Average reputation",
+                5: "Neutral",
+                6: "Decent",
+                7: "Good",
+                8: "Very good",
+                9: "Excellent",
+                10: "Highly ethical, trustworthy"
             },
             v52: {
-                0: "极度不透明，黑箱操作",
-                1: "非常不透明",
-                2: "很不透明",
-                3: "不透明",
-                4: "略不透明",
-                5: "中立",
-                6: "相对透明",
-                7: "透明",
-                8: "很透明",
-                9: "非常透明",
-                10: "高度透明，治理优秀"
+                0: "Extremely opaque, black box operations",
+                1: "Very non-transparent",
+                2: "Quite opaque",
+                3: "Not transparent",
+                4: "Slightly opaque",
+                5: "Neutral",
+                6: "Relatively transparent",
+                7: "Transparent",
+                8: "Very transparent",
+                9: "Extremely transparent",
+                10: "Highly transparent, excellent governance"
             },
-            // 模块6：估值与风险
+            // Module 6: Valuation & Safety
             v61: {
-                0: "极度高估，泡沫严重",
-                1: "非常高估",
-                2: "很高估",
-                3: "高估",
-                4: "略高估",
-                5: "合理",
-                6: "略低估",
-                7: "低估",
-                8: "很低估",
-                9: "非常低估",
-                10: "极度低估，严重便宜"
+                0: "Extremely overvalued, severe bubble",
+                1: "Very overvalued",
+                2: "Quite overvalued",
+                3: "Overvalued",
+                4: "Slightly overvalued",
+                5: "Fair valuation",
+                6: "Slightly undervalued",
+                7: "Undervalued",
+                8: "Quite undervalued",
+                9: "Very undervalued",
+                10: "Extremely undervalued, dirt cheap"
             },
             v62: {
-                0: "完全没有，买入即亏损",
-                1: "几乎没有",
-                2: "很小",
-                3: "较小",
-                4: "略小",
-                5: "一般",
-                6: "尚可",
-                7: "充足",
-                8: "很充足",
-                9: "非常充足",
-                10: "巨大安全边际"
+                0: "None at all, buy and lose immediately",
+                1: "Almost none",
+                2: "Very small",
+                3: "Small",
+                4: "Slightly small",
+                5: "Moderate",
+                6: "Decent",
+                7: "Adequate",
+                8: "Good",
+                9: "Very good",
+                10: "Huge safety margin"
             },
-            v63: {
-                0: "行业衰退中，市场萎缩",
-                1: "行业衰退，增长困难",
-                2: "行业停滞，无增长",
-                3: "行业增长缓慢",
-                4: "行业低增长",
-                5: "行业中速增长",
-                6: "行业稳健增长",
-                7: "行业较快增长",
-                8: "行业高速增长",
-                9: "行业爆发式增长",
-                10: "行业超级增长，空间巨大"
-            },
-            // 否决项
+            // Deal Breakers
             v71: {
-                0: "资产负债率>70%，极度危险",
+                0: "Debt-to-asset >70%, extremely dangerous",
                 1: "65-70%",
                 2: "60-65%",
                 3: "55-60%",
                 4: "50-55%",
-                5: "50%左右，适中",
+                5: "Around 50%, moderate",
                 6: "45-50%",
                 7: "40-45%",
                 8: "35-40%",
                 9: "30-35%",
-                10: "<30%，非常健康"
+                10: "<30%, very healthy"
             },
             v72: {
-                0: "存在重大风险，大额表外负债",
-                1: "风险很大",
-                2: "风险较大",
-                3: "有一些风险",
-                4: "略有风险",
-                5: "基本没有",
-                6: "较安全",
-                7: "安全",
-                8: "很安全",
-                9: "非常安全",
-                10: "极度安全，无任何隐患"
+                0: "Major risks exist, large off-balance sheet liabilities",
+                1: "Very risky",
+                2: "Quite risky",
+                3: "Some risks",
+                4: "Slightly risky",
+                5: "Basically none",
+                6: "Fairly safe",
+                7: "Safe",
+                8: "Very safe",
+                9: "Extremely safe",
+                10: "Perfectly safe, no hidden risks"
             },
             v81: {
-                0: "明显造假，危险信号很多",
-                1: "高度可疑",
-                2: "很可疑",
-                3: "较可疑",
-                4: "略可疑",
-                5: "无明显迹象",
-                6: "较干净",
-                7: "干净",
-                8: "很干净",
-                9: "非常干净",
-                10: "完全干净，财报可信"
+                0: "Clear fraud, many red flags",
+                1: "Highly suspicious",
+                2: "Very suspicious",
+                3: "Fairly suspicious",
+                4: "Slightly suspicious",
+                5: "No obvious signs",
+                6: "Fairly clean",
+                7: "Clean",
+                8: "Very clean",
+                9: "Extremely clean",
+                10: "Perfectly clean, financials credible"
             },
             v82: {
-                0: "存在致命风险，随时可能爆雷",
-                1: "风险极大",
-                2: "风险很大",
-                3: "风险较大",
-                4: "有风险",
-                5: "无明显致命风险",
-                6: "风险较小",
-                7: "风险小",
-                8: "风险很小",
-                9: "风险极小",
-                10: "无致命风险，安全无忧"
-            },
-            v91: {
-                0: "回购/分红极不合理",
-                1: "回购/分红很不合理",
-                2: "回购/分红较不合理",
-                3: "回购/分红略有瑕疵",
-                4: "回购/分红一般",
-                5: "回购/分红基本合理",
-                6: "回购/分红较合理",
-                7: "回购/分红合理",
-                8: "回购/分红很合理",
-                9: "回购/分红非常合理",
-                10: "回购/分红极佳，高度回报股东"
-            },
-            v92: {
-                0: "再投资回报极低，甚至亏损",
-                1: "再投资回报很低",
-                2: "再投资回报低",
-                3: "再投资回报较低",
-                4: "再投资回报一般",
-                5: "再投资回报尚可",
-                6: "再投资回报较好",
-                7: "再投资回报良好",
-                8: "再投资回报优秀",
-                9: "再投资回报卓越",
-                10: "再投资回报极高，资本配置大师"
-            },
-            v101: {
-                0: "负债率极高，严重财务风险",
-                1: "负债率很高",
-                2: "负债率高",
-                3: "负债率偏高",
-                4: "负债率略高",
-                5: "负债率适中",
-                6: "负债率略低",
-                7: "负债率较低",
-                8: "负债率低",
-                9: "负债率很低",
-                10: "负债率极低，财务极其稳健"
-            },
-            v102: {
-                0: "存在严重财务风险隐患",
-                1: "财务风险隐患很大",
-                2: "财务风险隐患较大",
-                3: "有一定财务风险隐患",
-                4: "有轻微财务风险隐患",
-                5: "财务风险隐患不明显",
-                6: "财务较安全",
-                7: "财务安全",
-                8: "财务很安全",
-                9: "财务非常安全",
-                10: "财务极度安全，无隐患"
-            },
-            v111: {
-                0: "利润率持续恶化，趋势极差",
-                1: "利润率明显下降",
-                2: "利润率下降",
-                3: "利润率略有下降",
-                4: "利润率不稳定",
-                5: "利润率平稳",
-                6: "利润率略有提升",
-                7: "利润率稳步提升",
-                8: "利润率明显提升",
-                9: "利润率大幅提升",
-                10: "利润率持续大幅提升，趋势极佳"
-            },
-            v112: {
-                0: "盈利来源极不稳定，无法预测",
-                1: "盈利来源很不稳定",
-                2: "盈利来源不稳定",
-                3: "盈利来源较不稳定",
-                4: "盈利来源略有波动",
-                5: "盈利来源基本稳定",
-                6: "盈利来源稳定",
-                7: "盈利来源很稳定",
-                8: "盈利来源非常稳定",
-                9: "盈利来源高度稳定",
-                10: "盈利来源极其稳定，完全可预测"
-            },
-            v121: {
-                0: "估值极高，严重高估",
-                1: "估值很高",
-                2: "估值偏高",
-                3: "估值略高",
-                4: "估值略偏贵",
-                5: "估值合理",
-                6: "估值略低",
-                7: "估值偏低",
-                8: "估值很低",
-                9: "估值非常低",
-                10: "估值极低，严重低估"
-            },
-            v122: {
-                0: "完全没有安全边际",
-                1: "安全边际极小",
-                2: "安全边际很小",
-                3: "安全边际较小",
-                4: "安全边际略小",
-                5: "安全边际一般",
-                6: "安全边际尚可",
-                7: "安全边际充足",
-                8: "安全边际很充足",
-                9: "安全边际非常充足",
-                10: "安全边际巨大，非常安全"
-            },
-            v131: {
-                0: "存在明显财务造假迹象",
-                1: "有较多财务造假嫌疑",
-                2: "有财务造假嫌疑",
-                3: "稍有财务造假嫌疑",
-                4: "轻微财务造假可能",
-                5: "无明显造假迹象",
-                6: "财务较为干净",
-                7: "财务干净",
-                8: "财务很干净",
-                9: "财务非常干净",
-                10: "财务完全透明，毫无造假可能"
-            },
-            v132: {
-                0: "存在致命风险，可能归零",
-                1: "有严重致命风险",
-                2: "有较大致命风险",
-                3: "有一定致命风险",
-                4: "有轻微致命风险",
-                5: "无明显致命风险",
-                6: "致命风险较小",
-                7: "致命风险小",
-                8: "致命风险很小",
-                9: "致命风险极小",
-                10: "无致命风险，非常安全"
+                0: "Fatal risk exists, could blow up anytime",
+                1: "Extreme risk",
+                2: "Very high risk",
+                3: "High risk",
+                4: "Risky",
+                5: "No obvious fatal risk",
+                6: "Low risk",
+                7: "Small risk",
+                8: "Very small risk",
+                9: "Minimal risk",
+                10: "No fatal risk, completely safe"
             }
         };
 
-        // 全局变量存储报告数据
+        // Global report data
         let reportData = {};
 
-        // 自动保存到 localStorage
-        function saveToStorage() {
-            const data = {
-                companyName: document.getElementById('companyName').value,
-                sliders: {},
-                savedAt: new Date().toISOString()
-            };
-            document.querySelectorAll('input[type="range"]').forEach(slider => {
-                data.sliders[slider.id] = slider.value;
-            });
-            localStorage.setItem('investmentJudgmentData', JSON.stringify(data));
-            
-            // 显示保存提示
-            const saveStatus = document.getElementById('saveStatus');
-            saveStatus.textContent = '💾 已自动保存';
-            setTimeout(() => { saveStatus.textContent = ''; }, 1500);
-        }
-
-        // 从 localStorage 加载
-        function loadFromStorage() {
-            const saved = localStorage.getItem('investmentJudgmentData');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    if (data.companyName) {
-                        document.getElementById('companyName').value = data.companyName;
-                    }
-                    if (data.sliders) {
-                        Object.keys(data.sliders).forEach(id => {
-                            const slider = document.getElementById(id);
-                            if (slider) {
-                                slider.value = data.sliders[id];
-                                updateValue(slider, false); // 加载时不触发保存
-                            }
-                        });
-                    }
-                    // 显示恢复提示
-                    const saveStatus = document.getElementById('saveStatus');
-                    const savedTime = new Date(data.savedAt).toLocaleString('zh-CN');
-                    saveStatus.textContent = '📂 已恢复上次数据 (' + savedTime + ')';
-                    setTimeout(() => { saveStatus.textContent = ''; }, 3000);
-                } catch (e) {
-                    console.error('加载缓存数据失败:', e);
-                }
-            }
-        }
-
-        // 导出数据为 JSON 文件
-        function exportData() {
-            const data = {
-                companyName: document.getElementById('companyName').value,
-                sliders: {},
-                exportedAt: new Date().toISOString(),
-                version: '1.0'
-            };
-            document.querySelectorAll('input[type="range"]').forEach(slider => {
-                data.sliders[slider.id] = slider.value;
-            });
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const fileName = data.companyName ? 
-                `投资判断_${data.companyName}_${new Date().toISOString().slice(0,10)}.json` :
-                `投资判断_${new Date().toISOString().slice(0,10)}.json`;
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            const saveStatus = document.getElementById('saveStatus');
-            saveStatus.textContent = '📤 导出成功';
-            setTimeout(() => { saveStatus.textContent = ''; }, 2000);
-        }
-
-        // 从 JSON 文件导入
-        function importData(input) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.companyName !== undefined) {
-                        document.getElementById('companyName').value = data.companyName;
-                    }
-                    if (data.sliders) {
-                        Object.keys(data.sliders).forEach(id => {
-                            const slider = document.getElementById(id);
-                            if (slider) {
-                                slider.value = data.sliders[id];
-                                updateValue(slider);
-                            }
-                        });
-                    }
-                    // 保存到 localStorage
-                    saveToStorage();
-                    
-                    const saveStatus = document.getElementById('saveStatus');
-                    saveStatus.textContent = '📥 导入成功';
-                    setTimeout(() => { saveStatus.textContent = ''; }, 2000);
-                } catch (err) {
-                    alert('导入失败：文件格式不正确');
-                    console.error(err);
-                }
-            };
-            reader.readAsText(file);
-            input.value = ''; // 重置，允许重复导入同一文件
-        }
-
-        // 更新滑块显示值（可选择是否自动保存）
-        function updateValue(slider, autoSave = true) {
+        // Update slider display value
+        function updateValue(slider) {
             const valueSpan = document.getElementById(slider.id.replace('q', 'v'));
             const val = parseInt(slider.value);
             const labels = scoreLabels[valueSpan.id];
@@ -1531,445 +1138,259 @@
             } else {
                 valueSpan.textContent = val;
             }
-            // 自动保存（除非指定不保存）
-            if (autoSave) {
-                saveToStorage();
-            }
         }
 
-        // 页面加载时初始化所有滑块显示
+        // Initialize all sliders on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化滑块显示（不触发保存）
             document.querySelectorAll('input[type="range"]').forEach(slider => {
-                updateValue(slider, false);
+                updateValue(slider);
             });
-            // 自动恢复上次数据
-            loadFromStorage();
         });
 
-        // 切换模块展开/收起
-        function toggleModule(header) {
-            const content = header.nextElementSibling;
+        // Toggle module
+        function toggleModule(modId) {
+            const header = document.querySelector('#' + modId + ' .module-header');
+            const content = document.querySelector('#' + modId + ' .module-content');
+            header.classList.toggle('collapsed');
             content.classList.toggle('open');
         }
 
-        // 清空所有
-        function clearAll() {
-            document.getElementById('companyName').value = '';
-            const sliders = document.querySelectorAll('input[type="range"]');
-            sliders.forEach(s => {
-                s.value = 5;
-                const valueSpan = document.getElementById(s.id.replace('q', 'v'));
-                valueSpan.textContent = '5';
+        // Update Circle of Competence
+        function updateCircleCompetence() {
+            const q1 = parseInt(document.getElementById('q01').value);
+            const q2 = parseInt(document.getElementById('q02').value);
+            const avg = (q1 + q2) / 2;
+            
+            document.getElementById('v01').textContent = q1 + " - " + scoreLabels.v01[q1];
+            document.getElementById('v02').textContent = q2 + " - " + scoreLabels.v02[q2];
+            document.getElementById('score0').textContent = avg.toFixed(1);
+            
+            const passed = avg >= 6;
+            const passEl = document.getElementById('pass0');
+            passEl.textContent = passed ? 'PASS' : 'FAIL';
+            passEl.className = 'module-pass ' + (passed ? 'pass-yes' : 'pass-no');
+            
+            reportData.circle = { q1, q2, avg, passed };
+            updateTotalScore();
+        }
+
+        // Update Deal Breakers
+        function updateDealBreakers() {
+            const q71 = parseInt(document.getElementById('q71').value);
+            const q72 = parseInt(document.getElementById('q72').value);
+            const q81 = parseInt(document.getElementById('q81').value);
+            const q82 = parseInt(document.getElementById('q82').value);
+            
+            document.getElementById('v71').textContent = q71 + " - " + scoreLabels.v71[q71];
+            document.getElementById('v72').textContent = q72 + " - " + scoreLabels.v72[q72];
+            document.getElementById('v81').textContent = q81 + " - " + scoreLabels.v81[q81];
+            document.getElementById('v82').textContent = q82 + " - " + scoreLabels.v82[q82];
+            
+            const allPassed = q71 >= 5 && q72 >= 5 && q81 >= 5 && q82 >= 5;
+            const avgScore = (q71 + q72 + q81 + q82) / 4;
+            
+            document.getElementById('score7').textContent = avgScore.toFixed(1);
+            const passEl = document.getElementById('pass7');
+            passEl.textContent = allPassed ? 'PASS' : 'FAIL';
+            passEl.className = 'module-pass ' + (allPassed ? 'pass-yes' : 'pass-no');
+            
+            reportData.dealbreakers = { q71, q72, q81, q82, avgScore, passed: allPassed };
+            updateTotalScore();
+        }
+
+        // Update all scores
+        function updateScore() {
+            const modules = [
+                { id: '1', qs: ['q11', 'q12'], weight: 0.20 },
+                { id: '2', qs: ['q21', 'q22'], weight: 0.20 },
+                { id: '3', qs: ['q31', 'q32'], weight: 0.20 },
+                { id: '4', qs: ['q41', 'q42'], weight: 0.10 },
+                { id: '5', qs: ['q51', 'q52'], weight: 0.10 },
+                { id: '6', qs: ['q61', 'q62'], weight: 0.20 }
+            ];
+            
+            let totalWeightedScore = 0;
+            
+            modules.forEach(mod => {
+                const values = mod.qs.map(q => parseInt(document.getElementById(q).value));
+                const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                
+                // Update display labels
+                values.forEach((val, i) => {
+                    const valId = mod.qs[i].replace('q', 'v');
+                    document.getElementById(valId).textContent = val + " - " + scoreLabels[valId][val];
+                });
+                
+                document.getElementById('score' + mod.id).textContent = avg.toFixed(1);
+                totalWeightedScore += avg * mod.weight;
+                
+                reportData['mod' + mod.id] = { values, avg, weight: mod.weight };
             });
-            document.getElementById('outputSection').classList.remove('show');
-            // 清除缓存
-            localStorage.removeItem('investmentJudgmentData');
-            const saveStatus = document.getElementById('saveStatus');
-            saveStatus.textContent = '🗑️ 已清空';
-            setTimeout(() => { saveStatus.textContent = ''; }, 1500);
+            
+            reportData.weightedBase = totalWeightedScore;
+            updateTotalScore();
         }
 
-        // 获取问题分数
-        function getScore(id) {
-            return parseInt(document.getElementById('q' + id).value);
-        }
-
-        // 计算模块平均分
-        function calcModuleAvg(ids) {
-            const sum = ids.reduce((acc, id) => acc + getScore(id), 0);
-            return sum / ids.length;
-        }
-
-        // 显示Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        // 一键复制报告
-        function copyReport() {
-            if (!reportData.companyName) {
-                showToast('请先进行评估');
-                return;
-            }
-
-            const text = generateReportText();
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('已复制到剪贴板');
-            }).catch(err => {
-                // Fallback
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showToast('已复制到剪贴板');
-            });
-        }
-
-        // 生成报告文本
-        function generateReportText() {
-            let text = '';
-            text += '━━━━━━━━━━━━━━━━━━━━\n';
-            text += '【投资判断系统】\n';
-            text += '让每一次投资，都有原则可依\n';
-            text += '基于巴菲特、芒格、段永平投资原则构建\n';
-            text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+        // Update total score
+        function updateTotalScore() {
+            updateCircleCompetence();
+            updateScore();
+            updateDealBreakers();
             
-            text += '企业：' + reportData.companyName + '\n';
-            text += '评分：' + reportData.score + ' / 100\n';
-            text += '结论：' + reportData.conclusion + '\n\n';
+            const circlePassed = reportData.circle && reportData.circle.passed;
+            const dealbreakersPassed = reportData.dealbreakers && reportData.dealbreakers.passed;
+            const baseScore = reportData.weightedBase || 0;
             
-            text += '一句话判断：\n' + reportData.oneLiner + '\n\n';
-            
-            text += '━━━ 模块评分 ━━━\n';
-            for (const key in reportData.modules) {
-                text += reportData.modules[key].name + '：' + Math.round(reportData.modules[key].score) + '分\n';
-            }
-            
-            text += '\n━━━ 优势 ━━━\n';
-            reportData.pros.forEach(p => text += '+ ' + p + '\n');
-            
-            text += '\n━━━ 风险 ━━━\n';
-            reportData.cons.forEach(c => text += '- ' + c + '\n');
-            
-            text += '\n━━━ 否决机制 ━━━\n';
-            text += reportData.killSwitchStatus + '\n';
-            
-            text += '\n━━━ 最终建议 ━━━\n';
-            text += reportData.finalRecommendation + '\n';
-            
-            text += '\n━━━━━━━━━━━━━━━━━━━━\n';
-            
-            return text;
-        }
-
-        // 主计算函数
-        function calculate() {
-            const companyName = document.getElementById('companyName').value || '未命名公司';
-
-            // 前置过滤器检查
-            const f1 = getScore('F1');
-            const f2 = getScore('F2');
-
-            // 否决项检查
-            const q72 = getScore('72');  // 管理层诚信
-            const q102 = getScore('102'); // 财务风险
-            const q131 = getScore('131'); // 财务造假
-
-            let killSwitchTriggered = null;
-
-            if (f1 < 4) {
-                killSwitchTriggered = '无法理解商业模式';
-            } else if (f2 < 4) {
-                killSwitchTriggered = '不在能力圈内';
-            } else if (q72 <= 3) {
-                killSwitchTriggered = '管理层存在侵害股东利益的历史';
-            } else if (q102 <= 3) {
-                killSwitchTriggered = '存在财务风险隐患';
-            } else if (q131 <= 3) {
-                killSwitchTriggered = '存在财务造假嫌疑';
-            }
-
-            // 如果触发否决，直接输出负面结论
-            if (killSwitchTriggered) {
-                showResult(companyName, 0, 'kill', killSwitchTriggered);
-                return;
-            }
-
-            // 计算各模块分数
-            const modules = {
-                biz: {
-                    name: '商业模式',
-                    weight: 0.25,
-                    score: calcModuleAvg(['11', '12', '21', '22', '31', '32', '33']),
-                    questions: ['11', '12', '21', '22', '31', '32', '33']
-                },
-                compete: {
-                    name: '竞争优势',
-                    weight: 0.20,
-                    score: calcModuleAvg(['41', '42', '43', '51', '52']),
-                    questions: ['41', '42', '43', '51', '52']
-                },
-                industry: {
-                    name: '行业结构',
-                    weight: 0.10,
-                    score: calcModuleAvg(['61', '62', '63']),
-                    questions: ['61', '62', '63']
-                },
-                mgmt: {
-                    name: '管理层',
-                    weight: 0.15,
-                    score: calcModuleAvg(['71', '72', '81', '82', '91', '92']),
-                    questions: ['71', '72', '81', '82', '91', '92']
-                },
-                finance: {
-                    name: '财务质量',
-                    weight: 0.15,
-                    score: calcModuleAvg(['101', '102', '111', '112']),
-                    questions: ['101', '102', '111', '112']
-                },
-                risk: {
-                    name: '估值与风险',
-                    weight: 0.15,
-                    score: calcModuleAvg(['121', '122', '131', '132']),
-                    questions: ['121', '122', '131', '132']
-                }
-            };
-
-            // 加权总分（转为百分制）
             let totalScore = 0;
-            for (const key in modules) {
-                totalScore += modules[key].score * modules[key].weight;
+            if (circlePassed && dealbreakersPassed) {
+                totalScore = baseScore;
+            } else if (!circlePassed) {
+                totalScore = 0;
+            } else if (!dealbreakersPassed) {
+                totalScore = baseScore * 0.3;
             }
-            totalScore = totalScore * 10; // 转为百分制
-
-            // 短板惩罚
-            let penalty = 0;
-            for (const key in modules) {
-                if (modules[key].score < 5) {
-                    penalty += 10;
-                } else if (modules[key].score < 6.5) {
-                    penalty += 5;
-                }
-            }
-            totalScore = Math.max(0, totalScore - penalty);
-
-            // 生成结论
-            let conclusion = '';
-            let conclusionClass = '';
-            if (totalScore >= 85) {
-                conclusion = '强烈建议';
-                conclusionClass = 'conclusion-strong';
-            } else if (totalScore >= 70) {
-                conclusion = '可投资';
-                conclusionClass = 'conclusion-good';
-            } else if (totalScore >= 60) {
-                conclusion = '谨慎观察';
-                conclusionClass = 'conclusion-caution';
-            } else {
-                conclusion = '不建议投资';
-                conclusionClass = 'conclusion-avoid';
-            }
-
-            showResult(companyName, Math.round(totalScore), conclusion, null, conclusionClass, modules, penalty);
+            
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+            document.getElementById('progressFill').style.width = (totalScore * 10) + '%';
+            
+            reportData.totalScore = totalScore;
+            reportData.circlePassed = circlePassed;
+            reportData.dealbreakersPassed = dealbreakersPassed;
         }
 
-        // 显示结果
-        function showResult(company, score, conclusion, killReason, conclusionClass, modules, penalty) {
-            document.getElementById('outputSection').classList.add('show');
-            document.getElementById('outCompany').textContent = company;
+        // Reset all
+        function resetAll() {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                slider.value = 5;
+                updateValue(slider);
+            });
+            document.getElementById('companyName').value = '';
+            reportData = {};
+            updateTotalScore();
+        }
 
-            // 处理否决情况
-            if (conclusion === 'kill') {
-                document.getElementById('outScore').textContent = '--';
-                const badge = document.getElementById('outConclusion');
-                badge.textContent = '不建议投资';
-                badge.className = 'conclusion-badge conclusion-kill';
-                document.getElementById('outOneLiner').textContent = '';
-                document.getElementById('outModules').innerHTML = '<p style="grid-column: span 2; text-align: center; color: #666;">已触发否决机制，无需进一步评分</p>';
-                document.getElementById('outPros').innerHTML = '<li>-</li>';
-                document.getElementById('outCons').innerHTML = '<li>' + killReason + '</li>';
-                document.getElementById('outKillSwitch').innerHTML = '<span style="color: #dc3545; font-weight: 600;">已触发：' + killReason + '</span>';
-                document.getElementById('outFinal').textContent = '该公司触发了否决机制，不建议投资。';
-
-                // 存储报告数据
-                reportData = {
-                    companyName: company,
-                    score: '--',
-                    conclusion: '不建议投资（触发否决）',
-                    oneLiner: '',
-                    modules: {},
-                    pros: ['-'],
-                    cons: [killReason],
-                    killSwitchStatus: '已触发：' + killReason,
-                    finalRecommendation: '该公司触发了否决机制，不建议投资。'
-                };
-
-                window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
-                return;
-            }
-
-            document.getElementById('outScore').textContent = score;
-            const badge = document.getElementById('outConclusion');
-            badge.textContent = conclusion;
-            badge.className = 'conclusion-badge ' + conclusionClass;
-
-            // 生成一句话判断
-            const bizScore = modules.biz.score;
-            const riskScore = modules.risk.score;
-            let oneLiner = '';
-            if (score >= 80) {
-                if (riskScore < 70) {
-                    oneLiner = '这是一家优秀的公司，但现在买入赚的是时间，不是价格。';
-                } else {
-                    oneLiner = '这是一家值得长期持有的优质公司，价格合理。';
-                }
-            } else if (score >= 70) {
-                oneLiner = '这是一家不错的公司，但存在一些需要关注的短板。';
-            } else if (score >= 60) {
-                oneLiner = '这家公司有价值但也有风险，建议观望或小额试水。';
+        // Generate report
+        function generateReport() {
+            const company = document.getElementById('companyName').value || 'Unknown Company';
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const totalScore = reportData.totalScore || 0;
+            const circlePassed = reportData.circlePassed;
+            const dbPassed = reportData.dealbreakersPassed;
+            
+            let verdict, verdictClass;
+            if (!circlePassed) {
+                verdict = '❌ OUTSIDE CIRCLE OF COMPETENCE - Do Not Invest';
+                verdictClass = 'verdict-fail';
+            } else if (!dbPassed) {
+                verdict = '⚠️ DEAL BREAKER DETECTED - High Risk';
+                verdictClass = 'verdict-fail';
+            } else if (totalScore >= 7) {
+                verdict = '✅ GOOD INVESTMENT OPPORTUNITY';
+                verdictClass = 'verdict-pass';
+            } else if (totalScore >= 5) {
+                verdict = '⚡ CAUTION - Need More Research';
+                verdictClass = 'verdict-fail';
             } else {
-                oneLiner = '这家公司问题较多，建议谨慎。';
+                verdict = '❌ AVOID - Insufficient Quality';
+                verdictClass = 'verdict-fail';
             }
-            document.getElementById('outOneLiner').textContent = oneLiner;
 
-            // 生成模块评分
-            let modulesHtml = '';
-            const summaries = generateModuleSummaries(modules);
-            for (const key in modules) {
-                modulesHtml += `
-                    <div class="module-score-card">
-                        <div class="module-score-header">
-                            <span class="module-score-name">${modules[key].name}</span>
-                            <span class="module-score-value">${Math.round(modules[key].score)}</span>
-                        </div>
-                        <div class="module-score-summary">${summaries[key]}</div>
+            const reportHTML = \`
+                <div class="report-header">
+                    <div class="report-company">\${company}</div>
+                    <div class="report-date">Analysis Date: \${date}</div>
+                </div>
+                
+                <div class="report-total-score">
+                    <div class="label">Total Score</div>
+                    <div class="score">\${totalScore.toFixed(1)}/10</div>
+                </div>
+                
+                <div class="report-verdict \${verdictClass}">
+                    \${verdict}
+                </div>
+                
+                <div class="report-section">
+                    <h3>0. Circle of Competence</h3>
+                    <div class="report-item">
+                        <span class="label">Business Understanding</span>
+                        <span class="value">\${reportData.circle?.q1 || 0}/10</span>
                     </div>
-                `;
-            }
-            document.getElementById('outModules').innerHTML = modulesHtml;
-
-            // 生成优势和风险
-            const prosCons = generateProsCons(modules);
-            document.getElementById('outPros').innerHTML = prosCons.pros.map(p => '<li>' + p + '</li>').join('');
-            document.getElementById('outCons').innerHTML = prosCons.cons.map(c => '<li>' + c + '</li>').join('');
-
-            // 否决机制状态
-            document.getElementById('outKillSwitch').innerHTML = '<span style="color: #22c55e; font-weight: 600;">未触发</span>';
-
-            // 最终建议
-            let finalRecommendation = '';
-            if (score >= 85) {
-                finalRecommendation = '强烈建议关注。这是一家各方面表现优异的公司，值得深入研究后考虑建仓。';
-            } else if (score >= 70) {
-                finalRecommendation = '可以投资，但建议关注短板。好公司不等于好价格，等待更好的买入时机会更安全。';
-            } else if (score >= 60) {
-                finalRecommendation = '谨慎观察。这家公司有一定价值，但存在明显短板，建议先观察再决定。';
-            } else {
-                finalRecommendation = '不建议投资。这家公司存在较多问题，风险大于机会。';
-            }
-            document.getElementById('outFinal').textContent = finalRecommendation;
-
-            // 存储报告数据
-            reportData = {
-                companyName: company,
-                score: score,
-                conclusion: conclusion,
-                oneLiner: oneLiner,
-                modules: modules,
-                pros: prosCons.pros,
-                cons: prosCons.cons,
-                killSwitchStatus: '未触发',
-                finalRecommendation: finalRecommendation
-            };
-
-            // 滚动到结果
-            window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
+                    <div class="report-item">
+                        <span class="label">Industry Familiarity</span>
+                        <span class="value">\${reportData.circle?.q2 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Status</span>
+                        <span class="value">\${circlePassed ? '✅ PASS' : '❌ FAIL'}</span>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h3>Core Assessment Modules</h3>
+                    <div class="report-item">
+                        <span class="label">1. Business Model</span>
+                        <span class="value">\${reportData.mod1?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">2. Competitive Advantage</span>
+                        <span class="value">\${reportData.mod2?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">3. Profit Quality</span>
+                        <span class="value">\${reportData.mod3?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">4. Industry Quality</span>
+                        <span class="value">\${reportData.mod4?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">5. Management & Governance</span>
+                        <span class="value">\${reportData.mod5?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">6. Valuation & Safety</span>
+                        <span class="value">\${reportData.mod6?.avg?.toFixed(1) || '-'}/10</span>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h3>7. Deal Breakers</h3>
+                    <div class="report-item">
+                        <span class="label">Debt Level</span>
+                        <span class="value">\${reportData.dealbreakers?.q71 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Hidden Risks</span>
+                        <span class="value">\${reportData.dealbreakers?.q72 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Fraud Risk</span>
+                        <span class="value">\${reportData.dealbreakers?.q81 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Fatal Risks</span>
+                        <span class="value">\${reportData.dealbreakers?.q82 || 0}/10</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="label">Status</span>
+                        <span class="value">\${dbPassed ? '✅ PASS' : '❌ FAIL'}</span>
+                    </div>
+                </div>
+            \`;
+            
+            document.getElementById('reportContent').innerHTML = reportHTML;
+            document.getElementById('reportModal').classList.add('active');
         }
 
-        // 生成模块摘要
-        function generateModuleSummaries(modules) {
-            const summaries = {
-                biz: '',
-                compete: '',
-                industry: '',
-                mgmt: '',
-                finance: '',
-                risk: ''
-            };
-
-            // 商业模式
-            if (modules.biz.score >= 80) {
-                summaries.biz = '商业模式清晰稳定';
-            } else if (modules.biz.score >= 60) {
-                summaries.biz = '商业模式一般';
-            } else {
-                summaries.biz = '商业模式存疑';
-            }
-
-            // 竞争优势
-            if (modules.compete.score >= 80) {
-                summaries.compete = '护城河深厚';
-            } else if (modules.compete.score >= 60) {
-                summaries.compete = '有一定竞争优势';
-            } else {
-                summaries.compete = '竞争优势不明显';
-            }
-
-            // 行业结构
-            if (modules.industry.score >= 80) {
-                summaries.industry = '行业环境友好';
-            } else if (modules.industry.score >= 60) {
-                summaries.industry = '行业中规中矩';
-            } else {
-                summaries.industry = '行业环境较差';
-            }
-
-            // 管理层
-            if (modules.mgmt.score >= 80) {
-                summaries.mgmt = '管理层优秀';
-            } else if (modules.mgmt.score >= 60) {
-                summaries.mgmt = '管理层一般';
-            } else {
-                summaries.mgmt = '管理层存疑';
-            }
-
-            // 财务质量
-            if (modules.finance.score >= 80) {
-                summaries.finance = '财务健康';
-            } else if (modules.finance.score >= 60) {
-                summaries.finance = '财务一般';
-            } else {
-                summaries.finance = '财务有风险';
-            }
-
-            // 估值与风险
-            if (modules.risk.score >= 80) {
-                summaries.risk = '估值合理风险低';
-            } else if (modules.risk.score >= 60) {
-                summaries.risk = '估值偏高或有风险';
-            } else {
-                summaries.risk = '估值或风险有问题';
-            }
-
-            return summaries;
+        // Close modal
+        function closeModal() {
+            document.getElementById('reportModal').classList.remove('active');
         }
 
-        // 生成优势和风险
-        function generateProsCons(modules) {
-            const pros = [];
-            const cons = [];
-
-            // 基于模块分数生成
-            if (modules.biz.score >= 75) pros.push('商业模式清晰');
-            else if (modules.biz.score < 55) cons.push('商业模式存疑');
-
-            if (modules.compete.score >= 75) pros.push('护城河深厚');
-            else if (modules.compete.score < 55) cons.push('竞争优势弱');
-
-            if (modules.industry.score >= 75) pros.push('行业环境友好');
-            else if (modules.industry.score < 55) cons.push('行业环境差');
-
-            if (modules.mgmt.score >= 75) pros.push('管理层值得信任');
-            else if (modules.mgmt.score < 55) cons.push('管理层存疑');
-
-            if (modules.finance.score >= 75) pros.push('财务健康');
-            else if (modules.finance.score < 55) cons.push('财务有隐患');
-
-            if (modules.risk.score >= 75) pros.push('估值合理');
-            else if (modules.risk.score < 55) cons.push('估值或风险有问题');
-
-            // 如果没有生成，添加默认
-            if (pros.length === 0) pros.push('无突出优势');
-            if (cons.length === 0) cons.push('无明显重大风险');
-
-            return { pros: pros.slice(0, 3), cons: cons.slice(0, 3) };
-        }
+        // Initialize on load
+        updateTotalScore();
     </script>
 </body>
 </html>
