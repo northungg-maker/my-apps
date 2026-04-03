@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资判断系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slogan {
+            color: #0071e3;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .philosophy {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: 32px;
+        }
+
+        /* 输入区 */
+        .input-section {
+            margin-bottom: 40px;
+        }
+
+        .company-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .company-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .company-input input:focus {
+            border-color: #0071e3;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0071e3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0077ed;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-copy {
+            background: #34c759;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #2db84e;
+            background: #e8e8e8;
+        }
+
+        .btn-copy {
+            background: #34c759;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #2db84e;
+        }
+
+        /* 模块卡片 */
+        .module-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+        }
+
+        .module-header {
+            padding: 16px 20px;
+            background: #f8f8f8;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .module-header:hover {
+            background: #f0f0f0;
+        }
+
+        .module-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .module-weight {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .module-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .module-content.open {
+            max-height: 2000px;
+            padding: 20px;
+        }
+
+        .question-item {
+            margin-bottom: 28px;
+        }
+
+        .question-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .question-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kill-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .question-hint {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-container input[type="range"] {
+            order: 2;
+        }
+
+        .slider-value {
+            order: 1;
+            font-size: 12px;
+            font-weight: 500;
+            color: #0071e3;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+            order: 2;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0071e3;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-size: 12px;
+            font-weight: 500;
+            color: #0071e3;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+            color: #0071e3;
+        }
+
+        /* 输出区 */
+        .output-section {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .output-section.show {
+            display: block;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0071e3;
+            margin-bottom: 8px;
+        }
+
+        .conclusion-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .conclusion-strong {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .conclusion-good {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .conclusion-caution {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .conclusion-avoid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .conclusion-kill {
+            background: #dc3545;
+            color: white;
+        }
+
+        .one-liner {
+            font-style: italic;
+            color: #666;
+            font-size: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .copy-section {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .report-modules {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .module-score-card {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .module-score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .module-score-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .module-score-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: #0071e3;
+        }
+
+        .module-score-summary {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .report-pros-cons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .pros-card, .cons-card {
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .pros-card {
+            background: #f0f9ff;
+        }
+
+        .cons-card {
+            background: #fef2f2;
+        }
+
+        .pros-card h4, .cons-card h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .pros-card h4 {
+            color: #0369a1;
+        }
+
+        .cons-card h4 {
+            color: #b91515;
+        }
+
+        .pros-card ul, .cons-card ul {
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .pros-card li, .cons-card li {
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .pros-card li::before {
+            content: "+";
+            position: absolute;
+            left: 0;
+            color: #0369a1;
+        }
+
+        .cons-card li::before {
+            content: "-";
+            position: absolute;
+            left: 0;
+            color: #b91515;
+        }
+
+        .kill-switch-check {
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .kill-switch-check h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .final-recommendation {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+        }
+
+        .final-recommendation p {
+            font-size: 15px;
+            color: #1a1a1a;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .report-modules {
+                grid-template-columns: 1fr;
+            }
+
+            .report-pros-cons {
+                grid-template-columns: 1fr;
+            }
+
+            .company-input {
+                flex-direction: column;
+            }
+        }
+
+        /* 模块图标 */
+        .module-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        .icon-biz { background: #dbeafe; color: #1e40af; }
+        .icon-compete { background: #dcfce7; color: #166534; }
+        .icon-industry { background: #fef3c7; color: #92400e; }
+        .icon-mgmt { background: #f3e8ff; color: #7c3aed; }
+        .icon-finance { background: #fce7f3; color: #be185d; }
+        .icon-risk { background: #fee2e2; color: #b91c1c; }
+        .icon-filter { background: #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slogan">让每一次投资，都有原则可依</div>
+        <h1>投资判断系统</h1>
+        <p class="philosophy">先避免犯错，再谈收益</p>
+        <p class="subtitle">基于巴菲特、芒格、段永平投资原则构建的决策辅助工具</p>
+
+        <!-- 输入区 -->
+        <div class="input-section">
+            <div class="company-input">
+                <input type="text" id="companyName" placeholder="输入公司名称（如：Apple）">
+                <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+                <button class="btn btn-save" onclick="manualSave()" style="background: #28a745; color: white; margin-left: 8px;">💾 保存</button>
+            </div>
+
+            <!-- 前置过滤器 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-filter">🔍</span>
+                        <span class="module-title">前置过滤器</span>
+                    </div>
+                    <span class="module-weight">必须通过才能继续</span>
+                </div>
+                <div class="module-content open">
+                    <!-- F1 -->
+                    <div class="question-item">
+                        <div class="question-label">
+                            F1：是否理解该公司商业模式？
+                            <span class="kill-badge">否决项</span>
+                        </div>
+                        <div class="question-hint">能否用一句话说清楚这公司怎么赚钱？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="qF1" oninput="updateValue(this)">
+                            <span class="slider-value" id="vF1">5</span>
+                        </div>
+                    </div>
+                    <!-- F2 -->
+                    <div class="question-item">
+                        <div class="question-label">
+                            F2：是否在能力圈内？
+                            <span class="kill-badge">否决项</span>
+                        </div>
+                        <div class="question-hint">对该行业是否有足够的研究和认知积累？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="qF2" oninput="updateValue(this)">
+                            <span class="slider-value" id="vF2">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块1：商业模式 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-biz">📦</span>
+                        <span class="module-title">商业模式</span>
+                    </div>
+                    <span class="module-weight">权重 25%</span>
+                </div>
+                <div class="module-content open">
+                    <!-- 1.1 -->
+                    <div class="question-item">
+                        <div class="question-label">1.1 业务复杂度如何？</div>
+                        <div class="question-hint">公司业务是否足够简单透明？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q11" oninput="updateValue(this)">
+                            <span class="slider-value" id="v11">5</span>
+                        </div>
+                    </div>
+                    <!-- 1.2 -->
+                    <div class="question-item">
+                        <div class="question-label">1.2 收入来源是否清晰？</div>
+                        <div class="question-hint">能否明确说出主要收入来源及其占比？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q12" oninput="updateValue(this)">
+                            <span class="slider-value" id="v12">5</span>
+                        </div>
+                    </div>
+                    <!-- 2.1 -->
+                    <div class="question-item">
+                        <div class="question-label">2.1 产品/服务变化频率？</div>
+                        <div class="question-hint">公司核心产品是否需要持续创新才能生存？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q21" oninput="updateValue(this)">
+                            <span class="slider-value" id="v21">5</span>
+                        </div>
+                    </div>
+                    <!-- 2.2 -->
+                    <div class="question-item">
+                        <div class="question-label">2.2 商业模式被颠覆风险？</div>
+                        <div class="question-hint">未来5-10年，该商业模式是否可能被技术或模式创新颠覆？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q22" oninput="updateValue(this)">
+                            <span class="slider-value" id="v22">5</span>
+                        </div>
+                    </div>
+                    <!-- 3.1 -->
+                    <div class="question-item">
+                        <div class="question-label">3.1 自由现金流状况？</div>
+                        <div class="question-hint">过去5年自由现金流是否持续为正？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q31" oninput="updateValue(this)">
+                            <span class="slider-value" id="v31">5</span>
+                        </div>
+                    </div>
+                    <!-- 3.2 -->
+                    <div class="question-item">
+                        <div class="question-label">3.2 现金流与利润匹配度？</div>
+                        <div class="question-hint">经营现金流净额与净利润的比值是否接近或大于1？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q32" oninput="updateValue(this)">
+                            <span class="slider-value" id="v32">5</span>
+                        </div>
+                    </div>
+                    <!-- 3.3 -->
+                    <div class="question-item">
+                        <div class="question-label">3.3 ROE水平及稳定性？</div>
+                        <div class="question-hint">过去5年平均ROE是否>15%且波动小？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q33" oninput="updateValue(this)">
+                            <span class="slider-value" id="v33">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块2：竞争优势 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-compete">🏰</span>
+                        <span class="module-title">竞争优势</span>
+                    </div>
+                    <span class="module-weight">权重 20%</span>
+                </div>
+                <div class="module-content">
+                    <!-- 4.1 -->
+                    <div class="question-item">
+                        <div class="question-label">4.1 护城河类型是否明确？</div>
+                        <div class="question-hint">公司是否有品牌、专利、网络效应、成本优势、转换成本等壁垒？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q41" oninput="updateValue(this)">
+                            <span class="slider-value" id="v41">5</span>
+                        </div>
+                    </div>
+                    <!-- 4.2 -->
+                    <div class="question-item">
+                        <div class="question-label">4.2 护城河变化趋势？</div>
+                        <div class="question-hint">过去3-5年护城河是在变宽、稳定还是被侵蚀？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q42" oninput="updateValue(this)">
+                            <span class="slider-value" id="v42">5</span>
+                        </div>
+                    </div>
+                    <!-- 4.3 -->
+                    <div class="question-item">
+                        <div class="question-label">4.3 竞争对手能否轻易复制？</div>
+                        <div class="question-hint">如果现在有巨头携巨资进入，能否撼动其地位？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q43" oninput="updateValue(this)">
+                            <span class="slider-value" id="v43">5</span>
+                        </div>
+                    </div>
+                    <!-- 5.1 -->
+                    <div class="question-item">
+                        <div class="question-label">5.1 是否有定价权？</div>
+                        <div class="question-hint">公司能否提价而不明显影响销量？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q51" oninput="updateValue(this)">
+                            <span class="slider-value" id="v51">5</span>
+                        </div>
+                    </div>
+                    <!-- 5.2 -->
+                    <div class="question-item">
+                        <div class="question-label">5.2 品牌认知度？</div>
+                        <div class="question-hint">在目标品类中，品牌是否是消费者首选？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q52" oninput="updateValue(this)">
+                            <span class="slider-value" id="v52">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块3：行业结构 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-industry">🏭</span>
+                        <span class="module-title">行业结构</span>
+                    </div>
+                    <span class="module-weight">权重 10%</span>
+                </div>
+                <div class="module-content">
+                    <!-- 6.1 -->
+                    <div class="question-item">
+                        <div class="question-label">6.1 行业竞争激烈程度？</div>
+                        <div class="question-hint">行业是否内卷严重、价格战频发？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q61" oninput="updateValue(this)">
+                            <span class="slider-value" id="v61">5</span>
+                        </div>
+                    </div>
+                    <!-- 6.2 -->
+                    <div class="question-item">
+                        <div class="question-label">6.2 行业长期存在性？</div>
+                        <div class="question-hint">该行业未来10-20年是否大概率继续存在？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q62" oninput="updateValue(this)">
+                            <span class="slider-value" id="v62">5</span>
+                        </div>
+                    </div>
+                    <!-- 6.3 -->
+                    <div class="question-item">
+                        <div class="question-label">6.3 行业增长空间？</div>
+                        <div class="question-hint">行业整体是否还在增长？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q63" oninput="updateValue(this)">
+                            <span class="slider-value" id="v63">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块4：管理层 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-mgmt">👔</span>
+                        <span class="module-title">管理层</span>
+                    </div>
+                    <span class="module-weight">权重 15%</span>
+                </div>
+                <div class="module-content">
+                    <!-- 7.1 -->
+                    <div class="question-item">
+                        <div class="question-label">7.1 管理层是否兑现承诺？</div>
+                        <div class="question-hint">过去3年管理层公开承诺的目标达成情况如何？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q71" oninput="updateValue(this)">
+                            <span class="slider-value" id="v71">5</span>
+                        </div>
+                    </div>
+                    <!-- 7.2 -->
+                    <div class="question-item">
+                        <div class="question-label">
+                            7.2 是否有侵害股东利益的历史？
+                            <span class="kill-badge">否决项</span>
+                        </div>
+                        <div class="question-hint">是否存在关联交易、高价收购劣质资产、过度股权激励等问题？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q72" oninput="updateValue(this)">
+                            <span class="slider-value" id="v72">5</span>
+                        </div>
+                    </div>
+                    <!-- 8.1 -->
+                    <div class="question-item">
+                        <div class="question-label">8.1 过往业绩表现？</div>
+                        <div class="question-hint">管理层任职期间，公司业绩（收入、利润、市值）增长如何？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q81" oninput="updateValue(this)">
+                            <span class="slider-value" id="v81">5</span>
+                        </div>
+                    </div>
+                    <!-- 8.2 -->
+                    <div class="question-item">
+                        <div class="question-label">8.2 战略清晰度？</div>
+                        <div class="question-hint">管理层是否有清晰的长期战略并能有效执行？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q82" oninput="updateValue(this)">
+                            <span class="slider-value" id="v82">5</span>
+                        </div>
+                    </div>
+                    <!-- 9.1 -->
+                    <div class="question-item">
+                        <div class="question-label">9.1 回购/分红决策是否合理？</div>
+                        <div class="question-hint">公司在股价低估时是否回购？分红是否持续稳定？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q91" oninput="updateValue(this)">
+                            <span class="slider-value" id="v91">5</span>
+                        </div>
+                    </div>
+                    <!-- 9.2 -->
+                    <div class="question-item">
+                        <div class="question-label">9.2 再投资回报率？</div>
+                        <div class="question-hint">公司留存利润的再投资回报率是否高于股东自行投资的回报？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q92" oninput="updateValue(this)">
+                            <span class="slider-value" id="v92">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块5：财务质量 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-finance">💰</span>
+                        <span class="module-title">财务质量</span>
+                    </div>
+                    <span class="module-weight">权重 15%</span>
+                </div>
+                <div class="module-content">
+                    <!-- 10.1 -->
+                    <div class="question-item">
+                        <div class="question-label">10.1 资产负债率水平？</div>
+                        <div class="question-hint">公司资产负债率是否在合理区间？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q101" oninput="updateValue(this)">
+                            <span class="slider-value" id="v101">5</span>
+                        </div>
+                    </div>
+                    <!-- 10.2 -->
+                    <div class="question-item">
+                        <div class="question-label">
+                            10.2 是否有财务风险隐患？
+                            <span class="kill-badge">否决项</span>
+                        </div>
+                        <div class="question-hint">是否存在大额待还债务、表外负债、担保等风险？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q102" oninput="updateValue(this)">
+                            <span class="slider-value" id="v102">5</span>
+                        </div>
+                    </div>
+                    <!-- 11.1 -->
+                    <div class="question-item">
+                        <div class="question-label">11.1 利润率趋势？</div>
+                        <div class="question-hint">毛利率、净利率过去5年趋势如何？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q111" oninput="updateValue(this)">
+                            <span class="slider-value" id="v111">5</span>
+                        </div>
+                    </div>
+                    <!-- 11.2 -->
+                    <div class="question-item">
+                        <div class="question-label">11.2 盈利来源稳定性？</div>
+                        <div class="question-hint">盈利是否依赖一次性收益、政府补贴、投资收益等非经常性项目？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q112" oninput="updateValue(this)">
+                            <span class="slider-value" id="v112">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块6：估值与风险 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div>
+                        <span class="module-icon icon-risk">⚠️</span>
+                        <span class="module-title">估值与风险</span>
+                    </div>
+                    <span class="module-weight">权重 15%</span>
+                </div>
+                <div class="module-content">
+                    <!-- 12.1 -->
+                    <div class="question-item">
+                        <div class="question-label">12.1 当前估值是否合理？</div>
+                        <div class="question-hint">PE、PB、PEG等指标是否在合理区间？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q121" oninput="updateValue(this)">
+                            <span class="slider-value" id="v121">5</span>
+                        </div>
+                    </div>
+                    <!-- 12.2 -->
+                    <div class="question-item">
+                        <div class="question-label">12.2 安全边际是否充足？</div>
+                        <div class="question-hint">当前价格与内在价值相比是否有足够折扣？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q122" oninput="updateValue(this)">
+                            <span class="slider-value" id="v122">5</span>
+                        </div>
+                    </div>
+                    <!-- 13.1 -->
+                    <div class="question-item">
+                        <div class="question-label">
+                            13.1 是否存在财务造假迹象？
+                            <span class="kill-badge">否决项</span>
+                        </div>
+                        <div class="question-hint">是否有利润与现金流严重背离、存货异常、关联交易异常等信号？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q131" oninput="updateValue(this)">
+                            <span class="slider-value" id="v131">5</span>
+                        </div>
+                    </div>
+                    <!-- 13.2 -->
+                    <div class="question-item">
+                        <div class="question-label">13.2 是否存在致命风险？</div>
+                        <div class="question-hint">是否存在监管风险、诉讼风险、大客户依赖、单一产品依赖等致命问题？</div>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="10" value="5" id="q132" oninput="updateValue(this)">
+                            <span class="slider-value" id="v132">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生成评估报告按钮 -->
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="btn btn-primary" onclick="calculate()" style="padding: 16px 48px; font-size: 18px;">生成评估报告</button>
+        </div>
+
+        <!-- 输出区 -->
+        <div class="output-section" id="outputSection">
+            <div class="report-card">
+                <div class="copy-section">
+                    <button class="btn btn-copy" onclick="copyReport()">📋 一键复制报告</button>
+                </div>
+                
+                <div class="report-header">
+                    <div class="company-name" id="outCompany">Apple</div>
+                    <div class="score-display" id="outScore">--</div>
+                    <div class="conclusion-badge" id="outConclusion">--</div>
+                    <div class="one-liner" id="outOneLiner">--</div>
+                </div>
+
+                <div class="report-modules" id="outModules">
+                    <!-- 动态生成 -->
+                </div>
+
+                <div class="report-pros-cons">
+                    <div class="pros-card">
+                        <h4>优势</h4>
+                        <ul id="outPros">
+                            <!-- 动态生成 -->
+                        </ul>
+                    </div>
+                    <div class="cons-card">
+                        <h4>风险</h4>
+                        <ul id="outCons">
+                            <!-- 动态生成 -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="kill-switch-check">
+                    <h4>否决机制检查</h4>
+                    <div id="outKillSwitch">--</div>
+                </div>
+
+                <div class="final-recommendation">
+                    <p id="outFinal">--</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast" id="toast">已复制到剪贴板</div>
+
+    <script>
+        // 评分标准 - 每个问题的0-10对应的文字描述
+        // ========== scoreLabels 定义 ==========
+        window.scoreLabels = {
+            // 0. 能力圈预判
+            v01: {
+                0: "完全不懂，连业务模式都说不清",
+                1: "只知道名字，其他都没听过",
+                2: "知道行业，但对公司不了解",
+                3: "听过公司基本情况",
+                4: "略懂核心业务",
+                5: "一般了解，能说出主要业务",
+                6: "较清晰，理解商业模式和竞争优势",
+                7: "清晰，了解财务状况和行业地位",
+                8: "很清晰，跟踪过一段时间",
+                9: "非常清晰，研究过多年",
+                10: "专业深度，可以写报告分析"
+            },
+            v02: {
+                0: "完全陌生，从未接触过这个行业",
+                1: "很生疏，只听说过一些概念",
+                2: "生疏，了解基本概念",
+                3: "略知，有些边缘了解",
+                4: "基础了解，知道行业运作方式",
+                5: "一般，关注过这个行业",
+                6: "还行，了解行业竞争格局",
+                7: "较熟悉，跟踪行业动态",
+                8: "熟悉，理解行业核心逻辑",
+                9: "很熟悉，有深入研究",
+                10: "深度研究，可以写行业分析"
+            },
+            // 前置过滤（否决项）
+            vF1: {
+                0: "完全不理解",
+                1: "几乎不懂",
+                2: "只知道皮毛",
+                3: "了解很少",
+                4: "略知一二",
+                5: "基本理解",
+                6: "较理解",
+                7: "理解清楚",
+                8: "理解透彻",
+                9: "深度理解",
+                10: "完全理解，如数家珍"
+            },
+            vF2: {
+                0: "完全不在能力圈",
+                1: "离能力圈很远",
+                2: "远超能力圈",
+                3: "明显超出能力圈",
+                4: "略超能力圈",
+                5: "勉强在能力圈边缘",
+                6: "在能力圈内",
+                7: "明确在能力圈内",
+                8: "深度在能力圈内",
+                9: "核心能力圈",
+                10: "绝对核心能力圈"
+            },
+            // 模块1：商业模式
+            v11: {
+                0: "极度复杂，完全理不清赚钱逻辑",
+                1: "非常复杂，大部分看不懂",
+                2: "很复杂，只能理解一小部分",
+                3: "比较复杂，看不懂的部分较多",
+                4: "略复杂，大致能理解",
+                5: "适中，基本能说清",
+                6: "比较简单，能清晰描述",
+                7: "简单，一目了然",
+                8: "很简单，一句话能说清",
+                9: "非常简单，任何人都能理解",
+                10: "极度简单，傻瓜都能懂"
+            },
+            v12: {
+                0: "极度难懂，黑箱操作",
+                1: "非常不透明",
+                2: "很不透明，大部分搞不懂",
+                3: "不太透明",
+                4: "略显复杂",
+                5: "适中，能看懂主要逻辑",
+                6: "比较透明",
+                7: "透明，逻辑清晰",
+                8: "很透明，一目了然",
+                9: "非常透明",
+                10: "极度清晰，每分钱都清楚"
+            },
+            // 模块2：竞争优势（HTML：产品/服务变化频率、商业模式被颠覆风险）
+            v21: {
+                0: "极度频繁，每季度都要大改",
+                1: "非常频繁，持续需要创新",
+                2: "很频繁，半年就得更新",
+                3: "比较频繁，一年一换",
+                4: "较频繁，需要持续迭代",
+                5: "适中，1-2年更新一次",
+                6: "比较稳定，2-3年更新",
+                7: "稳定，产品生命周期长",
+                8: "很稳定，多年不变",
+                9: "非常稳定，几乎不需要变化",
+                10: "极度稳定，产品几十年不变"
+            },
+            v22: {
+                0: "极高，马上就要被颠覆",
+                1: "很高，2-3年内可能被颠覆",
+                2: "高，5年内风险大",
+                3: "较高，有明显风险",
+                4: "有一些风险",
+                5: "适中，有挑战也有机会",
+                6: "较低，模式相对稳固",
+                7: "低，短期内难以颠覆",
+                8: "很低，模式已经成熟",
+                9: "极低，几乎不可能被颠覆",
+                10: "完全无风险，模式永久有效"
+            },
+            // 模块3：盈利质量
+            v31: {
+                0: "极差，长期现金流为负",
+                1: "很差",
+                2: "差",
+                3: "较差",
+                4: "偏弱",
+                5: "一般",
+                6: "尚可",
+                7: "良好",
+                8: "很好",
+                9: "优秀",
+                10: "极优，现金流充沛稳定"
+            },
+            v32: {
+                0: "完全不可持续，靠一次性收益",
+                1: "很难持续",
+                2: "较难持续",
+                3: "存在不确定性",
+                4: "稍有不确定",
+                5: "一般，基本可持续",
+                6: "较易持续",
+                7: "容易持续",
+                8: "很容易持续",
+                9: "高度可持续",
+                10: "强大稳定，几乎确定可持续"
+            },
+            v33: {
+                0: "ROE极低且波动剧烈",
+                1: "ROE很低，不稳定",
+                2: "ROE偏低，波动大",
+                3: "ROE略低，较不稳定",
+                4: "ROE一般，有波动",
+                5: "ROE中等，基本稳定",
+                6: "ROE较好，相对稳定",
+                7: "ROE良好，稳定",
+                8: "ROE优秀，很稳定",
+                9: "ROE卓越，高度稳定",
+                10: "ROE极高且长期稳定"
+            },
+            // 模块4：商业护城河（HTML：护城河类型、护城河变化趋势、复制难度）
+            v41: {
+                0: "完全无法识别，没有任何护城河",
+                1: "几乎看不出护城河",
+                2: "很模糊，难以确定",
+                3: "不太明确，有点疑问",
+                4: "略有雏形，但不稳固",
+                5: "一般，有但不强",
+                6: "相对明确，有一定护城河",
+                7: "较明确，护城河可识别",
+                8: "很明确，护城河清晰",
+                9: "非常明确，护城河很强",
+                10: "极度明确，护城河坚不可摧"
+            },
+            v42: {
+                0: "极速恶化，护城河快速消失",
+                1: "快速恶化",
+                2: "明显削弱",
+                3: "逐渐削弱",
+                4: "略微削弱",
+                5: "稳定，维持现状",
+                6: "略微增强",
+                7: "逐渐强化",
+                8: "明显强化",
+                9: "快速强化",
+                10: "持续强化，护城河越来越宽"
+            },
+            v43: {
+                0: "极易复制，毫无壁垒",
+                1: "很容易复制",
+                2: "较易复制",
+                3: "可以复制",
+                4: "有一定复制难度",
+                5: "复制有难度",
+                6: "复制较困难",
+                7: "复制很困难",
+                8: "极难复制",
+                9: "几乎无法复制",
+                10: "完全无法复制，绝对壁垒"
+            },
+            // 模块5：核心竞争力（HTML：定价权、品牌认知度）
+            v51: {
+                0: "完全没有定价权，价格接受者",
+                1: "几乎无定价权",
+                2: "定价权极弱",
+                3: "定价权较弱",
+                4: "有一点定价权",
+                5: "定价权一般",
+                6: "有一定定价权",
+                7: "定价权较强",
+                8: "定价权很强",
+                9: "定价权极强",
+                10: "绝对定价权，价格制定者"
+            },
+            v52: {
+                0: "完全无人知晓",
+                1: "几乎没人知道",
+                2: "知晓度极低",
+                3: "知晓度较低",
+                4: "小众认知",
+                5: "一定知名度",
+                6: "区域知名",
+                7: "行业知名",
+                8: "广泛知名",
+                9: "家喻户晓",
+                10: "世界级品牌，人人皆知"
+            },
+            // 模块6：行业质量（HTML：行业竞争激烈程度、行业长期存在性、行业增长空间）
+            v61: {
+                0: "极度激烈，完全红海，价格战惨烈",
+                1: "非常激烈，价格战不断",
+                2: "很激烈，竞争压力大",
+                3: "竞争激烈",
+                4: "竞争较强",
+                5: "竞争适中，有一定空间",
+                6: "竞争相对温和",
+                7: "竞争较少，格局较好",
+                8: "竞争很小，优势明显",
+                9: "几乎无竞争",
+                10: "垄断或接近垄断"
+            },
+            v62: {
+                0: "行业即将消失，夕阳末期",
+                1: "行业持续萎缩，前景黯淡",
+                2: "行业快速衰退",
+                3: "行业逐渐衰退",
+                4: "行业略有衰退迹象",
+                5: "行业稳定，长期存在无虞",
+                6: "行业缓慢增长，前景稳定",
+                7: "行业温和增长，长期看好",
+                8: "行业稳定增长",
+                9: "行业快速增长，前景广阔",
+                10: "行业爆发增长，黄金赛道"
+            },
+            v63: {
+                0: "行业衰退中，市场萎缩",
+                1: "行业衰退，增长困难",
+                2: "行业停滞，无增长",
+                3: "行业增长缓慢",
+                4: "行业低增长",
+                5: "行业中速增长",
+                6: "行业稳健增长",
+                7: "行业较快增长",
+                8: "行业高速增长",
+                9: "行业爆发式增长",
+                10: "行业超级增长，空间巨大"
+            },
+            // 模块7：管理层与治理（HTML：管理层是否兑现承诺、是否有侵害股东利益历史）
+            v71: {
+                0: "从未兑现，完全不可信",
+                1: "几乎不兑现承诺",
+                2: "很少兑现",
+                3: "兑现率很低",
+                4: "兑现率较低",
+                5: "兑现率一般，一半一半",
+                6: "大部分承诺能兑现",
+                7: "通常都能兑现",
+                8: "几乎都能兑现",
+                9: "完全兑现，言行一致",
+                10: "言出必行，超额达成"
+            },
+            v72: {
+                0: "有严重侵害股东利益的历史",
+                1: "多次侵害股东利益",
+                2: "有过侵害行为",
+                3: "曾有争议事件",
+                4: "有过轻微问题",
+                5: "历史记录一般，有存疑",
+                6: "历史清白，无明显问题",
+                7: "对待股东公平公正",
+                8: "持续维护股东利益",
+                9: "治理优秀，股东导向",
+                10: "典范治理，完全无忧"
+            },
+            // 模块8：管理层能力（HTML：过往业绩表现、战略清晰度）
+            v81: {
+                0: "业绩极差，持续亏损",
+                1: "业绩很差",
+                2: "业绩较差",
+                3: "业绩不佳",
+                4: "业绩一般",
+                5: "业绩尚可",
+                6: "业绩良好",
+                7: "业绩优秀",
+                8: "业绩卓越",
+                9: "长期优秀，持续超越",
+                10: "业绩传奇，行业标杆"
+            },
+            v82: {
+                0: "战略完全混乱，毫无方向",
+                1: "战略非常模糊",
+                2: "战略模糊",
+                3: "战略不够清晰",
+                4: "战略一般",
+                5: "战略基本清晰",
+                6: "战略较清晰",
+                7: "战略清晰",
+                8: "战略很清晰，执行到位",
+                9: "战略非常清晰，前瞻性强",
+                10: "战略极度清晰，精准预判"
+            },
+            v91: {
+                0: "回购/分红极不合理",
+                1: "回购/分红很不合理",
+                2: "回购/分红较不合理",
+                3: "回购/分红略有瑕疵",
+                4: "回购/分红一般",
+                5: "回购/分红基本合理",
+                6: "回购/分红较合理",
+                7: "回购/分红合理",
+                8: "回购/分红很合理",
+                9: "回购/分红非常合理",
+                10: "回购/分红极佳，高度回报股东"
+            },
+            v92: {
+                0: "再投资回报极低，甚至亏损",
+                1: "再投资回报很低",
+                2: "再投资回报低",
+                3: "再投资回报较低",
+                4: "再投资回报一般",
+                5: "再投资回报尚可",
+                6: "再投资回报较好",
+                7: "再投资回报良好",
+                8: "再投资回报优秀",
+                9: "再投资回报卓越",
+                10: "再投资回报极高，资本配置大师"
+            },
+            v101: {
+                0: "负债率极高，严重财务风险",
+                1: "负债率很高",
+                2: "负债率高",
+                3: "负债率偏高",
+                4: "负债率略高",
+                5: "负债率适中",
+                6: "负债率略低",
+                7: "负债率较低",
+                8: "负债率低",
+                9: "负债率很低",
+                10: "负债率极低，财务极其稳健"
+            },
+            v102: {
+                0: "存在严重财务风险隐患",
+                1: "财务风险隐患很大",
+                2: "财务风险隐患较大",
+                3: "有一定财务风险隐患",
+                4: "有轻微财务风险隐患",
+                5: "财务风险隐患不明显",
+                6: "财务较安全",
+                7: "财务安全",
+                8: "财务很安全",
+                9: "财务非常安全",
+                10: "财务极度安全，无隐患"
+            },
+            v111: {
+                0: "利润率持续恶化，趋势极差",
+                1: "利润率明显下降",
+                2: "利润率下降",
+                3: "利润率略有下降",
+                4: "利润率不稳定",
+                5: "利润率平稳",
+                6: "利润率略有提升",
+                7: "利润率稳步提升",
+                8: "利润率明显提升",
+                9: "利润率大幅提升",
+                10: "利润率持续大幅提升，趋势极佳"
+            },
+            v112: {
+                0: "盈利来源极不稳定，无法预测",
+                1: "盈利来源很不稳定",
+                2: "盈利来源不稳定",
+                3: "盈利来源较不稳定",
+                4: "盈利来源略有波动",
+                5: "盈利来源基本稳定",
+                6: "盈利来源稳定",
+                7: "盈利来源很稳定",
+                8: "盈利来源非常稳定",
+                9: "盈利来源高度稳定",
+                10: "盈利来源极其稳定，完全可预测"
+            },
+            v121: {
+                0: "估值极高，严重高估",
+                1: "估值很高",
+                2: "估值偏高",
+                3: "估值略高",
+                4: "估值略偏贵",
+                5: "估值合理",
+                6: "估值略低",
+                7: "估值偏低",
+                8: "估值很低",
+                9: "估值非常低",
+                10: "估值极低，严重低估"
+            },
+            v122: {
+                0: "完全没有安全边际",
+                1: "安全边际极小",
+                2: "安全边际很小",
+                3: "安全边际较小",
+                4: "安全边际略小",
+                5: "安全边际一般",
+                6: "安全边际尚可",
+                7: "安全边际充足",
+                8: "安全边际很充足",
+                9: "安全边际非常充足",
+                10: "安全边际巨大，非常安全"
+            },
+            // 模块13：风险（HTML：特定行业监管风险、是否存在致命风险）
+            v131: {
+                0: "监管风险极高，行业面临整顿",
+                1: "监管风险很高，政策不确定大",
+                2: "监管风险高",
+                3: "监管风险较高",
+                4: "有一定监管风险",
+                5: "监管风险适中",
+                6: "监管风险较低",
+                7: "监管风险低",
+                8: "监管风险很小",
+                9: "监管风险极小",
+                10: "无监管风险，政策友好"
+            },
+            v132: {
+                0: "存在致命风险，可能归零",
+                1: "有严重致命风险",
+                2: "有较大致命风险",
+                3: "有一定致命风险",
+                4: "有轻微致命风险",
+                5: "无明显致命风险",
+                6: "致命风险较小",
+                7: "致命风险小",
+                8: "致命风险很小",
+                9: "致命风险极小",
+                10: "无致命风险，非常安全"
+            }
+        };
+
+        // 全局变量存储报告数据
+        let reportData = {};
+
+        // 更新滑块显示值
+        function updateValue(slider) {
+            const valueSpan = document.getElementById(slider.id.replace('q', 'v'));
+            const val = parseInt(slider.value);
+            const labels = scoreLabels[valueSpan.id];
+            if (labels && labels[val]) {
+                valueSpan.textContent = val + " - " + labels[val];
+            } else {
+                valueSpan.textContent = val;
+            }
+        }
+
+        // 页面加载时初始化所有滑块显示
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                updateValue(slider);
+            });
+        });
+
+        // 切换模块展开/收起
+        function toggleModule(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+        }
+
+        // 手动保存（提供视觉反馈）
+        function manualSave() {
+            saveData();
+            showToast('✅ 数据已保存');
+        }
+
+        // 清空所有
+        function clearAll() {
+            document.getElementById('companyName').value = '';
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(s => {
+                s.value = 5;
+                const valueSpan = document.getElementById(s.id.replace('q', 'v'));
+                valueSpan.textContent = '5';
+            });
+            document.getElementById('outputSection').classList.remove('show');
+        }
+
+        // 获取问题分数
+        function getScore(id) {
+            return parseInt(document.getElementById('q' + id).value);
+        }
+
+        // 计算模块平均分
+        function calcModuleAvg(ids) {
+            const sum = ids.reduce((acc, id) => acc + getScore(id), 0);
+            return sum / ids.length;
+        }
+
+        // 显示Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 一键复制报告
+        function copyReport() {
+            if (!reportData.companyName) {
+                showToast('请先进行评估');
+                return;
+            }
+
+            const text = generateReportText();
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制到剪贴板');
+            }).catch(err => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('已复制到剪贴板');
+            });
+        }
+
+        // 生成报告文本
+        function generateReportText() {
+            let text = '';
+            text += '━━━━━━━━━━━━━━━━━━━━\n';
+            text += '【投资判断系统】\n';
+            text += '让每一次投资，都有原则可依\n';
+            text += '基于巴菲特、芒格、段永平投资原则构建\n';
+            text += '━━━━━━━━━━━━━━━━━━━━\n\n';
+            
+            text += '企业：' + reportData.companyName + '\n';
+            text += '评分：' + reportData.score + ' / 100\n';
+            text += '结论：' + reportData.conclusion + '\n\n';
+            
+            text += '一句话判断：\n' + reportData.oneLiner + '\n\n';
+            
+            text += '━━━ 模块评分 ━━━\n';
+            for (const key in reportData.modules) {
+                text += reportData.modules[key].name + '：' + Math.round(reportData.modules[key].score) + '分\n';
+            }
+            
+            text += '\n━━━ 优势 ━━━\n';
+            reportData.pros.forEach(p => text += '+ ' + p + '\n');
+            
+            text += '\n━━━ 风险 ━━━\n';
+            reportData.cons.forEach(c => text += '- ' + c + '\n');
+            
+            text += '\n━━━ 否决机制 ━━━\n';
+            text += reportData.killSwitchStatus + '\n';
+            
+            text += '\n━━━ 最终建议 ━━━\n';
+            text += reportData.finalRecommendation + '\n';
+            
+            text += '\n━━━━━━━━━━━━━━━━━━━━\n';
+            
+            return text;
+        }
+
+        // 主计算函数
+        function calculate() {
+            const companyName = document.getElementById('companyName').value || '未命名公司';
+
+            // 前置过滤器检查
+            const f1 = getScore('F1');
+            const f2 = getScore('F2');
+
+            // 否决项检查
+            const q72 = getScore('72');  // 管理层诚信
+            const q102 = getScore('102'); // 财务风险
+            const q131 = getScore('131'); // 财务造假
+
+            let killSwitchTriggered = null;
+
+            if (f1 < 4) {
+                killSwitchTriggered = '无法理解商业模式';
+            } else if (f2 < 4) {
+                killSwitchTriggered = '不在能力圈内';
+            } else if (q72 <= 3) {
+                killSwitchTriggered = '管理层存在侵害股东利益的历史';
+            } else if (q102 <= 3) {
+                killSwitchTriggered = '存在财务风险隐患';
+            } else if (q131 <= 3) {
+                killSwitchTriggered = '存在财务造假嫌疑';
+            }
+
+            // 如果触发否决，直接输出负面结论
+            if (killSwitchTriggered) {
+                showResult(companyName, 0, 'kill', killSwitchTriggered);
+                return;
+            }
+
+            // 计算各模块分数
+            const modules = {
+                biz: {
+                    name: '商业模式',
+                    weight: 0.25,
+                    score: calcModuleAvg(['11', '12', '21', '22', '31', '32', '33']),
+                    questions: ['11', '12', '21', '22', '31', '32', '33']
+                },
+                compete: {
+                    name: '竞争优势',
+                    weight: 0.20,
+                    score: calcModuleAvg(['41', '42', '43', '51', '52']),
+                    questions: ['41', '42', '43', '51', '52']
+                },
+                industry: {
+                    name: '行业结构',
+                    weight: 0.10,
+                    score: calcModuleAvg(['61', '62', '63']),
+                    questions: ['61', '62', '63']
+                },
+                mgmt: {
+                    name: '管理层',
+                    weight: 0.15,
+                    score: calcModuleAvg(['71', '72', '81', '82', '91', '92']),
+                    questions: ['71', '72', '81', '82', '91', '92']
+                },
+                finance: {
+                    name: '财务质量',
+                    weight: 0.15,
+                    score: calcModuleAvg(['101', '102', '111', '112']),
+                    questions: ['101', '102', '111', '112']
+                },
+                risk: {
+                    name: '估值与风险',
+                    weight: 0.15,
+                    score: calcModuleAvg(['121', '122', '131', '132']),
+                    questions: ['121', '122', '131', '132']
+                }
+            };
+
+            // 加权总分（转为百分制）
+            let totalScore = 0;
+            for (const key in modules) {
+                totalScore += modules[key].score * modules[key].weight;
+            }
+            totalScore = totalScore * 10; // 转为百分制
+
+            // 短板惩罚
+            let penalty = 0;
+            for (const key in modules) {
+                if (modules[key].score < 5) {
+                    penalty += 10;
+                } else if (modules[key].score < 6.5) {
+                    penalty += 5;
+                }
+            }
+            totalScore = Math.max(0, totalScore - penalty);
+
+            // 生成结论
+            let conclusion = '';
+            let conclusionClass = '';
+            if (totalScore >= 85) {
+                conclusion = '强烈建议';
+                conclusionClass = 'conclusion-strong';
+            } else if (totalScore >= 70) {
+                conclusion = '可投资';
+                conclusionClass = 'conclusion-good';
+            } else if (totalScore >= 60) {
+                conclusion = '谨慎观察';
+                conclusionClass = 'conclusion-caution';
+            } else {
+                conclusion = '不建议投资';
+                conclusionClass = 'conclusion-avoid';
+            }
+
+            showResult(companyName, Math.round(totalScore), conclusion, null, conclusionClass, modules, penalty);
+        }
+
+        // 显示结果
+        function showResult(company, score, conclusion, killReason, conclusionClass, modules, penalty) {
+            document.getElementById('outputSection').classList.add('show');
+            document.getElementById('outCompany').textContent = company;
+
+            // 处理否决情况
+            if (conclusion === 'kill') {
+                document.getElementById('outScore').textContent = '--';
+                const badge = document.getElementById('outConclusion');
+                badge.textContent = '不建议投资';
+                badge.className = 'conclusion-badge conclusion-kill';
+                document.getElementById('outOneLiner').textContent = '';
+                document.getElementById('outModules').innerHTML = '<p style="grid-column: span 2; text-align: center; color: #666;">已触发否决机制，无需进一步评分</p>';
+                document.getElementById('outPros').innerHTML = '<li>-</li>';
+                document.getElementById('outCons').innerHTML = '<li>' + killReason + '</li>';
+                document.getElementById('outKillSwitch').innerHTML = '<span style="color: #dc3545; font-weight: 600;">已触发：' + killReason + '</span>';
+                document.getElementById('outFinal').textContent = '该公司触发了否决机制，不建议投资。';
+
+                // 存储报告数据
+                reportData = {
+                    companyName: company,
+                    score: '--',
+                    conclusion: '不建议投资（触发否决）',
+                    oneLiner: '',
+                    modules: {},
+                    pros: ['-'],
+                    cons: [killReason],
+                    killSwitchStatus: '已触发：' + killReason,
+                    finalRecommendation: '该公司触发了否决机制，不建议投资。'
+                };
+
+                window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
+                return;
+            }
+
+            document.getElementById('outScore').textContent = score;
+            const badge = document.getElementById('outConclusion');
+            badge.textContent = conclusion;
+            badge.className = 'conclusion-badge ' + conclusionClass;
+
+            // 生成一句话判断
+            const bizScore = modules.biz.score;
+            const riskScore = modules.risk.score;
+            let oneLiner = '';
+            if (score >= 80) {
+                if (riskScore < 70) {
+                    oneLiner = '这是一家优秀的公司，但现在买入赚的是时间，不是价格。';
+                } else {
+                    oneLiner = '这是一家值得长期持有的优质公司，价格合理。';
+                }
+            } else if (score >= 70) {
+                oneLiner = '这是一家不错的公司，但存在一些需要关注的短板。';
+            } else if (score >= 60) {
+                oneLiner = '这家公司有价值但也有风险，建议观望或小额试水。';
+            } else {
+                oneLiner = '这家公司问题较多，建议谨慎。';
+            }
+            document.getElementById('outOneLiner').textContent = oneLiner;
+
+            // 生成模块评分
+            let modulesHtml = '';
+            const summaries = generateModuleSummaries(modules);
+            for (const key in modules) {
+                modulesHtml += `
+                    <div class="module-score-card">
+                        <div class="module-score-header">
+                            <span class="module-score-name">${modules[key].name}</span>
+                            <span class="module-score-value">${Math.round(modules[key].score)}</span>
+                        </div>
+                        <div class="module-score-summary">${summaries[key]}</div>
+                    </div>
+                `;
+            }
+            document.getElementById('outModules').innerHTML = modulesHtml;
+
+            // 生成优势和风险
+            const prosCons = generateProsCons(modules);
+            document.getElementById('outPros').innerHTML = prosCons.pros.map(p => '<li>' + p + '</li>').join('');
+            document.getElementById('outCons').innerHTML = prosCons.cons.map(c => '<li>' + c + '</li>').join('');
+
+            // 否决机制状态
+            document.getElementById('outKillSwitch').innerHTML = '<span style="color: #22c55e; font-weight: 600;">未触发</span>';
+
+            // 最终建议
+            let finalRecommendation = '';
+            if (score >= 85) {
+                finalRecommendation = '强烈建议关注。这是一家各方面表现优异的公司，值得深入研究后考虑建仓。';
+            } else if (score >= 70) {
+                finalRecommendation = '可以投资，但建议关注短板。好公司不等于好价格，等待更好的买入时机会更安全。';
+            } else if (score >= 60) {
+                finalRecommendation = '谨慎观察。这家公司有一定价值，但存在明显短板，建议先观察再决定。';
+            } else {
+                finalRecommendation = '不建议投资。这家公司存在较多问题，风险大于机会。';
+            }
+            document.getElementById('outFinal').textContent = finalRecommendation;
+
+            // 存储报告数据
+            reportData = {
+                companyName: company,
+                score: score,
+                conclusion: conclusion,
+                oneLiner: oneLiner,
+                modules: modules,
+                pros: prosCons.pros,
+                cons: prosCons.cons,
+                killSwitchStatus: '未触发',
+                finalRecommendation: finalRecommendation
+            };
+
+            // 滚动到结果
+            window.scrollTo({top: document.getElementById('outputSection').offsetTop, behavior: 'smooth'});
+        }
+
+        // 生成模块摘要
+        function generateModuleSummaries(modules) {
+            const summaries = {
+                biz: '',
+                compete: '',
+                industry: '',
+                mgmt: '',
+                finance: '',
+                risk: ''
+            };
+
+            // 商业模式
+            if (modules.biz.score >= 80) {
+                summaries.biz = '商业模式清晰稳定';
+            } else if (modules.biz.score >= 60) {
+                summaries.biz = '商业模式一般';
+            } else {
+                summaries.biz = '商业模式存疑';
+            }
+
+            // 竞争优势
+            if (modules.compete.score >= 80) {
+                summaries.compete = '护城河深厚';
+            } else if (modules.compete.score >= 60) {
+                summaries.compete = '有一定竞争优势';
+            } else {
+                summaries.compete = '竞争优势不明显';
+            }
+
+            // 行业结构
+            if (modules.industry.score >= 80) {
+                summaries.industry = '行业环境友好';
+            } else if (modules.industry.score >= 60) {
+                summaries.industry = '行业中规中矩';
+            } else {
+                summaries.industry = '行业环境较差';
+            }
+
+            // 管理层
+            if (modules.mgmt.score >= 80) {
+                summaries.mgmt = '管理层优秀';
+            } else if (modules.mgmt.score >= 60) {
+                summaries.mgmt = '管理层一般';
+            } else {
+                summaries.mgmt = '管理层存疑';
+            }
+
+            // 财务质量
+            if (modules.finance.score >= 80) {
+                summaries.finance = '财务健康';
+            } else if (modules.finance.score >= 60) {
+                summaries.finance = '财务一般';
+            } else {
+                summaries.finance = '财务有风险';
+            }
+
+            // 估值与风险
+            if (modules.risk.score >= 80) {
+                summaries.risk = '估值合理风险低';
+            } else if (modules.risk.score >= 60) {
+                summaries.risk = '估值偏高或有风险';
+            } else {
+                summaries.risk = '估值或风险有问题';
+            }
+
+            return summaries;
+        }
+
+        // 生成优势和风险
+        function generateProsCons(modules) {
+            const pros = [];
+            const cons = [];
+
+            // 基于模块分数生成
+            if (modules.biz.score >= 75) pros.push('商业模式清晰');
+            else if (modules.biz.score < 55) cons.push('商业模式存疑');
+
+            if (modules.compete.score >= 75) pros.push('护城河深厚');
+            else if (modules.compete.score < 55) cons.push('竞争优势弱');
+
+            if (modules.industry.score >= 75) pros.push('行业环境友好');
+            else if (modules.industry.score < 55) cons.push('行业环境差');
+
+            if (modules.mgmt.score >= 75) pros.push('管理层值得信任');
+            else if (modules.mgmt.score < 55) cons.push('管理层存疑');
+
+            if (modules.finance.score >= 75) pros.push('财务健康');
+            else if (modules.finance.score < 55) cons.push('财务有隐患');
+
+            if (modules.risk.score >= 75) pros.push('估值合理');
+            else if (modules.risk.score < 55) cons.push('估值或风险有问题');
+
+            // 如果没有生成，添加默认
+            if (pros.length === 0) pros.push('无突出优势');
+            if (cons.length === 0) cons.push('无明显重大风险');
+
+            return { pros: pros.slice(0, 3), cons: cons.slice(0, 3) };
+        }
+    </script>
+</body>
+</html>
