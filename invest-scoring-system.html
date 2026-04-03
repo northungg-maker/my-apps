@@ -2165,7 +2165,18 @@
             
             text += '━━━ 模块评分 ━━━\n';
             for (const key in reportData.modules) {
-                text += reportData.modules[key].name + '：' + Math.round(reportData.modules[key].score) + '分\n';
+                const mod = reportData.modules[key];
+                text += '\n【' + mod.name + '】' + Math.round(mod.score) + '分\n';
+
+                // 展开每道题的详细信息
+                if (mod.questions && mod.questions.length > 0) {
+                    mod.questions.forEach(qid => {
+                        const qText = formatQuestionOutput('q' + qid);
+                        if (qText) {
+                            text += '\n  ' + qText.split('\n').join('\n  ').trim() + '\n';
+                        }
+                    });
+                }
             }
             
             text += '\n━━━ 优势 ━━━\n';
