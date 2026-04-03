@@ -516,8 +516,12 @@
         <!-- 输入区 -->
         <div class="input-section">
             <div class="company-input">
-                <input type="text" id="companyName" placeholder="输入公司名称（如：Apple）">
+                <input type="text" id="companyName" placeholder="输入公司名称（如：Apple）" oninput="saveToStorage()">
                 <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+                <button class="btn btn-secondary" onclick="exportData()">导出</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">导入</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+                <span id="saveStatus" style="color: #34c759; font-size: 12px; margin-left: 8px;"></span>
             </div>
 
             <!-- 前置过滤器 -->
@@ -1406,8 +1410,119 @@
         // 全局变量存储报告数据
         let reportData = {};
 
-        // 更新滑块显示值
-        function updateValue(slider) {
+        // 自动保存到 localStorage
+        function saveToStorage() {
+            const data = {
+                companyName: document.getElementById('companyName').value,
+                sliders: {},
+                savedAt: new Date().toISOString()
+            };
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                data.sliders[slider.id] = slider.value;
+            });
+            localStorage.setItem('investmentJudgmentData', JSON.stringify(data));
+            
+            // 显示保存提示
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.textContent = '💾 已自动保存';
+            setTimeout(() => { saveStatus.textContent = ''; }, 1500);
+        }
+
+        // 从 localStorage 加载
+        function loadFromStorage() {
+            const saved = localStorage.getItem('investmentJudgmentData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.companyName) {
+                        document.getElementById('companyName').value = data.companyName;
+                    }
+                    if (data.sliders) {
+                        Object.keys(data.sliders).forEach(id => {
+                            const slider = document.getElementById(id);
+                            if (slider) {
+                                slider.value = data.sliders[id];
+                                updateValue(slider, false); // 加载时不触发保存
+                            }
+                        });
+                    }
+                    // 显示恢复提示
+                    const saveStatus = document.getElementById('saveStatus');
+                    const savedTime = new Date(data.savedAt).toLocaleString('zh-CN');
+                    saveStatus.textContent = '📂 已恢复上次数据 (' + savedTime + ')';
+                    setTimeout(() => { saveStatus.textContent = ''; }, 3000);
+                } catch (e) {
+                    console.error('加载缓存数据失败:', e);
+                }
+            }
+        }
+
+        // 导出数据为 JSON 文件
+        function exportData() {
+            const data = {
+                companyName: document.getElementById('companyName').value,
+                sliders: {},
+                exportedAt: new Date().toISOString(),
+                version: '1.0'
+            };
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                data.sliders[slider.id] = slider.value;
+            });
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const fileName = data.companyName ? 
+                `投资判断_${data.companyName}_${new Date().toISOString().slice(0,10)}.json` :
+                `投资判断_${new Date().toISOString().slice(0,10)}.json`;
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.textContent = '📤 导出成功';
+            setTimeout(() => { saveStatus.textContent = ''; }, 2000);
+        }
+
+        // 从 JSON 文件导入
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.companyName !== undefined) {
+                        document.getElementById('companyName').value = data.companyName;
+                    }
+                    if (data.sliders) {
+                        Object.keys(data.sliders).forEach(id => {
+                            const slider = document.getElementById(id);
+                            if (slider) {
+                                slider.value = data.sliders[id];
+                                updateValue(slider);
+                            }
+                        });
+                    }
+                    // 保存到 localStorage
+                    saveToStorage();
+                    
+                    const saveStatus = document.getElementById('saveStatus');
+                    saveStatus.textContent = '📥 导入成功';
+                    setTimeout(() => { saveStatus.textContent = ''; }, 2000);
+                } catch (err) {
+                    alert('导入失败：文件格式不正确');
+                    console.error(err);
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // 重置，允许重复导入同一文件
+        }
+
+        // 更新滑块显示值（可选择是否自动保存）
+        function updateValue(slider, autoSave = true) {
             const valueSpan = document.getElementById(slider.id.replace('q', 'v'));
             const val = parseInt(slider.value);
             const labels = scoreLabels[valueSpan.id];
@@ -1416,13 +1531,20 @@
             } else {
                 valueSpan.textContent = val;
             }
+            // 自动保存（除非指定不保存）
+            if (autoSave) {
+                saveToStorage();
+            }
         }
 
         // 页面加载时初始化所有滑块显示
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化滑块显示（不触发保存）
             document.querySelectorAll('input[type="range"]').forEach(slider => {
-                updateValue(slider);
+                updateValue(slider, false);
             });
+            // 自动恢复上次数据
+            loadFromStorage();
         });
 
         // 切换模块展开/收起
@@ -1441,6 +1563,11 @@
                 valueSpan.textContent = '5';
             });
             document.getElementById('outputSection').classList.remove('show');
+            // 清除缓存
+            localStorage.removeItem('investmentJudgmentData');
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.textContent = '🗑️ 已清空';
+            setTimeout(() => { saveStatus.textContent = ''; }, 1500);
         }
 
         // 获取问题分数
