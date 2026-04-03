@@ -1157,7 +1157,7 @@
                 </div>
 
                 <!-- 保存记录区 -->
-                <div class="save-history-section" id="saveHistorySection" style="display: none;">
+                <div class="save-history-section" id="saveHistorySection">
                     <div class="save-history-header">
                         <span>📋 保存记录</span>
                         <button class="btn-clear-history" onclick="clearSaveHistory()">清空全部</button>
@@ -1714,11 +1714,10 @@
             const list = document.getElementById('saveHistoryList');
 
             if (saves.length === 0) {
-                section.style.display = 'none';
+                list.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无保存记录</div>';
                 return;
             }
 
-            section.style.display = 'block';
             list.innerHTML = saves.map(s => `
                 <div class="save-item">
                     <div class="save-item-info" onclick="loadSave(${s.id})">
