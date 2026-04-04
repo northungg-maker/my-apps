@@ -34,7 +34,7 @@
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #1a1a1a;
             color: white;
             padding: 24px 20px;
             text-align: center;
@@ -302,15 +302,14 @@
         
         /* Risk Warning */
         .risk-warning {
-            background: #fff5f5;
-            border: 1px solid #ffcccc;
+            border: 1px solid #ddd;
             border-radius: 8px;
             padding: 16px;
             margin: 20px 0;
         }
         
         .risk-warning h4 {
-            color: #c0392b;
+            color: #333;
             font-size: 14px;
             margin-bottom: 10px;
             display: flex;
@@ -333,26 +332,27 @@
             background: #f8f8f8;
             border-radius: 8px;
             margin: 20px 0;
-            cursor: pointer;
         }
         
         .checkbox-wrapper input[type="checkbox"] {
             width: 20px;
             height: 20px;
             margin-top: 2px;
-            accent-color: #1a1a2e;
+            accent-color: #1a1a1a;
+            cursor: pointer;
+            flex-shrink: 0;
         }
         
         .checkbox-label {
             font-size: 13px;
             line-height: 1.5;
             color: #333;
+            cursor: pointer;
         }
         
         /* Signature Area */
         .signature-area {
-            background: #f8f8ff;
-            border: 1px solid #d0d0ff;
+            border: 1px solid #ddd;
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
@@ -442,7 +442,7 @@
         
         /* Room Display */
         .room-header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #1a1a1a;
             color: white;
             padding: 20px;
             margin: -20px -20px 20px -20px;
@@ -493,7 +493,7 @@
         .countdown-display {
             text-align: center;
             padding: 20px;
-            background: #fff8f0;
+            border: 1px solid #ddd;
             border-radius: 12px;
             margin-bottom: 20px;
         }
@@ -501,7 +501,7 @@
         .countdown-display .time {
             font-size: 32px;
             font-weight: 700;
-            color: #e74c3c;
+            color: #1a1a1a;
             font-family: monospace;
         }
         
@@ -829,9 +829,9 @@
                         <p>本契约一经签署生效，将无法修改或撤销。若未履行本契约义务，将按约定执行违约处理。系统仅作为记录与执行工具，用户对自身行为结果负责。</p>
                     </div>
                     
-                    <div class="checkbox-wrapper" onclick="toggleCheckbox('agree-rules')">
-                        <input type="checkbox" id="agree-rules">
-                        <span class="checkbox-label">我已阅读并接受本契约的全部条款和约束，理解违约将按约定执行。</span>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="agree-rules" onchange="updateNextButton()">
+                        <label for="agree-rules" class="checkbox-label">我已阅读并接受本契约的全部条款和约束，理解违约将按约定执行。</label>
                     </div>
                     
                     <button class="btn btn-primary" onclick="showSignaturePage()" id="btn-next-sign" disabled>下一步：签署契约</button>
@@ -1161,7 +1161,7 @@
             
             let html = `
                 <div class="contract-header">
-                    <h2>行为执行契约</h2>
+                    <h2>行为契约</h2>
                     <div class="contract-subtitle">本契约一经签署，即具有约束效力</div>
                     <div class="contract-id">${contract.contractId}</div>
                 </div>
@@ -1458,7 +1458,7 @@
                     `}
                 </div>
                 
-                <div style="background: #fff8f0; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <span style="color: #888; font-size: 12px;">执行周期</span>
                         <span style="font-weight: 500;">${duration} 天</span>
@@ -1469,8 +1469,8 @@
                     </div>
                 </div>
                 
-                <div style="background: #fff5f5; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                    <h4 style="margin-bottom: 8px; color: #c0392b;">⚖️ 约束条款</h4>
+                <div style="border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <h4 style="margin-bottom: 8px;">⚖️ 约束条款</h4>
                     <p style="font-size: 13px; margin-bottom: 4px;">押注代价：${room.stake}</p>
                     <p style="font-size: 13px; color: #666;">违约处理：${room.penaltyClause}</p>
                 </div>
@@ -1716,9 +1716,9 @@
             
             // Title
             doc.setFontSize(20);
-            doc.text('Behavior Execution Contract', 105, 20, { align: 'center' });
+            doc.text('Behavior Contract', 105, 20, { align: 'center' });
             doc.setFontSize(12);
-            doc.text('行为执行契约', 105, 28, { align: 'center' });
+            doc.text('行为契约', 105, 28, { align: 'center' });
             
             // Subtitle
             doc.setFontSize(10);
