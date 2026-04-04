@@ -137,6 +137,18 @@
             color: #1a1a1a;
             font-size: 14px;
             transition: all 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group input[type="datetime-local"] {
+            line-height: 1.4;
+        }
+        
+        .form-group input::-webkit-date-and-time-value {
+            text-align: left;
         }
         
         .form-group input:focus,
@@ -677,13 +689,17 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>📅 截止日期</label>
-                                <input type="date" id="deadline-date">
+                                <label>📅 开始日期</label>
+                                <input type="date" id="start-date">
                             </div>
                             <div class="form-group">
-                                <label>⏰ 截止时间</label>
-                                <input type="time" id="deadline-time" value="23:59">
+                                <label>🏁 截止日期</label>
+                                <input type="date" id="deadline-date">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label>⏰ 截止时间</label>
+                            <input type="time" id="deadline-time" value="23:59">
                         </div>
                         <div class="form-group">
                             <label>💎 赌注</label>
@@ -709,13 +725,17 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>📅 截止日期</label>
-                                <input type="date" id="dual-deadline-date">
+                                <label>📅 开始日期</label>
+                                <input type="date" id="dual-start-date">
                             </div>
                             <div class="form-group">
-                                <label>⏰ 截止时间</label>
-                                <input type="time" id="dual-deadline-time" value="23:59">
+                                <label>🏁 截止日期</label>
+                                <input type="date" id="dual-deadline-date">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label>⏰ 截止时间</label>
+                            <input type="time" id="dual-deadline-time" value="23:59">
                         </div>
                         <div class="form-group">
                             <label>💎 赌注（输家给赢家）</label>
@@ -893,15 +913,7 @@
         window.selectMode = function(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
-            document.querySelector('.mode-option.' + (mode === 'single' ? '' : ':nth-child(2)')).classList.add('selected');
-            
-            if (mode === 'single') {
-                document.querySelector('.mode-option:nth-child(1)').classList.add('selected');
-                document.querySelector('.mode-option:nth-child(2)').classList.remove('selected');
-            } else {
-                document.querySelector('.mode-option:nth-child(1)').classList.remove('selected');
-                document.querySelector('.mode-option:nth-child(2)').classList.add('selected');
-            }
+            document.querySelector('.mode-option:nth-child(' + (mode === 'single' ? '1' : '2') + ')').classList.add('selected');
             
             document.getElementById('single-form').style.display = mode === 'single' ? 'block' : 'none';
             document.getElementById('dual-form').style.display = mode === 'dual' ? 'block' : 'none';
@@ -914,27 +926,37 @@
             
             if (currentMode === 'single') {
                 const goal = document.getElementById('goal').value.trim();
+                const startDate = document.getElementById('start-date').value;
                 const deadlineDate = document.getElementById('deadline-date').value;
                 const deadlineTime = document.getElementById('deadline-time').value;
                 const stakeValue = document.getElementById('stake-value').value.trim();
                 const myRole = document.getElementById('my-role').value;
                 
-                if (!goal || !deadlineDate || !stakeValue) {
+                if (!goal || !startDate || !deadlineDate || !stakeValue) {
                     showToast('请填写完整信息');
                     return;
                 }
                 
+                const start = new Date(startDate);
                 const deadline = new Date(`${deadlineDate}T${deadlineTime}`);
                 if (deadline <= new Date()) {
                     showToast('截止时间必须在未来');
                     return;
                 }
+                if (deadline <= start) {
+                    showToast('截止时间必须在开始时间之后');
+                    return;
+                }
+                
+                const duration = Math.ceil((deadline - start) / (1000 * 60 * 60 * 24));
                 
                 roomData = {
                     id: roomId,
                     mode: 'single',
                     goal: goal,
+                    startDate: start.getTime(),
                     deadline: deadline.getTime(),
+                    duration: duration,
                     stakeValue: stakeValue,
                     status: 'waiting',
                     createdAt: Date.now(),
@@ -949,27 +971,37 @@
                 // 双向对赌
                 const myGoal = document.getElementById('my-goal').value.trim();
                 const peerGoal = document.getElementById('peer-goal').value.trim();
+                const startDate = document.getElementById('dual-start-date').value;
                 const deadlineDate = document.getElementById('dual-deadline-date').value;
                 const deadlineTime = document.getElementById('dual-deadline-time').value;
                 const stake = document.getElementById('dual-stake').value.trim();
                 
-                if (!myGoal || !deadlineDate || !stake) {
+                if (!myGoal || !startDate || !deadlineDate || !stake) {
                     showToast('请填写完整信息');
                     return;
                 }
                 
+                const start = new Date(startDate);
                 const deadline = new Date(`${deadlineDate}T${deadlineTime}`);
                 if (deadline <= new Date()) {
                     showToast('截止时间必须在未来');
                     return;
                 }
+                if (deadline <= start) {
+                    showToast('截止时间必须在开始时间之后');
+                    return;
+                }
+                
+                const duration = Math.ceil((deadline - start) / (1000 * 60 * 60 * 24));
                 
                 roomData = {
                     id: roomId,
                     mode: 'dual',
                     goalA: myGoal,
                     goalB: peerGoal || '待对方填写',
+                    startDate: start.getTime(),
                     deadline: deadline.getTime(),
+                    duration: duration,
                     stakeValue: stake,
                     status: 'waiting',
                     createdAt: Date.now(),
@@ -1081,6 +1113,9 @@
             
             // 目标展示
             const goalDisplay = document.getElementById('goal-display');
+            const startDateStr = room.startDate ? new Date(room.startDate).toLocaleDateString('zh-CN') : '未设置';
+            const durationText = room.duration ? `共 ${room.duration} 天` : '';
+            
             if (room.mode === 'single') {
                 goalDisplay.innerHTML = `
                     <div class="goal-card">
@@ -1089,6 +1124,9 @@
                             <span class="goal-card-title">目标</span>
                         </div>
                         <div class="goal-card-content">${room.goal}</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #999;">
+                            📅 ${startDateStr} 开始 ${durationText ? '· ' + durationText : ''}
+                        </div>
                         <div class="stake-tag">💎 赌注：${room.stakeValue}</div>
                     </div>
                 `;
@@ -1109,8 +1147,11 @@
                             ${room.executorBDone ? '<span class="goal-progress-status done">✓ 完成</span>' : ''}
                         </div>
                         <div class="goal-card-content">${room.goalB}</div>
-                        <div class="stake-tag">💎 赌注：${room.stakeValue}</div>
                     </div>
+                    <div style="text-align: center; font-size: 12px; color: #999; margin: -8px 0 8px;">
+                        📅 ${startDateStr} 开始 ${durationText ? '· ' + durationText : ''}
+                    </div>
+                    <div class="stake-tag" style="justify-content: center;">💎 赌注：${room.stakeValue}</div>
                 `;
             }
             
@@ -1372,14 +1413,23 @@
         
         // 初始化
         window.onload = function() {
+            const today = new Date();
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            const dateStr = tomorrow.toISOString().split('T')[0];
+            const todayStr = today.toISOString().split('T')[0];
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
             
-            document.getElementById('deadline-date').value = dateStr;
-            document.getElementById('deadline-date').min = new Date().toISOString().split('T')[0];
-            document.getElementById('dual-deadline-date').value = dateStr;
-            document.getElementById('dual-deadline-date').min = new Date().toISOString().split('T')[0];
+            // 单向模式
+            document.getElementById('start-date').value = todayStr;
+            document.getElementById('start-date').min = todayStr;
+            document.getElementById('deadline-date').value = tomorrowStr;
+            document.getElementById('deadline-date').min = todayStr;
+            
+            // 双向模式
+            document.getElementById('dual-start-date').value = todayStr;
+            document.getElementById('dual-start-date').min = todayStr;
+            document.getElementById('dual-deadline-date').value = tomorrowStr;
+            document.getElementById('dual-deadline-date').min = todayStr;
             
             if (!localStorage.getItem('userId')) {
                 localStorage.setItem('userId', 'user_' + Math.random().toString(36).substr(2, 9));
