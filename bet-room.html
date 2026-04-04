@@ -554,6 +554,76 @@
             opacity: 1;
         }
         
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .success-content {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+        
+        .success-content h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .success-content p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .success-room-id {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .success-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .success-actions .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .success-actions .close-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
         /* Result */
         .result-section {
             text-align: center;
