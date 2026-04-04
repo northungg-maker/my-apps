@@ -738,7 +738,7 @@
                         </div>
                         <div class="form-group">
                             <label>执行任务</label>
-                            <textarea id="goal" placeholder="Describe what needs to be done..."></textarea>
+                            <textarea id="goal" placeholder="描述需要完成的任务内容..."></textarea>
                         </div>
                         <div class="form-group">
                             <label>完成标准（怎么算完成）</label>
@@ -959,7 +959,7 @@
             <p>这是最后一步。契约一旦生效，将无法修改或撤销。</p>
             <span class="warning-text">⚠️ 违约将按照规则自动执行</span>
             <div class="final-confirm-buttons">
-                <button class="btn btn-danger" onclick="lockContract()">确认锁定契约</button>
+                <button class="btn btn-danger" onclick="finalizeContract()">确认锁定契约</button>
                 <button class="btn btn-secondary" onclick="closeFinalConfirm()">再想想</button>
             </div>
         </div>
@@ -1212,7 +1212,7 @@
                 </div>
                 
                 <div class="contract-section">
-                    <h3>👤 当事人信息</h3>
+                    <h3>当事人信息</h3>
                     <div class="contract-row">
                         <span class="contract-label">甲方</span>
                         <span class="contract-value">${contract.partyA.name}（执行方）</span>
@@ -1232,7 +1232,7 @@
                 </div>
                 
                 <div class="contract-section">
-                    <h3>📋 执行内容</h3>
+                    <h3>执行内容</h3>
                     ${contract.mode === 'single' ? `
                     <div class="contract-row">
                         <span class="contract-label">执行任务</span>
@@ -1259,7 +1259,7 @@
                 </div>
                 
                 <div class="contract-section">
-                    <h3>⚖️ 约束条款</h3>
+                    <h3>约束条款</h3>
                     <div class="contract-row">
                         <span class="contract-label">押注代价</span>
                         <span class="contract-value">${contract.stake}</span>
@@ -1503,7 +1503,7 @@ ${statusText || '等待签署...'}
                 </div>
                 
                 <div class="contract-section">
-                    <h3>👤 当事人信息</h3>
+                    <h3>当事人信息</h3>
                     <div class="contract-row">
                         <span class="contract-label">甲方</span>
                         <span class="contract-value">${contract.partyA.name}（执行方）</span>
@@ -1523,7 +1523,7 @@ ${statusText || '等待签署...'}
                 </div>
                 
                 <div class="contract-section">
-                    <h3>📋 执行内容</h3>
+                    <h3>执行内容</h3>
                     ${contract.mode === 'single' ? `
                     <div class="contract-row">
                         <span class="contract-label">执行任务</span>
@@ -1550,7 +1550,7 @@ ${statusText || '等待签署...'}
                 </div>
                 
                 <div class="contract-section">
-                    <h3>⚖️ 约束条款</h3>
+                    <h3>约束条款</h3>
                     <div class="contract-row">
                         <span class="contract-label">押注代价</span>
                         <span class="contract-value">${contract.stake}</span>
@@ -1760,7 +1760,7 @@ ${statusText || '等待签署...'}
             // Contract info
             html += `
                 <div style="background: #f8f8f8; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                    <h4 style="margin-bottom: 12px;">📋 执行内容</h4>
+                    <h4 style="margin-bottom: 12px;">执行内容</h4>
                     ${room.mode === 'single' ? `
                         <p style="font-weight: 500; margin-bottom: 8px;">${room.goal}</p>
                         <p style="font-size: 12px; color: #666;">完成标准：${room.completionStandard}</p>
@@ -1789,7 +1789,7 @@ ${statusText || '等待签署...'}
                 </div>
                 
                 <div style="border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                    <h4 style="margin-bottom: 8px;">⚖️ 约束条款</h4>
+                    <h4 style="margin-bottom: 8px;">约束条款</h4>
                     <p style="font-size: 13px; margin-bottom: 4px;">押注代价：${room.stake}</p>
                     <p style="font-size: 13px; color: #666;">违约处理：${room.penaltyClause}</p>
                 </div>
@@ -1812,7 +1812,7 @@ ${statusText || '等待签署...'}
                     <h4 style="margin-bottom: 12px; font-size: 14px;">👥 参与方</h4>
                     <div class="participant-row">
                         <div class="participant-info">
-                            <div class="participant-avatar">👤</div>
+                            <div class="participant-avatar"></div>
                             <div>
                                 <div class="participant-name">${room.partyA.name}</div>
                                 <div class="participant-role">${room.partyA.role}</div>
@@ -1826,7 +1826,7 @@ ${statusText || '等待签署...'}
                 html += `
                     <div class="participant-row">
                         <div class="participant-info">
-                            <div class="participant-avatar">👤</div>
+                            <div class="participant-avatar"></div>
                             <div>
                                 <div class="participant-name">${room.partyB.name}</div>
                                 <div class="participant-role">${room.partyB.role}</div>
