@@ -142,6 +142,18 @@
             gap: 12px;
         }
         
+        @media (max-width: 400px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            min-width: 0;
+            width: 100%;
+        }
+        
         /* Button */
         .btn {
             width: 100%;
@@ -506,6 +518,7 @@
         <div class="header">
             <h1>⚡ 对赌房间</h1>
             <p>用代价逼出执行力</p>
+            <p style="color: #ffc107; font-size: 12px; margin-top: 4px;">⚠️ 本地演示版 · 数据仅存本机</p>
         </div>
         
         <div class="tabs">
@@ -742,7 +755,7 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             
-            event.target.classList.add('active');
+            document.querySelector('.tab:nth-child(' + (tab === 'create' ? 1 : tab === 'join' ? 2 : 3) + ')').classList.add('active');
             document.getElementById('section-' + tab).classList.add('active');
             
             if (tab === 'history') {
@@ -1024,14 +1037,10 @@
         
         // 保存到本地存储
         function saveToStorage() {
-            const rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
-            rooms[roomData.id] = roomData;
-            localStorage.setItem('betRooms', JSON.stringify(rooms));
-            localStorage.setItem('currentRoom', roomData.id);
-            
             let rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
             rooms[roomData.id] = roomData;
             localStorage.setItem('betRooms', JSON.stringify(rooms));
+            localStorage.setItem('currentRoom', roomData.id);
         }
         
         // 从本地存储加载
