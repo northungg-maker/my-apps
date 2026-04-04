@@ -977,6 +977,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
+        // ⚠️ 关键：将 Firebase 函数挂载到 window 供 onclick 使用
+        window.db = db;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.onValue = onValue;
+        window.update = update;
+        window.off = off;
+        
         window.currentRoomId = null;
         window.currentRole = null;
         window.currentMode = 'single';
