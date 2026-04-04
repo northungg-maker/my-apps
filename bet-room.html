@@ -1357,32 +1357,119 @@
             document.getElementById('final-confirm-overlay').classList.remove('active');
         };
         
-        // Finalize contract
+        // Finalize contract - 处理所有锁定场景
         window.finalizeContract = async function() {
             closeFinalConfirm();
             
-            const roomId = generateRoomId();
-            currentContract.roomId = roomId;
+            // 场景1：从甲方创建契约进入（currentContract.status 未定义）
+            if (!currentContract.status || currentContract.status === 'draft') {
+                // 单人模式：直接锁定
+                if (currentContract.mode === 'single') {
+                    const roomId = generateRoomId();
+                    currentContract.roomId = roomId;
+                    currentContract.status = 'locked';
+                    currentContract.lockedAt = Date.now();
+                    
+                    try {
+                        await set(ref(db, 'rooms/' + roomId), currentContract);
+                        saveToHistory(currentContract);
+                        showToast('契约已生效');
+                        currentRoomId = roomId;
+                        currentRole = 'executor';
+                        enterRoom(roomId);
+                    } catch (err) {
+                        showToast('创建失败，请重试');
+                        console.error(err);
+                    }
+                    return;
+                }
+                
+                // 双方模式：甲方先签署，保存为 pending 状态
+                const roomId = generateRoomId();
+                currentContract.roomId = roomId;
+                currentContract.status = 'pending'; // 等待他方签署
+                currentContract.partyASigned = true;
+                currentContract.partyASignedAt = Date.now();
+                currentContract.partyASignedBy = document.getElementById('signature-input').value.trim();
+                
+                try {
+                    await set(ref(db, 'rooms/' + roomId), currentContract);
+                    saveToHistory(currentContract);
+                    
+                    showToast('契约已创建，请分享房间码给对方');
+                    currentRoomId = roomId;
+                    currentRole = 'executorA';
+                    
+                    showWaitingForOthers(roomId);
+                } catch (err) {
+                    showToast('创建失败，请重试');
+                    console.error(err);
+                }
+                return;
+            }
+            
+            // 场景2：从乙方/监督方签署后进入（currentContract.status === 'pending'）
+            if (currentContract.status === 'pending' && currentRoomId) {
+                currentContract.status = 'locked';
+                currentContract.lockedAt = Date.now();
+                
+                try {
+                    await update(ref(db, 'rooms/' + currentRoomId), {
+                        status: 'locked',
+                        lockedAt: currentContract.lockedAt
+                    });
+                    
+                    showToast('契约已正式锁定生效');
+                    enterRoom(currentRoomId);
+                } catch (err) {
+                    showToast('锁定失败，请重试');
+                    console.error(err);
+                }
+            }
+        };
+        
+        // 显示等待他方签署的页面
+        window.showWaitingForOthers = function(roomId) {
+            const container = document.getElementById('page-create');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
+                    <h2 style="margin-bottom: 16px;">等待他人签署</h2>
+                    <p style="color: #666; margin-bottom: 24px;">房间号：<strong style="font-size: 24px; color: #1a1a1a;">${roomId}</strong></p>
+                    <p style="color: #999; font-size: 13px; margin-bottom: 32px;">请将房间号分享给乙方或监督方</p>
+                    <button class="btn btn-primary" onclick="copyRoomCode('${roomId}')" style="margin-bottom: 12px;">复制房间号</button>
+                    <button class="btn btn-secondary" onclick="enterRoom('${roomId}')">进入房间</button>
+                    <p style="color: #999; font-size: 12px; margin-top: 24px;">签署完成后将自动锁定契约</p>
+                </div>
+            `;
+        };
+        
+        // 复制房间号
+        window.copyRoomCode = function(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('房间号已复制');
+            }).catch(() => {
+                showToast('复制失败，请手动复制');
+            });
+        };
+        
+        // 所有签署完成后锁定契约
+        window.lockContractAfterAllSigned = async function() {
+            document.getElementById('final-confirm-overlay').classList.remove('active');
+            
             currentContract.status = 'locked';
             currentContract.lockedAt = Date.now();
             
             try {
-                await set(ref(db, 'rooms/' + roomId), currentContract);
+                await update(ref(db, 'rooms/' + currentRoomId), {
+                    status: 'locked',
+                    lockedAt: currentContract.lockedAt
+                });
                 
-                // Save to local history
-                saveToHistory(currentContract);
-                
-                // Show contract info for easy copy
-                const contractInfo = generateContractText(currentContract);
-                showToast('契约已生效，点击下方"复制契约信息"按钮分享');
-                
-                // Enter room
-                currentRoomId = roomId;
-                currentRole = currentContract.mode === 'single' ? 'executor' : 'executorA';
-                enterRoom(roomId);
-                
+                showToast('契约已正式锁定生效');
+                enterRoom(currentRoomId);
             } catch (err) {
-                showToast('创建失败，请重试');
+                showToast('锁定失败，请重试');
                 console.error(err);
             }
         };
