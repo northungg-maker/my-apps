@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对赌房间 - 行动执行系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #8892b0;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #8892b0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        /* Card Style */
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #8892b0;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: #fff;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: #fff;
+        }
+        
+        /* Progress Circle */
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#667eea var(--progress), rgba(255,255,255,0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .progress-circle::before {
+            content: '';
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            position: absolute;
+        }
+        
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .progress-label {
+            color: #8892b0;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+        /* Room Info */
+        .room-info {
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        .room-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            letter-spacing: 4px;
+            margin: 10px 0;
+        }
+        
+        .room-status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-waiting {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .status-active {
+            background: rgba(56, 239, 125, 0.2);
+            color: #38ef7d;
+        }
+        
+        .status-completed {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+        
+        /* Participants */
+        .participants {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        
+        .participant {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .participant-role {
+            font-size: 11px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .participant-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+        
+        .participant-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .participant-status.done {
+            background: rgba(56, 239, 125, 0.2);
+            color: #38ef7d;
+        }
+        
+        .participant-status.pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        /* Stake Display */
+        .stake-display {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 16px 0;
+        }
+        
+        .stake-label {
+            font-size: 12px;
+            color: #8892b0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stake-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #fff;
+        }
+        
+        /* Timer */
+        .timer {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .timer-value {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+        }
+        
+        .timer-label {
+            color: #8892b0;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        /* History List */
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .history-icon.win {
+            background: rgba(56, 239, 125, 0.2);
+        }
+        
+        .history-icon.lose {
+            background: rgba(235, 51, 73, 0.2);
+        }
+        
+        .history-content {
+            flex: 1;
+        }
+        
+        .history-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .history-meta {
+            color: #8892b0;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        
+        .history-result {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .history-result.win {
+            color: #38ef7d;
+        }
+        
+        .history-result.lose {
+            color: #eb3349;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8892b0;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* Section Hidden */
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-new {
+            background: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+        
+        /* Copy Link */
+        .copy-link {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .copy-link input {
+            flex: 1;
+        }
+        
+        .copy-link button {
+            padding: 14px 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 对赌房间</h1>
+            <p>用代价逼出执行力</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('create')">创建房间</button>
+            <button class="tab" onclick="switchTab('join')">加入房间</button>
+            <button class="tab" onclick="switchTab('history')">历史记录</button>
+        </div>
+        
+        <!-- 创建房间 -->
+        <div id="section-create" class="section active">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🎯</span>
+                    设定目标
+                </div>
+                <div class="form-group">
+                    <label>你要完成什么？</label>
+                    <textarea id="goal" placeholder="例如：本周完成3篇公众号文章"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>截止日期</label>
+                        <input type="date" id="deadline">
+                    </div>
+                    <div class="form-group">
+                        <label>截止时间</label>
+                        <input type="time" id="deadline-time" value="23:59">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">💰</span>
+                    设定赌注
+                </div>
+                <div class="form-group">
+                    <label>赌注类型</label>
+                    <select id="stake-type" onchange="toggleStakeInput()">
+                        <option value="money">💰 现金</option>
+                        <option value="item">🎁 物品</option>
+                        <option value="promise">📝 承诺</option>
+                        <option value="other">✨ 其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="stake-label">赌注金额</label>
+                    <input type="text" id="stake-value" placeholder="例如：200元">
+                </div>
+                <div class="form-group">
+                    <label>监管方式</label>
+                    <select id="supervision">
+                        <option value="honor">🤝 诚信模式（双方私下转账）</option>
+                        <option value="public">📢 公开模式（截图为证）</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">👤</span>
+                    监督方信息
+                </div>
+                <div class="form-group">
+                    <label>监督方称呼</label>
+                    <input type="text" id="supervisor-name" placeholder="例如：小明">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="createRoom()">
+                创建房间
+            </button>
+        </div>
+        
+        <!-- 加入房间 -->
+        <div id="section-join" class="section">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🔑</span>
+                    输入房间号
+                </div>
+                <div class="form-group">
+                    <input type="text" id="room-code" placeholder="例如：ABC123" style="text-transform: uppercase; letter-spacing: 4px; text-align: center; font-size: 20px;">
+                </div>
+                <button class="btn btn-primary" onclick="joinRoom()">
+                    加入房间
+                </button>
+            </div>
+        </div>
+        
+        <!-- 房间详情（创建后显示） -->
+        <div id="section-room" class="section">
+            <div class="card">
+                <div class="room-info">
+                    <div class="room-status status-waiting" id="room-status">等待加入</div>
+                    <div style="margin-top: 12px;">
+                        <span style="color: #8892b0; font-size: 12px;">房间号</span>
+                        <div class="room-id" id="display-room-id">------</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🎯</span>
+                    目标任务
+                </div>
+                <p id="display-goal" style="color: #fff; font-size: 15px; line-height: 1.6;"></p>
+            </div>
+            
+            <div class="timer">
+                <div class="timer-value" id="countdown">--:--:--</div>
+                <div class="timer-label">剩余时间</div>
+            </div>
+            
+            <div class="stake-display">
+                <div class="stake-label">赌注</div>
+                <div class="stake-value" id="display-stake">--</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">👥</span>
+                    参与双方
+                </div>
+                <div class="participants">
+                    <div class="participant">
+                        <div class="participant-role">执行方</div>
+                        <div class="participant-name" id="display-executor">我</div>
+                        <div class="participant-status pending" id="executor-status">待完成</div>
+                    </div>
+                    <div class="participant">
+                        <div class="participant-role">监督方</div>
+                        <div class="participant-name" id="display-supervisor">等待加入</div>
+                        <div class="participant-status pending" id="supervisor-status">待确认</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" id="invite-card">
+                <div class="card-title">
+                    <span class="icon">🔗</span>
+                    邀请监督方
+                </div>
+                <p style="color: #8892b0; font-size: 13px; margin-bottom: 12px;">
+                    将房间号发送给监督方，或直接分享链接
+                </p>
+                <div class="copy-link">
+                    <input type="text" id="share-link" readonly>
+                    <button onclick="copyLink()">📋</button>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="confirmComplete()">
+                    ✓ 我完成了
+                </button>
+                <button class="btn btn-danger" onclick="giveUp()">
+                    ✗ 我认输
+                </button>
+            </div>
+        </div>
+        
+        <!-- 历史记录 -->
+        <div id="section-history" class="section">
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📊</span>
+                    历史战绩
+                </div>
+                <div id="history-list">
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>暂无历史记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 确认完成弹窗 -->
+    <div class="modal" id="modal-complete">
+        <div class="modal-content">
+            <div class="modal-title">确认完成？</div>
+            <p style="color: #8892b0; font-size: 14px; line-height: 1.6;">
+                确认后，监督方将收到通知进行核实。如果监督方确认你完成，赌注返还。
+            </p>
+            <div class="form-group" style="margin-top: 16px;">
+                <label>完成说明（可选）</label>
+                <textarea id="complete-note" placeholder="描述你的完成情况"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('complete')">取消</button>
+                <button class="btn btn-success" onclick="submitComplete()">确认完成</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 认输弹窗 -->
+    <div class="modal" id="modal-giveup">
+        <div class="modal-content">
+            <div class="modal-title">确认认输？</div>
+            <p style="color: #8892b0; font-size: 14px; line-height: 1.6;">
+                认输意味着你承认失败，赌注将由监督方获得。此操作不可撤销。
+            </p>
+            <div class="form-group" style="margin-top: 16px;">
+                <label>失败原因（可选）</label>
+                <textarea id="fail-reason" placeholder="记录一下为什么没完成"></textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="closeModal('giveup')">取消</button>
+                <button class="btn btn-danger" onclick="submitGiveUp()">确认认输</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 数据存储
+        let roomData = null;
+        let countdownTimer = null;
+        
+        // 初始化日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            document.getElementById('deadline').value = nextWeek.toISOString().split('T')[0];
+            
+            // 尝试加载本地存储的数据
+            loadFromStorage();
+        });
+        
+        // 切换标签
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('section-' + tab).classList.add('active');
+            
+            if (tab === 'history') {
+                renderHistory();
+            }
+        }
+        
+        // 切换赌注输入
+        function toggleStakeInput() {
+            const type = document.getElementById('stake-type').value;
+            const label = document.getElementById('stake-label');
+            const input = document.getElementById('stake-value');
+            
+            switch(type) {
+                case 'money':
+                    label.textContent = '赌注金额';
+                    input.placeholder = '例如：200元';
+                    break;
+                case 'item':
+                    label.textContent = '物品描述';
+                    input.placeholder = '例如：我的AirPods';
+                    break;
+                case 'promise':
+                    label.textContent = '承诺内容';
+                    input.placeholder = '例如：请对方吃一顿大餐';
+                    break;
+                case 'other':
+                    label.textContent = '赌注内容';
+                    input.placeholder = '描述你的赌注';
+                    break;
+            }
+        }
+        
+        // 生成房间号
+        function generateRoomId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // 创建房间
+        function createRoom() {
+            const goal = document.getElementById('goal').value.trim();
+            const deadline = document.getElementById('deadline').value;
+            const deadlineTime = document.getElementById('deadline-time').value;
+            const stakeType = document.getElementById('stake-type').value;
+            const stakeValue = document.getElementById('stake-value').value.trim();
+            const supervision = document.getElementById('supervision').value;
+            const supervisorName = document.getElementById('supervisor-name').value.trim();
+            
+            if (!goal) {
+                alert('请输入目标任务');
+                return;
+            }
+            if (!deadline) {
+                alert('请选择截止日期');
+                return;
+            }
+            if (!stakeValue) {
+                alert('请输入赌注内容');
+                return;
+            }
+            
+            const roomId = generateRoomId();
+            const deadlineStr = deadline + ' ' + deadlineTime;
+            
+            roomData = {
+                id: roomId,
+                goal: goal,
+                deadline: new Date(deadlineStr).getTime(),
+                stakeType: stakeType,
+                stakeValue: stakeValue,
+                supervision: supervision,
+                supervisorName: supervisorName || '监督方',
+                executorName: '我',
+                status: 'waiting', // waiting, active, completed, failed
+                executorComplete: false,
+                supervisorConfirm: false,
+                createdAt: Date.now()
+            };
+            
+            // 保存到本地存储
+            saveToStorage();
+            
+            // 显示房间
+            showRoom();
+        }
+        
+        // 显示房间
+        function showRoom() {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-room').classList.add('active');
+            
+            // 更新显示
+            document.getElementById('display-room-id').textContent = roomData.id;
+            document.getElementById('display-goal').textContent = roomData.goal;
+            
+            const stakeText = getStakeText(roomData.stakeType, roomData.stakeValue);
+            document.getElementById('display-stake').textContent = stakeText;
+            
+            document.getElementById('display-supervisor').textContent = roomData.supervisorName;
+            
+            // 分享链接
+            const shareUrl = window.location.href.split('?')[0] + '?room=' + roomData.id;
+            document.getElementById('share-link').value = shareUrl;
+            
+            // 开始倒计时
+            startCountdown();
+            
+            // 更新状态显示
+            updateRoomStatus();
+        }
+        
+        // 获取赌注文本
+        function getStakeText(type, value) {
+            switch(type) {
+                case 'money': return '💰 ' + value;
+                case 'item': return '🎁 ' + value;
+                case 'promise': return '📝 ' + value;
+                default: return '✨ ' + value;
+            }
+        }
+        
+        // 开始倒计时
+        function startCountdown() {
+            if (countdownTimer) clearInterval(countdownTimer);
+            
+            countdownTimer = setInterval(function() {
+                const now = Date.now();
+                const remaining = roomData.deadline - now;
+                
+                if (remaining <= 0) {
+                    clearInterval(countdownTimer);
+                    document.getElementById('countdown').textContent = '已截止';
+                    checkAutoFail();
+                    return;
+                }
+                
+                const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                
+                if (days > 0) {
+                    document.getElementById('countdown').textContent = 
+                        days + '天 ' + hours + ':' + pad(minutes) + ':' + pad(seconds);
+                } else {
+                    document.getElementById('countdown').textContent = 
+                        hours + ':' + pad(minutes) + ':' + pad(seconds);
+                }
+            }, 1000);
+        }
+        
+        function pad(n) {
+            return n < 10 ? '0' + n : n;
+        }
+        
+        // 更新房间状态显示
+        function updateRoomStatus() {
+            const statusEl = document.getElementById('room-status');
+            
+            switch(roomData.status) {
+                case 'waiting':
+                    statusEl.className = 'room-status status-waiting';
+                    statusEl.textContent = '等待加入';
+                    break;
+                case 'active':
+                    statusEl.className = 'room-status status-active';
+                    statusEl.textContent = '进行中';
+                    break;
+                case 'completed':
+                    statusEl.className = 'room-status status-completed';
+                    statusEl.textContent = '已完成';
+                    break;
+                case 'failed':
+                    statusEl.className = 'room-status status-waiting';
+                    statusEl.textContent = '已失败';
+                    break;
+            }
+        }
+        
+        // 加入房间
+        function joinRoom() {
+            const code = document.getElementById('room-code').value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('请输入房间号');
+                return;
+            }
+            
+            // 检查本地存储
+            const rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
+            if (rooms[code]) {
+                roomData = rooms[code];
+                roomData.status = 'active';
+                saveToStorage();
+                showRoom();
+            } else {
+                // 模拟加入（实际应用需要后端）
+                alert('房间不存在或已过期');
+            }
+        }
+        
+        // 复制链接
+        function copyLink() {
+            const link = document.getElementById('share-link');
+            link.select();
+            document.execCommand('copy');
+            alert('链接已复制');
+        }
+        
+        // 确认完成
+        function confirmComplete() {
+            document.getElementById('modal-complete').classList.add('show');
+        }
+        
+        // 提交完成
+        function submitComplete() {
+            const note = document.getElementById('complete-note').value.trim();
+            
+            roomData.executorComplete = true;
+            roomData.completeNote = note;
+            roomData.status = 'completed';
+            
+            document.getElementById('executor-status').textContent = '已完成';
+            document.getElementById('executor-status').className = 'participant-status done';
+            
+            saveToStorage();
+            addToHistory(true);
+            closeModal('complete');
+            updateRoomStatus();
+            
+            alert('已提交完成确认！等待监督方核实。');
+        }
+        
+        // 认输
+        function giveUp() {
+            document.getElementById('modal-giveup').classList.add('show');
+        }
+        
+        // 提交认输
+        function submitGiveUp() {
+            const reason = document.getElementById('fail-reason').value.trim();
+            
+            roomData.status = 'failed';
+            roomData.failReason = reason;
+            
+            document.getElementById('executor-status').textContent = '已失败';
+            document.getElementById('executor-status').className = 'participant-status pending';
+            
+            saveToStorage();
+            addToHistory(false);
+            closeModal('giveup');
+            updateRoomStatus();
+            
+            if (countdownTimer) clearInterval(countdownTimer);
+            
+            alert('已确认认输，赌注归监督方所有。');
+        }
+        
+        // 关闭弹窗
+        function closeModal(type) {
+            document.getElementById('modal-' + type).classList.remove('show');
+        }
+        
+        // 自动失败检查
+        function checkAutoFail() {
+            if (roomData.status === 'active' && !roomData.executorComplete) {
+                roomData.status = 'failed';
+                saveToStorage();
+                addToHistory(false);
+                updateRoomStatus();
+                alert('时间到！任务失败，赌注归监督方所有。');
+            }
+        }
+        
+        // 保存到本地存储
+        function saveToStorage() {
+            const rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
+            rooms[roomData.id] = roomData;
+            localStorage.setItem('betRooms', JSON.stringify(rooms));
+            localStorage.setItem('currentRoom', roomData.id);
+            
+            let rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
+            rooms[roomData.id] = roomData;
+            localStorage.setItem('betRooms', JSON.stringify(rooms));
+        }
+        
+        // 从本地存储加载
+        function loadFromStorage() {
+            const currentRoomId = localStorage.getItem('currentRoom');
+            if (currentRoomId) {
+                const rooms = JSON.parse(localStorage.getItem('betRooms') || '{}');
+                if (rooms[currentRoomId]) {
+                    roomData = rooms[currentRoomId];
+                    if (roomData.status === 'active' || roomData.status === 'waiting') {
+                        showRoom();
+                    }
+                }
+            }
+            
+            // 检查URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            if (roomParam) {
+                document.getElementById('room-code').value = roomParam;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('section-join').classList.add('active');
+            }
+        }
+        
+        // 添加到历史
+        function addToHistory(won) {
+            let history = JSON.parse(localStorage.getItem('betHistory') || '[]');
+            
+            history.unshift({
+                id: roomData.id,
+                goal: roomData.goal,
+                stake: getStakeText(roomData.stakeType, roomData.stakeValue),
+                won: won,
+                date: new Date().toLocaleDateString(),
+                failReason: roomData.failReason || ''
+            });
+            
+            // 只保留最近20条
+            if (history.length > 20) history = history.slice(0, 20);
+            
+            localStorage.setItem('betHistory', JSON.stringify(history));
+        }
+        
+        // 渲染历史
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('betHistory') || '[]');
+            const list = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>暂无历史记录</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="history-icon ${item.won ? 'win' : 'lose'}">
+                        ${item.won ? '✓' : '✗'}
+                    </div>
+                    <div class="history-content">
+                        <div class="history-title">${item.goal}</div>
+                        <div class="history-meta">${item.date} · ${item.stake}</div>
+                    </div>
+                    <div class="history-result ${item.won ? 'win' : 'lose'}">
+                        ${item.won ? '胜利' : '失败'}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
