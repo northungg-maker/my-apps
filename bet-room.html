@@ -932,6 +932,19 @@
     <!-- Toast -->
     <div id="toast" class="toast"></div>
     
+    <!-- 成功弹窗 -->
+    <div id="success-modal" class="success-modal">
+        <div class="success-content">
+            <h3>🎉 房间创建成功！</h3>
+            <p>把房间号发给对方加入</p>
+            <div class="success-room-id" id="success-room-id"></div>
+            <div class="success-actions">
+                <button class="copy-btn" onclick="window.copySuccessRoomId()">📋 复制房间号</button>
+                <button class="close-btn" onclick="window.closeSuccessModal();window.enterRoom(window.currentRoomId);">进入房间</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 完成确认 -->
     <div id="complete-modal" class="modal">
         <div class="modal-content">
