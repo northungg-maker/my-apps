@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成事系统 V4.0</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fafafa; color: #333; min-height: 100vh; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 25px 20px; }
+        
+        /* Header */
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 1.6em; font-weight: 600; color: #000; margin-bottom: 5px; }
+        .header .subtitle { color: #999; font-size: 0.8em; }
+        .header-actions { margin-top: 12px; }
+        .header-actions button { padding: 6px 14px; margin: 0 3px; border: 1px solid #ddd; border-radius: 5px; background: #fff; color: #666; cursor: pointer; font-size: 0.8em; }
+        .header-actions button:hover { background: #f5f5f5; }
+        
+        /* Info Section - 修复日期框溢出 */
+        .info-section { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+        .info-item { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #eee; min-width: 0; overflow: hidden; }
+        .info-item label { display: block; color: #999; font-size: 0.7em; margin-bottom: 4px; }
+        .info-item input, .info-item select { width: 100%; max-width: 100%; border: 1px solid #eee; padding: 5px 6px; border-radius: 3px; font-size: 0.8em; box-sizing: border-box; }
+        input[type="date"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            appearance: none;
+            color: #333 !important;
+            color-scheme: light;
+        }
+        input[type="date"]::-webkit-date-and-time-value { text-align: left; color: #333 !important; }
+        input[type="date"]::-webkit-datetime-edit { color: #333 !important; }
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #333 !important; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.3); }
+        
+        /* Chain - 动力链增强 */
+        .chain-section { background: #fff; border-radius: 6px; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eee; }
+        .chain-text { font-size: 0.85em; color: #666; text-align: center; }
+        .chain-node-inline { display: inline-block; padding: 3px 10px; border-radius: 3px; margin: 0 2px; font-weight: 500; }
+        .chain-node-inline.green { background: #e8f5e9; color: #2e7d32; }
+        .chain-node-inline.yellow { background: #fff8e1; color: #e65100; }
+        .chain-node-inline.red { background: #ffebee; color: #c62828; }
+        .chain-node-inline.broken { background: #f5f5f5; color: #999; text-decoration: line-through; }
+        .chain-weaknesses { margin-top: 8px; font-size: 0.75em; text-align: center; color: #666; }
+        .chain-weaknesses .weak-item { display: inline-block; padding: 2px 6px; margin: 2px; border-radius: 3px; background: #fff3e0; color: #e65100; }
+        .chain-alert { margin-top: 6px; font-size: 0.8em; text-align: center; }
+        .chain-alert.danger { color: #c62828; font-weight: 500; }
+        .chain-alert.warning { color: #e65100; }
+        
+        /* Score Section */
+        .score-section { background: #fff; border-radius: 8px; padding: 18px; margin-bottom: 18px; border: 1px solid #eee; }
+        .layer-block { margin-bottom: 18px; }
+        .layer-block:last-child { margin-bottom: 0; }
+        .layer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+        .layer-header h3 { font-size: 0.9em; font-weight: 600; }
+        .layer-header .weight { color: #999; font-size: 0.75em; font-weight: normal; margin-left: 6px; }
+        .layer-header .layer-score { font-size: 0.95em; font-weight: 600; color: #000; }
+        .layer-block.collapsed .layer-header { border-bottom: none; margin-bottom: 0; }
+        .layer-block.collapsed #coreContent,
+        .layer-block.collapsed #supportContent,
+        .layer-block.collapsed #strategyContent,
+        .layer-block.collapsed #externalContent { display: none; }
+        .layer-header:hover { background: rgba(0,0,0,0.02); }
+        .layer-header::after { content: '▼'; font-size: 0.7em; color: #999; margin-left: 8px; transition: transform 0.2s; }
+        .layer-block.collapsed .layer-header::after { content: '▶'; }
+        
+        .system-row { margin-bottom: 12px; }
+        .system-name { font-size: 0.8em; color: #555; margin-bottom: 6px; font-weight: 500; }
+        
+        .indicator-row { margin-bottom: 4px; }
+        .indicator-item { display: flex; align-items: center; padding: 4px 0; }
+        .indicator-name { flex: 1; font-size: 0.75em; color: #888; }
+        
+        .score-btns { display: flex; gap: 2px; }
+        .score-btn { width: 20px; height: 20px; border: 1px solid #ddd; border-radius: 3px; background: #fff; color: #999; cursor: pointer; font-size: 0.7em; }
+        .score-btn:hover { border-color: #999; }
+        .score-btn.selected { background: #000; color: #fff; border-color: #000; font-weight: 600; }
+        .score-btn.zero { color: #f44336; }
+        .score-btn.zero.selected { background: #f44336; color: #fff; border-color: #f44336; }
+        
+        .score-meaning { font-size: 0.7em; color: #666; padding: 3px 0 3px 8px; background: #f9f9f9; border-radius: 3px; margin-left: 0; min-height: 16px; }
+        
+        /* Total Score */
+        .total-section { background: #000; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 18px; color: #fff; }
+        .total-label { font-size: 0.75em; color: #999; margin-bottom: 3px; }
+        .total-score { font-size: 2.8em; font-weight: 700; }
+        .total-status { margin-top: 6px; font-size: 0.8em; }
+        
+        /* Analysis Section */
+        .analysis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; }
+        .analysis-card { background: #fff; border-radius: 6px; padding: 12px; border: 1px solid #eee; }
+        .analysis-card h4 { font-size: 0.8em; color: #000; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
+        .analysis-card .content { font-size: 0.75em; line-height: 1.5; color: #555; }
+        
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.75em; margin-right: 4px; margin-bottom: 4px; }
+        .tag-danger { background: #ffebee; color: #c62828; }
+        .tag-warning { background: #fff8e1; color: #e65100; }
+        .tag-success { background: #e8f5e9; color: #2e7d32; }
+        .tag-info { background: #e3f2fd; color: #1565c0; }
+        
+        .alert-box { padding: 8px; border-radius: 3px; margin-top: 6px; font-size: 0.75em; }
+        .alert-danger { background: #ffebee; color: #c62828; border-left: 2px solid #f44336; }
+        .alert-warning { background: #fff8e1; color: #e65100; border-left: 2px solid #ff9800; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 2px solid #4caf50; }
+        .alert-info { background: #e3f2fd; color: #1565c0; border-left: 2px solid #2196f3; }
+        
+        /* Sub-info in cards */
+        .sub-info { font-size: 0.7em; color: #888; margin-top: 4px; }
+        .sub-item { padding: 2px 0; }
+        .sub-item.strong { color: #2e7d32; font-weight: 500; }
+        .sub-item.weak { color: #c62828; font-weight: 500; }
+        
+        /* Decision Grid */
+        .decision-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .decision-item { padding: 10px 6px; border-radius: 5px; background: #f8f8f8; text-align: center; }
+        .decision-item h5 { font-size: 0.65em; color: #999; margin-bottom: 3px; font-weight: normal; }
+        .decision-item .value { font-size: 0.8em; font-weight: 600; color: #333; }
+        .decision-item .reason { font-size: 0.65em; color: #999; margin-top: 2px; }
+        .decision-item .detail { font-size: 0.6em; color: #666; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #ddd; text-align: left; }
+        .decision-item.danger { background: #ffebee; }
+        .decision-item.danger .value { color: #c62828; }
+        .decision-item.warning { background: #fff8e1; }
+        .decision-item.warning .value { color: #e65100; }
+        .decision-item.success { background: #e8f5e9; }
+        .decision-item.success .value { color: #2e7d32; }
+        
+        /* Strategy */
+        .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .strategy-col h5 { font-size: 0.75em; margin-bottom: 6px; }
+        .strategy-col.fit h5 { color: #4caf50; }
+        .strategy-col.unfit h5 { color: #f44336; }
+        .strategy-col ul { list-style: none; font-size: 0.75em; color: #666; }
+        .strategy-col li { padding: 2px 0; }
+        
+        /* Buttons */
+        .action-buttons { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+        .btn { padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
+        .btn-primary { background: #000; color: #fff; }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary { background: #fff; color: #333; border: 1px solid #ddd; }
+        
+        /* Export */
+        .export-section { display: none; background: #fff; border-radius: 6px; padding: 12px; margin-bottom: 18px; border: 1px solid #eee; }
+        .export-section textarea { width: 100%; height: 200px; border: 1px solid #eee; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 0.75em; }
+        .export-buttons { margin-top: 8px; display: flex; gap: 6px; }
+        
+        /* History */
+        .history-section { background: #fff; border-radius: 6px; padding: 12px; border: 1px solid #eee; }
+        .history-section h4 { font-size: 0.8em; margin-bottom: 10px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.75em; }
+        .history-table th, .history-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid #f5f5f5; }
+        .history-table th { color: #999; font-weight: normal; }
+        .history-table button { padding: 2px 6px; border: 1px solid #ddd; border-radius: 3px; background: #fff; cursor: pointer; font-size: 0.75em; margin-right: 2px; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-content { background: #fff; border-radius: 8px; padding: 18px; max-width: 650px; max-height: 75vh; overflow-y: auto; width: 100%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .modal-header h3 { font-size: 0.95em; }
+        .modal-close { background: none; border: none; font-size: 1.2em; cursor: pointer; color: #999; }
+        
+        @media (max-width: 768px) {
+            .info-section { grid-template-columns: repeat(2, 1fr); }
+            .analysis-grid { grid-template-columns: 1fr; }
+            .decision-grid { grid-template-columns: repeat(3, 1fr); }
+            .strategy-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>成事系统 V4.0</h1>
+            <div class="subtitle">洞察·掌控·成事</div>
+            <div class="header-actions">
+                <button onclick="showStandardsModal()">📋 评分标准</button>
+                <button onclick="clearAll()">🗑️ 清空</button>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-item">
+                <label>评估日期</label>
+                <input type="date" id="evalDate">
+            </div>
+            <div class="info-item">
+                <label>评估对象</label>
+                <input type="text" id="personName" placeholder="姓名">
+            </div>
+            <div class="info-item">
+                <label>评估目的</label>
+                <select id="evalPurpose">
+                    <option value="">选择目的</option>
+                    <option value="合作">合作评估</option>
+                    <option value="招聘">招聘筛选</option>
+                    <option value="交往">交往判断</option>
+                    <option value="自评">自我评估</option>
+                    <option value="复盘">复盘分析</option>
+                </select>
+            </div>
+            <div class="info-item">
+                <label>备注</label>
+                <input type="text" id="evalNote" placeholder="说明">
+            </div>
+        </div>
+        
+        <div class="chain-section">
+            <div class="chain-text" id="chainText">核心层(0.0) → 支撑层(0.0) → 战略层(0.0) → 外部层(0.0)</div>
+            <div class="chain-weaknesses" id="chainWeaknesses"></div>
+            <div id="chainAlert"></div>
+        </div>
+        
+        <div class="score-section">
+            <div class="layer-block" data-layer="core">
+                <div class="layer-header">
+                    <h3>核心层（人格系统）<span class="weight">40%</span></h3>
+                    <span class="layer-score" id="coreTotal">0.00</span>
+                </div>
+                <div id="coreContent"></div>
+            </div>
+            
+            <div class="layer-block" data-layer="support">
+                <div class="layer-header">
+                    <h3>支撑层（能力系统）<span class="weight">35%</span></h3>
+                    <span class="layer-score" id="supportTotal">0.00</span>
+                </div>
+                <div id="supportContent"></div>
+            </div>
+            
+            <div class="layer-block" data-layer="strategy">
+                <div class="layer-header">
+                    <h3>战略层（系统整合）<span class="weight">15%</span></h3>
+                    <span class="layer-score" id="strategyTotal">0.00</span>
+                </div>
+                <div id="strategyContent"></div>
+            </div>
+            
+            <div class="layer-block" data-layer="external">
+                <div class="layer-header">
+                    <h3>外部层（环境机遇）<span class="weight">10%</span></h3>
+                    <span class="layer-score" id="externalTotal">0.00</span>
+                </div>
+                <div id="externalContent"></div>
+            </div>
+        </div>
+        
+        <div class="total-section">
+            <div class="total-label">宏观成事指数</div>
+            <div class="total-score" id="totalScore">0.00</div>
+            <div class="total-status" id="totalStatus">等待评分</div>
+        </div>
+        
+        <div class="analysis-grid">
+            <div class="analysis-card">
+                <h4>类型识别</h4>
+                <div class="content" id="typeContent">等待评分...</div>
+            </div>
+            <div class="analysis-card">
+                <h4>优势/短板维度</h4>
+                <div class="content" id="strengthWeaknessContent">等待评分...</div>
+            </div>
+            <div class="analysis-card">
+                <h4>补偿机制</h4>
+                <div class="content" id="compensateContent">等待评分...</div>
+            </div>
+            <div class="analysis-card">
+                <h4>风险转译</h4>
+                <div class="content" id="riskContent">等待评分...</div>
+            </div>
+        </div>
+
+        <div class="analysis-card" style="margin-bottom:18px;">
+            <h4>决策引擎</h4>
+            <div id="core-judgment-display" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; font-size: 16px; font-weight: bold; text-align: center;">—</div>
+            <div class="decision-grid">
+                <div class="decision-item" id="decision-coop-item">
+                    <h5>可合作</h5>
+                    <div class="value" id="decision-coop">—</div>
+                    <div class="reason" id="decision-coop-reason"></div>
+                    <div class="detail" id="decision-coop-detail"></div>
+                </div>
+                <div class="decision-item" id="decision-deep-item">
+                    <h5>可深交</h5>
+                    <div class="value" id="decision-deep">—</div>
+                    <div class="reason" id="decision-deep-reason"></div>
+                    <div class="detail" id="decision-deep-detail"></div>
+                </div>
+                <div class="decision-item" id="decision-trust-item">
+                    <h5>可托付</h5>
+                    <div class="value" id="decision-trust">—</div>
+                    <div class="reason" id="decision-trust-reason"></div>
+                    <div class="detail" id="decision-trust-detail"></div>
+                </div>
+                <div class="decision-item" id="decision-risk-item">
+                    <h5>风险等级</h5>
+                    <div class="value" id="decision-risk">—</div>
+                    <div class="reason" id="decision-risk-reason"></div>
+                    <div class="detail" id="decision-risk-detail"></div>
+                </div>
+                <div class="decision-item" id="decision-role-item">
+                    <h5>适合角色</h5>
+                    <div class="value" id="decision-role">—</div>
+                    <div class="reason" id="decision-role-reason"></div>
+                    <div class="detail" id="decision-role-detail"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="analysis-card" style="margin-bottom:18px;">
+            <h4>使用策略</h4>
+            <div class="strategy-grid">
+                <div class="strategy-col fit">
+                    <h5>✅ 适合</h5>
+                    <ul id="strategyFit"></ul>
+                </div>
+                <div class="strategy-col unfit">
+                    <h5>❌ 不适合</h5>
+                    <ul id="strategyUnfit"></ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="saveRecord()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="exportReport()">📄 报告</button>
+            <button class="btn btn-secondary" onclick="exportJSON()">📦 JSON</button>
+        </div>
+        
+        <div class="export-section" id="exportSection">
+            <textarea id="exportText" readonly></textarea>
+            <div class="export-buttons">
+                <button class="btn btn-primary" onclick="copyExport()">📋 复制</button>
+                <button class="btn btn-secondary" onclick="closeExport()">关闭</button>
+            </div>
+        </div>
+        
+        <div class="history-section">
+            <h4>历史记录</h4>
+            <table class="history-table">
+                <thead><tr><th>日期</th><th>对象</th><th>核心</th><th>支撑</th><th>战略</th><th>外部</th><th>总分</th><th>操作</th></tr></thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal" id="standardsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 全层评分标准</h3>
+                <button class="modal-close" onclick="closeStandardsModal()">×</button>
+            </div>
+            <div id="standardsContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 折叠功能
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.layer-block[data-layer] .layer-header').forEach(header => {
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', () => {
+                    const block = header.parentElement;
+                    block.classList.toggle('collapsed');
+                });
+            });
+        });
+        // 初始化 layer-content 的 max-height
+        // ==================== 全部四层评分标准 ====================
+        const systems = {
+            core: {
+                name: '核心层', weight: 0.4,
+                systems: {
+                    power: {
+                        name: '动力系统', indicators: ['目标清晰度', '原则稳定性', '动机方向', '自驱强度', '目标一致性'],
+                        standards: [
+                            ['无任何目标', '偶尔有模糊想法', '有短期目标但不稳定', '有较清晰目标', '有长期目标持续行动', '目标清晰可量化完全自驱'],
+                            ['无原则遇利则变', '原则模糊容易妥协', '有原则但不够坚定', '原则基本稳定', '原则坚定言行一致', '原则不可动摇始终如一'],
+                            ['被动驱动无自主意愿', '外部压力下有动力', '有动机但易受影响', '有一定自主方向', '动机明确且稳定', '动机完全自驱方向清晰'],
+                            ['完全无自驱力', '偶尔主动需外部刺激', '能主动但不持续', '自我驱动中等稳定', '自驱力强且稳定', '完全自驱持续优化'],
+                            ['目标与行动完全脱节', '偶尔对齐', '部分一致', '基本一致性', '高度一致', '目标行动完美对齐']
+                        ]
+                    },
+                    cognitive: {
+                        name: '认知系统', indicators: ['逻辑判断', '归因方式', '世界模型', '信息处理', '认知深度'],
+                        standards: [
+                            ['逻辑混乱无法判断', '经常判断错误', '能做简单判断', '判断基本合理', '逻辑清晰准确', '高度理性预测精准'],
+                            ['完全错误归因', '经常外归因', '归因不稳定', '基本能正确归因', '归因平衡合理', '归因精准深刻洞察'],
+                            ['世界观严重偏离', '世界模型不完整', '模型部分正确', '模型较完整', '能理解复杂关系', '高度贴合现实'],
+                            ['无法处理信息', '信息处理粗糙', '处理能力有限', '能基本处理整合', '高效处理整合', '信息处理能力极强'],
+                            ['认知极浅', '理解表层', '有一定深度', '能深入思考', '认知深刻', '洞察本质']
+                        ]
+                    },
+                    emotion: {
+                        name: '情绪系统', indicators: ['情绪稳定性', '自我调节', '抗压能力', '恢复速度', '情绪表达'],
+                        standards: [
+                            ['情绪完全失控', '极易波动', '波动明显', '相对稳定', '情绪稳定', '高度稳定不受影响'],
+                            ['无法自我调节', '需他人安抚', '调节能力有限', '能部分调节', '自我调节能力强', '调节迅速有效'],
+                            ['无法承受压力', '压力下崩溃', '承受力弱', '能承受一定压力', '抗压能力强', '压力下表现更好'],
+                            ['恢复极慢长期影响', '恢复很慢', '恢复较慢', '恢复一般', '恢复较快', '快速恢复并学习'],
+                            ['表达混乱极端', '表达不当', '表达不稳定', '表达基本得当', '表达清晰有效', '表达精准有感染力']
+                        ]
+                    },
+                    behavior: {
+                        name: '行为系统', indicators: ['执行力', '持续性', '落地能力', '行动质量', '反馈响应'],
+                        standards: [
+                            ['完全不执行', '极少执行', '偶尔执行', '能执行大部分', '执行力强', '持续高效执行'],
+                            ['无一件事能持续', '经常半途而废', '持续性一般', '能持续一定时间', '持续性强', '长期持续不断'],
+                            ['无一件事能落地', '偶有落地', '落地能力弱', '能基本落地', '稳定落地', '完美落地产出'],
+                            ['行动质量极差', '质量不稳定', '质量一般', '质量较好', '质量高', '质量持续提升'],
+                            ['无视反馈', '偶尔响应', '响应不稳定', '基本能响应', '积极响应改进', '快速响应并优化']
+                        ]
+                    },
+                    resource: {
+                        name: '资源系统', indicators: ['资源识别', '调配能力', '优化能力', '资源渠道', '资源转化'],
+                        standards: [
+                            ['完全无法识别', '识别极少', '识别部分', '识别较好', '高效识别', '极高敏感度'],
+                            ['完全无法调配', '调配极差', '调配能力弱', '能基本调配', '高效调配', '调配精准最大化'],
+                            ['无优化意识', '偶尔优化', '优化能力有限', '有一定优化', '持续优化', '优化循环最大化'],
+                            ['无渠道', '渠道极少', '渠道有限', '有一定渠道', '渠道丰富', '渠道广泛高质量'],
+                            ['无法转化', '转化极低', '转化能力弱', '能基本转化', '高效转化', '转化率极高']
+                        ]
+                    }
+                }
+            },
+            support: {
+                name: '支撑层', weight: 0.35,
+                systems: {
+                    professional: {
+                        name: '专业能力', indicators: ['专业技能', '行业认知', '问题解决', '创新能力', '经验积累'],
+                        standards: [
+                            ['无专业技能', '技能基础薄弱', '掌握基本技能', '技能熟练', '技能精通', '领域专家级别'],
+                            ['对行业一无所知', '认知碎片化', '了解行业基本', '认知较全面', '洞察行业趋势', '深刻理解行业本质'],
+                            ['无法解决问题', '问题解决能力弱', '能解决简单问题', '能解决大部分问题', '善于解决复杂问题', '问题解决能力极强'],
+                            ['无创新意识', '偶尔有想法', '有想法但难落地', '能产生有效创新', '创新能力突出', '持续产生高价值创新'],
+                            ['无相关经验', '经验有限', '有一定经验', '经验较丰富', '经验丰富且有效', '经验深厚的行业资深']
+                        ]
+                    },
+                    learning: {
+                        name: '学习能力', indicators: ['学习速度', '知识迁移', '方法优化', '知识整合', '持续学习'],
+                        standards: [
+                            ['学习极其缓慢', '学习速度慢', '学习速度一般', '学习较快', '学习速度快', '极快掌握新知识'],
+                            ['无法迁移知识', '迁移能力弱', '偶尔能迁移', '能进行基础迁移', '善于迁移应用', '知识迁移能力极强'],
+                            ['无方法优化意识', '偶尔优化', '优化能力有限', '有系统优化方法', '持续优化方法', '方法论专家'],
+                            ['无法整合知识', '整合能力弱', '能进行简单整合', '整合能力较好', '善于整合应用', '知识整合能力极强'],
+                            ['完全不学习', '偶尔学习', '被动学习', '有学习习惯', '主动持续学习', '终身学习者']
+                        ]
+                    },
+                    decision: {
+                        name: '决策能力', indicators: ['信息收集', '分析判断', '决策速度', '风险意识', '决策执行'],
+                        standards: [
+                            ['不收集信息', '信息收集有限', '收集基本信息', '信息收集较全面', '信息收集系统', '信息收集能力极强'],
+                            ['无法分析判断', '判断经常出错', '能做简单判断', '能做合理判断', '善于分析判断', '判断精准深刻'],
+                            ['无法做决定', '决策极其缓慢', '决策速度慢', '决策速度适中', '决策及时', '快速准确决策'],
+                            ['无风险意识', '风险意识薄弱', '有基础风险意识', '风险意识较强', '善于识别风险', '风险意识极强'],
+                            ['决策后不执行', '执行意愿弱', '执行不稳定', '能执行决策', '坚决执行决策', '完美执行并反馈']
+                        ]
+                    },
+                    execution: {
+                        name: '执行能力', indicators: ['计划制定', '任务分解', '时间管理', '质量控制', '结果交付'],
+                        standards: [
+                            ['不制定计划', '计划模糊', '能制定简单计划', '计划较清晰', '善于制定计划', '计划精准可执行'],
+                            ['无法分解任务', '分解能力弱', '能做简单分解', '任务分解合理', '善于分解任务', '任务分解精准完备'],
+                            ['无时间概念', '时间管理差', '时间管理一般', '时间管理较好', '时间管理强', '时间管理极强高效'],
+                            ['无质量意识', '质量意识弱', '有基础质量意识', '质量意识较强', '质量控制能力强', '追求极致质量'],
+                            ['无法交付结果', '交付不稳定', '能基本交付', '交付较稳定', '交付质量高', '完美交付超出预期']
+                        ]
+                    },
+                    collaboration: {
+                        name: '协作能力', indicators: ['沟通表达', '团队协作', '冲突处理', '影响力', '关系维护'],
+                        standards: [
+                            ['无法沟通', '表达不清', '基本能沟通', '沟通清晰', '沟通能力强', '沟通极具感染力'],
+                            ['无法协作', '协作意愿弱', '能配合协作', '协作能力强', '善于团队协作', '团队核心推动者'],
+                            ['无法处理冲突', '回避冲突', '处理冲突能力弱', '能处理一般冲突', '善于化解冲突', '冲突解决高手'],
+                            ['无影响力', '影响力弱', '有一定影响力', '影响力较强', '影响力强', '极具影响力领导力'],
+                            ['不维护关系', '关系维护差', '关系维护一般', '能维护关系', '善于维护关系', '关系维护能力极强']
+                        ]
+                    }
+                }
+            },
+            strategy: {
+                name: '战略层', weight: 0.15,
+                systems: {
+                    thinking: {
+                        name: '系统思维', indicators: ['整体观', '关联分析', '动态思考', '结构认知', '长期视角'],
+                        standards: [
+                            ['只看局部', '偶尔能看到整体', '有基础整体观', '整体观较强', '善于全局思考', '高度系统化思维'],
+                            ['无法分析关联', '关联分析弱', '能看到简单关联', '能分析关键关联', '善于关联分析', '关联分析能力极强'],
+                            ['只看当下', '偶尔考虑动态', '有动态思考意识', '能进行动态思考', '善于动态思考', '动态思维极强'],
+                            ['无结构认知', '结构认知弱', '有基础结构认知', '结构认知较强', '善于结构分析', '结构认知极强'],
+                            ['无长期视角', '长期视角弱', '偶尔考虑长期', '有长期视角', '长期视角清晰', '战略眼光长远']
+                        ]
+                    },
+                    integration: {
+                        name: '资源整合', indicators: ['跨域整合', '时机把握', '杠杆效应', '协同优化', '价值放大'],
+                        standards: [
+                            ['无法跨域整合', '整合能力弱', '能进行简单整合', '整合能力较强', '善于跨域整合', '整合能力极强'],
+                            ['无法把握时机', '时机把握差', '偶尔能把握时机', '时机把握较好', '善于把握时机', '时机把握精准'],
+                            ['无杠杆意识', '杠杆意识弱', '有基础杠杆意识', '能利用杠杆', '善于利用杠杆', '杠杆效应最大化'],
+                            ['无协同意识', '协同优化弱', '有基础协同意识', '协同能力较强', '善于协同优化', '协同效益最大化'],
+                            ['无价值放大意识', '放大能力弱', '有基础放大意识', '能进行价值放大', '善于价值放大', '价值放大能力极强']
+                        ]
+                    },
+                    planning: {
+                        name: '长期规划', indicators: ['愿景设定', '路径设计', '里程碑', '弹性调整', '资源预判'],
+                        standards: [
+                            ['无愿景', '愿景模糊', '有基础愿景', '愿景较清晰', '愿景清晰激励人心', '愿景极强引领力'],
+                            ['无法设计路径', '路径设计弱', '能设计简单路径', '路径设计合理', '善于设计路径', '路径设计精准完备'],
+                            ['无里程碑意识', '里程碑模糊', '能设定基础里程碑', '里程碑清晰', '里程碑设计精准', '里程碑体系完备'],
+                            ['无弹性意识', '弹性调整弱', '有基础弹性', '能进行弹性调整', '善于弹性调整', '弹性调整能力极强'],
+                            ['无资源预判', '资源预判弱', '能做简单预判', '资源预判较好', '善于资源预判', '资源预判精准']
+                        ]
+                    },
+                    risk: {
+                        name: '风险管理', indicators: ['风险识别', '风险评估', '应对预案', '危机处理', '恢复能力'],
+                        standards: [
+                            ['无风险识别', '识别能力弱', '能识别明显风险', '识别能力较强', '善于风险识别', '风险识别极强'],
+                            ['无法评估风险', '评估能力弱', '能做简单评估', '评估能力较强', '善于风险评估', '风险评估精准'],
+                            ['无预案意识', '预案能力弱', '能做简单预案', '预案能力较强', '善于制定预案', '预案体系完备'],
+                            ['无法处理危机', '危机处理弱', '能处理简单危机', '危机处理较强', '善于危机处理', '危机处理能力极强'],
+                            ['无法恢复', '恢复能力弱', '恢复能力一般', '恢复能力较强', '恢复能力强', '恢复能力极强反弹力']
+                        ]
+                    },
+                    iteration: {
+                        name: '迭代优化', indicators: ['反馈收集', '数据分析', '方案优化', '持续改进', '经验沉淀'],
+                        standards: [
+                            ['不收集反馈', '反馈收集弱', '能收集基础反馈', '反馈收集较好', '善于收集反馈', '反馈收集体系完备'],
+                            ['不分析数据', '数据分析弱', '能做简单分析', '数据分析较好', '善于数据分析', '数据分析能力极强'],
+                            ['无优化意识', '优化能力弱', '能做简单优化', '优化能力较强', '善于方案优化', '优化能力极强'],
+                            ['无改进意识', '改进能力弱', '有改进意识', '持续改进', '善于持续改进', '持续改进体系完备'],
+                            ['无沉淀意识', '沉淀能力弱', '能做简单沉淀', '沉淀能力较好', '善于经验沉淀', '沉淀体系价值极高']
+                        ]
+                    }
+                }
+            },
+            external: {
+                name: '外部层', weight: 0.1,
+                systems: {
+                    environment: {
+                        name: '社会环境', indicators: ['政策利好', '行业趋势', '社会资源', '法律环境', '文化环境'],
+                        standards: [
+                            ['完全不利', '政策环境差', '政策环境一般', '有一定利好', '政策环境较好', '政策环境极有利'],
+                            ['行业衰退', '趋势不明朗', '趋势平稳', '趋势向好', '处于风口', '处于爆发期'],
+                            ['无社会资源', '资源极其有限', '资源有限', '有一定资源', '社会资源丰富', '社会资源极丰富'],
+                            ['法律环境恶劣', '法律风险高', '法律风险适中', '法律环境一般', '法律环境较好', '法律环境极有利'],
+                            ['文化冲突严重', '文化环境差', '文化环境一般', '文化环境适中', '文化环境较好', '文化环境极有利']
+                        ]
+                    },
+                    timing: {
+                        name: '时间窗口', indicators: ['时机匹配', '窗口长度', '竞争态势', '先发优势', '转换成本'],
+                        standards: [
+                            ['完全错过时机', '时机较差', '时机一般', '时机较好', '时机很好', '最佳时机'],
+                            ['窗口已关闭', '窗口极短', '窗口较短', '窗口适中', '窗口较长', '窗口期很长'],
+                            ['竞争极度激烈', '竞争激烈', '竞争较强', '竞争适中', '竞争较弱', '蓝海市场'],
+                            ['无先发优势', '优势极弱', '优势较弱', '有一定优势', '先发优势明显', '先发优势极强'],
+                            ['转换成本极高', '转换成本高', '成本较高', '成本适中', '成本较低', '转换成本极低']
+                        ]
+                    },
+                    network: {
+                        name: '人脉资源', indicators: ['人脉广度', '人脉质量', '人脉激活', '价值交换', '信任积累'],
+                        standards: [
+                            ['几乎无人脉', '人脉很少', '人脉有限', '人脉适中', '人脉较广', '人脉极广'],
+                            ['质量极低', '质量较低', '质量一般', '质量适中', '质量较高', '质量极高关键人物'],
+                            ['无法激活人脉', '激活能力弱', '能激活部分', '激活能力较好', '善于激活人脉', '激活能力极强'],
+                            ['无法价值交换', '交换能力弱', '能进行简单交换', '交换能力较好', '善于价值交换', '价值交换极强'],
+                            ['信任度极低', '信任度低', '信任度一般', '信任度适中', '信任度较高', '信任度极高']
+                        ]
+                    },
+                    economic: {
+                        name: '经济资源', indicators: ['资金储备', '资金渠道', '资产管理', '风险承受', '增值能力'],
+                        standards: [
+                            ['无资金储备', '储备极少', '储备有限', '储备适中', '储备充足', '资金储备极充足'],
+                            ['无资金渠道', '渠道很少', '渠道有限', '渠道适中', '渠道较多', '资金渠道极丰富'],
+                            ['无管理能力', '管理能力弱', '管理能力一般', '管理能力较好', '善于资产管理', '资产管理极强'],
+                            ['无法承受风险', '承受能力弱', '承受能力一般', '承受能力较好', '承受能力强', '承受能力极强'],
+                            ['无增值能力', '增值能力弱', '增值能力一般', '增值能力较好', '增值能力强', '增值能力极强']
+                        ]
+                    },
+                    info: {
+                        name: '信息优势', indicators: ['信息渠道', '信息质量', '信息处理', '信息变现', '信息壁垒'],
+                        standards: [
+                            ['无信息渠道', '渠道很少', '渠道有限', '渠道适中', '渠道较多', '信息渠道极丰富'],
+                            ['信息质量极低', '质量较低', '质量一般', '质量适中', '质量较高', '信息质量极高独家'],
+                            ['无法处理信息', '处理能力弱', '处理能力一般', '处理能力较好', '善于信息处理', '处理能力极强'],
+                            ['无法变现信息', '变现能力弱', '变现能力一般', '变现能力较好', '善于信息变现', '变现能力极强'],
+                            ['无壁垒', '壁垒很低', '壁垒较低', '有一定壁垒', '壁垒较高', '信息壁垒极强护城河']
+                        ]
+                    }
+                }
+            }
+        };
+        
+        // 分数存储
+        const scores = {};
+        Object.keys(systems).forEach(layer => {
+            scores[layer] = {};
+            Object.keys(systems[layer].systems).forEach(sys => {
+                scores[layer][sys] = {};
+                systems[layer].systems[sys].indicators.forEach((ind, idx) => {
+                    scores[layer][sys][idx] = 0;
+                });
+            });
+        });
+        
+        let history = JSON.parse(localStorage.getItem('chengshi_v34_history') || '[]');
+        
+        // ==================== 辅助函数 ====================
+        function getSystemAvg(layer, sys) {
+            if (!scores[layer] || !scores[layer][sys]) return 0;
+            const vals = Object.values(scores[layer][sys]);
+            if (vals.length === 0) return 0;
+            let sum = 0;
+            vals.forEach(v => { if (typeof v === 'number' && !isNaN(v)) sum += v; });
+            return sum / vals.length;
+        }
+        
+        function getLayerScore(layer) {
+            if (!scores[layer]) return 0;
+            let total = 0, count = 0;
+            Object.values(scores[layer]).forEach(sys => {
+                Object.values(sys).forEach(score => {
+                    if (typeof score === 'number' && !isNaN(score)) {
+                        total += score;
+                        count++;
+                    }
+                });
+            });
+            return count > 0 ? total / count : 0;
+        }
+        
+        function getTotalScore() {
+            let total = 0;
+            Object.keys(systems).forEach(layer => {
+                total += getLayerScore(layer) * systems[layer].weight;
+            });
+            return total * 20;
+        }
+        
+        // 获取所有子系统分数
+        function getAllSubsystemScores() {
+            const result = [];
+            Object.keys(systems).forEach(layer => {
+                Object.keys(systems[layer].systems).forEach(sys => {
+                    result.push({
+                        layer,
+                        layerName: systems[layer].name,
+                        sys,
+                        sysName: systems[layer].systems[sys].name,
+                        score: getSystemAvg(layer, sys)
+                    });
+                });
+            });
+            return result;
+        }
+        
+        // 获取优势/短板
+        function getStrengthsAndWeaknesses() {
+            const allScores = getAllSubsystemScores();
+            if (allScores.length === 0) return { strengths: [], weaknesses: [] };
+            
+            const scores = allScores.map(s => s.score);
+            const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+            
+            return {
+                strengths: allScores.filter(s => s.score > avg + 0.3).sort((a, b) => b.score - a.score),
+                weaknesses: allScores.filter(s => s.score < avg - 0.3 && s.score > 0).sort((a, b) => a.score - b.score),
+                avg
+            };
+        }
+        
+        // 核心检测
+        function checkCoreFailure() {
+            const coreScores = {
+                power: getSystemAvg('core', 'power'),
+                cognitive: getSystemAvg('core', 'cognitive'),
+                emotion: getSystemAvg('core', 'emotion'),
+                behavior: getSystemAvg('core', 'behavior'),
+                resource: getSystemAvg('core', 'resource')
+            };
+            
+            const zeroCount = Object.values(coreScores).filter(s => s === 0).length;
+            const lowCount = Object.values(coreScores).filter(s => s > 0 && s <= 2).length;
+            
+            return {
+                zeroCount,
+                lowCount,
+                isFailed: zeroCount >= 2,
+                hasZero: zeroCount >= 1,
+                scores: coreScores
+            };
+        }
+        
+        // ==================== 初始化 ====================
+        function init() {
+            document.getElementById('evalDate').value = new Date().toISOString().split('T')[0];
+            renderAllLayers();
+            renderStandardsModal();
+            renderHistory();
+            updateAll();
+        }
+        
+        function renderAllLayers() {
+            ['core', 'support', 'strategy', 'external'].forEach(layer => renderLayer(layer));
+        }
+        
+        function renderLayer(layer) {
+            const container = document.getElementById(layer + 'Content');
+            let html = '';
+            
+            Object.keys(systems[layer].systems).forEach(sys => {
+                const sysData = systems[layer].systems[sys];
+                html += `<div class="system-row"><div class="system-name">${sysData.name}</div>`;
+                
+                sysData.indicators.forEach((ind, idx) => {
+                    const standards = sysData.standards[idx];
+                    html += `<div class="indicator-row">
+                        <div class="indicator-item">
+                            <span class="indicator-name">${ind}</span>
+                            <div class="score-btns">`;
+                    for (let i = 0; i <= 5; i++) {
+                        html += `<button class="${i === 0 ? 'score-btn zero' : 'score-btn'}" data-layer="${layer}" data-sys="${sys}" data-idx="${idx}" data-score="${i}">${i}</button>`;
+                    }
+                    html += `</div></div>
+                        <div class="score-meaning" id="meaning-${layer}-${sys}-${idx}"></div>
+                    </div>`;
+                });
+                html += `</div>`;
+            });
+            
+            container.innerHTML = html;
+            
+            container.querySelectorAll('.score-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const layer = this.dataset.layer;
+                    const sys = this.dataset.sys;
+                    const idx = parseInt(this.dataset.idx);
+                    const score = parseInt(this.dataset.score);
+                    selectScore(layer, sys, idx, score);
+                });
+            });
+        }
+        
+        function selectScore(layer, sys, idx, score) {
+            scores[layer][sys][idx] = score;
+            
+            const row = document.querySelector(`[data-layer="${layer}"][data-sys="${sys}"][data-idx="${idx}"]`).closest('.indicator-row');
+            row.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
+            row.querySelector(`[data-score="${score}"]`).classList.add('selected');
+            
+            const meaning = document.getElementById(`meaning-${layer}-${sys}-${idx}`);
+            const standards = systems[layer].systems[sys].standards[idx];
+            const colors = ['#f44336', '#ff5722', '#ff9800', '#ffc107', '#8bc34a', '#4caf50'];
+            meaning.innerHTML = `<span style="color:${colors[score]}">${score}分：</span>${standards[score]}`;
+            meaning.style.display = 'block';
+            
+            updateAll();
+        }
+        
+        // ==================== 更新所有模块 ====================
+        function updateAll() {
+            updateChainVisualization();
+            updateLayerScores();
+            updateTypeRecognition();
+            updateStrengthWeakness();
+            updateCompensate();
+            updateRiskTranslate();
+            updateDecisionEngine();
+            updateStrategy();
+        }
+        
+        // ==================== 动力链（增强版）====================
+        function updateChainVisualization() {
+            const layers = ['core', 'support', 'strategy', 'external'];
+            const layerNames = ['核心层', '支撑层', '战略层', '外部层'];
+            const layerScores = layers.map(l => getLayerScore(l));
+            
+            let brokenAt = -1;
+            for (let i = 0; i < layerScores.length; i++) {
+                if (layerScores[i] === 0) { brokenAt = i; break; }
+            }
+            
+            // 动力链节点
+            let chainHtml = '';
+            layers.forEach((layer, idx) => {
+                const score = layerScores[idx];
+                const isBroken = brokenAt !== -1 && idx >= brokenAt;
+                let cls = isBroken ? 'broken' : (score === 0 || score <= 2) ? 'red' : score <= 3 ? 'yellow' : 'green';
+                const mark = isBroken ? '❌' : score <= 2 ? '⚠' : '';
+                chainHtml += `<span class="chain-node-inline ${cls}">${layerNames[idx]}(${score.toFixed(1)}${mark})</span>`;
+                if (idx < layers.length - 1) chainHtml += ` → `;
+            });
+            
+            document.getElementById('chainText').innerHTML = chainHtml;
+            
+            // 低分子系统展示
+            const allScores = getAllSubsystemScores();
+            const lowSubsystems = allScores.filter(s => s.score > 0 && s.score <= 2);
+            
+            let weaknessesHtml = '';
+            if (lowSubsystems.length > 0) {
+                weaknessesHtml = lowSubsystems.map(s => `<span class="weak-item">${s.sysName} ${s.score.toFixed(1)}</span>`).join('');
+            }
+            document.getElementById('chainWeaknesses').innerHTML = weaknessesHtml;
+            
+            // 警告信息
+            const alertDiv = document.getElementById('chainAlert');
+            if (brokenAt !== -1) {
+                alertDiv.innerHTML = `<div class="chain-alert danger">🚨 ${layerNames[brokenAt]}=0，系统断裂，后续环节失效</div>`;
+            } else if (lowSubsystems.length > 0) {
+                alertDiv.innerHTML = `<div class="chain-alert warning">⚠️ ${lowSubsystems.length}个子系统≤2分，存在潜在断裂风险</div>`;
+            } else {
+                alertDiv.innerHTML = '';
+            }
+        }
+        
+        // ==================== 层级得分 ====================
+        function updateLayerScores() {
+            document.getElementById('coreTotal').textContent = getLayerScore('core').toFixed(2);
+            document.getElementById('supportTotal').textContent = getLayerScore('support').toFixed(2);
+            document.getElementById('strategyTotal').textContent = getLayerScore('strategy').toFixed(2);
+            document.getElementById('externalTotal').textContent = getLayerScore('external').toFixed(2);
+            
+            const total = getTotalScore();
+            document.getElementById('totalScore').textContent = total.toFixed(2);
+            
+            const status = document.getElementById('totalStatus');
+            if (total >= 80) status.textContent = '🌟 优秀';
+            else if (total >= 60) status.textContent = '✅ 良好';
+            else if (total >= 40) status.textContent = '⚖️ 中等';
+            else if (total >= 20) status.textContent = '⚠️ 较弱';
+            else status.textContent = '❌ 失效';
+        }
+        
+        // ==================== 类型识别 ====================
+        function updateTypeRecognition() {
+            const failure = checkCoreFailure();
+            const { power, cognitive, emotion, behavior, resource } = failure.scores;
+            
+            const validScores = [power, cognitive, emotion, behavior, resource].filter(s => typeof s === 'number' && !isNaN(s));
+            const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
+            
+            let html = '';
+            
+            if (failure.isFailed) {
+                html = `<span class="tag tag-danger">系统失效型</span>`;
+                html += `<div class="alert-box alert-danger">${failure.zeroCount}个核心系统为0，人格系统严重缺陷</div>`;
+            } else if (behavior === 0) {
+                html = `<span class="tag tag-danger">动力链断裂型</span>`;
+                html += `<div class="alert-box alert-danger">行为系统=0，无法执行任何目标</div>`;
+            } else if (power === 0) {
+                html = `<span class="tag tag-danger">动力缺失型</span>`;
+                html += `<div class="alert-box alert-danger">动力系统=0，无自驱力只能被动响应</div>`;
+            } else if (failure.lowCount + failure.zeroCount >= 3) {
+                html = `<span class="tag tag-warning">多短板型</span>`;
+                html += `<div class="alert-box alert-warning">${failure.lowCount + failure.zeroCount}个系统≤2分</div>`;
+            } else {
+                const allScores = [power, cognitive, emotion, behavior, resource];
+                const names = ['动力', '认知', '情绪', '行为', '资源'];
+                const max = Math.max(...allScores);
+                const min = Math.min(...allScores);
+                
+                if (max - min <= 1) {
+                    html = `<span class="tag tag-success">均衡型</span>`;
+                    html += `<div>五大系统均衡(均值${avg.toFixed(2)})</div>`;
+                } else {
+                    const maxIdx = allScores.indexOf(max);
+                    html = `<span class="tag tag-info">${names[maxIdx]}主导型</span>`;
+                    html += `<div>均值${avg.toFixed(2)}</div>`;
+                }
+            }
+            
+            document.getElementById('typeContent').innerHTML = html;
+        }
+        
+        // ==================== 优势/短板维度（新增）====================
+        function updateStrengthWeakness() {
+            const { strengths, weaknesses, avg } = getStrengthsAndWeaknesses();
+            
+            let html = `<div style="font-size:0.7em;color:#888;margin-bottom:6px;">系统均值：${avg.toFixed(2)} | 优势=均值+1 | 短板=均值-1</div>`;
+            
+            if (strengths.length > 0) {
+                html += `<div class="sub-info"><span style="color:#2e7d32;font-weight:500;">优势：</span>`;
+                html += strengths.map(s => `${s.sysName}(${s.score.toFixed(1)})`).join('、');
+                html += `</div>`;
+            } else {
+                html += `<div class="sub-info"><span style="color:#999;">优势：</span>无明显优势维度</div>`;
+            }
+            
+            if (weaknesses.length > 0) {
+                html += `<div class="sub-info"><span style="color:#c62828;font-weight:500;">短板：</span>`;
+                html += weaknesses.map(s => `${s.sysName}(${s.score.toFixed(1)})`).join('、');
+                html += `</div>`;
+            } else {
+                html += `<div class="sub-info"><span style="color:#999;">短板：</span>无明显短板维度</div>`;
+            }
+            
+            document.getElementById('strengthWeaknessContent').innerHTML = html;
+        }
+        
+        // ==================== 补偿机制（增强版）====================
+        function updateCompensate() {
+            const failure = checkCoreFailure();
+            const { strengths, weaknesses, avg } = getStrengthsAndWeaknesses();
+            const names = { power: '动力', cognitive: '认知', emotion: '情绪', behavior: '行为', resource: '资源' };
+            
+            let html = '';
+            
+            if (failure.isFailed) {
+                html = `<div class="alert-box alert-danger">系统失效，补偿机制无效</div>`;
+                html += `<div class="sub-info">需先修复失效系统，再考虑补偿</div>`;
+            } else if (weaknesses.length > 0 && strengths.length > 0) {
+                html = `<div class="alert-box alert-success">可补偿结构</div>`;
+
+                // 具体补偿路径
+                const compensationPaths = getCompensationPaths(strengths, weaknesses);
+                if (compensationPaths.length > 0) {
+                    html += `<div class="sub-info" style="margin-top:4px;"><b>补偿路径：</b></div>`;
+                    compensationPaths.forEach(p => {
+                        html += `<div class="sub-item" style="color:#2e7d32;">${p.strong}(${p.strongScore.toFixed(1)}) → 补偿 ${p.weak}(${p.weakScore.toFixed(1)})</div>`;
+                        html += `<div class="sub-info" style="margin-left:12px;font-size:0.85em;">${p.path}</div>`;
+                    });
+                }
+
+                // 无法补偿的短板
+                const uncompensated = weaknesses.filter(w => !strengths.some(s => canCompensate(s.sys, w.sys)));
+                if (uncompensated.length > 0) {
+                    html += `<div class="alert-box alert-warning" style="margin-top:6px;">⚠️ 需外部支持：${uncompensated.map(u => u.sysName).join('、')}</div>`;
+                    html += `<div class="sub-info" style="font-size:0.85em;">该短板无优势可补，需引入外部资源或监督</div>`;
+                }
+            } else if (weaknesses.length > 0) {
+                html = `<div class="alert-box alert-warning">有短板无优势可补</div>`;
+                html += `<div class="sub-info">短板：${weaknesses.map(w => w.sysName + '(' + w.score.toFixed(1) + ')').join('、')}</div>`;
+                html += `<div class="sub-info" style="font-size:0.85em;">需外部干预或监督机制</div>`;
+            } else if (strengths.length > 0) {
+                html = `<div class="alert-box alert-success">优势明显无短板</div>`;
+                html += `<div class="sub-info">优势：${strengths.map(s => s.sysName + '(' + s.score.toFixed(1) + ')').join('、')}</div>`;
+            } else {
+                html = `✅ 均衡发展`;
+            }
+
+            document.getElementById('compensateContent').innerHTML = html;
+        }
+
+        // 获取具体补偿路径
+        function getCompensationPaths(strengths, weaknesses) {
+            const paths = [];
+            strengths.forEach(s => {
+                const targetWeak = weaknesses.find(w => canCompensate(s.sys, w.sys));
+                if (targetWeak) {
+                    paths.push({
+                        strong: s.sysName,
+                        strongScore: s.score,
+                        weak: targetWeak.sysName,
+                        weakScore: targetWeak.score,
+                        path: getCompensationDetail(s.sys, targetWeak.sys)
+                    });
+                }
+            });
+            return paths;
+        }
+
+        // 补偿路径详情
+        function getCompensationDetail(strongSys, weakSys) {
+            const details = {
+                'cognitive-behavior': '认知优势可帮助规划行动路径，弥补执行力的不足',
+                'cognitive-resource': '逻辑判断可优化资源配置，选择高性价比投入',
+                'cognitive-decision': '清晰判断可补偿决策犹豫，提供决策依据',
+                'resource-behavior': '资源充足可降低执行门槛，减少阻力',
+                'resource-professional': '资源可购买专业服务或培训，弥补专业短板',
+                'behavior-execution': '执行力强可直接落地任务，弥补规划不足',
+                'behavior-planning': '持续行动可验证并优化计划',
+                'power-iteration': '强动力推动持续尝试，加速迭代优化',
+                'power-learning': '高动力驱动主动学习，弥补学习能力不足',
+                'emotion-collaboration': '情绪稳定有助于团队协作，弥补社交短板',
+                'emotion-network': '稳定情绪有助于维护长期关系'
+            };
+            return details[`${strongSys}-${weakSys}`] || '优势可一定程度上弥补短板';
+        }
+
+        // 补偿关系判定
+        function canCompensate(strongSys, weakSys) {
+            const compensationMap = {
+                'cognitive': ['behavior', 'resource', 'decision'],
+                'resource': ['behavior', 'professional'],
+                'behavior': ['execution', 'planning'],
+                'power': ['iteration', 'learning'],
+                'emotion': ['collaboration', 'network']
+            };
+            const comp = compensationMap[strongSys] || [];
+            return comp.includes(weakSys);
+        }
+        
+        // ==================== 风险转译（增强版）====================
+        function updateRiskTranslate() {
+            const failure = checkCoreFailure();
+            const allScores = getAllSubsystemScores();
+            const risks = allScores.filter(s => s.score > 0 && s.score <= 2);
+            const zeroScores = allScores.filter(s => s.score === 0);
+            
+            let html = '';
+            
+            // 风险等级由最低分决定
+            const minScore = Math.min(...allScores.map(s => s.score));
+            
+            if (zeroScores.length > 0) {
+                html += `<div class="alert-box alert-danger">🚨 系统性失效（最低分=${minScore.toFixed(1)}）</div>`;
+                html += `<div class="sub-info">失效：${zeroScores.map(z => z.sysName).join('、')}</div>`;
+            }
+            
+            if (risks.length > 0) {
+                html += `<div class="alert-box alert-warning">⚠️ 高风险维度（≤2分）</div>`;
+                // 风险转译为现实表现
+                risks.forEach(r => {
+                    const trans = getRiskTranslation(r.sys, r.score);
+                    html += `<div class="sub-item weak">${r.sysName}(${r.score.toFixed(1)})：${trans}</div>`;
+                });
+            }
+            
+            // 风险等级总结
+            html += `<div style="margin-top:6px;padding-top:6px;border-top:1px dashed #ddd;font-size:0.75em;">`;
+            if (minScore === 0) {
+                html += `<span style="color:#c62828;font-weight:500;">风险等级：极高</span> | 必须修复失效系统`;
+            } else if (minScore <= 2) {
+                html += `<span style="color:#e65100;font-weight:500;">风险等级：高</span> | 需要支持和监督`;
+            } else if (minScore <= 3) {
+                html += `<span style="color:#ff9800;font-weight:500;">风险等级：中</span> | 可正常合作`;
+            } else {
+                html += `<span style="color:#4caf50;font-weight:500;">风险等级：低</span> | 正常合作`;
+            }
+            html += `</div>`;
+            
+            document.getElementById('riskContent').innerHTML = html || '✅ 无高风险维度';
+        }
+        
+        // 风险转译映射
+        function getRiskTranslation(sys, score) {
+            const translations = {
+                power: { text: '自驱力不足，需外部督促', impact: '合作时需明确目标和考核' },
+                cognitive: { text: '判断易出错，决策需审核', impact: '避免独立负责关键决策' },
+                emotion: { text: '情绪波动明显', impact: '不适合高压环境' },
+                behavior: { text: '执行不稳定', impact: '需监督和跟进' },
+                resource: { text: '资源意识薄弱', impact: '需外部资源支持' },
+                professional: { text: '专业能力不足', impact: '需培训或辅助' },
+                learning: { text: '学习速度慢', impact: '成长周期长' },
+                decision: { text: '决策能力弱', impact: '需他人协助决策' },
+                execution: { text: '执行力弱', impact: '任务需拆解监督' },
+                collaboration: { text: '协作能力弱', impact: '团队融入困难' },
+                thinking: { text: '系统思维弱', impact: '复杂问题处理吃力' },
+                integration: { text: '资源整合弱', impact: '独立项目困难' },
+                planning: { text: '规划能力弱', impact: '需他人规划路径' },
+                risk: { text: '风险意识弱', impact: '可能忽略关键风险' },
+                iteration: { text: '迭代优化弱', impact: '改进速度慢' },
+                environment: { text: '环境不利', impact: '需更强的内驱力' },
+                timing: { text: '时机不佳', impact: '需等待窗口期' },
+                network: { text: '人脉有限', impact: '资源获取困难' },
+                economic: { text: '经济储备有限', impact: '风险承受力弱' },
+                info: { text: '信息优势弱', impact: '决策信息不充分' }
+            };
+            const t = translations[sys] || { text: '需要关注', impact: '' };
+            return `${t.text}${t.impact ? ' → ' + t.impact : ''}`;
+        }
+        
+        // ==================== 核心判断模块 ====================
+        function getCoreJudgment(avgScore) {
+            if (avgScore >= 4.0) return '🎯 高度可靠，可托付核心任务';
+            if (avgScore >= 3.5) return '✅ 可合作，适合辅助支持角色';
+            if (avgScore >= 3.0) return '⚠️ 需监督，适合明确指令类任务';
+            if (avgScore >= 2.5) return '🔶 高风险，需紧密辅导';
+            return '❌ 不建议合作，风险过高';
+        }
+
+        // ==================== 决策引擎（增强版，显示依据）====================
+        function updateDecisionEngine() {
+            const failure = checkCoreFailure();
+            const { power, cognitive, emotion, behavior, resource } = failure.scores;
+            const validScores = [power, cognitive, emotion, behavior, resource].filter(s => typeof s === 'number' && !isNaN(s));
+            const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
+            const { strengths, weaknesses } = getStrengthsAndWeaknesses();
+
+            // 核心判断显示
+            document.getElementById('core-judgment-display').textContent = getCoreJudgment(avg);
+
+            // 可合作
+            const coopItem = document.getElementById('decision-coop-item');
+            const coopValue = document.getElementById('decision-coop');
+            const coopReason = document.getElementById('decision-coop-reason');
+            const coopDetail = document.getElementById('decision-coop-detail');
+            
+            if (failure.isFailed) {
+                coopItem.className = 'decision-item danger';
+                coopValue.textContent = '❌ 不建议';
+                coopReason.textContent = `${failure.zeroCount}系统失效`;
+                coopDetail.innerHTML = `<div style="color:#c62828;">限制：核心层失效</div>`;
+            } else if (failure.hasZero) {
+                coopItem.className = 'decision-item danger';
+                coopValue.textContent = '❌ 高风险';
+                coopReason.textContent = '存在关键缺失';
+                coopDetail.innerHTML = `<div style="color:#c62828;">限制：${Object.entries(failure.scores).filter(([k, v]) => v === 0).map(([k]) => k).join('、')}=0</div>`;
+            } else if (avg >= 3.5) {
+                coopItem.className = 'decision-item success';
+                coopValue.textContent = '✅ 适合';
+                coopReason.textContent = '核心' + avg.toFixed(1);
+                coopDetail.innerHTML = `<div style="color:#2e7d32;">支撑：核心层稳定</div>${strengths.length > 0 ? `<div>优势：${strengths.map(s => s.sysName).join('、')}</div>` : ''}`;
+            } else if (avg >= 2.5) {
+                coopItem.className = 'decision-item warning';
+                coopValue.textContent = '⚖️ 视情况';
+                coopReason.textContent = '需评估匹配';
+                coopDetail.innerHTML = `${weaknesses.length > 0 ? `<div style="color:#c62828;">限制：${weaknesses.map(w => w.sysName).join('、')}</div>` : ''}${strengths.length > 0 ? `<div style="color:#2e7d32;">支撑：${strengths.map(s => s.sysName).join('、')}</div>` : ''}`;
+            } else {
+                coopItem.className = 'decision-item warning';
+                coopValue.textContent = '⚠️ 需支持';
+                coopReason.textContent = '有短板需补位';
+                coopDetail.innerHTML = `<div style="color:#c62828;">限制：核心均值${avg.toFixed(1)}偏低</div><div>建议：提供${weaknesses.map(w => w.sysName).join('、')}支持</div>`;
+            }
+            
+            // 可深交
+            const deepItem = document.getElementById('decision-deep-item');
+            const deepValue = document.getElementById('decision-deep');
+            const deepReason = document.getElementById('decision-deep-reason');
+            const deepDetail = document.getElementById('decision-deep-detail');
+            
+            if (failure.isFailed || power === 0 || behavior === 0) {
+                deepItem.className = 'decision-item danger';
+                deepValue.textContent = '❌ 不建议';
+                deepReason.textContent = '系统缺陷';
+                deepDetail.innerHTML = `<div style="color:#c62828;">原因：动力或行为=0，关系难以维系</div>`;
+            } else if (emotion >= 4 && cognitive >= 4) {
+                deepItem.className = 'decision-item success';
+                deepValue.textContent = '✅ 可深交';
+                deepReason.textContent = '情绪稳定';
+                deepDetail.innerHTML = `<div style="color:#2e7d32;">支撑：情绪${emotion.toFixed(1)}+认知${cognitive.toFixed(1)}</div>`;
+            } else if (emotion <= 2) {
+                deepItem.className = 'decision-item warning';
+                deepValue.textContent = '⚠️ 需谨慎';
+                deepReason.textContent = '情绪波动';
+                deepDetail.innerHTML = `<div style="color:#c62828;">限制：情绪${emotion.toFixed(1)}≤2，关系中可能情绪化</div>`;
+            } else {
+                deepItem.className = 'decision-item warning';
+                deepValue.textContent = '⚖️ 普通';
+                deepReason.textContent = '正常社交';
+                deepDetail.innerHTML = `<div>可维持正常社交关系</div>`;
+            }
+            
+            // 可托付
+            const trustItem = document.getElementById('decision-trust-item');
+            const trustValue = document.getElementById('decision-trust');
+            const trustReason = document.getElementById('decision-trust-reason');
+            const trustDetail = document.getElementById('decision-trust-detail');
+            
+            if (failure.isFailed || behavior === 0) {
+                trustItem.className = 'decision-item danger';
+                trustValue.textContent = '❌ 不可';
+                trustReason.textContent = '行为=0';
+                trustDetail.innerHTML = `<div style="color:#c62828;">原因：无法执行任何任务</div>`;
+            } else if (power === 0) {
+                trustItem.className = 'decision-item danger';
+                trustValue.textContent = '❌ 风险高';
+                trustReason.textContent = '动力=0';
+                trustDetail.innerHTML = `<div style="color:#c62828;">原因：无自驱力，需持续外部推动</div>`;
+            } else if (behavior >= 4 && resource >= 3 && cognitive >= 3) {
+                trustItem.className = 'decision-item success';
+                trustValue.textContent = '✅ 可托付';
+                trustReason.textContent = '执行强';
+                trustDetail.innerHTML = `<div style="color:#2e7d32;">支撑：行为${behavior.toFixed(1)}+认知${cognitive.toFixed(1)}+资源${resource.toFixed(1)}</div>`;
+            } else if (behavior >= 3) {
+                trustItem.className = 'decision-item warning';
+                trustValue.textContent = '⚖️ 简单事项';
+                trustReason.textContent = '需监督';
+                trustDetail.innerHTML = `<div>行为${behavior.toFixed(1)}中等，复杂任务需跟进</div>${weaknesses.length > 0 ? `<div style="color:#e65100;">需关注：${weaknesses.map(w => w.sysName).join('、')}</div>` : ''}`;
+            } else {
+                trustItem.className = 'decision-item warning';
+                trustValue.textContent = '⚖️ 视情况';
+                trustReason.textContent = '评估任务';
+                trustDetail.innerHTML = `<div>行为${behavior.toFixed(1)}偏低，需评估任务难度</div>`;
+            }
+            
+            // 风险等级
+            const riskItem = document.getElementById('decision-risk-item');
+            const riskValue = document.getElementById('decision-risk');
+            const riskReason = document.getElementById('decision-risk-reason');
+            const riskDetail = document.getElementById('decision-risk-detail');
+            
+            const allScoresArr = getAllSubsystemScores();
+            const minScore = Math.min(...allScoresArr.map(s => s.score));
+            const zeroScoresArr = allScoresArr.filter(s => s.score === 0);
+            const lowScoresArr = allScoresArr.filter(s => s.score > 0 && s.score <= 2);
+            
+            if (failure.isFailed || zeroScoresArr.length > 0) {
+                riskItem.className = 'decision-item danger';
+                riskValue.textContent = '🚨 极高';
+                riskReason.textContent = '系统失效';
+                riskDetail.innerHTML = `<div style="color:#c62828;">限制：${zeroScoresArr.map(z => z.sysName).join('、')}失效</div>`;
+            } else if (lowScoresArr.length >= 3) {
+                riskItem.className = 'decision-item danger';
+                riskValue.textContent = '🔴 高';
+                riskReason.textContent = '多短板';
+                riskDetail.innerHTML = `<div style="color:#c62828;">限制：${lowScoresArr.length}个短板(${lowScoresArr.map(l => l.sysName).join('、')})</div>`;
+            } else if (lowScoresArr.length >= 1) {
+                riskItem.className = 'decision-item warning';
+                riskValue.textContent = '🟡 中';
+                riskReason.textContent = '有短板';
+                riskDetail.innerHTML = `<div style="color:#e65100;">限制：${lowScoresArr.map(l => l.sysName).join('、')}偏低</div><div style="color:#2e7d32;">支撑：可通过支持弥补</div>`;
+            } else {
+                riskItem.className = 'decision-item success';
+                riskValue.textContent = '🟢 低';
+                riskReason.textContent = '系统良好';
+                riskDetail.innerHTML = `<div style="color:#2e7d32;">支撑：各系统≥3分</div>`;
+            }
+            
+            // 适合角色
+            const roleItem = document.getElementById('decision-role-item');
+            const roleValue = document.getElementById('decision-role');
+            const roleReason = document.getElementById('decision-role-reason');
+            const roleDetail = document.getElementById('decision-role-detail');
+            
+            if (failure.isFailed || behavior === 0) {
+                roleItem.className = 'decision-item danger';
+                roleValue.textContent = '无适合';
+                roleReason.textContent = '需先修复';
+                roleDetail.innerHTML = `<div style="color:#c62828;">限制：系统缺陷，无法承担角色</div>`;
+            } else if (power >= 4 && cognitive >= 4 && behavior >= 3) {
+                roleItem.className = 'decision-item success';
+                roleValue.textContent = '战略决策';
+                roleReason.textContent = '可主导';
+                roleDetail.innerHTML = `<div style="color:#2e7d32;">支撑：动力${power.toFixed(1)}+认知${cognitive.toFixed(1)}</div>`;
+            } else if (behavior >= 4) {
+                roleItem.className = 'decision-item success';
+                roleValue.textContent = '执行者';
+                roleReason.textContent = '善于落地';
+                roleDetail.innerHTML = `<div style="color:#2e7d32;">支撑：行为${behavior.toFixed(1)}</div>`;
+            } else if (cognitive >= 4) {
+                roleItem.className = 'decision-item success';
+                roleValue.textContent = '顾问参谋';
+                roleReason.textContent = '善于分析';
+                roleDetail.innerHTML = `<div style="color:#2e7d32;">支撑：认知${cognitive.toFixed(1)}</div>`;
+            } else {
+                roleItem.className = 'decision-item warning';
+                roleValue.textContent = '辅助支持';
+                roleReason.textContent = '需指导';
+                roleDetail.innerHTML = `<div style="color:#e65100;">限制：核心能力中等</div><div style="color:#2e7d32;">支撑：需配合指导</div>`;
+            }
+        }
+        
+        // ==================== 使用策略 ====================
+        function updateStrategy() {
+            const failure = checkCoreFailure();
+            const validScores = Object.values(failure.scores).filter(s => typeof s === 'number' && !isNaN(s));
+            const avg = validScores.length > 0 ? validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
+            const { power, behavior, cognitive, emotion } = failure.scores;
+            const { weaknesses } = getStrengthsAndWeaknesses();
+            
+            let fitHtml = '', unfitHtml = '';
+            
+            if (failure.isFailed) {
+                fitHtml = '<li>无（需先修复）</li>';
+                unfitHtml = '<li>独立任务</li><li>关键岗位</li><li>长期合作</li>';
+            } else if (behavior === 0) {
+                fitHtml = '<li>纯顾问咨询</li>';
+                unfitHtml = '<li>独立执行</li><li>项目主导</li>';
+            } else if (power === 0) {
+                fitHtml = '<li>执行型岗位（需目标明确）</li><li>辅助角色</li>';
+                unfitHtml = '<li>自主创新任务</li><li>创业主导</li>';
+            } else {
+                if (avg >= 4) fitHtml = '<li>高复杂任务</li><li>团队领导</li><li>长期合作</li>';
+                else if (avg >= 3) fitHtml = '<li>常规任务</li><li>团队协作</li>';
+                else fitHtml = '<li>简单任务</li><li>有指导的工作</li>';
+                
+                // 根据短板生成不适合
+                weaknesses.forEach(w => {
+                    if (w.sys === 'emotion' || w.sys === 'cognitive') unfitHtml += '<li>高压环境</li>';
+                    if (w.sys === 'behavior' || w.sys === 'execution') unfitHtml += '<li>紧急任务</li>';
+                    if (w.sys === 'collaboration' || w.sys === 'network') unfitHtml += '<li>客户对接</li>';
+                    if (w.sys === 'decision' || w.sys === 'thinking') unfitHtml += '<li>复杂决策</li>';
+                });
+                
+                // 去重
+                const unfitSet = new Set(unfitHtml.split('</li>').filter(s => s.trim()).map(s => s.replace('<li>', '')));
+                unfitHtml = Array.from(unfitSet).map(s => '<li>' + s + '</li>').join('');
+                
+                if (!unfitHtml) unfitHtml = '<li>无特别限制</li>';
+            }
+            
+            document.getElementById('strategyFit').innerHTML = fitHtml;
+            document.getElementById('strategyUnfit').innerHTML = unfitHtml;
+        }
+        
+        // ==================== 保存与导出 ====================
+        function saveRecord() {
+            const record = {
+                date: document.getElementById('evalDate').value,
+                name: document.getElementById('personName').value || '未命名',
+                purpose: document.getElementById('evalPurpose').value,
+                note: document.getElementById('evalNote').value,
+                core: getLayerScore('core'),
+                support: getLayerScore('support'),
+                strategy: getLayerScore('strategy'),
+                external: getLayerScore('external'),
+                total: getTotalScore(),
+                scores: JSON.parse(JSON.stringify(scores))
+            };
+            history.push(record);
+            localStorage.setItem('chengshi_v34_history', JSON.stringify(history));
+            renderHistory();
+            alert('保存成功！');
+        }
+        
+        function renderHistory() {
+            document.getElementById('historyBody').innerHTML = history.map((h, idx) => `
+                <tr>
+                    <td>${h.date}</td><td>${h.name}</td><td>${h.core.toFixed(2)}</td><td>${h.support.toFixed(2)}</td>
+                    <td>${h.strategy.toFixed(2)}</td><td>${h.external.toFixed(2)}</td><td><strong>${h.total.toFixed(2)}</strong></td>
+                    <td><button onclick="loadRecord(${idx})">加载</button><button onclick="deleteRecord(${idx})">删</button></td>
+                </tr>
+            `).join('');
+        }
+        
+        window.loadRecord = function(idx) {
+            const record = history[idx];
+            document.getElementById('evalDate').value = record.date;
+            document.getElementById('personName').value = record.name;
+            document.getElementById('evalPurpose').value = record.purpose || '';
+            document.getElementById('evalNote').value = record.note || '';
+            
+            Object.keys(systems).forEach(layer => {
+                Object.keys(systems[layer].systems).forEach(sys => {
+                    systems[layer].systems[sys].indicators.forEach((ind, i) => {
+                        scores[layer][sys][i] = 0;
+                    });
+                });
+            });
+            document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.score-meaning').forEach(el => el.innerHTML = '');
+            
+            if (record.scores) {
+                Object.keys(record.scores).forEach(layer => {
+                    Object.keys(record.scores[layer]).forEach(sys => {
+                        Object.keys(record.scores[layer][sys]).forEach(idx => {
+                            selectScore(layer, sys, parseInt(idx), record.scores[layer][sys][idx]);
+                        });
+                    });
+                });
+            }
+        };
+        
+        window.deleteRecord = function(idx) {
+            if (confirm('确定删除？')) {
+                history.splice(idx, 1);
+                localStorage.setItem('chengshi_v34_history', JSON.stringify(history));
+                renderHistory();
+            }
+        };
+        
+        // ==================== 导出报告（V3.4增强版）====================
+        function exportReport() {
+            const name = document.getElementById('personName').value || '未命名';
+            const date = document.getElementById('evalDate').value;
+            const purpose = document.getElementById('evalPurpose').value;
+            const failure = checkCoreFailure();
+            const { strengths, weaknesses, avg } = getStrengthsAndWeaknesses();
+            const allScores = getAllSubsystemScores();
+            
+            let report = `# 成事系统评估报告 V3.4\n\n**对象：** ${name}  \n**日期：** ${date}  \n**目的：** ${purpose || '未指定'}\n\n---\n\n## 一、动力链\n\n`;
+            
+            // 动力链展示
+            const layers = ['core', 'support', 'strategy', 'external'];
+            const layerNames = ['核心层', '支撑层', '战略层', '外部层'];
+            const layerScores = layers.map(l => getLayerScore(l));
+            
+            layers.forEach((layer, idx) => {
+                const score = layerScores[idx];
+                const mark = score === 0 ? ' ❌断裂' : score <= 2 ? ' 🔴' : score <= 3 ? ' 🟡' : ' 🟢';
+                report += `- ${layerNames[idx]}：${score.toFixed(2)}${mark}\n`;
+            });
+            
+            const lowSubsystems = allScores.filter(s => s.score > 0 && s.score <= 2);
+            if (lowSubsystems.length > 0) {
+                report += `\n**低分子系统（≤2）：**\n`;
+                lowSubsystems.forEach(s => {
+                    report += `- ${s.layerName}-${s.sysName}：${s.score.toFixed(2)}\n`;
+                });
+            }
+            
+            report += `\n---\n\n## 二、总分\n\n| 层级 | 分数 |\n|------|------|\n`;
+            report += `| 核心层 | ${getLayerScore('core').toFixed(2)} |\n| 支撑层 | ${getLayerScore('support').toFixed(2)} |\n| 战略层 | ${getLayerScore('strategy').toFixed(2)} |\n| 外部层 | ${getLayerScore('external').toFixed(2)} |\n| **总分** | **${getTotalScore().toFixed(2)}** |\n\n`;
+            
+            // 子系统分数表格
+            report += `### 子系统分数\n\n| 层级 | 子系统 | 分数 |\n|------|--------|------|\n`;
+            allScores.forEach(s => {
+                const mark = s.score === 0 ? ' ❌' : s.score <= 2 ? ' ⚠' : '';
+                report += `| ${s.layerName} | ${s.sysName} | ${s.score.toFixed(2)}${mark} |\n`;
+            });
+            
+            // 优势短板
+            report += `\n---\n\n## 三、优势/短板维度\n\n**系统均值：** ${avg.toFixed(2)}\n\n`;
+            if (strengths.length > 0) {
+                report += `**优势维度（>均值+0.3）：**\n`;
+                strengths.forEach(s => report += `- ${s.sysName}：${s.score.toFixed(2)}\n`);
+            } else {
+                report += `**优势维度：** 无明显优势维度\n`;
+            }
+            if (weaknesses.length > 0) {
+                report += `\n**短板维度（<均值-0.3）：**\n`;
+                weaknesses.forEach(s => report += `- ${s.sysName}：${s.score.toFixed(2)}\n`);
+            } else {
+                report += `\n**短板维度：** 无明显短板维度\n`;
+            }
+            
+            report += `\n---\n\n## 四、类型识别\n\n${document.getElementById('typeContent').innerText}\n\n`;
+            if (strengths.length > 0) {
+                report += `**优势子系统：** ${strengths.map(s => s.sysName).join('、')}\n`;
+            }
+            if (weaknesses.length > 0) {
+                report += `**短板子系统：** ${weaknesses.map(s => s.sysName).join('、')}\n`;
+            }
+            report += `\n---\n\n## 五、补偿机制\n\n${document.getElementById('compensateContent').innerText}\n\n---\n\n## 六、风险转译\n\n${document.getElementById('riskContent').innerText}\n\n---\n\n## 七、决策引擎\n\n`;
+            report += `| 决策项 | 结论 | 依据 |\n|--------|------|------|\n`;
+            report += `| 可合作 | ${document.getElementById('decision-coop').textContent} | ${document.getElementById('decision-coop-reason').textContent}；${document.getElementById('decision-coop-detail').innerText} |\n`;
+            report += `| 可深交 | ${document.getElementById('decision-deep').textContent} | ${document.getElementById('decision-deep-reason').textContent}；${document.getElementById('decision-deep-detail').innerText} |\n`;
+            report += `| 可托付 | ${document.getElementById('decision-trust').textContent} | ${document.getElementById('decision-trust-reason').textContent}；${document.getElementById('decision-trust-detail').innerText} |\n`;
+            report += `| 风险等级 | ${document.getElementById('decision-risk').textContent} | ${document.getElementById('decision-risk-reason').textContent}；${document.getElementById('decision-risk-detail').innerText} |\n`;
+            report += `| 适合角色 | ${document.getElementById('decision-role').textContent} | ${document.getElementById('decision-role-reason').textContent}；${document.getElementById('decision-role-detail').innerText} |\n\n`;
+            
+            report += `---\n\n## 八、使用策略\n\n**✅ 适合：**\n${document.getElementById('strategyFit').innerText.split('\\n').map(l => '- ' + l).join('\\n')}\n\n**❌ 不适合：**\n${document.getElementById('strategyUnfit').innerText.split('\\n').map(l => '- ' + l).join('\\n')}`;
+            
+            // 行为定义（关键子系统）
+            report += `\n\n---\n\n## 九、关键子系统行为定义\n\n`;
+
+            // 优先包含核心层5系统 + 低分子系统 + 优势子系统
+            const coreSystems = allScores.filter(s => s.layer === 'core');
+            const seen = new Set();
+            const keySystems = [];
+            // 1. 核心层5系统优先
+            coreSystems.forEach(s => {
+                if (!seen.has(s.sys)) { seen.add(s.sys); keySystems.push(s); }
+            });
+            // 2. 低分子系统
+            lowSubsystems.forEach(s => {
+                if (!seen.has(s.sys)) { seen.add(s.sys); keySystems.push(s); }
+            });
+            // 3. 优势子系统
+            strengths.forEach(s => {
+                if (!seen.has(s.sys)) { seen.add(s.sys); keySystems.push(s); }
+            });
+            keySystems.slice(0, 8).forEach(s => {
+                const sysData = systems[s.layer].systems[s.sys];
+                report += `### ${s.sysName}（${s.score.toFixed(1)}分）\n\n`;
+                report += `| 指标 | 0分 | 1分 | 2分 | 3分 | 4分 | 5分 |\n|------|-----|-----|-----|-----|-----|-----|\n`;
+                sysData.indicators.forEach((ind, idx) => {
+                    report += `| ${ind} | ${sysData.standards[idx].join(' | ')} |\n`;
+                });
+                report += '\n';
+            });
+            
+            document.getElementById('exportText').value = report;
+            document.getElementById('exportSection').style.display = 'block';
+        }
+        
+        function exportJSON() {
+            const data = {
+                version: '3.4', date: document.getElementById('evalDate').value, name: document.getElementById('personName').value,
+                purpose: document.getElementById('evalPurpose').value,
+                layers: { core: getLayerScore('core'), support: getLayerScore('support'), strategy: getLayerScore('strategy'), external: getLayerScore('external') },
+                total: getTotalScore(),
+                subsystems: getAllSubsystemScores(),
+                strengths: getStrengthsAndWeaknesses().strengths,
+                weaknesses: getStrengthsAndWeaknesses().weaknesses,
+                avg: getStrengthsAndWeaknesses().avg,
+                scores
+            };
+            document.getElementById('exportText').value = JSON.stringify(data, null, 2);
+            document.getElementById('exportSection').style.display = 'block';
+        }
+        
+        function copyExport() {
+            const textarea = document.getElementById('exportText');
+            textarea.select();
+            document.execCommand('copy');
+            alert('已复制！');
+        }
+        
+        function closeExport() { document.getElementById('exportSection').style.display = 'none'; }
+        
+        function clearAll() {
+            if (!confirm('确定清空？')) return;
+            Object.keys(systems).forEach(layer => {
+                Object.keys(systems[layer].systems).forEach(sys => {
+                    systems[layer].systems[sys].indicators.forEach((ind, i) => { scores[layer][sys][i] = 0; });
+                });
+            });
+            document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.score-meaning').forEach(el => el.innerHTML = '');
+            updateAll();
+        }
+        
+        // 评分标准弹窗
+        function renderStandardsModal() {
+            let html = '';
+            Object.keys(systems).forEach(layer => {
+                const layerData = systems[layer];
+                html += `<div style="margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid #eee;"><h4 style="margin-bottom:8px;color:#000;">${layerData.name}</h4>`;
+                
+                Object.keys(layerData.systems).forEach(sys => {
+                    const sysData = layerData.systems[sys];
+                    html += `<div style="margin-bottom:10px;"><div style="font-weight:500;color:#555;font-size:0.85em;margin-bottom:5px;">${sysData.name}</div>`;
+                    
+                    sysData.indicators.forEach((ind, idx) => {
+                        html += `<div style="margin-bottom:6px;"><div style="font-size:0.8em;color:#666;margin-bottom:2px;">${ind}：</div>`;
+                        html += `<div style="font-size:0.7em;color:#888;padding-left:8px;">`;
+                        for (let i = 0; i <= 5; i++) {
+                            html += `<div>${i}: ${sysData.standards[idx][i]}</div>`;
+                        }
+                        html += `</div></div>`;
+                    });
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            });
+            
+            document.getElementById('standardsContent').innerHTML = html;
+        }
+        
+        function showStandardsModal() { document.getElementById('standardsModal').classList.add('show'); }
+        function closeStandardsModal() { document.getElementById('standardsModal').classList.remove('show'); }
+        
+        init();
+    </script>
+</body>
+</html>

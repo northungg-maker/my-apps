@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自媒体数据助手 v2.9.5</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #333;
+            --text2: #999;
+            --line: #eee;
+            --accent: #333;
+            --success: #4caf50;
+            --danger: #f44336;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: 80px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            padding: 32px 16px 24px;
+            background: var(--card);
+            border-bottom: 1px solid var(--line);
+            position: relative;
+        }
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .header p { 
+            font-size: 13px; 
+            color: var(--text2);
+            margin-top: 4px;
+        }
+        .refresh-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: var(--text2);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+        .refresh-btn:hover {
+            background: var(--bg);
+            color: var(--accent);
+        }
+        .refresh-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        .refresh-btn.spinning {
+            animation: spin 0.6s ease;
+        }
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 24px 0 12px;
+        }
+        
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            font-size: 15px;
+            background: var(--bg);
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--card);
+        }
+        input[type="date"] {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        input[type="date"]::-webkit-date-and-time-value {
+            text-align: left;
+        }
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            font-size: 15px;
+            background: var(--bg);
+        }
+        
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:active { opacity: 0.8; }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+        
+        .btn-large {
+            width: 100%;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-large:active { opacity: 0.85; }
+        
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--text2);
+        }
+        
+        .btn-danger {
+            color: var(--danger);
+            border-color: var(--danger);
+            background: transparent;
+        }
+        
+        .stat-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 0;
+        }
+        .stat-row .form-group { flex: 1; margin-bottom: 16px; }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 20px;
+            border-top: 1px solid var(--line);
+            z-index: 100;
+        }
+        .nav-item {
+            text-align: center;
+            padding: 4px 12px;
+            cursor: pointer;
+            color: var(--text2);
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item .icon { font-size: 20px; }
+        .nav-item .label { font-size: 10px; margin-top: 4px; font-weight: 500; }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-valid { background: #e8f5e9; color: var(--success); }
+        .tag-invalid { background: #fce4ec; color: var(--danger); }
+        .tag-warn { background: #fff3e0; color: #f57c00; }
+        .diagnosis-card { background: var(--bg); border-radius: 12px; }
+        
+        .record-item {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--line);
+        }
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .record-title { font-weight: 500; font-size: 15px; }
+        .record-meta {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+        
+        .tip-box {
+            background: var(--bg);
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text2);
+        }
+        
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--line);
+        }
+        .stat-card .num {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .danger-zone {
+            border: 1px solid #ffcdd2;
+            background: #fff8f8;
+        }
+        
+        .input-file-label {
+            display: block;
+            padding: 16px;
+            background: var(--bg);
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .input-file-label:active {
+            background: var(--line);
+        }
+        
+        /* V2.9.5 新增：平台标签样式 */
+        .platform-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .platform-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #f0f0f0;
+            color: var(--text);
+        }
+        .platform-tag.小红书 { background: #ffecf0; color: #ff2d55; }
+        .platform-tag.抖音 { background: #e8f4ff; color: #161823; }
+        .platform-tag.B站 { background: #ffe8ee; color: #fb7299; }
+        .platform-tag.快手 { background: #fff4e8; color: #ff6a00; }
+        .platform-tag.微博 { background: #e8f5ff; color: #e6162d; }
+        .platform-tag.TikTok { background: #f0f0f0; color: #000; }
+        
+        .platform-input-item {
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .platform-input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .remove-platform-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text2);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0;
+        }
+        .remove-platform-btn:hover {
+            color: var(--danger);
+        }
+        
+        /* 录入步骤指示器 */
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--bg);
+            color: var(--text2);
+        }
+        .step.active {
+            background: var(--accent);
+            color: white;
+        }
+        .step.done {
+            background: var(--success);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>自媒体数据助手</h1>
+        <p>记录 · 验证 · 复盘</p>
+        <button class="refresh-btn" onclick="handleRefresh()" title="刷新数据">↻</button>
+    </div>
+    
+    <div class="container">
+        <!-- 首页：数据录入 -->
+        <div id="page-home" class="tab-content active">
+            <div class="grid-2" style="margin-bottom:20px;">
+                <div class="stat-card">
+                    <div class="num" id="home-total">0</div>
+                    <div class="label">总视频</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="home-valid" style="color:var(--success)">0</div>
+                    <div class="label">有效内容</div>
+                </div>
+            </div>
+
+            <!-- 待录入提醒 -->
+            <div id="reminder-panel" class="tip-box" style="display:none;margin-bottom:16px;background:#fff8e1;border:1px solid #ffc107;">
+                <div style="font-weight:600;margin-bottom:8px;color:#f57c00;">📋 今日待录入</div>
+                <div id="reminder-list"></div>
+            </div>
+
+            <div class="section-title">录入数据</div>
+            
+            <!-- 步骤指示器 -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">1. 视频信息</div>
+                <div class="step" id="step2">2. 平台数据</div>
+            </div>
+            
+            <div class="card" id="video-form">
+                <!-- 步骤1：视频基础信息 -->
+                <div id="step1-form">
+                    <div class="form-group">
+                        <label class="form-label">标题 *</label>
+                        <input type="text" id="record-title" class="form-input" placeholder="内容标题">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">方向</label>
+                        <select id="record-direction" class="form-select">
+                            <option value="">选择方向</option>
+                            <option value="心理学">心理学</option>
+                            <option value="经济学">经济学</option>
+                            <option value="认知提升">认知提升</option>
+                            <option value="行为经济学">行为经济学</option>
+                            <option value="社会观察">社会观察</option>
+                            <option value="人际关系">人际关系</option>
+                            <option value="自我成长">自我成长</option>
+                            <option value="博弈论">博弈论</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">有效性</label>
+                        <select id="record-valid" class="form-select">
+                            <option value="有效">有效</option>
+                            <option value="无效">无效</option>
+                            <option value="待定">待定</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">备注（全局）</label>
+                        <textarea id="record-remark" class="form-input" rows="2" placeholder="可选，所有平台共用"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="goToStep2()">下一步：添加平台数据 →</button>
+                </div>
+                
+                <!-- 步骤2：平台数据 -->
+                <div id="step2-form" style="display:none;">
+                    <div style="margin-bottom:12px;">
+                        <span style="font-weight:500;" id="video-title-display"></span>
+                        <button class="btn-small" onclick="goToStep1()" style="margin-left:8px;">修改视频信息</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">平台数据</label>
+                        <div id="platform-inputs">
+                            <!-- 平台输入项动态添加 -->
+                        </div>
+                        <button class="btn-small" onclick="addPlatformInput()" style="margin-top:8px;">+ 添加平台</button>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveVideo()">保存视频</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 评论页 -->
+        <div id="page-comment" class="tab-content">
+            <div class="section-title">评论收集</div>
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">关联内容</label>
+                    <select id="comment-record" class="form-select" onchange="loadCommentCounts()">
+                        <option value="">请先录入内容</option>
+                    </select>
+                </div>
+                
+                <!-- 四个分类输入框（含数字统计） -->
+                <div class="form-group">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                        <label class="form-label" style="color:#e53935;margin:0;">🔴 需求（有痛点）</label>
+                        <input type="number" id="count-need" class="form-input" style="width:60px;padding:4px 8px;text-align:center;" min="0" placeholder="0">
+                        <span style="font-size:12px;color:var(--text2);">条</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">用户有具体问题要解决，如：怎么解决焦虑？能帮到我吗？</div>
+                    <textarea id="comment-need" class="form-input" rows="3" placeholder="连续粘贴多条评论，每条一行..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                        <label class="form-label" style="color:#43a047;margin:0;">🟢 认可</label>
+                        <input type="number" id="count-approve" class="form-input" style="width:60px;padding:4px 8px;text-align:center;" min="0" placeholder="0">
+                        <span style="font-size:12px;color:var(--text2);">条</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">点赞、感谢、共鸣，如：说得太对了！感谢分享！</div>
+                    <textarea id="comment-approve" class="form-input" rows="3" placeholder="连续粘贴多条评论，每条一行..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                        <label class="form-label" style="color:#757575;margin:0;">⚪ 中立（无意义）</label>
+                        <input type="number" id="count-neutral" class="form-input" style="width:60px;padding:4px 8px;text-align:center;" min="0" placeholder="0">
+                        <span style="font-size:12px;color:var(--text2);">条</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">无实际信息，如：哈、打卡、路过</div>
+                    <textarea id="comment-neutral" class="form-input" rows="3" placeholder="连续粘贴多条评论，每条一行..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                        <label class="form-label" style="color:#1976d2;margin:0;">🔵 提问</label>
+                        <input type="number" id="count-question" class="form-input" style="width:60px;padding:4px 8px;text-align:center;" min="0" placeholder="0">
+                        <span style="font-size:12px;color:var(--text2);">条</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">请求更多信息，如：可以展开讲讲吗？有推荐书吗？</div>
+                    <textarea id="comment-question" class="form-input" rows="3" placeholder="连续粘贴多条评论，每条一行..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveComments()">保存评论</button>
+            </div>
+            
+            <!-- 评论历史 -->
+            <div class="section-title">评论记录</div>
+            <div id="comment-history"></div>
+        </div>
+        
+        <!-- 诊断页 -->
+        <div id="page-diagnosis" class="tab-content">
+            <div class="section-title">内容诊断</div>
+            <div id="diagnosis-list"></div>
+        </div>
+        
+        <!-- 录入页 -->
+        <div id="page-records" class="tab-content">
+            <div class="section-title">数据记录</div>
+            
+            <!-- 统计维度切换 -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button class="btn-small" id="view-by-video" onclick="setViewMode('video')" style="background:var(--accent);color:white;border-color:var(--accent);">按视频</button>
+                <button class="btn-small" id="view-by-platform" onclick="setViewMode('platform')">按平台</button>
+            </div>
+            
+            <div id="records-list"></div>
+        </div>
+        
+        <!-- 设置页 -->
+        <div id="page-settings" class="tab-content">
+            <div class="section-title">数据管理</div>
+            <button class="btn-large" style="background:var(--accent);color:white;" onclick="exportData()">📤 导出数据</button>
+            <button class="btn-large" style="background:var(--bg);color:var(--text);" onclick="document.getElementById('import-file').click()">📥 导入数据</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+            
+            <div class="card danger-zone" style="margin-top:24px;">
+                <div style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:12px;">⚠️ 危险区域</div>
+                <button class="btn-large btn-danger" onclick="clearAllData()">清空所有数据</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchPage('home')">
+            <div class="icon">📝</div>
+            <div class="label">录入</div>
+        </div>
+        <div class="nav-item" onclick="switchPage('comment')">
+            <div class="icon">💬</div>
+            <div class="label">评论</div>
+        </div>
+        <div class="nav-item" onclick="switchPage('diagnosis')">
+            <div class="icon">🔍</div>
+            <div class="label">诊断</div>
+        </div>
+        <div class="nav-item" onclick="switchPage('records')">
+            <div class="icon">📊</div>
+            <div class="label">记录</div>
+        </div>
+        <div class="nav-item" onclick="switchPage('settings')">
+            <div class="icon">⚙️</div>
+            <div class="label">设置</div>
+        </div>
+    </div>
+
+<script>
+// ==================== 数据结构 ====================
+// V2.9.5: 一视频一记录多平台
+// video = {
+//   id: string,
+//   title: string,
+//   direction: string,
+//   valid: '有效'|'无效'|'待定',
+//   remark: string,  // 全局备注
+//   createdAt: string,
+//   platforms: [
+//     { platform: '小红书', views, comments, likes, saves, shares, date }
+//   ]
+// }
+
+const STORAGE_KEY = 'media-assistant-v2.9.5';
+const DIRECTIONS = ['心理学', '经济学', '认知提升', '行为经济学', '社会观察', '人际关系', '自我成长', '博弈论'];
+const PLATFORMS = ['抖音', '小红书', 'B站', '快手', '微博', 'TikTok'];
+
+let videos = [];
+let editingVideoId = null;
+let currentStep = 1;
+let viewMode = 'video'; // 'video' | 'platform'
+
+// ==================== 初始化 ====================
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    renderHome();
+    initDateInput();
+});
+
+function loadData() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            videos = parsed.videos || [];
+            // 迁移旧数据（兼容 v2.8.9 及更早）
+            if (parsed.records && parsed.records.length > 0 && videos.length === 0) {
+                migrateOldData(parsed.records);
+            }
+        }
+    } catch (e) {
+        console.error('加载数据失败', e);
+        videos = [];
+    }
+}
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ videos, version: '2.9.5' }));
+}
+
+// 迁移旧数据
+function migrateOldData(oldRecords) {
+    const videoMap = {};
+    oldRecords.forEach(r => {
+        if (!videoMap[r.title]) {
+            videoMap[r.title] = {
+                id: generateId(),
+                title: r.title,
+                direction: r.direction || '',
+                valid: r.valid || '待定',
+                remark: r.script || r.remark || '',
+                createdAt: r.createdAt || r.date || new Date().toISOString(),
+                platforms: []
+            };
+        }
+        if (r.platform && r.views !== undefined) {
+            videoMap[r.title].platforms.push({
+                platform: r.platform,
+                views: r.views || 0,
+                comments: r.comments || 0,
+                likes: r.likes || 0,
+                saves: r.saves || 0,
+                shares: r.shares || 0,
+                date: r.date || new Date().toISOString().split('T')[0]
+            });
+        }
+    });
+    videos = Object.values(videoMap);
+    saveData();
+    console.log('数据迁移完成，共', videos.length, '个视频');
+}
+
+function generateId() {
+    return 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function initDateInput() {
+    // 保持默认不填，由用户选择
+}
+
+// ==================== 页面切换 ====================
+function switchPage(page) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    
+    if (page === 'home') renderHome();
+    if (page === 'comment') renderCommentPage();
+    if (page === 'diagnosis') renderDiagnosis();
+    if (page === 'records') renderRecords();
+}
+
+// ==================== 首页渲染 ====================
+function renderHome() {
+    document.getElementById('home-total').textContent = videos.length;
+    document.getElementById('home-valid').textContent = videos.filter(v => v.valid === '有效').length;
+}
+
+// ==================== 录入步骤管理 ====================
+function goToStep2() {
+    const title = document.getElementById('record-title').value.trim();
+    if (!title) {
+        alert('请输入标题');
+        return;
+    }
+    
+    // 检查是否有同名视频（编辑模式）
+    const existing = videos.find(v => v.title === title && v.id !== editingVideoId);
+    if (existing) {
+        if (!confirm('已存在同名视频「' + title + '」，是否继续录入？\n\n选择「确定」将为该视频添加新的平台数据。')) {
+            return;
+        }
+        // 编辑模式：加载现有数据
+        editingVideoId = existing.id;
+        document.getElementById('record-direction').value = existing.direction || '';
+        document.getElementById('record-valid').value = existing.valid || '有效';
+        document.getElementById('record-remark').value = existing.remark || '';
+    }
+    
+    currentStep = 2;
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step1').classList.add('done');
+    document.getElementById('step2').classList.add('active');
+    document.getElementById('step1-form').style.display = 'none';
+    document.getElementById('step2-form').style.display = 'block';
+    document.getElementById('video-title-display').textContent = '「' + title + '」';
+    
+    // 初始化平台输入（默认一个）
+    document.getElementById('platform-inputs').innerHTML = '';
+    addPlatformInput();
+}
+
+function goToStep1() {
+    currentStep = 1;
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('step1').classList.remove('done');
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1-form').style.display = 'block';
+    document.getElementById('step2-form').style.display = 'none';
+}
+
+function addPlatformInput() {
+    const container = document.getElementById('platform-inputs');
+    const index = container.children.length;
+    
+    // 检查已添加的平台
+    const existingPlatforms = Array.from(container.querySelectorAll('select[name="platform"]')).map(s => s.value);
+    const availablePlatforms = PLATFORMS.filter(p => !existingPlatforms.includes(p));
+    const defaultPlatform = availablePlatforms[0] || PLATFORMS[0];
+    
+    const div = document.createElement('div');
+    div.className = 'platform-input-item';
+    div.innerHTML = `
+        <div class="platform-input-header">
+            <select name="platform" class="form-select" style="width:120px;padding:8px 12px;" onchange="updateDateField(this)">
+                ${PLATFORMS.map(p => `<option value="${p}" ${p === defaultPlatform ? 'selected' : ''}>${p}</option>`).join('')}
+            </select>
+            ${index > 0 ? '<button class="remove-platform-btn" onclick="removePlatformInput(this)">×</button>' : ''}
+        </div>
+        <input type="date" name="date" class="form-input" style="margin-bottom:8px;padding:10px 12px;" value="${new Date().toISOString().split('T')[0]}">
+        <div class="stat-row">
+            <div class="form-group">
+                <label class="form-label" style="font-size:11px;">播放</label>
+                <input type="number" name="views" class="form-input" placeholder="0" style="padding:10px 12px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size:11px;">评论</label>
+                <input type="number" name="comments" class="form-input" placeholder="0" style="padding:10px 12px;">
+            </div>
+        </div>
+        <div class="stat-row">
+            <div class="form-group">
+                <label class="form-label" style="font-size:11px;">点赞</label>
+                <input type="number" name="likes" class="form-input" placeholder="0" style="padding:10px 12px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size:11px;">收藏</label>
+                <input type="number" name="saves" class="form-input" placeholder="0" style="padding:10px 12px;">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:11px;">转发</label>
+            <input type="number" name="shares" class="form-input" placeholder="0" style="padding:10px 12px;">
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+function removePlatformInput(btn) {
+    btn.closest('.platform-input-item').remove();
+}
+
+function updateDateField(select) {
+    // 平台改变时可以做一些联动，目前不需要
+}
+
+// ==================== 保存视频 ====================
+function saveVideo() {
+    const title = document.getElementById('record-title').value.trim();
+    const direction = document.getElementById('record-direction').value;
+    const valid = document.getElementById('record-valid').value;
+    const remark = document.getElementById('record-remark').value.trim();
+    
+    if (!title) {
+        alert('请输入标题');
+        return;
+    }
+    
+    // 收集平台数据
+    const platformInputs = document.getElementById('platform-inputs').children;
+    const platforms = [];
+    
+    for (let item of platformInputs) {
+        const platform = item.querySelector('[name="platform"]').value;
+        const date = item.querySelector('[name="date"]').value;
+        const views = parseInt(item.querySelector('[name="views"]').value) || 0;
+        const comments = parseInt(item.querySelector('[name="comments"]').value) || 0;
+        const likes = parseInt(item.querySelector('[name="likes"]').value) || 0;
+        const saves = parseInt(item.querySelector('[name="saves"]').value) || 0;
+        const shares = parseInt(item.querySelector('[name="shares"]').value) || 0;
+        
+        if (views > 0 || comments > 0 || likes > 0 || saves > 0 || shares > 0) {
+            platforms.push({ platform, date, views, comments, likes, saves, shares });
+        }
+    }
+    
+    if (platforms.length === 0) {
+        alert('请至少填写一个平台的数据');
+        return;
+    }
+    
+    // 检查是否编辑现有视频
+    if (editingVideoId) {
+        const video = videos.find(v => v.id === editingVideoId);
+        if (video) {
+            video.direction = direction;
+            video.valid = valid;
+            video.remark = remark;
+            // 合并平台数据
+            platforms.forEach(p => {
+                const existing = video.platforms.find(ep => ep.platform === p.platform);
+                if (existing) {
+                    Object.assign(existing, p); // 更新现有平台数据
+                } else {
+                    video.platforms.push(p); // 添加新平台数据
+                }
+            });
+        }
+    } else {
+        // 检查是否有同名视频
+        const existing = videos.find(v => v.title === title);
+        if (existing) {
+            existing.direction = direction;
+            existing.valid = valid;
+            existing.remark = remark;
+            platforms.forEach(p => {
+                const ep = existing.platforms.find(x => x.platform === p.platform);
+                if (ep) Object.assign(ep, p);
+                else existing.platforms.push(p);
+            });
+        } else {
+            // 新建视频
+            videos.push({
+                id: generateId(),
+                title,
+                direction,
+                valid,
+                remark,
+                createdAt: new Date().toISOString(),
+                platforms
+            });
+        }
+    }
+    
+    saveData();
+    
+    // 重置表单
+    editingVideoId = null;
+    document.getElementById('record-title').value = '';
+    document.getElementById('record-direction').value = '';
+    document.getElementById('record-valid').value = '有效';
+    document.getElementById('record-remark').value = '';
+    document.getElementById('platform-inputs').innerHTML = '';
+    goToStep1();
+    renderHome();
+    
+    alert('✅ 保存成功！');
+}
+
+// ==================== 评论系统（保持不变）====================
+function renderCommentPage() {
+    const select = document.getElementById('comment-record');
+    select.innerHTML = '<option value="">选择内容</option>';
+    videos.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.id;
+        opt.textContent = v.title;
+        select.appendChild(opt);
+    });
+    renderCommentHistory();
+}
+
+function loadCommentCounts() {
+    const videoId = document.getElementById('comment-record').value;
+    if (!videoId) return;
+    // 评论数据存储在 video 级别
+    const video = videos.find(v => v.id === videoId);
+    if (video && video.comments) {
+        document.getElementById('comment-need').value = video.comments.need || '';
+        document.getElementById('comment-approve').value = video.comments.approve || '';
+        document.getElementById('comment-neutral').value = video.comments.neutral || '';
+        document.getElementById('comment-question').value = video.comments.question || '';
+        document.getElementById('count-need').value = video.comments.countNeed || 0;
+        document.getElementById('count-approve').value = video.comments.countApprove || 0;
+        document.getElementById('count-neutral').value = video.comments.countNeutral || 0;
+        document.getElementById('count-question').value = video.comments.countQuestion || 0;
+    } else {
+        ['need', 'approve', 'neutral', 'question'].forEach(id => {
+            document.getElementById('comment-' + id).value = '';
+            document.getElementById('count-' + id).value = 0;
+        });
+    }
+}
+
+function saveComments() {
+    const videoId = document.getElementById('comment-record').value;
+    if (!videoId) {
+        alert('请选择关联内容');
+        return;
+    }
+    
+    const video = videos.find(v => v.id === videoId);
+    if (video) {
+        video.comments = {
+            need: document.getElementById('comment-need').value,
+            approve: document.getElementById('comment-approve').value,
+            neutral: document.getElementById('comment-neutral').value,
+            question: document.getElementById('comment-question').value,
+            countNeed: parseInt(document.getElementById('count-need').value) || 0,
+            countApprove: parseInt(document.getElementById('count-approve').value) || 0,
+            countNeutral: parseInt(document.getElementById('count-neutral').value) || 0,
+            countQuestion: parseInt(document.getElementById('count-question').value) || 0,
+            updatedAt: new Date().toISOString()
+        };
+        saveData();
+        renderCommentHistory();
+        alert('✅ 评论已保存');
+    }
+}
+
+function renderCommentHistory() {
+    const container = document.getElementById('comment-history');
+    const videosWithComments = videos.filter(v => v.comments && v.comments.updatedAt);
+    
+    if (videosWithComments.length === 0) {
+        container.innerHTML = '<div class="tip-box">暂无评论记录</div>';
+        return;
+    }
+    
+    container.innerHTML = videosWithComments.map(v => `
+        <div class="record-item">
+            <div class="record-header">
+                <div class="record-title">${v.title}</div>
+                <span style="font-size:12px;color:var(--text2);">${v.comments.updatedAt.split('T')[0]}</span>
+            </div>
+            <div class="stat-row" style="font-size:12px;">
+                <span style="color:#e53935;">🔴 ${v.comments.countNeed || 0}</span>
+                <span style="color:#43a047;">🟢 ${v.comments.countApprove || 0}</span>
+                <span style="color:#757575;">⚪ ${v.comments.countNeutral || 0}</span>
+                <span style="color:#1976d2;">🔵 ${v.comments.countQuestion || 0}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== 诊断系统（保持不变）====================
+function renderDiagnosis() {
+    const container = document.getElementById('diagnosis-list');
+    const validVideos = videos.filter(v => v.valid === '有效');
+    
+    if (validVideos.length === 0) {
+        container.innerHTML = '<div class="tip-box">暂无有效内容可供诊断</div>';
+        return;
+    }
+    
+    container.innerHTML = validVideos.map(v => {
+        const diagnosis = generateDiagnosis(v);
+        return `
+            <div class="card diagnosis-card">
+                <div class="record-header">
+                    <div class="record-title">${v.title}</div>
+                    <span class="tag ${v.valid === '有效' ? 'tag-valid' : 'tag-invalid'}">${v.valid}</span>
+                </div>
+                <div style="margin-top:12px;font-size:13px;">
+                    ${diagnosis.map(d => `<div style="margin-bottom:6px;">${d}</div>`).join('')}
+                </div>
+                <div class="platform-tags" style="margin-top:8px;">
+                    ${(v.platforms || []).map(p => `<span class="platform-tag ${p.platform}">${p.platform}: ${formatNum(p.views)}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function generateDiagnosis(video) {
+    const results = [];
+    const totalViews = (video.platforms || []).reduce((sum, p) => sum + (p.views || 0), 0);
+    const totalComments = (video.platforms || []).reduce((sum, p) => sum + (p.comments || 0), 0);
+    const totalLikes = (video.platforms || []).reduce((sum, p) => sum + (p.likes || 0), 0);
+    const totalSaves = (video.platforms || []).reduce((sum, p) => sum + (p.saves || 0), 0);
+    
+    if (totalViews === 0) {
+        results.push('⚠️ 暂无播放数据');
+    } else {
+        const commentRate = (totalComments / totalViews * 100).toFixed(2);
+        const saveRate = (totalSaves / totalViews * 100).toFixed(2);
+        
+        if (commentRate > 1) results.push('💬 评论率 ' + commentRate + '% — 互动活跃');
+        else if (commentRate > 0.3) results.push('💬 评论率 ' + commentRate + '% — 正常水平');
+        else results.push('💬 评论率 ' + commentRate + '% — 偏低');
+        
+        if (saveRate > 3) results.push('⭐ 收藏率 ' + saveRate + '% — 价值感强');
+        else if (saveRate > 1) results.push('⭐ 收藏率 ' + saveRate + '% — 正常');
+        else results.push('⭐ 收藏率 ' + saveRate + '% — 偏低');
+    }
+    
+    if (video.direction) {
+        results.push('📂 方向：' + video.direction);
+    }
+    
+    return results;
+}
+
+// ==================== 记录列表 ====================
+function setViewMode(mode) {
+    viewMode = mode;
+    document.getElementById('view-by-video').style.background = mode === 'video' ? 'var(--accent)' : 'var(--bg)';
+    document.getElementById('view-by-video').style.color = mode === 'video' ? 'white' : 'var(--text)';
+    document.getElementById('view-by-video').style.borderColor = mode === 'video' ? 'var(--accent)' : 'var(--line)';
+    document.getElementById('view-by-platform').style.background = mode === 'platform' ? 'var(--accent)' : 'var(--bg)';
+    document.getElementById('view-by-platform').style.color = mode === 'platform' ? 'white' : 'var(--text)';
+    document.getElementById('view-by-platform').style.borderColor = mode === 'platform' ? 'var(--accent)' : 'var(--line)';
+    renderRecords();
+}
+
+function renderRecords() {
+    const container = document.getElementById('records-list');
+    
+    if (videos.length === 0) {
+        container.innerHTML = '<div class="tip-box">暂无数据记录</div>';
+        return;
+    }
+    
+    if (viewMode === 'video') {
+        renderByVideo(container);
+    } else {
+        renderByPlatform(container);
+    }
+}
+
+function renderByVideo(container) {
+    // 按视频去重展示
+    container.innerHTML = videos.map(v => {
+        const totalViews = (v.platforms || []).reduce((sum, p) => sum + (p.views || 0), 0);
+        const totalComments = (v.platforms || []).reduce((sum, p) => sum + (p.comments || 0), 0);
+        const totalLikes = (v.platforms || []).reduce((sum, p) => sum + (p.likes || 0), 0);
+        const totalSaves = (v.platforms || []).reduce((sum, p) => sum + (p.saves || 0), 0);
+        
+        return `
+            <div class="record-item">
+                <div class="record-header">
+                    <div class="record-title">${v.title}</div>
+                    <span class="tag ${v.valid === '有效' ? 'tag-valid' : 'tag-invalid'}">${v.valid}</span>
+                </div>
+                <div class="record-meta">
+                    ${v.direction ? '📂 ' + v.direction + ' · ' : ''}
+                    总播放 ${formatNum(totalViews)} · 评论 ${formatNum(totalComments)} · 点赞 ${formatNum(totalLikes)} · 收藏 ${formatNum(totalSaves)}
+                </div>
+                <div class="platform-tags">
+                    ${(v.platforms || []).map(p => `<span class="platform-tag ${p.platform}">${p.platform}</span>`).join('')}
+                </div>
+                ${v.remark ? '<div style="font-size:12px;color:var(--text2);margin-top:6px;">📝 ' + v.remark + '</div>' : ''}
+                <div style="margin-top:8px;">
+                    <button class="btn-small" onclick="editVideo('${v.id}')">编辑</button>
+                    <button class="btn-small btn-danger" onclick="deleteVideo('${v.id}')">删除</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderByPlatform(container) {
+    // 按平台维度展示
+    const platformData = {};
+    videos.forEach(v => {
+        (v.platforms || []).forEach(p => {
+            if (!platformData[p.platform]) {
+                platformData[p.platform] = [];
+            }
+            platformData[p.platform].push({
+                ...p,
+                videoTitle: v.title,
+                videoId: v.id,
+                valid: v.valid,
+                direction: v.direction
+            });
+        });
+    });
+    
+    let html = '';
+    PLATFORMS.forEach(platform => {
+        const items = platformData[platform] || [];
+        if (items.length === 0) return;
+        
+        const totalViews = items.reduce((sum, i) => sum + (i.views || 0), 0);
+        
+        html += `
+            <div class="card" style="margin-bottom:12px;">
+                <div style="font-weight:600;margin-bottom:8px;">
+                    <span class="platform-tag ${platform}">${platform}</span>
+                    <span style="font-size:12px;color:var(--text2);margin-left:8px;">${items.length}条 · 总播放 ${formatNum(totalViews)}</span>
+                </div>
+                ${items.map(item => `
+                    <div style="padding:8px 0;border-top:1px solid var(--line);font-size:13px;">
+                        <div style="font-weight:500;">${item.videoTitle}</div>
+                        <div style="color:var(--text2);font-size:12px;">
+                            ${item.date} · 播放 ${formatNum(item.views)} · 评论 ${formatNum(item.comments)}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html || '<div class="tip-box">暂无平台数据</div>';
+}
+
+function editVideo(id) {
+    const video = videos.find(v => v.id === id);
+    if (!video) return;
+    
+    editingVideoId = id;
+    document.getElementById('record-title').value = video.title;
+    document.getElementById('record-direction').value = video.direction || '';
+    document.getElementById('record-valid').value = video.valid || '有效';
+    document.getElementById('record-remark').value = video.remark || '';
+    
+    // 跳转到首页录入
+    switchPage('home');
+    document.querySelector('.nav-item').classList.add('active');
+    
+    goToStep2();
+    
+    // 加载已有平台数据
+    const container = document.getElementById('platform-inputs');
+    container.innerHTML = '';
+    (video.platforms || []).forEach(p => {
+        addPlatformInput();
+        const item = container.lastChild;
+        item.querySelector('[name="platform"]').value = p.platform;
+        item.querySelector('[name="date"]').value = p.date || '';
+        item.querySelector('[name="views"]').value = p.views || '';
+        item.querySelector('[name="comments"]').value = p.comments || '';
+        item.querySelector('[name="likes"]').value = p.likes || '';
+        item.querySelector('[name="saves"]').value = p.saves || '';
+        item.querySelector('[name="shares"]').value = p.shares || '';
+    });
+}
+
+function deleteVideo(id) {
+    if (!confirm('确定删除该视频及其所有平台数据？')) return;
+    videos = videos.filter(v => v.id !== id);
+    saveData();
+    renderRecords();
+    renderHome();
+}
+
+// ==================== 导入导出 ====================
+function exportData() {
+    const data = {
+        version: '2.9.5',
+        exportedAt: new Date().toISOString(),
+        videos: videos
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'media-assistant-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            // 兼容旧版本
+            if (data.records && data.records.length > 0 && !data.videos) {
+                migrateOldData(data.records);
+            } else if (data.videos) {
+                videos = data.videos;
+            }
+            
+            saveData();
+            renderHome();
+            alert('✅ 导入成功，共 ' + videos.length + ' 个视频');
+        } catch (err) {
+            alert('导入失败：' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function clearAllData() {
+    if (!confirm('⚠️ 确定清空所有数据？此操作不可恢复！')) return;
+    if (!confirm('再次确认：真的要删除所有数据吗？')) return;
+    
+    videos = [];
+    saveData();
+    renderHome();
+    alert('已清空所有数据');
+}
+
+// ==================== 工具函数 ====================
+function formatNum(n) {
+    if (n >= 10000) return (n / 10000).toFixed(1) + 'w';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return n || 0;
+}
+
+function handleRefresh() {
+    const btn = document.querySelector('.refresh-btn');
+    btn.classList.add('spinning');
+    setTimeout(() => btn.classList.remove('spinning'), 600);
+    loadData();
+    renderHome();
+}
+</script>
+</body>
+</html>

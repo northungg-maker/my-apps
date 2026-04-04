@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自媒体工具集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background: #fafafa;
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+        .tool-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+            border: 1px solid #eee;
+        }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .tool-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .tool-card.primary .tool-desc { color: rgba(255,255,255,0.8); }
+        .tool-card.primary .tool-arrow { color: rgba(255,255,255,0.8); }
+        .tool-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .tool-desc {
+            font-size: 13px;
+            color: #999;
+        }
+        .tool-arrow {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #ccc;
+        }
+        .tool-card { position: relative; padding-right: 50px; }
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .tag-new { background: #e8f5e9; color: #4caf50; }
+        .tag-hot { background: #fff3e0; color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>自媒体工具集</h1>
+        <p class="subtitle">记录、验证、复盘、分析</p>
+        
+        <div class="tool-grid">
+            <a href="media-assistant-v2.8.html" class="tool-card primary">
+                <div class="tool-name">📊 自媒体数据助手 <span class="tag tag-new">推荐</span></div>
+                <div class="tool-desc">数据录入 · 方向验证 · 周复盘 · 评论分类收集</div>
+                <span class="tool-arrow">→</span>
+            </a>
+            
+            <a href="form-collection-v4.4.html" class="tool-card">
+                <div class="tool-name">📝 表单合集 <span class="tag tag-hot">常用</span></div>
+                <div class="tool-desc">每日数据 · 方向验证 · 评论分析 · 执行清单 · 周复盘</div>
+                <span class="tool-arrow">→</span>
+            </a>
+            
+            <a href="stage-check-v4.5.html" class="tool-card">
+                <div class="tool-name">📈 阶段自检表单</div>
+                <div class="tool-desc">累计数据汇总、阶段判定</div>
+                <span class="tool-arrow">→</span>
+            </a>
+            
+            <a href="14day-review-v4.3.html" class="tool-card">
+                <div class="tool-name">📋 14天复盘工具包</div>
+                <div class="tool-desc">内容样本、14天数据、方向验证、评论分析</div>
+                <span class="tool-arrow">→</span>
+            </a>
+            
+            <a href="manual-v4.3.html" class="tool-card">
+                <div class="tool-name">📖 执行手册</div>
+                <div class="tool-desc">流程手册（查询用）</div>
+                <span class="tool-arrow">→</span>
+            </a>
+            
+            <a href="stage-strategy-v4.5.html" class="tool-card">
+                <div class="tool-name">🎯 阶段判定与产品期策略</div>
+                <div class="tool-desc">判定规则（查询用）</div>
+                <span class="tool-arrow">→</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
