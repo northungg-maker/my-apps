@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>临界点决策系统</title>
+    <title>格栅临界点决策系统</title>
     <style>
         * {
             margin: 0;
@@ -12,94 +12,91 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fafafa;
-            color: #1a1a1a;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.5;
             min-height: 100vh;
         }
 
         /* ===== 首页 ===== */
         .landing {
-            max-width: 800px;
+            max-width: 680px;
             margin: 0 auto;
-            padding: 80px 24px;
+            padding: 120px 32px 80px;
         }
 
         .hero {
-            text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 100px;
         }
 
-        .hero-title {
-            font-size: 36px;
-            font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 16px;
-        }
-
-        .hero-subtitle {
-            font-size: 16px;
-            color: #666;
+        .brand-tag {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #999;
             margin-bottom: 24px;
         }
 
-        .hero-tagline {
-            font-size: 22px;
-            font-weight: 500;
-            color: #1a1a1a;
-            margin-bottom: 40px;
-            line-height: 1.4;
-        }
-
-        .hero-tagline span {
-            color: #e63946;
-        }
-
-        .btn-primary {
-            background: #1a1a1a;
-            color: #fff;
-            border: none;
-            padding: 16px 40px;
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: #333;
-            transform: translateY(-1px);
-        }
-
-        /* 痛点区 */
-        .pain-section {
-            margin-bottom: 80px;
-        }
-
-        .section-title {
-            font-size: 20px;
+        .hero-title {
+            font-size: 42px;
             font-weight: 600;
-            margin-bottom: 32px;
-            text-align: center;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 20px;
         }
 
-        .pain-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        .hero-subtitle {
+            font-size: 17px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 40px;
         }
 
-        .pain-item {
-            background: #fff;
-            padding: 20px 24px;
-            border-radius: 12px;
-            border: 1px solid #eee;
+        .hero-cta {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 16px 36px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .pain-item strong {
-            color: #e63946;
+        .hero-cta:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        /* 核心价值 */
+        .value-section {
+            margin-bottom: 80px;
+            padding: 48px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .value-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .value-text {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #000;
+        }
+
+        .value-text em {
+            font-style: normal;
+            color: #ff3b30;
         }
 
         /* 三层模型 */
@@ -107,331 +104,287 @@
             margin-bottom: 80px;
         }
 
-        .model-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+        .section-header {
+            margin-bottom: 40px;
         }
 
-        @media (max-width: 600px) {
-            .model-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .model-card {
-            background: #fff;
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid #eee;
-            text-align: center;
-        }
-
-        .model-card .icon {
-            font-size: 32px;
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #999;
             margin-bottom: 12px;
         }
 
-        .model-card h3 {
-            font-size: 16px;
+        .section-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .model-item {
+            padding: 24px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .model-item:last-child {
+            border-bottom: none;
+        }
+
+        .model-name {
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
-        .model-card p {
-            font-size: 13px;
+        .model-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .model-desc {
+            font-size: 14px;
             color: #666;
+            padding-left: 20px;
         }
 
-        .model-physics { border-top: 3px solid #e63946; }
-        .model-bio { border-top: 3px solid #f4a261; }
-        .model-psy { border-top: 3px solid #457b9d; }
-
-        /* 核心差异 */
-        .core-section {
-            text-align: center;
+        /* 核心问题 */
+        .core-question {
             margin-bottom: 80px;
-            padding: 48px 24px;
-            background: #1a1a1a;
-            border-radius: 16px;
-            color: #fff;
+            text-align: center;
+            padding: 60px 24px;
+            background: #fafafa;
+            border-radius: 24px;
         }
 
-        .core-section h2 {
-            font-size: 16px;
-            font-weight: 400;
-            color: #aaa;
-            margin-bottom: 16px;
-        }
-
-        .core-section .big-text {
-            font-size: 28px;
-            font-weight: 600;
+        .core-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #999;
             margin-bottom: 24px;
         }
 
-        .core-section .sub-text {
-            font-size: 14px;
-            color: #888;
+        .core-text {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.6;
         }
-
-        /* 示例 */
-        .example-section {
-            margin-bottom: 60px;
-        }
-
-        .example-box {
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #eee;
-            overflow: hidden;
-        }
-
-        .example-input, .example-output {
-            padding: 24px;
-        }
-
-        .example-input {
-            background: #f8f8f8;
-            border-bottom: 1px solid #eee;
-        }
-
-        .example-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .example-output {
-            background: #fff5f5;
-        }
-
-        .risk-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .risk-high { background: #fee2e2; color: #dc2626; }
 
         /* ===== 工具页 ===== */
         .tool-page {
             display: none;
-            max-width: 800px;
+            max-width: 680px;
             margin: 0 auto;
-            padding: 40px 24px;
+            padding: 40px 32px;
         }
 
         .tool-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 48px;
         }
 
-        .tool-header h1 {
-            font-size: 24px;
+        .tool-title {
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .btn-back {
             background: none;
             border: none;
-            color: #666;
-            cursor: pointer;
             font-size: 14px;
+            color: #999;
+            cursor: pointer;
         }
 
         .btn-back:hover {
-            color: #1a1a1a;
+            color: #000;
         }
 
-        /* 输入表单 */
+        /* 表单 */
         .input-form {
-            background: #fff;
-            padding: 32px;
-            border-radius: 16px;
-            border: 1px solid #eee;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
+            padding: 16px 0;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+            background: transparent;
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
-            border-color: #1a1a1a;
+            border-color: #000;
         }
 
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
+        .form-textarea {
+            resize: none;
+            min-height: 80px;
         }
 
-        .radio-group {
+        .radio-row {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        .radio-option {
+        .radio-btn {
             padding: 10px 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 100px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 14px;
+            background: #fff;
         }
 
-        .radio-option:hover {
-            border-color: #1a1a1a;
+        .radio-btn:hover {
+            border-color: #999;
         }
 
-        .radio-option.selected {
-            background: #1a1a1a;
+        .radio-btn.selected {
+            background: #000;
             color: #fff;
-            border-color: #1a1a1a;
+            border-color: #000;
         }
 
-        .btn-analyze {
+        .btn-submit {
             width: 100%;
-            padding: 16px;
-            background: #1a1a1a;
+            padding: 18px;
+            background: #000;
             color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 100px;
+            font-size: 15px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            margin-top: 16px;
+            transition: all 0.3s;
         }
 
-        .btn-analyze:hover {
-            background: #333;
+        .btn-submit:hover {
+            transform: scale(1.01);
         }
 
-        .btn-analyze:disabled {
+        .btn-submit:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
         }
 
-        /* 加载动画 */
+        /* 加载 */
         .loading-section {
             display: none;
             text-align: center;
-            padding: 60px 24px;
-            background: #fff;
-            border-radius: 16px;
-            border: 1px solid #eee;
-            margin-bottom: 24px;
+            padding: 80px 24px;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #f0f0f0;
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .loading-text {
-            font-size: 18px;
-            color: #1a1a1a;
-            margin-bottom: 8px;
+            font-size: 15px;
+            color: #666;
         }
 
-        .loading-sub {
-            font-size: 14px;
-            color: #999;
-        }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        /* 结果展示 */
+        /* 结果 */
         .result-section {
             display: none;
         }
 
-        .result-summary {
-            background: #fff;
-            padding: 32px;
-            border-radius: 16px;
-            border: 1px solid #eee;
-            margin-bottom: 24px;
+        .result-header {
             text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .result-risk {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .result-level {
-            font-size: 32px;
-            font-weight: 700;
+        .result-risk-badge {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 4px;
             margin-bottom: 16px;
         }
 
-        .result-level.safe { color: #4ade80; }
-        .result-level.warning { color: #fbbf24; }
-        .result-level.danger { color: #f97316; }
-        .result-level.critical { color: #dc2626; }
+        .risk-safe { background: #e8f5e9; color: #2e7d32; }
+        .risk-warning { background: #fff8e1; color: #f57c00; }
+        .risk-danger { background: #ffebee; color: #c62828; }
+        .risk-critical { background: #c62828; color: #fff; }
 
-        .result-advice {
-            font-size: 18px;
-            color: #1a1a1a;
+        .result-level {
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
 
-        /* 三层分析卡片 */
-        .analysis-cards {
+        .result-advice {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 分析卡片 */
+        .analysis-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
 
         @media (max-width: 600px) {
-            .analysis-cards {
+            .analysis-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .analysis-card {
-            background: #fff;
+            background: #fafafa;
             padding: 24px;
             border-radius: 16px;
-            border: 1px solid #eee;
         }
 
-        .analysis-card h3 {
-            font-size: 14px;
+        .analysis-card-title {
+            font-size: 13px;
             font-weight: 600;
             margin-bottom: 16px;
             display: flex;
@@ -442,41 +395,41 @@
         .analysis-item {
             display: flex;
             justify-content: space-between;
+            font-size: 13px;
             padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
+            border-bottom: 1px solid #eee;
         }
 
         .analysis-item:last-child {
             border-bottom: none;
         }
 
-        .analysis-item .label {
-            color: #666;
+        .analysis-label {
+            color: #999;
         }
 
-        .analysis-item .value {
+        .analysis-value {
             font-weight: 500;
         }
 
-        .value-yes { color: #dc2626; }
-        .value-no { color: #4ade80; }
-        .value-status { color: #f97316; }
+        .value-true { color: #ff3b30; }
+        .value-false { color: #34c759; }
+        .value-warn { color: #ff9500; }
 
         /* 退出判断 */
-        .exit-section {
+        .exit-card {
             background: #fff5f5;
             padding: 24px;
             border-radius: 16px;
-            margin-bottom: 24px;
-            border: 1px solid #fecaca;
+            margin-bottom: 32px;
+            border: 1px solid #ffe0e0;
         }
 
-        .exit-section h3 {
-            font-size: 16px;
+        .exit-title {
+            font-size: 13px;
             font-weight: 600;
+            color: #ff3b30;
             margin-bottom: 16px;
-            color: #dc2626;
         }
 
         .exit-grid {
@@ -492,89 +445,70 @@
         }
 
         .exit-item {
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .exit-item .label {
-            color: #666;
+        .exit-label {
+            color: #999;
         }
 
-        .exit-item .value {
+        .exit-value {
             font-weight: 500;
+            color: #000;
         }
 
-        /* 一句话结论 */
-        .conclusion-section {
-            background: #1a1a1a;
+        /* 结论 */
+        .conclusion-card {
+            background: #000;
             color: #fff;
-            padding: 24px;
+            padding: 32px;
             border-radius: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             text-align: center;
         }
 
-        .conclusion-section p {
-            font-size: 18px;
+        .conclusion-text {
+            font-size: 17px;
             line-height: 1.6;
         }
 
         /* 操作按钮 */
-        .action-buttons {
+        .action-row {
             display: flex;
             gap: 12px;
+            margin-bottom: 48px;
         }
 
-        .btn-secondary {
+        .btn-action {
             flex: 1;
-            padding: 14px;
-            background: #fff;
-            color: #1a1a1a;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 100px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
+            background: #fff;
             transition: all 0.2s;
         }
 
-        .btn-secondary:hover {
-            background: #f5f5f5;
+        .btn-action:hover {
+            border-color: #999;
         }
 
-        .btn-copy {
-            background: #1a1a1a;
+        .btn-action.primary {
+            background: #000;
             color: #fff;
-            border-color: #1a1a1a;
+            border-color: #000;
         }
 
-        .btn-copy:hover {
+        .btn-action.primary:hover {
             background: #333;
-        }
-
-        /* Toast提示 */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1a1a1a;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
         }
 
         /* 历史记录 */
         .history-section {
-            margin-top: 24px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 32px;
         }
 
         .history-header {
@@ -584,64 +518,41 @@
             margin-bottom: 16px;
         }
 
-        .history-header h3 {
-            font-size: 16px;
+        .history-title {
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #999;
         }
 
         .btn-clear {
             background: none;
             border: none;
+            font-size: 12px;
             color: #999;
-            font-size: 13px;
             cursor: pointer;
         }
 
         .btn-clear:hover {
-            color: #dc2626;
+            color: #ff3b30;
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .history-item {
-            background: #fff;
-            padding: 16px 20px;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .history-item:hover {
-            border-color: #1a1a1a;
-        }
-
-        .history-item .title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .history-item .meta {
-            font-size: 12px;
-            color: #999999; 1px solid #eee;
-        }
-
-        .history-item {
-            background: #fff;
             padding: 16px;
+            background: #fafafa;
             border-radius: 12px;
-            border: 1px solid #eee;
-            margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .history-item:hover {
-            border-color: #1a1a1a;
+            background: #f0f0f0;
         }
 
         .history-item-title {
@@ -654,92 +565,97 @@
             font-size: 12px;
             color: #999;
         }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #000;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
     <!-- 首页 -->
     <div class="landing" id="landingPage">
         <div class="hero">
-            <h1 class="hero-title">临界点决策系统</h1>
-            <p class="hero-subtitle">基于多元思维模型的现实风险判断工具（演化自查理·芒格思维体系）</p>
-            <p class="hero-tagline">帮你判断，这件事会不会<span>把你拖进无法回头的局</span></p>
-            <button class="btn-primary" onclick="showTool()">开始分析</button>
+            <div class="brand-tag">Mental Lattice System</div>
+            <h1 class="hero-title">格栅临界点<br>决策系统</h1>
+            <p class="hero-subtitle">基于多元思维模型的现实风险判断工具<br>演化自查理·芒格思维体系</p>
+            <div class="hero-cta" onclick="showTool()">开始判断</div>
         </div>
 
-        <div class="pain-section">
-            <h2 class="section-title">你不是做错决策，而是进入了"不能回头的局"</h2>
-            <div class="pain-list">
-                <div class="pain-item">投资亏损，不是因为看错，而是<strong>退不出来</strong></div>
-                <div class="pain-item">合作失败，不是因为人坏，而是<strong>对方不能认错</strong></div>
-                <div class="pain-item">职业困境，不是能力问题，而是<strong>赛道无进化空间</strong></div>
-            </div>
+        <div class="value-section">
+            <div class="value-label">核心价值</div>
+            <div class="value-text">不帮你赢，只帮你<em>不输到出局</em></div>
         </div>
 
         <div class="model-section">
-            <h2 class="section-title">系统不判断你能不能赢，只判断你会不会出局</h2>
-            <div class="model-cards">
-                <div class="model-card model-physics">
-                    <div class="icon">🔴</div>
-                    <h3>物理层（临界点）</h3>
-                    <p>系统是否靠"持续加力"维持稳定<br>一旦失去支点，是否直接崩溃</p>
+            <div class="section-header">
+                <div class="section-label">Three Layers</div>
+                <div class="section-title">三层分析模型</div>
+            </div>
+
+            <div class="model-item">
+                <div class="model-name">
+                    <span class="model-dot" style="background: #ff3b30;"></span>
+                    物理层 · 临界点
                 </div>
-                <div class="model-card model-bio">
-                    <div class="icon">🟡</div>
-                    <h3>生物层（进化）</h3>
-                    <p>你是在进化，还是在被竞争吞噬<br>越努力，是否越难活</p>
+                <div class="model-desc">系统是否靠持续加力维持稳定？失去支点会崩溃吗？</div>
+            </div>
+
+            <div class="model-item">
+                <div class="model-name">
+                    <span class="model-dot" style="background: #ff9500;"></span>
+                    生物层 · 进化
                 </div>
-                <div class="model-card model-psy">
-                    <div class="icon">🔵</div>
-                    <h3>心理层（误判）</h3>
-                    <p>这个系统是否还能承认错误<br>还是已经无法回头</p>
+                <div class="model-desc">是在进化还是被吞噬？越努力是否越难活？</div>
+            </div>
+
+            <div class="model-item">
+                <div class="model-name">
+                    <span class="model-dot" style="background: #007aff;"></span>
+                    心理层 · 误判
                 </div>
+                <div class="model-desc">还能承认错误吗？还是已经无法回头？</div>
             </div>
         </div>
 
-        <div class="core-section">
-            <h2>所有分析，最终只回答一个问题</h2>
-            <p class="big-text">你还能不能体面退出？</p>
-            <p class="sub-text">有退路 = 可控风险 / 无退路 = 极度危险</p>
-        </div>
-
-        <div class="example-section">
-            <h2 class="section-title">示例</h2>
-            <div class="example-box">
-                <div class="example-input">
-                    <div class="example-label">输入</div>
-                    <p>"我该不该和这个人长期合作？"</p>
-                </div>
-                <div class="example-output">
-                    <div class="example-label">输出</div>
-                    <span class="risk-badge risk-high">⚠️ 高危</span>
-                    <p style="font-size: 14px; color: #666; margin-bottom: 8px;">
-                        • 心理层：对方无法承认错误<br>
-                        • 物理层：关系依赖持续投入<br>
-                        • 退出路径：不存在
-                    </p>
-                    <p style="font-weight: 500;">建议：降低绑定</p>
-                </div>
-            </div>
+        <div class="core-question">
+            <div class="core-label">The Core Question</div>
+            <div class="core-text">所有分析最终收敛到一个问题：<br><strong>是否还能体面退出？</strong></div>
         </div>
 
         <div style="text-align: center;">
-            <button class="btn-primary" onclick="showTool()">开始分析</button>
+            <div class="hero-cta" onclick="showTool()">开始判断</div>
         </div>
     </div>
 
     <!-- 工具页 -->
     <div class="tool-page" id="toolPage">
         <div class="tool-header">
-            <h1>临界点决策系统</h1>
-            <button class="btn-back" onclick="showLanding()">← 返回首页</button>
+            <div class="tool-title">格栅临界点决策系统</div>
+            <button class="btn-back" onclick="showLanding()">← 首页</button>
         </div>
 
-        <!-- 输入表单 -->
         <div class="input-form" id="inputForm">
             <div class="form-group">
-                <label>对象类型</label>
-                <select id="objType">
-                    <option value="">请选择</option>
+                <label class="form-label">对象类型</label>
+                <select class="form-select" id="objType">
+                    <option value="">选择类型</option>
                     <option value="人">人</option>
                     <option value="公司">公司</option>
                     <option value="行业">行业</option>
@@ -749,139 +665,146 @@
             </div>
 
             <div class="form-group">
-                <label>问题描述</label>
-                <textarea id="description" placeholder="描述你想要判断的情况..."></textarea>
+                <label class="form-label">问题描述</label>
+                <textarea class="form-textarea" id="description" placeholder="描述你想判断的情况..."></textarea>
             </div>
 
             <div class="form-group">
-                <label>时间维度</label>
-                <div class="radio-group" id="timeDimension">
-                    <div class="radio-option" onclick="selectRadio('timeDimension', '短期')">短期</div>
-                    <div class="radio-option" onclick="selectRadio('timeDimension', '中期')">中期</div>
-                    <div class="radio-option" onclick="selectRadio('timeDimension', '长期')">长期</div>
+                <label class="form-label">时间维度</label>
+                <div class="radio-row" id="timeDimension">
+                    <div class="radio-btn" onclick="selectRadio('timeDimension', '短期', this)">短期</div>
+                    <div class="radio-btn" onclick="selectRadio('timeDimension', '中期', this)">中期</div>
+                    <div class="radio-btn" onclick="selectRadio('timeDimension', '长期', this)">长期</div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>你的位置</label>
-                <div class="radio-group" id="userPosition">
-                    <div class="radio-option" onclick="selectRadio('userPosition', '参与者')">参与者</div>
-                    <div class="radio-option" onclick="selectRadio('userPosition', '旁观者')">旁观者</div>
-                    <div class="radio-option" onclick="selectRadio('userPosition', '决策者')">决策者</div>
+                <label class="form-label">你的位置</label>
+                <div class="radio-row" id="userPosition">
+                    <div class="radio-btn" onclick="selectRadio('userPosition', '参与者', this)">参与者</div>
+                    <div class="radio-btn" onclick="selectRadio('userPosition', '旁观者', this)">旁观者</div>
+                    <div class="radio-btn" onclick="selectRadio('userPosition', '决策者', this)">决策者</div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>风险承受能力</label>
-                <div class="radio-group" id="riskTolerance">
-                    <div class="radio-option" onclick="selectRadio('riskTolerance', '低')">低</div>
-                    <div class="radio-option" onclick="selectRadio('riskTolerance', '中')">中</div>
-                    <div class="radio-option" onclick="selectRadio('riskTolerance', '高')">高</div>
+                <label class="form-label">风险承受</label>
+                <div class="radio-row" id="riskTolerance">
+                    <div class="radio-btn" onclick="selectRadio('riskTolerance', '低', this)">低</div>
+                    <div class="radio-btn" onclick="selectRadio('riskTolerance', '中', this)">中</div>
+                    <div class="radio-btn" onclick="selectRadio('riskTolerance', '高', this)">高</div>
                 </div>
             </div>
 
-            <button class="btn-analyze" onclick="startAnalysis()">开始分析</button>
+            <button class="btn-submit" onclick="startAnalysis()">开始分析</button>
         </div>
 
-        <!-- 加载动画 -->
         <div class="loading-section" id="loadingSection">
-            <div class="loading-text" id="loadingText">正在分析临界点<span class="loading-dots"></span></div>
-            <div class="loading-sub" id="loadingSub">识别系统依赖结构</div>
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">正在分析中...</div>
         </div>
 
-        <!-- 结果展示 -->
         <div class="result-section" id="resultSection">
-            <div class="result-summary">
-                <div class="result-risk">危险等级</div>
+            <div class="result-header">
+                <div class="result-risk-badge" id="riskBadge">危险等级</div>
                 <div class="result-level" id="resultLevel">高危</div>
                 <div class="result-advice">建议：<span id="resultAdvice">降低绑定</span></div>
             </div>
 
-            <div class="analysis-cards">
+            <div class="analysis-grid">
                 <div class="analysis-card">
-                    <h3>🔴 物理层</h3>
-                    <div class="analysis-item">
-                        <span class="label">依赖持续加力</span>
-                        <span class="value" id="physics1">是</span>
+                    <div class="analysis-card-title">
+                        <span style="width:8px;height:8px;background:#ff3b30;border-radius:50%;display:inline-block;"></span>
+                        物理层
                     </div>
                     <div class="analysis-item">
-                        <span class="label">支点稳定性</span>
-                        <span class="value" id="physics2">低</span>
+                        <span class="analysis-label">依赖持续加力</span>
+                        <span class="analysis-value" id="physics1">是</span>
                     </div>
                     <div class="analysis-item">
-                        <span class="label">临界状态</span>
-                        <span class="value value-status" id="physics3">临界区</span>
+                        <span class="analysis-label">支点稳定性</span>
+                        <span class="analysis-value" id="physics2">低</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">临界状态</span>
+                        <span class="analysis-value value-warn" id="physics3">临界区</span>
                     </div>
                 </div>
 
                 <div class="analysis-card">
-                    <h3>🟡 生物层</h3>
-                    <div class="analysis-item">
-                        <span class="label">进化状态</span>
-                        <span class="value" id="bio1">停滞</span>
+                    <div class="analysis-card-title">
+                        <span style="width:8px;height:8px;background:#ff9500;border-radius:50%;display:inline-block;"></span>
+                        生物层
                     </div>
                     <div class="analysis-item">
-                        <span class="label">竞争类型</span>
-                        <span class="value" id="bio2">消耗型</span>
+                        <span class="analysis-label">进化状态</span>
+                        <span class="analysis-value" id="bio1">停滞</span>
                     </div>
                     <div class="analysis-item">
-                        <span class="label">是否被吞噬</span>
-                        <span class="value" id="bio3">是</span>
+                        <span class="analysis-label">竞争类型</span>
+                        <span class="analysis-value" id="bio2">消耗型</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">是否被吞噬</span>
+                        <span class="analysis-value" id="bio3">是</span>
                     </div>
                 </div>
 
                 <div class="analysis-card">
-                    <h3>🔵 心理层</h3>
-                    <div class="analysis-item">
-                        <span class="label">激励是否扭曲</span>
-                        <span class="value" id="psy1">是</span>
+                    <div class="analysis-card-title">
+                        <span style="width:8px;height:8px;background:#007aff;border-radius:50%;display:inline-block;"></span>
+                        心理层
                     </div>
                     <div class="analysis-item">
-                        <span class="label">是否允许纠错</span>
-                        <span class="value" id="psy2">否</span>
+                        <span class="analysis-label">激励扭曲</span>
+                        <span class="analysis-value" id="psy1">是</span>
                     </div>
                     <div class="analysis-item">
-                        <span class="label">心理风险等级</span>
-                        <span class="value value-status" id="psy3">极高</span>
+                        <span class="analysis-label">允许纠错</span>
+                        <span class="analysis-value" id="psy2">否</span>
+                    </div>
+                    <div class="analysis-item">
+                        <span class="analysis-label">心理风险</span>
+                        <span class="analysis-value value-warn" id="psy3">极高</span>
                     </div>
                 </div>
             </div>
 
-            <div class="exit-section">
-                <h3>☠️ 退出判断</h3>
+            <div class="exit-card">
+                <div class="exit-title">.Exit 判断</div>
                 <div class="exit-grid">
                     <div class="exit-item">
-                        <span class="label">退出路径：</span>
-                        <span class="value" id="exit1">不存在</span>
+                        <span class="exit-label">退出路径：</span>
+                        <span class="exit-value" id="exit1">不存在</span>
                     </div>
                     <div class="exit-item">
-                        <span class="label">退出成本：</span>
-                        <span class="value" id="exit2">极高</span>
+                        <span class="exit-label">退出成本：</span>
+                        <span class="exit-value" id="exit2">极高</span>
                     </div>
                     <div class="exit-item">
-                        <span class="label">是否已无法回头：</span>
-                        <span class="value" id="exit3">是</span>
+                        <span class="exit-label">无法回头：</span>
+                        <span class="exit-value" id="exit3">是</span>
                     </div>
                     <div class="exit-item">
-                        <span class="label">是否建议绑定：</span>
-                        <span class="value" id="exit4">否</span>
+                        <span class="exit-label">建议绑定：</span>
+                        <span class="exit-value" id="exit4">否</span>
                     </div>
                 </div>
             </div>
 
-            <div class="conclusion-section">
-                <p id="conclusionText">你正在为一个"无法回头的系统"承担风险，建议尽快降低绑定程度。</p>
+            <div class="conclusion-card">
+                <div class="conclusion-text" id="conclusionText">你正在为一个无法回头的系统承担风险</div>
             </div>
 
-            <div class="action-buttons">
-                <button class="btn-secondary" onclick="resetForm()">重新分析</button>
-                <button class="btn-secondary btn-copy" onclick="copyResult()">📋 一键复制结果</button>
+            <div class="action-row">
+                <button class="btn-action" onclick="resetForm()">重新分析</button>
+                <button class="btn-action primary" onclick="copyResult()">复制结果</button>
             </div>
 
             <div class="history-section">
                 <div class="history-header">
-                    <h3>历史记录</h3>
-                    <button class="btn-clear" onclick="clearHistory()">清空全部</button>
+                    <div class="history-title">历史记录</div>
+                    <button class="btn-clear" onclick="clearHistory()">清空</button>
                 </div>
                 <div class="history-list" id="historyList"></div>
             </div>
@@ -891,22 +814,14 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // 表单数据
-        let formData = {
-            timeDimension: '',
-            userPosition: '',
-            riskTolerance: ''
-        };
+        const formData = { timeDimension: '', userPosition: '', riskTolerance: '' };
 
-        // 单选按钮选择
-        function selectRadio(group, value) {
-            const options = document.querySelectorAll(`#${group} .radio-option`);
-            options.forEach(opt => opt.classList.remove('selected'));
-            event.target.classList.add('selected');
+        function selectRadio(group, value, el) {
+            document.querySelectorAll(`#${group} .radio-btn`).forEach(btn => btn.classList.remove('selected'));
+            el.classList.add('selected');
             formData[group] = value;
         }
 
-        // 页面切换
         function showTool() {
             document.getElementById('landingPage').style.display = 'none';
             document.getElementById('toolPage').style.display = 'block';
@@ -917,187 +832,131 @@
             document.getElementById('toolPage').style.display = 'none';
         }
 
-        // 开始分析
         function startAnalysis() {
             const objType = document.getElementById('objType').value;
-            const description = document.getElementById('description').value;
+            const desc = document.getElementById('description').value;
 
-            if (!objType || !description) {
-                showToast('请填写对象类型和问题描述');
+            if (!objType || !desc) {
+                showToast('请填写完整信息');
                 return;
             }
 
-            // 显示加载
             document.getElementById('inputForm').style.display = 'none';
             document.getElementById('loadingSection').style.display = 'block';
 
-            // 模拟分析过程
-            const loadingSteps = [
-                { text: '正在分析临界点', sub: '识别系统依赖结构' },
-                { text: '正在分析进化状态', sub: '判断生态位与竞争关系' },
-                { text: '正在分析心理结构', sub: '检测是否存在纠错机制' }
-            ];
-
-            let step = 0;
+            const steps = ['正在分析物理层...', '正在分析生物层...', '正在分析心理层...', '正在生成结论...'];
+            let i = 0;
             const interval = setInterval(() => {
-                if (step < loadingSteps.length) {
-                    document.getElementById('loadingText').innerHTML = 
-                        loadingSteps[step].text + '<span class="loading-dots"></span>';
-                    document.getElementById('loadingSub').textContent = loadingSteps[step].sub;
-                    step++;
-                } else {
+                document.getElementById('loadingText').textContent = steps[i];
+                i++;
+                if (i >= steps.length) {
                     clearInterval(interval);
-                    setTimeout(() => showResult(), 500);
+                    setTimeout(showResult, 400);
                 }
-            }, 800);
+            }, 600);
         }
 
-        // 根据输入生成结果（Mock逻辑）
-        function generateMockResult(input) {
-            // 危险等级映射
-            const riskLevels = ['安全', '警惕', '高危', '极危'];
-            const riskClasses = ['safe', 'warning', 'danger', 'critical'];
-            const advices = ['可进入', '观望', '降低绑定', '立即退出'];
+        function generateResult(input) {
+            const levels = ['安全', '警惕', '高危', '极危'];
+            const classes = ['risk-safe', 'risk-warning', 'risk-danger', 'risk-critical'];
+            const advices = ['可进入', '保持观望', '降低绑定', '立即退出'];
 
-            // 基于输入的简单逻辑（实际应该更复杂）
-            let riskIndex = 1; // 默认警惕
-
-            if (input.description.includes('无法') || input.description.includes('不能')) {
-                riskIndex = 2;
-            }
-            if (input.description.includes('亏损') || input.description.includes('失败')) {
-                riskIndex = 3;
-            }
-            if (input.riskTolerance === '低') {
-                riskIndex = Math.min(riskIndex + 1, 3);
-            }
-
-            // 物理层
-            const physics = {
-                needForce: Math.random() > 0.5 ? '是' : '否',
-                stability: ['高', '中', '低'][Math.floor(Math.random() * 3)],
-                status: ['安全', '压力积累', '临界区', '已越界'][riskIndex]
-            };
-
-            // 生物层
-            const bio = {
-                evolution: ['进化', '停滞', '退化', '苟活'][Math.floor(Math.random() * 4)],
-                competition: ['结构型', '消耗型'][Math.floor(Math.random() * 2)],
-                swallowed: riskIndex >= 2 ? '是' : '否'
-            };
-
-            // 心理层
-            const psy = {
-                incentiveTwisted: riskIndex >= 2 ? '是' : '否',
-                canCorrect: riskIndex <= 1 ? '是' : '否',
-                psyRisk: ['低', '中', '高', '极高'][riskIndex]
-            };
-
-            // 退出判断
-            const exit = {
-                hasPath: riskIndex <= 1 ? '是' : '否',
-                cost: ['低', '中', '高', '极高'][riskIndex],
-                noReturn: riskIndex >= 2 ? '是' : '否',
-                suggestBind: riskIndex <= 1 ? '是' : '否'
-            };
-
-            // 一句话结论
-            const conclusions = [
-                '目前风险可控，可持续观察。',
-                '存在潜在风险，建议保持距离或预留退路。',
-                '你正在为一个"无法回头的系统"承担风险，建议尽快降低绑定程度。',
-                '极度危险！建议立即退出，止损为上。'
-            ];
+            let idx = 1;
+            if (input.desc.includes('无法') || input.desc.includes('不能')) idx = 2;
+            if (input.desc.includes('亏损') || input.desc.includes('失败')) idx = 3;
+            if (input.riskTolerance === '低') idx = Math.min(idx + 1, 3);
 
             return {
-                riskLevel: riskLevels[riskIndex],
-                riskClass: riskClasses[riskIndex],
-                advice: advices[riskIndex],
-                physics,
-                bio,
-                psy,
-                exit,
-                conclusion: conclusions[riskIndex]
+                level: levels[idx],
+                levelClass: classes[idx],
+                advice: advices[idx],
+                physics: {
+                    force: idx >= 2 ? '是' : '否',
+                    stability: ['高', '中', '低'][Math.min(idx, 2)],
+                    status: ['安全', '压力积累', '临界区', '已越界'][idx]
+                },
+                bio: {
+                    evolution: ['进化', '停滞', '退化', '苟活'][idx],
+                    competition: idx >= 2 ? '消耗型' : '结构型',
+                    swallowed: idx >= 2 ? '是' : '否'
+                },
+                psy: {
+                    twisted: idx >= 2 ? '是' : '否',
+                    correct: idx <= 1 ? '是' : '否',
+                    risk: ['低', '中', '高', '极高'][idx]
+                },
+                exit: {
+                    path: idx <= 1 ? '存在' : '不存在',
+                    cost: ['低', '中', '高', '极高'][idx],
+                    noReturn: idx >= 2 ? '是' : '否',
+                    bind: idx <= 1 ? '可考虑' : '否'
+                },
+                conclusion: [
+                    '目前风险可控，可以继续观察',
+                    '存在潜在风险，建议预留退路',
+                    '你正在为一个无法回头的系统承担风险',
+                    '极度危险，建议立即止损退出'
+                ][idx]
             };
         }
 
-        // 显示结果
         function showResult() {
             const input = {
                 objType: document.getElementById('objType').value,
-                description: document.getElementById('description').value,
-                timeDimension: formData.timeDimension,
-                userPosition: formData.userPosition,
+                desc: document.getElementById('description').value,
                 riskTolerance: formData.riskTolerance
             };
 
-            const result = generateMockResult(input);
+            const r = generateResult(input);
 
-            // 更新UI
-            const levelEl = document.getElementById('resultLevel');
-            levelEl.textContent = result.riskLevel;
-            levelEl.className = 'result-level ' + result.riskClass;
+            document.getElementById('riskBadge').className = 'result-risk-badge ' + r.levelClass;
+            document.getElementById('riskBadge').textContent = r.level === '极危' ? '极度危险' : r.level;
+            document.getElementById('resultLevel').textContent = r.level;
+            document.getElementById('resultAdvice').textContent = r.advice;
 
-            document.getElementById('resultAdvice').textContent = result.advice;
+            document.getElementById('physics1').textContent = r.physics.force;
+            document.getElementById('physics1').className = 'analysis-value ' + (r.physics.force === '是' ? 'value-true' : 'value-false');
+            document.getElementById('physics2').textContent = r.physics.stability;
+            document.getElementById('physics3').textContent = r.physics.status;
 
-            // 物理层
-            document.getElementById('physics1').textContent = result.physics.needForce;
-            document.getElementById('physics1').className = 'value ' + (result.physics.needForce === '是' ? 'value-yes' : 'value-no');
-            document.getElementById('physics2').textContent = result.physics.stability;
-            document.getElementById('physics3').textContent = result.physics.status;
+            document.getElementById('bio1').textContent = r.bio.evolution;
+            document.getElementById('bio2').textContent = r.bio.competition;
+            document.getElementById('bio3').textContent = r.bio.swallowed;
+            document.getElementById('bio3').className = 'analysis-value ' + (r.bio.swallowed === '是' ? 'value-true' : 'value-false');
 
-            // 生物层
-            document.getElementById('bio1').textContent = result.bio.evolution;
-            document.getElementById('bio2').textContent = result.bio.competition;
-            document.getElementById('bio3').textContent = result.bio.swallowed;
-            document.getElementById('bio3').className = 'value ' + (result.bio.swallowed === '是' ? 'value-yes' : 'value-no');
+            document.getElementById('psy1').textContent = r.psy.twisted;
+            document.getElementById('psy1').className = 'analysis-value ' + (r.psy.twisted === '是' ? 'value-true' : 'value-false');
+            document.getElementById('psy2').textContent = r.psy.correct;
+            document.getElementById('psy2').className = 'analysis-value ' + (r.psy.correct === '否' ? 'value-true' : 'value-false');
+            document.getElementById('psy3').textContent = r.psy.risk;
 
-            // 心理层
-            document.getElementById('psy1').textContent = result.psy.incentiveTwisted;
-            document.getElementById('psy1').className = 'value ' + (result.psy.incentiveTwisted === '是' ? 'value-yes' : 'value-no');
-            document.getElementById('psy2').textContent = result.psy.canCorrect;
-            document.getElementById('psy2').className = 'value ' + (result.psy.canCorrect === '否' ? 'value-yes' : 'value-no');
-            document.getElementById('psy3').textContent = result.psy.psyRisk;
+            document.getElementById('exit1').textContent = r.exit.path;
+            document.getElementById('exit2').textContent = r.exit.cost;
+            document.getElementById('exit3').textContent = r.exit.noReturn;
+            document.getElementById('exit4').textContent = r.exit.bind;
 
-            // 退出判断
-            document.getElementById('exit1').textContent = result.exit.hasPath;
-            document.getElementById('exit2').textContent = result.exit.cost;
-            document.getElementById('exit3').textContent = result.exit.noReturn;
-            document.getElementById('exit4').textContent = result.exit.suggestBind;
+            document.getElementById('conclusionText').textContent = r.conclusion;
 
-            // 结论
-            document.getElementById('conclusionText').textContent = result.conclusion;
+            saveHistory(input, r);
 
-            // 保存历史
-            saveHistory(input, result);
-
-            // 显示结果区
             document.getElementById('loadingSection').style.display = 'none';
             document.getElementById('resultSection').style.display = 'block';
         }
 
-        // 重置表单
         function resetForm() {
             document.getElementById('objType').value = '';
             document.getElementById('description').value = '';
-            
-            document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
-            formData = { timeDimension: '', userPosition: '', riskTolerance: '' };
-
+            document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+            Object.keys(formData).forEach(k => formData[k] = '');
             document.getElementById('resultSection').style.display = 'none';
             document.getElementById('inputForm').style.display = 'block';
         }
 
-        // 复制结果
         function copyResult() {
-            const level = document.getElementById('resultLevel').textContent;
-            const advice = document.getElementById('resultAdvice').textContent;
-            const conclusion = document.getElementById('conclusionText').textContent;
+            const text = `【格栅临界点决策系统】
 
-            const text = `【临界点决策系统分析结果】
-
-危险等级：${level}
-建议：${advice}
+危险等级：${document.getElementById('resultLevel').textContent}
+建议：${document.getElementById('resultAdvice').textContent}
 
 物理层：
 - 依赖持续加力：${document.getElementById('physics1').textContent}
@@ -1110,87 +969,78 @@
 - 是否被吞噬：${document.getElementById('bio3').textContent}
 
 心理层：
-- 激励是否扭曲：${document.getElementById('psy1').textContent}
-- 是否允许纠错：${document.getElementById('psy2').textContent}
-- 心理风险等级：${document.getElementById('psy3').textContent}
+- 激励扭曲：${document.getElementById('psy1').textContent}
+- 允许纠错：${document.getElementById('psy2').textContent}
+- 心理风险：${document.getElementById('psy3').textContent}
 
 退出判断：
 - 退出路径：${document.getElementById('exit1').textContent}
 - 退出成本：${document.getElementById('exit2').textContent}
-- 是否已无法回头：${document.getElementById('exit3').textContent}
-- 是否建议绑定：${document.getElementById('exit4').textContent}
+- 无法回头：${document.getElementById('exit3').textContent}
+- 建议绑定：${document.getElementById('exit4').textContent}
 
-一句话结论：
-${conclusion}`;
+一句话结论：${document.getElementById('conclusionText').textContent}`;
 
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('已复制到剪贴板');
-            });
+            navigator.clipboard.writeText(text).then(() => showToast('已复制'));
         }
 
-        // 历史记录
         function saveHistory(input, result) {
-            let history = JSON.parse(localStorage.getItem('criticalPointHistory') || '[]');
-            history.unshift({
+            let h = JSON.parse(localStorage.getItem('cpHistory') || '[]');
+            h.unshift({
                 id: Date.now(),
                 date: new Date().toLocaleString('zh-CN'),
-                objType: input.objType,
-                description: input.description.substring(0, 30) + (input.description.length > 30 ? '...' : ''),
+                type: input.objType,
+                desc: input.desc.substring(0, 40) + (input.desc.length > 40 ? '...' : ''),
                 result
             });
-            history = history.slice(0, 10); // 只保留10条
-            localStorage.setItem('criticalPointHistory', JSON.stringify(history));
+            h = h.slice(0, 10);
+            localStorage.setItem('cpHistory', JSON.stringify(h));
             renderHistory();
         }
 
         function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('criticalPointHistory') || '[]');
+            const h = JSON.parse(localStorage.getItem('cpHistory') || '[]');
             const list = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                list.innerHTML = '<div style="color: #999; font-size: 14px; text-align: center; padding: 20px;">暂无历史记录</div>';
+            if (!h.length) {
+                list.innerHTML = '<div style="color:#999;font-size:13px;text-align:center;padding:16px;">暂无记录</div>';
                 return;
             }
-
-            list.innerHTML = history.map(h => `
-                <div class="history-item" onclick="loadHistory(${h.id})">
-                    <div class="history-item-title">${h.objType}：${h.description}</div>
-                    <div class="history-item-meta">${h.date} · ${h.result.riskLevel}</div>
+            list.innerHTML = h.map(item => `
+                <div class="history-item" onclick="loadHistory(${item.id})">
+                    <div class="history-item-title">${item.type}：${item.desc}</div>
+                    <div class="history-item-meta">${item.date} · ${item.result.level}</div>
                 </div>
             `).join('');
         }
 
         function loadHistory(id) {
-            const history = JSON.parse(localStorage.getItem('criticalPointHistory') || '[]');
-            const item = history.find(h => h.id === id);
+            const h = JSON.parse(localStorage.getItem('cpHistory') || '[]');
+            const item = h.find(i => i.id === id);
             if (item) {
-                // 恢复结果展示
-                const result = item.result;
-                const levelEl = document.getElementById('resultLevel');
-                levelEl.textContent = result.riskLevel;
-                levelEl.className = 'result-level ' + result.riskClass;
-                document.getElementById('resultAdvice').textContent = result.advice;
-                // ... 其他字段恢复
+                const r = item.result;
+                document.getElementById('riskBadge').className = 'result-risk-badge ' + r.levelClass;
+                document.getElementById('riskBadge').textContent = r.level === '极危' ? '极度危险' : r.level;
+                document.getElementById('resultLevel').textContent = r.level;
+                document.getElementById('resultAdvice').textContent = r.advice;
+                document.getElementById('conclusionText').textContent = r.conclusion;
                 showToast('已加载历史记录');
             }
         }
 
         function clearHistory() {
             if (!confirm('确定清空全部历史记录？')) return;
-            localStorage.removeItem('criticalPointHistory');
+            localStorage.removeItem('cpHistory');
             renderHistory();
             showToast('已清空');
         }
 
-        // Toast提示
         function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        // 初始化
         renderHistory();
     </script>
 </body>
