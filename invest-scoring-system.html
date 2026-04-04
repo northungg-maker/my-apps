@@ -1742,6 +1742,14 @@
             showToast('已删除');
         }
 
+        // 清空全部保存记录
+        function clearSaveHistory() {
+            if (!confirm('确定清空全部保存记录？此操作不可恢复。')) return;
+            localStorage.removeItem('investSaves');
+            renderSaveHistory();
+            showToast('已清空全部记录');
+        }
+
         // 加载保存的记录
         function loadSave(id) {
             const saves = JSON.parse(localStorage.getItem('investSaves') || '[]');
