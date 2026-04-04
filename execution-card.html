@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>执行卡</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --bg: #f8f7f4;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-light: #888;
+      --accent: #e07a5f;
+      --success: #81b29a;
+      --shadow: 0 2px 20px rgba(0,0,0,0.04);
+      --shadow-hover: 0 4px 30px rgba(0,0,0,0.08);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .page {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 首页样式 */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo {
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    .date {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    
+    .task-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    
+    .task-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    
+    .task-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .task-desc {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+    
+    .task-meta {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+    
+    .meta-item svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.6;
+    }
+    
+    /* 步骤列表 */
+    .steps-section {
+      margin-bottom: 32px;
+    }
+    
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    
+    .step-list {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    .step-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f5f5f5;
+      transition: background 0.2s;
+    }
+    
+    .step-item:last-child {
+      border-bottom: none;
+    }
+    
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: #f5f5f5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+    
+    .step-text {
+      font-size: 14px;
+      flex: 1;
+    }
+    
+    /* 按钮 */
+    .btn-main {
+      width: 100%;
+      padding: 18px;
+      background: var(--text);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    
+    .btn-main:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .btn-main:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--text);
+    }
+    
+    /* 统计条 */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+    
+    /* 执行页样式 */
+    .execute-container {
+      height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 0;
+    }
+    
+    .timer-container {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    
+    .timer {
+      font-size: 64px;
+      font-weight: 300;
+      letter-spacing: -2px;
+      color: var(--text);
+    }
+    
+    .timer-label {
+      font-size: 12px;
+      color: var(--text-light);
+      letter-spacing: 2px;
+      margin-top: 8px;
+    }
+    
+    .current-step {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+    }
+    
+    .current-step-num {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    
+    .current-step-text {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .step-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .step-nav button {
+      flex: 1;
+      padding: 14px;
+      border: 1.5px solid #e0e0e0;
+      background: white;
+      border-radius: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .step-nav button:hover {
+      border-color: var(--text);
+    }
+    
+    .step-nav button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    .step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      transition: all 0.3s;
+    }
+    
+    .step-dot.active {
+      background: var(--text);
+      transform: scale(1.2);
+    }
+    
+    .step-dot.completed {
+      background: var(--success);
+    }
+    
+    /* 完成页样式 */
+    .result-container {
+      height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .result-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+    
+    .result-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .result-subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 40px;
+    }
+    
+    .result-stats {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    
+    .result-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .result-stat-value {
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .result-stat-label {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    
+    .personality-tag {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--card);
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+    }
+    
+    .mood-text {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 16px;
+      font-style: italic;
+    }
+    
+    /* 任务编辑页 */
+    .edit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .edit-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 16px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      background: white;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--text);
+    }
+    
+    .form-textarea {
+      resize: none;
+      height: 100px;
+    }
+    
+    .step-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .step-input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .step-input-num {
+      width: 28px;
+      height: 28px;
+      background: #f5f5f5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    
+    .step-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    
+    .step-input:focus {
+      outline: none;
+      border-color: var(--text);
+    }
+    
+    /* 提示模态框 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 320px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .modal-text {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+    
+    .modal-btns {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .modal-btns button {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .modal-confirm {
+      background: var(--text);
+      color: white;
+      border: none;
+    }
+    
+    .modal-cancel {
+      background: white;
+      border: 1.5px solid #e0e0e0;
+    }
+    
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 首页 -->
+  <div id="homePage" class="page active">
+    <div class="header">
+      <div class="logo">Execution Card</div>
+      <div class="date" id="currentDate"></div>
+    </div>
+    
+    <div id="taskContainer">
+      <!-- 任务内容动态加载 -->
+    </div>
+    
+    <div class="stats-bar" id="statsBar">
+      <!-- 统计数据动态加载 -->
+    </div>
+  </div>
+  
+  <!-- 执行页 -->
+  <div id="executePage" class="page">
+    <div class="execute-container">
+      <div class="timer-container">
+        <div class="timer" id="timerDisplay">00:00</div>
+        <div class="timer-label">已执行</div>
+      </div>
+      
+      <div class="current-step">
+        <div class="current-step-num" id="stepIndicator">步骤 1/3</div>
+        <div class="current-step-text" id="currentStepText">加载中...</div>
+      </div>
+      
+      <div class="step-dots" id="stepDots">
+        <!-- 步骤点动态生成 -->
+      </div>
+      
+      <div class="step-nav">
+        <button id="prevStepBtn" disabled>上一步</button>
+        <button id="nextStepBtn">下一步</button>
+      </div>
+      
+      <button class="btn-main" id="completeBtn" style="display:none;">完成任务</button>
+    </div>
+  </div>
+  
+  <!-- 结果页 -->
+  <div id="resultPage" class="page">
+    <div class="result-container">
+      <div class="result-icon">✨</div>
+      <div class="result-title">做得好</div>
+      <div class="result-subtitle" id="completeTime">用时 12 分钟</div>
+      
+      <div class="personality-tag" id="personalityTag">执行力强</div>
+      
+      <div class="result-stats">
+        <div class="result-stats-grid">
+          <div class="result-stat-item">
+            <div class="result-stat-value" id="streakValue">0</div>
+            <div class="result-stat-label">连续天数</div>
+          </div>
+          <div class="result-stat-item">
+            <div class="result-stat-value" id="totalValue">0</div>
+            <div class="result-stat-label">总完成</div>
+          </div>
+          <div class="result-stat-item">
+            <div class="result-stat-value" id="rateValue">0%</div>
+            <div class="result-stat-label">成功率</div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn-main" id="backHomeBtn">返回首页</button>
+    </div>
+  </div>
+  
+  <!-- 编辑页 -->
+  <div id="editPage" class="page">
+    <div class="edit-header">
+      <button class="back-btn" onclick="showPage('home')">←</button>
+      <div class="edit-title" id="editTitle">新建任务</div>
+      <button class="back-btn" style="visibility:hidden;">→</button>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">任务标题</label>
+      <input type="text" class="form-input" id="inputTitle" placeholder="今天要完成的一件事">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">任务描述</label>
+      <textarea class="form-input form-textarea" id="inputDesc" placeholder="为什么这件事重要"></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">预计时长（分钟）</label>
+      <input type="number" class="form-input" id="inputDuration" value="15" min="1" max="120">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">执行步骤（动作级）</label>
+      <div class="step-inputs" id="stepInputs">
+        <div class="step-input-row">
+          <div class="step-input-num">1</div>
+          <input type="text" class="step-input" placeholder="第一步动作">
+        </div>
+        <div class="step-input-row">
+          <div class="step-input-num">2</div>
+          <input type="text" class="step-input" placeholder="第二步动作">
+        </div>
+        <div class="step-input-row">
+          <div class="step-input-num">3</div>
+          <input type="text" class="step-input" placeholder="第三步动作">
+        </div>
+        <div class="step-input-row">
+          <div class="step-input-num">4</div>
+          <input type="text" class="step-input" placeholder="第四步动作（可选）">
+        </div>
+        <div class="step-input-row">
+          <div class="step-input-num">5</div>
+          <input type="text" class="step-input" placeholder="第五步动作（可选）">
+        </div>
+      </div>
+    </div>
+    
+    <button class="btn-main" id="saveTaskBtn">保存任务</button>
+  </div>
+  
+  <!-- 提示模态框 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">确认吗？</div>
+      <div class="modal-text" id="modalText">这个操作无法撤销</div>
+      <div class="modal-btns">
+        <button class="modal-cancel" id="modalCancelBtn">取消</button>
+        <button class="modal-confirm" id="modalConfirmBtn">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 数据管理 ==========
+    const STORAGE_KEY = 'execution_card_data';
+    const TASK_KEY = 'execution_card_task';
+    
+    // 默认数据
+    const defaultData = {
+      streak: 0,
+      totalTasks: 0,
+      completedTasks: 0,
+      lastCompletedDate: null,
+      personalityTag: '新手上路'
+    };
+    
+    // 示例任务
+    const defaultTask = {
+      title: '英语跟读练习',
+      description: '每天10分钟，保持语感',
+      duration: 10,
+      steps: [
+        '打开英语学习APP',
+        '选择今日跟读内容',
+        '跟读并录音',
+        '对比发音差异',
+        '完成提交'
+      ]
+    };
+    
+    // 获取数据
+    function getData() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : { ...defaultData };
+    }
+    
+    // 保存数据
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    
+    // 获取任务
+    function getTask() {
+      const stored = localStorage.getItem(TASK_KEY);
+      return stored ? JSON.parse(stored) : null;
+    }
+    
+    // 保存任务
+    function saveTask(task) {
+      localStorage.setItem(TASK_KEY, JSON.stringify(task));
+    }
+    
+    // ========== 工具函数 ==========
+    function getTodayString() {
+      return new Date().toISOString().split('T')[0];
+    }
+    
+    function formatDate() {
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const day = days[now.getDay()];
+      return `${month}月${date}日 星期${day}`;
+    }
+    
+    function calculatePersonality(rate) {
+      if (rate >= 80) return '执行力强';
+      if (rate >= 50) return '还需努力';
+      return '容易拖延';
+    }
+    
+    // ========== 页面控制 ==========
+    let currentPage = 'home';
+    
+    function showPage(page, data = null) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(page + 'Page').classList.add('active');
+      currentPage = page;
+      
+      if (page === 'home') renderHome();
+      if (page === 'result') renderResult(data);
+    }
+    
+    // ========== 首页渲染 ==========
+    function renderHome() {
+      const task = getTask();
+      const data = getData();
+      
+      // 日期
+      document.getElementById('currentDate').textContent = formatDate();
+      
+      // 检查今天是否完成
+      const today = getTodayString();
+      const completedToday = data.lastCompletedDate === today;
+      
+      // 任务容器
+      const container = document.getElementById('taskContainer');
+      
+      if (completedToday) {
+        // 今天已完成
+        container.innerHTML = `
+          <div class="task-card">
+            <div class="task-label">今日已完成</div>
+            <div class="task-title" style="color: var(--success);">${task ? task.title : '任务完成'}</div>
+            <div class="task-desc" style="margin-top: 8px;">明天继续记录</div>
+          </div>
+        `;
+      } else if (task) {
+        // 显示任务
+        let stepsHtml = task.steps.filter(s => s).map((step, i) => `
+          <div class="step-item">
+            <div class="step-num">${i + 1}</div>
+            <div class="step-text">${step}</div>
+          </div>
+        `).join('');
+        
+        container.innerHTML = `
+          <div class="task-card">
+            <div class="task-label">今日任务</div>
+            <div class="task-title">${task.title}</div>
+            <div class="task-desc">${task.description}</div>
+            <div class="task-meta">
+              <div class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+                ${task.duration} 分钟
+              </div>
+              <div class="meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                ${task.steps.filter(s => s).length} 步骤
+              </div>
+            </div>
+          </div>
+          
+          <div class="steps-section">
+            <div class="section-title">执行步骤</div>
+            <div class="step-list">${stepsHtml}</div>
+          </div>
+          
+          <button class="btn-main" onclick="startExecution()">开始执行</button>
+          <div style="text-align: center; margin-top: 16px;">
+            <button class="btn-secondary" onclick="openEditPage()">修改任务</button>
+          </div>
+        `;
+      } else {
+        // 无任务
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">还没有今日任务</div>
+            <button class="btn-main" onclick="openEditPage()">创建任务</button>
+          </div>
+        `;
+      }
+      
+      // 统计栏
+      const statsBar = document.getElementById('statsBar');
+      const rate = data.totalTasks > 0 
+        ? Math.round((data.completedTasks / data.totalTasks) * 100) 
+        : 0;
+      
+      statsBar.innerHTML = `
+        <div class="stat-item">
+          <div class="stat-value">${data.streak}</div>
+          <div class="stat-label">连续天数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${data.completedTasks}</div>
+          <div class="stat-label">总完成</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${rate}%</div>
+          <div class="stat-label">成功率</div>
+        </div>
+      `;
+    }
+    
+    // ========== 编辑页 ==========
+    function openEditPage() {
+      const task = getTask();
+      document.getElementById('editTitle').textContent = task ? '编辑任务' : '新建任务';
+      
+      if (task) {
+        document.getElementById('inputTitle').value = task.title;
+        document.getElementById('inputDesc').value = task.description;
+        document.getElementById('inputDuration').value = task.duration;
+        
+        const inputs = document.querySelectorAll('.step-input');
+        task.steps.forEach((step, i) => {
+          if (inputs[i]) inputs[i].value = step || '';
+        });
+      } else {
+        document.getElementById('inputTitle').value = '';
+        document.getElementById('inputDesc').value = '';
+        document.getElementById('inputDuration').value = 15;
+        document.querySelectorAll('.step-input').forEach(input => input.value = '');
+      }
+      
+      showPage('edit');
+    }
+    
+    // 保存任务
+    document.getElementById('saveTaskBtn').addEventListener('click', () => {
+      const title = document.getElementById('inputTitle').value.trim();
+      const description = document.getElementById('inputDesc').value.trim();
+      const duration = parseInt(document.getElementById('inputDuration').value) || 15;
+      
+      const steps = [];
+      document.querySelectorAll('.step-input').forEach(input => {
+        const val = input.value.trim();
+        if (val) steps.push(val);
+      });
+      
+      if (!title) {
+        alert('请输入任务标题');
+        return;
+      }
+      
+      if (steps.length < 2) {
+        alert('至少需要2个步骤');
+        return;
+      }
+      
+      saveTask({ title, description, duration, steps });
+      showPage('home');
+    });
+    
+    // ========== 执行页 ==========
+    let executionState = {
+      currentStep: 0,
+      startTime: null,
+      timerInterval: null,
+      steps: []
+    };
+    
+    function startExecution() {
+      const task = getTask();
+      if (!task) return;
+      
+      executionState.currentStep = 0;
+      executionState.steps = task.steps.filter(s => s);
+      executionState.startTime = Date.now();
+      
+      // 渲染步骤点
+      const dotsHtml = executionState.steps.map((_, i) => 
+        `<div class="step-dot ${i === 0 ? 'active' : ''}"></div>`
+      ).join('');
+      document.getElementById('stepDots').innerHTML = dotsHtml;
+      
+      // 显示第一步骤
+      updateStepDisplay();
+      
+      // 启动计时器
+      executionState.timerInterval = setInterval(updateTimer, 1000);
+      
+      showPage('execute');
+    }
+    
+    function updateStepDisplay() {
+      const { currentStep, steps } = executionState;
+      const total = steps.length;
+      
+      document.getElementById('stepIndicator').textContent = `步骤 ${currentStep + 1}/${total}`;
+      document.getElementById('currentStepText').textContent = steps[currentStep];
+      
+      // 更新步骤点
+      document.querySelectorAll('.step-dot').forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if (i < currentStep) dot.classList.add('completed');
+        if (i === currentStep) dot.classList.add('active');
+      });
+      
+      // 按钮状态
+      document.getElementById('prevStepBtn').disabled = currentStep === 0;
+      document.getElementById('nextStepBtn').style.display = currentStep === total - 1 ? 'none' : 'block';
+      document.getElementById('completeBtn').style.display = currentStep === total - 1 ? 'block' : 'none';
+    }
+    
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - executionState.startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      document.getElementById('timerDisplay').textContent = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    // 上一步
+    document.getElementById('prevStepBtn').addEventListener('click', () => {
+      if (executionState.currentStep > 0) {
+        executionState.currentStep--;
+        updateStepDisplay();
+      }
+    });
+    
+    // 下一步
+    document.getElementById('nextStepBtn').addEventListener('click', () => {
+      if (executionState.currentStep < executionState.steps.length - 1) {
+        executionState.currentStep++;
+        updateStepDisplay();
+      }
+    });
+    
+    // 完成任务
+    document.getElementById('completeBtn').addEventListener('click', () => {
+      clearInterval(executionState.timerInterval);
+      
+      const elapsed = Math.floor((Date.now() - executionState.startTime) / 1000);
+      completeTask(elapsed);
+    });
+    
+    function completeTask(elapsedSeconds) {
+      const data = getData();
+      const today = getTodayString();
+      
+      // 检查连续天数
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      
+      if (data.lastCompletedDate === yesterdayStr) {
+        data.streak++;
+      } else if (data.lastCompletedDate !== today) {
+        // 非连续，重置为1
+        data.streak = 1;
+      }
+      
+      data.totalTasks++;
+      data.completedTasks++;
+      data.lastCompletedDate = today;
+      
+      const rate = Math.round((data.completedTasks / data.totalTasks) * 100);
+      data.personalityTag = calculatePersonality(rate);
+      
+      saveData(data);
+      
+      // 显示结果页
+      const minutes = Math.ceil(elapsedSeconds / 60);
+      showPage('result', { minutes, ...data });
+    }
+    
+    // ========== 结果页 ==========
+    function renderResult(data) {
+      document.getElementById('completeTime').textContent = `用时 ${data.minutes} 分钟`;
+      document.getElementById('streakValue').textContent = data.streak;
+      document.getElementById('totalValue').textContent = data.completedTasks;
+      
+      const rate = Math.round((data.completedTasks / data.totalTasks) * 100);
+      document.getElementById('rateValue').textContent = rate + '%';
+      document.getElementById('personalityTag').textContent = data.personalityTag;
+      
+      // 心情文案
+      const moodTexts = [
+        '每一次执行都是在建立信任',
+        '今天的你，执行力在线',
+        '坚持比完美更重要',
+        '行动是治愈恐惧的良药'
+      ];
+      const randomMood = moodTexts[Math.floor(Math.random() * moodTexts.length)];
+      
+      if (!document.querySelector('.mood-text')) {
+        const mood = document.createElement('div');
+        mood.className = 'mood-text';
+        mood.textContent = randomMood;
+        document.querySelector('.result-stats').after(mood);
+      } else {
+        document.querySelector('.mood-text').textContent = randomMood;
+      }
+    }
+    
+    document.getElementById('backHomeBtn').addEventListener('click', () => {
+      showPage('home');
+    });
+    
+    // ========== 初始化 ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      // 检查是否需要更新streak（昨天没完成）
+      const data = getData();
+      const today = getTodayString();
+      
+      if (data.lastCompletedDate && data.lastCompletedDate !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+        
+        // 如果昨天没完成，streak清零
+        if (data.lastCompletedDate !== yesterdayStr) {
+          data.streak = 0;
+          saveData(data);
+        }
+      }
+      
+      // 如果没有任务，创建默认任务
+      if (!getTask()) {
+        saveTask(defaultTask);
+      }
+      
+      renderHome();
+    });
+  </script>
+</body>
+</html>
