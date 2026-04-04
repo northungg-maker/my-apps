@@ -646,6 +646,40 @@
             font-size: 32px;
             margin-bottom: 8px;
         }
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -879,8 +913,42 @@
         window.countdownInterval = null;
         window.roomListener = null;
         
+        // Toast 提示
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2500);
+            }
+        };
+        
+        // 成功弹窗
+        window.showSuccessModal = function(roomId) {
+            const modal = document.getElementById('success-modal');
+            const roomIdDisplay = document.getElementById('success-room-id');
+            if (modal && roomIdDisplay) {
+                roomIdDisplay.textContent = roomId;
+                modal.style.display = 'flex';
+            }
+        };
+        
+        window.closeSuccessModal = function() {
+            const modal = document.getElementById('success-modal');
+            if (modal) modal.style.display = 'none';
+        };
+        
+        window.copySuccessRoomId = function() {
+            const roomId = document.getElementById('success-room-id').textContent;
+            navigator.clipboard.writeText(roomId).then(() => {
+                window.showToast('已复制房间号：' + roomId);
+            }).catch(() => {
+                window.showToast('复制失败，请手动复制');
+            });
+        };
+        
         // 生成房间号
-        function generateRoomId() {
+window.generateRoomId = function() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let result = '';
             for (let i = 0; i < 6; i++) {
@@ -890,7 +958,7 @@
         }
         
         // Toast
-        function showToast(msg) {
+window.showToast = function(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.classList.add('show');
@@ -1019,9 +1087,12 @@
                 await set(ref(db, 'rooms/' + roomId), roomData);
                 window.currentRoomId = roomId;
                 showToast('房间创建成功！');
-                enterRoom(roomId);
+                // 显示成功弹窗
+                showSuccessModal(roomId);
+                window.enterRoom(roomId);
             } catch (error) {
                 showToast('创建失败：' + error.message);
+                console.error('创建房间失败:', error);
             }
         };
         
@@ -1087,7 +1158,7 @@
         };
         
         // 进入房间
-        function enterRoom(roomId) {
+window.enterRoom = function(roomId) {
             document.getElementById('lobby-view').style.display = 'none';
             document.getElementById('room-view').style.display = 'block';
             
@@ -1102,7 +1173,7 @@
         }
         
         // 更新房间显示
-        function updateRoomDisplay(room) {
+window.updateRoomDisplay = function(room) {
             document.getElementById('display-room-code').textContent = room.id;
             
             // 状态徽章
@@ -1249,7 +1320,7 @@
         }
         
         // 倒计时
-        function startCountdown(deadline) {
+window.startCountdown = function(deadline) {
             clearInterval(window.countdownInterval);
             
             window.countdownInterval = setInterval(() => {
@@ -1381,7 +1452,7 @@
         }
         
         // 渲染历史
-        function renderHistory() {
+window.renderHistory = function() {
             const key = 'betHistory_' + (localStorage.getItem('userId') || 'default');
             const history = JSON.parse(localStorage.getItem(key) || '[]');
             const container = document.getElementById('history-list');
