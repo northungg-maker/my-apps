@@ -873,11 +873,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        let currentRoomId = null;
-        let currentRole = null;
-        let currentMode = 'single';
-        let countdownInterval = null;
-        let roomListener = null;
+        window.currentRoomId = null;
+        window.currentRole = null;
+        window.currentMode = 'single';
+        window.countdownInterval = null;
+        window.roomListener = null;
         
         // 生成房间号
         function generateRoomId() {
@@ -911,7 +911,7 @@
         
         // 选择模式
         window.selectMode = function(mode) {
-            currentMode = mode;
+            window.currentMode = mode;
             document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
             document.querySelector('.mode-option:nth-child(' + (mode === 'single' ? '1' : '2') + ')').classList.add('selected');
             
@@ -924,7 +924,7 @@
             const roomId = generateRoomId();
             let roomData;
             
-            if (currentMode === 'single') {
+            if (window.currentMode === 'single') {
                 const goal = document.getElementById('goal').value.trim();
                 const startDate = document.getElementById('start-date').value;
                 const deadlineDate = document.getElementById('deadline-date').value;
@@ -966,7 +966,7 @@
                     result: null
                 };
                 
-                currentRole = myRole;
+                window.currentRole = myRole;
             } else {
                 // 双向对赌
                 const myGoal = document.getElementById('my-goal').value.trim();
@@ -1012,12 +1012,12 @@
                     result: null
                 };
                 
-                currentRole = 'executorA';
+                window.currentRole = 'executorA';
             }
             
             try {
                 await set(ref(db, 'rooms/' + roomId), roomData);
-                currentRoomId = roomId;
+                window.currentRoomId = roomId;
                 showToast('房间创建成功！');
                 enterRoom(roomId);
             } catch (error) {
@@ -1049,13 +1049,13 @@
                 if (room.mode === 'single') {
                     // 单向模式
                     if (!room.executor && room.supervisor) {
-                        currentRole = 'executor';
+                        window.currentRole = 'executor';
                         await update(ref(db, 'rooms/' + code), { 
                             executor: 'joiner', 
                             status: 'active' 
                         });
                     } else if (room.executor && !room.supervisor) {
-                        currentRole = 'supervisor';
+                        window.currentRole = 'supervisor';
                         await update(ref(db, 'rooms/' + code), { 
                             supervisor: 'joiner', 
                             status: 'active' 
@@ -1067,7 +1067,7 @@
                 } else {
                     // 双向模式
                     if (!room.executorB) {
-                        currentRole = 'executorB';
+                        window.currentRole = 'executorB';
                         await update(ref(db, 'rooms/' + code), { 
                             executorB: 'joiner',
                             status: 'active'
@@ -1078,7 +1078,7 @@
                     }
                 }
                 
-                currentRoomId = code;
+                window.currentRoomId = code;
                 showToast('成功加入房间！');
                 enterRoom(code);
             } catch (error) {
@@ -1091,7 +1091,7 @@
             document.getElementById('lobby-view').style.display = 'none';
             document.getElementById('room-view').style.display = 'block';
             
-            roomListener = onValue(ref(db, 'rooms/' + roomId), (snapshot) => {
+            window.roomListener = onValue(ref(db, 'rooms/' + roomId), (snapshot) => {
                 if (snapshot.exists()) {
                     updateRoomDisplay(snapshot.val());
                 } else {
@@ -1198,13 +1198,13 @@
                 document.getElementById('waiting-hint').style.display = 'none';
                 document.getElementById('result-section').style.display = 'none';
                 
-                const isExecutor = (room.mode === 'single' && currentRole === 'executor') ||
-                                   (room.mode === 'dual' && (currentRole === 'executorA' || currentRole === 'executorB'));
+                const isExecutor = (room.mode === 'single' && window.currentRole === 'executor') ||
+                                   (room.mode === 'dual' && (window.currentRole === 'executorA' || window.currentRole === 'executorB'));
                 
                 if (isExecutor) {
                     // 双向模式下检查是否已完成
                     if (room.mode === 'dual') {
-                        const myDone = currentRole === 'executorA' ? room.executorADone : room.executorBDone;
+                        const myDone = window.currentRole === 'executorA' ? room.executorADone : room.executorBDone;
                         if (myDone) {
                             document.getElementById('action-buttons').style.display = 'none';
                             document.getElementById('supervisor-hint').style.display = 'block';
@@ -1225,7 +1225,7 @@
                 startCountdown(room.deadline);
             } else {
                 // completed 或 failed
-                clearInterval(countdownInterval);
+                clearInterval(window.countdownInterval);
                 document.getElementById('room-code-section').style.display = 'none';
                 document.getElementById('waiting-hint').style.display = 'none';
                 document.getElementById('action-buttons').style.display = 'none';
@@ -1250,16 +1250,16 @@
         
         // 倒计时
         function startCountdown(deadline) {
-            clearInterval(countdownInterval);
+            clearInterval(window.countdownInterval);
             
-            countdownInterval = setInterval(() => {
+            window.countdownInterval = setInterval(() => {
                 const now = Date.now();
                 const diff = deadline - now;
                 
                 if (diff <= 0) {
-                    clearInterval(countdownInterval);
+                    clearInterval(window.countdownInterval);
                     document.getElementById('countdown').textContent = '00:00:00';
-                    if (currentRole === 'executor' || currentRole === 'executorA' || currentRole === 'executorB') {
+                    if (window.currentRole === 'executor' || window.currentRole === 'executorA' || window.currentRole === 'executorB') {
                         submitGiveUp(true);
                     }
                     return;
@@ -1284,30 +1284,30 @@
             closeModal('complete-modal');
             
             try {
-                if (currentMode === 'single' || currentRole === 'executor') {
-                    await update(ref(db, 'rooms/' + currentRoomId), {
+                if (window.currentMode === 'single' || window.currentRole === 'executor') {
+                    await update(ref(db, 'rooms/' + window.currentRoomId), {
                         status: 'completed',
                         result: 'success',
                         completedAt: Date.now()
                     });
                 } else {
                     // 双向模式
-                    const updateData = currentRole === 'executorA' 
+                    const updateData = window.currentRole === 'executorA' 
                         ? { executorADone: true }
                         : { executorBDone: true };
                     
                     // 检查是否都完成了
-                    const snapshot = await get(ref(db, 'rooms/' + currentRoomId));
+                    const snapshot = await get(ref(db, 'rooms/' + window.currentRoomId));
                     const room = snapshot.val();
-                    const bothDone = (currentRole === 'executorA' ? true : room.executorADone) &&
-                                     (currentRole === 'executorB' ? true : room.executorBDone);
+                    const bothDone = (window.currentRole === 'executorA' ? true : room.executorADone) &&
+                                     (window.currentRole === 'executorB' ? true : room.executorBDone);
                     
                     if (bothDone) {
                         updateData.status = 'completed';
                         updateData.result = 'success';
                     }
                     
-                    await update(ref(db, 'rooms/' + currentRoomId), updateData);
+                    await update(ref(db, 'rooms/' + window.currentRoomId), updateData);
                 }
             } catch (error) {
                 showToast('提交失败：' + error.message);
@@ -1323,11 +1323,11 @@
             if (!isTimeout) closeModal('giveup-modal');
             
             try {
-                await update(ref(db, 'rooms/' + currentRoomId), {
+                await update(ref(db, 'rooms/' + window.currentRoomId), {
                     status: 'failed',
                     result: 'giveup',
                     failedAt: Date.now(),
-                    failedBy: currentRole
+                    failedBy: window.currentRole
                 });
             } catch (error) {
                 showToast('提交失败：' + error.message);
@@ -1350,12 +1350,12 @@
         
         // 退出房间
         window.exitRoom = function() {
-            if (currentRoomId) {
-                off(ref(db, 'rooms/' + currentRoomId));
+            if (window.currentRoomId) {
+                off(ref(db, 'rooms/' + window.currentRoomId));
             }
-            clearInterval(countdownInterval);
-            currentRoomId = null;
-            currentRole = null;
+            clearInterval(window.countdownInterval);
+            window.currentRoomId = null;
+            window.currentRole = null;
             
             document.getElementById('room-view').style.display = 'none';
             document.getElementById('lobby-view').style.display = 'block';
@@ -1372,7 +1372,7 @@
                     goal: room.goal || (room.goalA + ' vs ' + room.goalB),
                     stake: room.stakeValue,
                     status: room.status,
-                    myRole: currentRole,
+                    myRole: window.currentRole,
                     mode: room.mode,
                     date: Date.now()
                 });
