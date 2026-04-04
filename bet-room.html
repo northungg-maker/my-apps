@@ -690,6 +690,19 @@
             cursor: pointer;
             padding: 8px;
         }
+        
+        /* Ritual Divider */
+        .ritual-divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+            margin: 16px auto;
+        }
+        
+        .ritual-text {
+            text-align: left;
+            padding: 0 8px;
+        }
     </style>
 </head>
 <body>
@@ -954,13 +967,24 @@
     <!-- Final Confirm Overlay -->
     <div id="final-confirm-overlay" class="final-confirm-overlay">
         <div class="final-confirm-box">
-            <div class="icon">🔒</div>
-            <h3>最终生效确认</h3>
-            <p>这是最后一步。契约一旦生效，将无法修改或撤销。</p>
-            <span class="warning-text">⚠️ 违约将按照规则自动执行</span>
+            <div class="icon">⚖️</div>
+            <h3>契约生效确认</h3>
+            <div class="ritual-divider"></div>
+            <div class="ritual-text">
+                <p style="font-weight: 600; margin-bottom: 12px;">本人已充分理解本契约的全部条款：</p>
+                <ul style="text-align: left; margin: 0 0 16px 0; padding-left: 20px; color: #666; font-size: 13px; line-height: 1.8;">
+                    <li>契约一经锁定，<strong>不可撤销、不可修改</strong></li>
+                    <li>未按约定履行义务，将<strong>自动执行违约处理</strong></li>
+                    <li>系统仅作为记录工具，<strong>本人对自身行为负责</strong></li>
+                </ul>
+            </div>
+            <div class="ritual-divider"></div>
+            <p style="font-size: 12px; color: #999; margin: 16px 0;">
+                签署即表示本人自愿接受本契约的全部约束
+            </p>
             <div class="final-confirm-buttons">
-                <button class="btn btn-danger" onclick="finalizeContract()">确认锁定契约</button>
-                <button class="btn btn-secondary" onclick="closeFinalConfirm()">再想想</button>
+                <button class="btn btn-primary" onclick="finalizeContract()" style="background: #1a1a1a;">确认签署并锁定</button>
+                <button class="btn btn-secondary" onclick="closeFinalConfirm()">取消</button>
             </div>
         </div>
     </div>
