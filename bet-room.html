@@ -903,6 +903,51 @@
                     <button class="btn btn-secondary" onclick="exitRoom()">退出房间</button>
                 </div>
             </div>
+            
+            <!-- Join Sign Page - 乙方/监督方签署 -->
+            <div id="page-sign-join" class="page">
+                <div style="text-align: center; padding: 16px 0;">
+                    <h3>📜 契约详情</h3>
+                    <p style="font-size: 12px; color: #888; margin-top: 4px;">房间号：<span id="join-room-code">------</span></p>
+                </div>
+                
+                <div id="join-contract-preview" class="contract-preview">
+                    <!-- Dynamic content -->
+                </div>
+                
+                <div class="risk-warning">
+                    <h4>⚠️ 风险提示</h4>
+                    <p>本契约一经签署生效，将无法修改或撤销。若未履行本契约义务，将按约定执行违约处理。系统仅作为记录与执行工具，用户对自身行为结果负责。</p>
+                </div>
+                
+                <div id="join-role-select" class="form-group">
+                    <label>选择你的身份</label>
+                    <select id="join-role" onchange="updateJoinRole()">
+                        <option value="">-- 请选择 --</option>
+                        <option value="partyB">乙方（执行方）</option>
+                        <option value="supervisor">监督方</option>
+                    </select>
+                </div>
+                
+                <div id="join-sign-section" class="hidden">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="agree-rules-join" onchange="updateJoinNextButton()">
+                        <label for="agree-rules-join" class="checkbox-label">我已阅读并接受本契约的全部条款和约束，理解违约将按约定执行。</label>
+                    </div>
+                    
+                    <div class="signature-area">
+                        <h4>请在下方签署你的名字</h4>
+                        <input type="text" class="signature-input" id="signature-input-join" placeholder="输入你的名字">
+                        <div class="signature-timestamp" id="signature-timestamp-join">
+                            签署时间：<span id="sign-time-join">--</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="signAsJoiner()" id="btn-join-sign" disabled>签署契约</button>
+                </div>
+                
+                <button class="btn btn-secondary" style="margin-top: 12px;" onclick="exitToMain()">返回</button>
+            </div>
         </div>
     </div>
     
@@ -914,7 +959,7 @@
             <p>这是最后一步。契约一旦生效，将无法修改或撤销。</p>
             <span class="warning-text">⚠️ 违约将按照规则自动执行</span>
             <div class="final-confirm-buttons">
-                <button class="btn btn-danger" onclick="finalizeContract()">确认生效契约</button>
+                <button class="btn btn-danger" onclick="lockContract()">确认锁定契约</button>
                 <button class="btn btn-secondary" onclick="closeFinalConfirm()">再想想</button>
             </div>
         </div>
@@ -1380,39 +1425,269 @@
                 }
                 
                 const room = snapshot.val();
+                currentContract = room;
+                currentRoomId = code;
                 
-                if (room.status === 'locked' || room.status === 'active') {
-                    currentRoomId = code;
-                    
-                    // Determine role
-                    if (room.mode === 'dual') {
-                        const partyA = room.partyA.name;
-                        const partyB = room.partyB.name;
-                        const userName = prompt(`你是谁？\n1. ${partyA}\n2. ${partyB}\n3. 监督方`);
-                        
-                        if (userName === room.partyA.name || userName === '1') {
-                            currentRole = 'executorA';
-                        } else if (userName === room.partyB.name || userName === '2') {
-                            currentRole = 'executorB';
-                        } else if (userName === '3' || userName === room.supervisor) {
-                            currentRole = 'supervisor';
-                        } else {
-                            showToast('身份不匹配');
-                            return;
-                        }
-                    } else {
-                        currentRole = 'executor';
-                    }
-                    
-                    enterRoom(code);
-                } else {
-                    showToast('房间状态异常');
+                // 检查房间状态
+                if (room.status === 'locked') {
+                    showToast('契约已锁定');
+                    return;
                 }
+                
+                if (room.status === 'completed' || room.status === 'failed') {
+                    showToast('契约已结束');
+                    return;
+                }
+                
+                // 进入签署流程页面
+                showJoinSignPage();
                 
             } catch (err) {
                 showToast('加入失败');
                 console.error(err);
             }
+        };
+        
+        // 显示加入方的签署页面
+        window.showJoinSignPage = function() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-sign-join').classList.add('active');
+            document.querySelectorAll('#main-tabs .tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById('join-room-code').textContent = currentRoomId;
+            renderJoinContractPreview();
+            
+            // 更新时间戳
+            updateJoinSignatureTimestamp();
+            setInterval(updateJoinSignatureTimestamp, 1000);
+        };
+        
+        // 渲染加入方契约预览
+        window.renderJoinContractPreview = function() {
+            const container = document.getElementById('join-contract-preview');
+            const contract = currentContract;
+            const deadline = new Date(contract.deadline);
+            const start = new Date(contract.startDate);
+            
+            // 检查是否已签署
+            const partyBSigned = contract.partyBSigned;
+            const supervisorSigned = contract.supervisorSigned;
+            
+            // 更新角色选择选项
+            const roleSelect = document.getElementById('join-role');
+            roleSelect.innerHTML = '<option value="">-- 请选择 --</option>';
+            
+            if (contract.mode === 'dual' && !partyBSigned) {
+                roleSelect.innerHTML += `<option value="partyB">${contract.partyB.name}（乙方）</option>`;
+            }
+            if (contract.supervisor && !supervisorSigned) {
+                roleSelect.innerHTML += `<option value="supervisor">${contract.supervisor}（监督方）</option>`;
+            }
+            
+            // 签署状态提示
+            let statusText = '';
+            if (contract.partyASigned) statusText += '✓ 甲方已签署\n';
+            if (partyBSigned) statusText += '✓ 乙方已签署\n';
+            if (contract.supervisor && supervisorSigned) statusText += '✓ 监督方已签署\n';
+            
+            let html = `
+                <div class="contract-header">
+                    <h2>行为契约</h2>
+                    <div class="contract-subtitle">本契约一经签署，即具有约束效力</div>
+                    <div class="contract-id">${contract.contractId}</div>
+                </div>
+                
+                <div style="background: #f0f0f0; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; white-space: pre-line;">
+签署状态：
+${statusText || '等待签署...'}
+                </div>
+                
+                <div class="contract-section">
+                    <h3>👤 当事人信息</h3>
+                    <div class="contract-row">
+                        <span class="contract-label">甲方</span>
+                        <span class="contract-value">${contract.partyA.name}（执行方）</span>
+                    </div>
+                    ${contract.partyB ? `
+                    <div class="contract-row">
+                        <span class="contract-label">乙方</span>
+                        <span class="contract-value">${contract.partyB.name}（执行方）</span>
+                    </div>
+                    ` : ''}
+                    ${contract.supervisor ? `
+                    <div class="contract-row">
+                        <span class="contract-label">监督方</span>
+                        <span class="contract-value">${contract.supervisor}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="contract-section">
+                    <h3>📋 执行内容</h3>
+                    ${contract.mode === 'single' ? `
+                    <div class="contract-row">
+                        <span class="contract-label">执行任务</span>
+                        <span class="contract-value">${contract.goal}</span>
+                    </div>
+                    ` : `
+                    <div class="contract-row">
+                        <span class="contract-label">${contract.partyA.name}任务</span>
+                        <span class="contract-value">${contract.partyA.goal}</span>
+                    </div>
+                    <div class="contract-row">
+                        <span class="contract-label">${contract.partyB.name}任务</span>
+                        <span class="contract-value">${contract.partyB.goal}</span>
+                    </div>
+                    `}
+                    <div class="contract-row">
+                        <span class="contract-label">完成标准</span>
+                        <span class="contract-value">${contract.completionStandard}</span>
+                    </div>
+                    <div class="contract-row">
+                        <span class="contract-label">截止时间</span>
+                        <span class="contract-value">${deadline.toLocaleString('zh-CN')}</span>
+                    </div>
+                </div>
+                
+                <div class="contract-section">
+                    <h3>⚖️ 约束条款</h3>
+                    <div class="contract-row">
+                        <span class="contract-label">押注代价</span>
+                        <span class="contract-value">${contract.stake}</span>
+                    </div>
+                    <div class="contract-row">
+                        <span class="contract-label">违约处理</span>
+                        <span class="contract-value">${contract.penaltyClause}</span>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        };
+        
+        // 更新角色选择
+        window.updateJoinRole = function() {
+            const role = document.getElementById('join-role').value;
+            const section = document.getElementById('join-sign-section');
+            const input = document.getElementById('signature-input-join');
+            
+            if (role) {
+                section.classList.remove('hidden');
+                // 预填名字
+                if (role === 'partyB') {
+                    input.value = currentContract.partyB.name;
+                } else if (role === 'supervisor') {
+                    input.value = currentContract.supervisor;
+                }
+            } else {
+                section.classList.add('hidden');
+            }
+        };
+        
+        // 更新时间戳
+        window.updateJoinSignatureTimestamp = function() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', { 
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('sign-time-join').textContent = timeStr;
+        };
+        
+        // 更新签署按钮状态
+        window.updateJoinNextButton = function() {
+            const checkbox = document.getElementById('agree-rules-join');
+            const input = document.getElementById('signature-input-join');
+            document.getElementById('btn-join-sign').disabled = !checkbox.checked || !input.value.trim();
+        };
+        
+        // 初始化加入页面的监听
+        document.getElementById('signature-input-join').addEventListener('input', updateJoinNextButton);
+        
+        // 加入方签署
+        window.signAsJoiner = async function() {
+            const role = document.getElementById('join-role').value;
+            const signatureName = document.getElementById('signature-input-join').value.trim();
+            
+            if (!role || !signatureName) {
+                showToast('请选择身份并签署名字');
+                return;
+            }
+            
+            const checkbox = document.getElementById('agree-rules-join');
+            if (!checkbox.checked) {
+                showToast('请先同意契约条款');
+                return;
+            }
+            
+            const updateData = {};
+            const signedAt = Date.now();
+            
+            if (role === 'partyB') {
+                updateData.partyBSigned = true;
+                updateData.partyBSignedAt = signedAt;
+                updateData.partyBSignedBy = signatureName;
+                currentRole = 'partyB';
+            } else if (role === 'supervisor') {
+                updateData.supervisorSigned = true;
+                updateData.supervisorSignedAt = signedAt;
+                updateData.supervisorSignedBy = signatureName;
+                currentRole = 'supervisor';
+            }
+            
+            // 检查是否所有人都签署了
+            const willComplete = checkAllSignedAfterUpdate(role);
+            
+            try {
+                await update(ref(db, 'rooms/' + currentRoomId), updateData);
+                
+                if (willComplete) {
+                    // 所有人签署完毕，显示最终锁定确认
+                    showToast('签署成功！请确认锁定契约');
+                    setTimeout(() => {
+                        document.getElementById('final-confirm-overlay').classList.add('active');
+                    }, 500);
+                } else {
+                    showToast('签署成功，等待其他方签署');
+                    exitToMain();
+                }
+            } catch (err) {
+                showToast('签署失败');
+                console.error(err);
+            }
+        };
+        
+        // 检查签署后是否全部完成
+        window.checkAllSignedAfterUpdate = function(role) {
+            const contract = currentContract;
+            const hasPartyB = contract.partyB !== null;
+            const hasSupervisor = contract.supervisor !== null;
+            
+            // 模拟更新后的状态
+            const partyASigned = contract.partyASigned;
+            const partyBSigned = role === 'partyB' ? true : contract.partyBSigned;
+            const supervisorSigned = role === 'supervisor' ? true : contract.supervisorSigned;
+            
+            if (hasPartyB && hasSupervisor) {
+                return partyASigned && partyBSigned && supervisorSigned;
+            } else if (hasPartyB) {
+                return partyASigned && partyBSigned;
+            } else if (hasSupervisor) {
+                return partyASigned && supervisorSigned;
+            } else {
+                // 单人模式（自我契约）
+                return partyASigned;
+            }
+        };
+        
+        // 显示最终锁定确认
+        window.showFinalLockConfirm = function() {
+            document.getElementById('final-confirm-overlay').classList.add('active');
         };
         
         // Enter room
@@ -1445,6 +1720,8 @@
             // Status badge
             const badge = document.getElementById('room-status-badge');
             const statusMap = { 
+                pending_signatures: { text: '等待签署', class: 'waiting' },
+                all_signed: { text: '待锁定', class: 'waiting' },
                 locked: { text: '已锁定', class: 'locked' },
                 active: { text: '进行中', class: 'active' },
                 completed: { text: '已完成', class: 'completed' },
@@ -1458,9 +1735,26 @@
             
             let html = '';
             
-            // Countdown
-            if (room.status === 'locked' || room.status === 'active') {
-                startCountdown(deadline);
+            // 签署状态显示（等待签署时）
+            if (room.status === 'pending_signatures' || room.status === 'all_signed') {
+                html += `
+                    <div style="background: #f0f0f0; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                        <h4 style="margin-bottom: 12px;">📝 签署状态</h4>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            ${room.partyASigned ? '✅' : '⏳'} 甲方（${room.partyA.name}）${room.partyASigned ? '已签署' : '待签署'}
+                        </div>
+                        ${room.partyB ? `
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            ${room.partyBSigned ? '✅' : '⏳'} 乙方（${room.partyB.name}）${room.partyBSigned ? '已签署' : '待签署'}
+                        </div>
+                        ` : ''}
+                        ${room.supervisor ? `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${room.supervisorSigned ? '✅' : '⏳'} 监督方（${room.supervisor}）${room.supervisorSigned ? '已签署' : '待签署'}
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
             }
             
             // Contract info
@@ -1499,12 +1793,18 @@
                     <p style="font-size: 13px; margin-bottom: 4px;">押注代价：${room.stake}</p>
                     <p style="font-size: 13px; color: #666;">违约处理：${room.penaltyClause}</p>
                 </div>
-                
-                <div id="countdown-display" class="countdown-display">
-                    <div class="time" id="countdown">--:--:--</div>
-                    <div class="label">距离截止</div>
-                </div>
             `;
+            
+            // Countdown (only when locked/active)
+            if (room.status === 'locked' || room.status === 'active') {
+                startCountdown(deadline);
+                html += `
+                    <div id="countdown-display" class="countdown-display">
+                        <div class="time" id="countdown">--:--:--</div>
+                        <div class="label">距离截止</div>
+                    </div>
+                `;
+            }
             
             // Participants
             html += `
@@ -1555,17 +1855,13 @@
             
             // Actions based on role and status
             if (room.status === 'locked' || room.status === 'active') {
-                const isExecutorA = currentRole === 'executorA' || currentRole === 'executor';
-                const isExecutorB = currentRole === 'executorB';
+                const isExecutorA = currentRole === 'partyA' || currentRole === 'executorA' || currentRole === 'executor';
+                const isExecutorB = currentRole === 'partyB' || currentRole === 'executorB';
                 const isSupervisor = currentRole === 'supervisor';
                 
                 html += '<div style="margin-top: 20px;">';
                 
-                if (isExecutorA && !room.executorADone) {
-                    html += `<button class="btn btn-success" onclick="confirmComplete()" style="width: 100%; margin-bottom: 8px;">✓ 我完成了</button>`;
-                }
-                
-                if (isExecutorB && !room.executorBDone) {
+                if ((isExecutorA || isExecutorB) && !room.executorADone && !room.executorBDone) {
                     html += `<button class="btn btn-success" onclick="confirmComplete()" style="width: 100%; margin-bottom: 8px;">✓ 我完成了</button>`;
                 }
                 
