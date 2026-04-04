@@ -1327,7 +1327,9 @@
                 // Save to local history
                 saveToHistory(currentContract);
                 
-                showToast('契约已生效 🔒');
+                // Show contract info for easy copy
+                const contractInfo = generateContractText(currentContract);
+                showToast('契约已生效，点击下方"复制契约信息"按钮分享');
                 
                 // Enter room
                 currentRoomId = roomId;
@@ -1338,6 +1340,28 @@
                 showToast('创建失败，请重试');
                 console.error(err);
             }
+        };
+        
+        // Generate contract text
+        window.generateContractText = function(c) {
+            const deadline = new Date(c.deadline);
+            let text = `【行为契约】\n`;
+            text += `契约编号：${c.contractId}\n`;
+            text += `房间号：${c.roomId}\n\n`;
+            text += `甲方：${c.partyA.name}\n`;
+            if (c.partyB) text += `乙方：${c.partyB.name}\n`;
+            if (c.supervisor) text += `监督方：${c.supervisor}\n`;
+            text += `\n执行内容：\n`;
+            if (c.mode === 'single') {
+                text += `${c.goal}\n`;
+            } else {
+                text += `${c.partyA.name}：${c.partyA.goal}\n`;
+                text += `${c.partyB.name}：${c.partyB.goal}\n`;
+            }
+            text += `\n截止时间：${deadline.toLocaleString('zh-CN')}\n`;
+            text += `押注代价：${c.stake}\n`;
+            text += `违约处理：${c.penaltyClause}\n`;
+            return text;
         };
         
         // Join room
@@ -1401,6 +1425,7 @@
             onValue(ref(db, 'rooms/' + roomId), (snapshot) => {
                 const room = snapshot.val();
                 if (room) {
+                    currentContract = room; // 同步更新 currentContract
                     updateRoomDisplay(room);
                 }
             });
@@ -1673,39 +1698,18 @@
         // Copy contract info
         window.copyContractInfo = async function() {
             if (!currentContract) {
-                showToast('无契约信息');
+                showToast('契约信息加载中...');
                 return;
             }
             
-            const deadline = new Date(currentContract.deadline);
-            let text = `【行为执行契约】\n`;
-            text += `契约编号：${currentContract.contractId}\n`;
-            text += `房间号：${currentRoomId}\n\n`;
-            text += `甲方：${currentContract.partyA.name}\n`;
-            if (currentContract.partyB) {
-                text += `乙方：${currentContract.partyB.name}\n`;
-            }
-            if (currentContract.supervisor) {
-                text += `监督方：${currentContract.supervisor}\n`;
-            }
-            text += `\n执行内容：\n`;
-            if (currentContract.mode === 'single') {
-                text += `${currentContract.goal}\n`;
-            } else {
-                text += `${currentContract.partyA.name}：${currentContract.partyA.goal}\n`;
-                text += `${currentContract.partyB.name}：${currentContract.partyB.goal}\n`;
-            }
-            text += `\n截止时间：${deadline.toLocaleString('zh-CN')}\n`;
-            text += `押注代价：${currentContract.stake}\n`;
-            text += `违约处理：${currentContract.penaltyClause}\n`;
-            
+            const text = generateContractText(currentContract);
             await copyToClipboard(text);
         };
         
         // Export contract PDF
         window.exportContractPDF = function() {
             if (!currentContract) {
-                showToast('无契约信息');
+                showToast('契约信息加载中...');
                 return;
             }
             
