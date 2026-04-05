@@ -1785,8 +1785,8 @@ ${statusText || '等待签署...'}
                     exitToMain();
                 }
             } catch (err) {
-                showToast('签署失败');
-                console.error(err);
+                showToast('签署失败: ' + (err.message || err));
+                console.error('[签署失败]', err);
             }
         };
         
