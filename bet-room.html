@@ -1069,6 +1069,14 @@
                 showToast('请手动粘贴');
             }
         };
+
+        // Exit to main page
+        window.exitToMain = function() {
+            currentRoomId = null;
+            currentContract = null;
+            currentRole = null;
+            switchMainTab('create');
+        };
         
         // Tab switching
         window.switchMainTab = function(tab) {
