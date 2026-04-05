@@ -6,8 +6,6 @@
     <title>对赌房间 - 用代价逼出执行力</title>
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- html2canvas for screenshot -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -57,17 +55,6 @@
             font-size: 12px;
             opacity: 0.7;
             letter-spacing: 1px;
-        }
-        
-        .header .header-logo {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-        
-        .header .header-logo img {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
         }
         
         /* Tabs */
@@ -599,44 +586,6 @@
             color: #888;
         }
         
-        .history-item .history-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .history-item .history-logo {
-            font-size: 18px;
-        }
-        
-        .history-item .history-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .history-item .history-room-id {
-            font-size: 11px;
-            color: #aaa;
-            margin-left: auto;
-        }
-        
-        .history-item .history-status-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 8px;
-            font-size: 11px;
-        }
-        
-        .history-item .active-status {
-            font-weight: 500;
-        }
-        
-        .history-item .signed-time {
-            color: #888;
-        }
-        
         /* Toast */
         .toast {
             position: fixed;
@@ -761,8 +710,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="header-logo" id="main-logo">🎲</div>
-            <h1>对赌房间</h1>
+            <h1>⚡ 对赌房间</h1>
             <div class="subtitle">用代价逼出执行力</div>
         </div>
         
@@ -2336,37 +2284,19 @@ ${statusText || '等待签署...'}
         function saveToHistory(room) {
             const key = 'betHistory_v2';
             let history = JSON.parse(localStorage.getItem(key) || '[]');
-            
-            // Check if already exists
-            const existingIdx = history.findIndex(h => h.contractId === room.contractId);
-            const record = {
+            history.unshift({
                 contractId: room.contractId,
                 roomId: room.roomId,
                 mode: room.mode,
-                title: '对赌房间',
                 partyA: room.partyA,
                 partyB: room.partyB,
                 supervisor: room.supervisor,
-                goal: room.mode === 'single' ? room.goal : `${room.partyA.goal} / ${room.partyB?.goal || ''}`,
+                goal: room.mode === 'single' ? room.goal : `${room.partyA.goal} / ${room.partyB.goal}`,
                 stake: room.stake,
                 deadline: room.deadline,
                 status: room.status,
-                createdAt: room.createdAt,
-                // 签署时间
-                partyASignedAt: room.partyASignedAt || null,
-                partyBSignedAt: room.partyBSignedAt || null,
-                supervisorSignedAt: room.supervisorSignedAt || null,
-                // 生效状态
-                partyBSigned: room.partyBSigned || false,
-                supervisorSigned: room.supervisorSigned || false
-            };
-            
-            if (existingIdx >= 0) {
-                history[existingIdx] = record;
-            } else {
-                history.unshift(record);
-            }
-            
+                createdAt: room.createdAt
+            });
             // Keep only last 50
             if (history.length > 50) history = history.slice(0, 50);
             localStorage.setItem(key, JSON.stringify(history));
@@ -2387,43 +2317,13 @@ ${statusText || '等待签署...'}
             history.forEach((h, i) => {
                 const deadline = new Date(h.deadline);
                 const statusIcon = h.status === 'completed' ? '✓' : (h.status === 'failed' ? '✗' : '⏳');
-                const statusColor = h.status === 'completed' ? '#27ae60' : (h.status === 'failed' ? '#e74c3c' : '#f39c12');
-                
-                // 计算生效状态
-                let isActive = false;
-                let activeText = '';
-                if (h.mode === 'single') {
-                    isActive = true;
-                    activeText = '自我承诺';
-                } else if (h.mode === 'dual') {
-                    isActive = h.partyBSigned;
-                    activeText = isActive ? '已生效' : '待乙方签署';
-                } else if (h.mode === 'supervised') {
-                    isActive = h.partyBSigned && h.supervisorSigned;
-                    activeText = isActive ? '已生效' : (h.partyBSigned ? '待监督方签署' : '待乙方签署');
-                }
-                
-                // 签署时间显示
-                let signedTimeText = '';
-                if (h.partyASignedAt) {
-                    const signedDate = new Date(h.partyASignedAt);
-                    signedTimeText = `甲方：${signedDate.toLocaleDateString('zh-CN')} ${signedDate.toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'})}`;
-                }
+                const iconClass = h.status === 'completed' ? 'win' : (h.status === 'failed' ? 'lose' : 'pending');
                 
                 html += `
                     <div class="history-item" onclick="viewHistoryDetail(${i})">
-                        <div class="history-header">
-                            <span class="history-logo">🎲</span>
-                            <span class="history-title">对赌房间</span>
-                            <span class="history-room-id">#${h.roomId}</span>
-                        </div>
                         <div class="goal-text">${h.goal}</div>
-                        <div class="meta-info">${h.partyA.name} · 截止 ${deadline.toLocaleDateString('zh-CN')} · ${h.stake}</div>
-                        <div class="history-status-row">
-                            <span class="active-status" style="color: ${isActive ? '#27ae60' : '#f39c12'}">${activeText}</span>
-                            ${signedTimeText ? `<span class="signed-time">${signedTimeText}</span>` : ''}
-                        </div>
-                        <div class="status-icon" style="color: ${statusColor}">${statusIcon}</div>
+                        <div class="meta-info">${h.partyA.name} · ${deadline.toLocaleDateString('zh-CN')} · ${h.stake}</div>
+                        <div class="status-icon" style="color: ${h.status === 'completed' ? '#27ae60' : '#e74c3c'}">${statusIcon}</div>
                     </div>
                 `;
             });
