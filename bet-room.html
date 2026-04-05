@@ -781,6 +781,230 @@
             text-align: left;
             padding: 0 8px;
         }
+
+/* 进行中契约页面 */
+.ongoing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.ongoing-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+.refresh-icon {
+    display: inline-block;
+    margin-right: 4px;
+}
+#ongoing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ongoing-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #e8e8e8;
+}
+.ongoing-card:hover {
+    border-color: #1677ff;
+    box-shadow: 0 2px 8px rgba(22,119,255,0.1);
+}
+.ongoing-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.ongoing-contract-id {
+    font-size: 12px;
+    color: #666;
+}
+.ongoing-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.status-active {
+    background: #e6f7ff;
+    color: #1890ff;
+}
+.status-locked {
+    background: #fff7e6;
+    color: #fa8c16;
+}
+.ongoing-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ongoing-goal {
+    font-size: 16px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ongoing-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #666;
+}
+.ongoing-role {
+    font-size: 12px;
+    color: #999;
+}
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* 规则弹窗 */
+.rules-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+.rules-modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+.rules-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+.rules-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+.rules-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.rules-section {
+    margin-bottom: 16px;
+}
+.rules-section h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: #333;
+}
+.rules-section ol {
+    margin: 0;
+    padding-left: 20px;
+    color: #666;
+    font-size: 14px;
+}
+.rules-section li {
+    margin-bottom: 4px;
+}
+.rules-section p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+.rules-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+.rules-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.rules-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+.rules-buttons {
+    display: flex;
+    gap: 12px;
+}
+.rules-buttons .btn {
+    flex: 1;
+}
+
+/* 密码弹窗 */
+.password-modal {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 360px;
+    width: 100%;
+}
+.password-header {
+    padding: 24px 20px 16px;
+    text-align: center;
+}
+.password-header h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+.password-hint {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+.password-body {
+    padding: 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.password-body input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 8px;
+}
+.password-body input:focus {
+    border-color: #1677ff;
+    outline: none;
+}
+.password-warning {
+    margin: 0;
+    font-size: 12px;
+    color: #fa8c16;
+    text-align: center;
+}
+.password-footer {
+    padding: 16px 20px 24px;
+    display: flex;
+    gap: 12px;
+}
+.password-footer .btn {
+    flex: 1;
+}
     </style>
 </head>
 <body>
@@ -942,7 +1166,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="confirmSignature()">确认签署</button>
+                    <button class="btn btn-primary" onclick="initiateSign('partyA')">确认签署</button>
                     <button class="btn btn-secondary" style="margin-top: 12px;" onclick="goBackToPreview()">返回</button>
                 </div>
             </div>
@@ -959,7 +1183,18 @@
                 <button class="btn btn-primary" onclick="joinRoom()">加入房间</button>
             </div>
             
-            <!-- History Page -->
+            <!-- Ongoing Contracts Page -->
+    <div id="page-ongoing" class="page">
+        <div class="ongoing-header">
+            <h3>进行中的契约</h3>
+            <button class="btn btn-secondary btn-small" onclick="loadOngoingContracts()">
+                <span class="refresh-icon">↻</span> 刷新
+            </button>
+        </div>
+        <div id="ongoing-list"></div>
+    </div>
+
+    <!-- History Page -->
             <div id="page-history" class="page">
                 <div class="action-row">
                     <button class="btn btn-outline" onclick="exportHistory()">📤 导出历史</button>
@@ -1035,7 +1270,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="signAsJoiner()" id="btn-join-sign" disabled>签署契约</button>
+                    <button class="btn btn-primary" onclick="initiateSign(currentRole)" id="btn-join-sign" disabled>签署契约</button>
                 </div>
                 
                 <button class="btn btn-secondary" style="margin-top: 12px;" onclick="exitToMain()">返回</button>
@@ -2438,6 +2673,258 @@ ${statusText || '等待签署...'}
                 history[idx].lockedAt = Date.now();
                 localStorage.setItem(key, JSON.stringify(history));
             }
+        };
+        
+        // ========== 规则弹窗 ==========
+        const RULES_CONTENT = `
+            <div class="rules-section">
+                <h4>一、契约性质</h4>
+                <ol>
+                    <li>本契约为参与各方自愿签署的电子协议。</li>
+                    <li>系统仅提供契约管理工具，不承担裁决责任。</li>
+                </ol>
+            </div>
+            <div class="rules-section">
+                <h4>二、监督方</h4>
+                <ol>
+                    <li>监督方由各方共同选择，请选择您信任的人。</li>
+                    <li>监督方的建议裁决仅供参考，不具有强制执行力。</li>
+                </ol>
+            </div>
+            <div class="rules-section">
+                <h4>三、确认密码</h4>
+                <ol>
+                    <li>各方签署时需设置 4 位确认密码。</li>
+                    <li>契约到期后，需输入密码确认结果。</li>
+                </ol>
+            </div>
+            <div class="rules-section">
+                <h4>四、争议处理</h4>
+                <ol>
+                    <li>若确认结果不一致，契约进入「争议」状态。</li>
+                    <li>争议优先协商，协商不成可走法律途径。</li>
+                </ol>
+            </div>
+        `;
+        
+        window.showRulesModal = function(onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'rules-overlay';
+            overlay.innerHTML = `
+                <div class="rules-modal">
+                    <div class="rules-header"><h3>📜 契约规则</h3></div>
+                    <div class="rules-body">${RULES_CONTENT}</div>
+                    <div class="rules-footer">
+                        <label class="rules-checkbox">
+                            <input type="checkbox" id="rules-agree">
+                            <span>我已阅读并同意以上规则</span>
+                        </label>
+                        <div class="rules-buttons">
+                            <button class="btn btn-secondary" onclick="closeRulesModal()">取消</button>
+                            <button class="btn btn-primary" id="rules-confirm-btn" disabled onclick="confirmRules()">确认签署</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            window._rulesOnConfirm = onConfirm;
+            document.getElementById('rules-agree').addEventListener('change', function() {
+                document.getElementById('rules-confirm-btn').disabled = !this.checked;
+            });
+        };
+        
+        window.closeRulesModal = function() {
+            document.querySelector('.rules-overlay')?.remove();
+            window._rulesOnConfirm = null;
+        };
+        
+        window.confirmRules = function() {
+            const cb = window._rulesOnConfirm;
+            closeRulesModal();
+            if (cb) cb();
+        };
+        
+        // ========== 密码设置弹窗 ==========
+        window.showPasswordModal = function(role, onConfirm) {
+            const roleText = role === 'partyA' ? '甲方' : role === 'partyB' ? '乙方' : '监督方';
+            const overlay = document.createElement('div');
+            overlay.className = 'rules-overlay';
+            overlay.innerHTML = `
+                <div class="password-modal">
+                    <div class="password-header">
+                        <h3>🔐 设置确认密码</h3>
+                        <p class="password-hint">${roleText}，请设置 4 位数字密码</p>
+                    </div>
+                    <div class="password-body">
+                        <input type="password" id="pwd-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="输入 4 位数字">
+                        <input type="password" id="pwd-confirm" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="再次输入">
+                        <p class="password-warning">⚠️ 密码用于完成确认，请妥善保管</p>
+                    </div>
+                    <div class="password-footer">
+                        <button class="btn btn-secondary" onclick="closePasswordModal()">取消</button>
+                        <button class="btn btn-primary" onclick="submitPassword('${role}')">确认</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            window._pwdOnConfirm = onConfirm;
+            setTimeout(() => document.getElementById('pwd-input').focus(), 100);
+        };
+        
+        window.closePasswordModal = function() {
+            document.querySelector('.rules-overlay')?.remove();
+            window._pwdOnConfirm = null;
+        };
+        
+        window.submitPassword = function(role) {
+            const pwd = document.getElementById('pwd-input').value;
+            const confirm = document.getElementById('pwd-confirm').value;
+            if (!/^\d{4}$/.test(pwd)) { alert('请输入 4 位数字'); return; }
+            if (pwd !== confirm) { alert('两次密码不一致'); return; }
+            const cb = window._pwdOnConfirm;
+            closePasswordModal();
+            if (cb) cb(pwd);
+        };
+        
+        // ========== 发起签署流程 ==========
+        window.initiateSign = function(role) {
+            showRulesModal(function() {
+                showPasswordModal(role, function(password) {
+                    doSignContract(role, password);
+                });
+            });
+        };
+        
+        // ========== 执行签署 ==========
+        window.doSignContract = async function(role, password) {
+            if (!currentRoomId) return;
+            
+            const updates = {};
+            const timestamp = Date.now();
+            const passwordField = role === 'partyA' ? 'partyAPassword' : 
+                                  role === 'partyB' ? 'partyBPassword' : 'supervisorPassword';
+            const signedField = role === 'partyA' ? 'partyASigned' : 
+                               role === 'partyB' ? 'partyBSigned' : 'supervisorSigned';
+            const signedAtField = role === 'partyA' ? 'partyASignedAt' : 
+                                 role === 'partyB' ? 'partyBSignedAt' : 'supervisorSignedAt';
+            
+            updates[signedField] = true;
+            updates[signedAtField] = timestamp;
+            updates[passwordField] = password;
+            
+            try {
+                await update(ref(db, 'rooms/' + currentRoomId), updates);
+                
+                // 保存到本地
+                saveMyContract(currentRoomId, role);
+                updateHistoryAfterSign(currentRoomId, role);
+                
+                alert('签署成功！');
+                // 刷新房间信息
+                enterRoom(currentRoomId);
+            } catch (err) {
+                console.error('签署失败:', err);
+                alert('签署失败: ' + err.message);
+            }
+        };
+        
+        // ========== 保存参与的契约 ==========
+        window.saveMyContract = function(roomId, role) {
+            const contracts = JSON.parse(localStorage.getItem('myContracts') || '{}');
+            contracts[roomId] = { role, savedAt: Date.now() };
+            localStorage.setItem('myContracts', JSON.stringify(contracts));
+        };
+        
+        // 保存用户参与的契约（用于刷新后恢复）
+        window.saveMyContract = function(roomId, role) {
+            const key = 'myContracts';
+            const contracts = JSON.parse(localStorage.getItem(key) || '{}');
+            contracts[roomId] = { role, savedAt: Date.now() };
+            localStorage.setItem(key, JSON.stringify(contracts));
+        };
+        
+        // 加载进行中的契约
+        window.loadOngoingContracts = async function() {
+            const listEl = document.getElementById('ongoing-list');
+            if (!listEl) return;
+            
+            listEl.innerHTML = '<div class="loading">加载中...</div>';
+            
+            const myContracts = JSON.parse(localStorage.getItem('myContracts') || '{}');
+            const roomIds = Object.keys(myContracts);
+            
+            if (roomIds.length === 0) {
+                listEl.innerHTML = '<div class="empty-state">暂无进行中的契约</div>';
+                return;
+            }
+            
+            const ongoingCards = [];
+            
+            for (const roomId of roomIds) {
+                try {
+                    const snapshot = await get(ref(db, 'rooms/' + roomId));
+                    if (!snapshot.exists()) continue;
+                    
+                    const contract = snapshot.val();
+                    // 只显示进行中的契约（locked 或 active）
+                    if (contract.status === 'locked' || contract.status === 'active') {
+                        const myRole = myContracts[roomId]?.role || 'partyA';
+                        ongoingCards.push(renderOngoingCard(contract, myRole));
+                    }
+                } catch (err) {
+                    console.error('加载契约失败:', roomId, err);
+                }
+            }
+            
+            if (ongoingCards.length === 0) {
+                listEl.innerHTML = '<div class="empty-state">暂无进行中的契约</div>';
+            } else {
+                listEl.innerHTML = ongoingCards.join('');
+            }
+        };
+        
+        // 渲染进行中契约卡片
+        window.renderOngoingCard = function(contract, myRole) {
+            const statusText = contract.status === 'locked' ? '已锁定' : '进行中';
+            const statusClass = contract.status === 'locked' ? 'status-locked' : 'status-active';
+            const deadline = new Date(contract.deadline);
+            const now = new Date();
+            const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
+            const deadlineText = daysLeft > 0 ? `剩余 ${daysLeft} 天` : '已到期';
+            
+            return `
+                <div class="ongoing-card" onclick="enterExistingRoom('${contract.roomId}')">
+                    <div class="ongoing-card-header">
+                        <span class="ongoing-contract-id">${contract.contractId}</span>
+                        <span class="ongoing-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="ongoing-card-body">
+                        <div class="ongoing-goal">${contract.goal || contract.partyA?.goal || '-'}</div>
+                        <div class="ongoing-meta">
+                            <span>房型：${contract.mode === 'single' ? '自我契约' : '双向对赌'}</span>
+                            <span>${deadlineText}</span>
+                        </div>
+                        <div class="ongoing-role">我是：${getRoleText(myRole)}</div>
+                    </div>
+                </div>
+            `;
+        };
+        
+        // 获取角色文字
+        window.getRoleText = function(role) {
+            const roleMap = {
+                'partyA': '甲方',
+                'partyB': '乙方',
+                'supervisor': '监督方'
+            };
+            return roleMap[role] || role;
+        };
+        
+        // 进入已存在的契约房间
+        window.enterExistingRoom = function(roomId) {
+            currentRoomId = roomId;
+            enterRoom(roomId);
+            document.getElementById('contract-detail-overlay').classList.add('active');
         };
         
         // Render history
