@@ -1596,6 +1596,9 @@
                     lockedAt: currentContract.lockedAt
                 });
                 
+                // 更新历史记录
+                updateHistoryAfterLock(currentRoomId);
+                
                 showToast('契约已正式锁定生效');
                 enterRoom(currentRoomId);
             } catch (err) {
@@ -1862,6 +1865,9 @@ ${statusText || '等待签署...'}
             
             try {
                 await update(ref(db, 'rooms/' + currentRoomId), updateData);
+                
+                // 更新历史记录
+                updateHistoryAfterSign(currentRoomId, updateData);
                 
                 if (willComplete) {
                     // 所有人签署完毕，显示最终锁定确认
@@ -2400,6 +2406,39 @@ ${statusText || '等待签署...'}
             if (history.length > 50) history = history.slice(0, 50);
             localStorage.setItem(key, JSON.stringify(history));
         }
+        
+        // 更新历史记录（签署后）
+        window.updateHistoryAfterSign = function(roomId, signData) {
+            const key = 'betHistory_v2';
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            const idx = history.findIndex(h => h.roomId === roomId);
+            
+            if (idx >= 0) {
+                // 更新签署状态和时间
+                if (signData.partyBSigned !== undefined) {
+                    history[idx].partyBSigned = signData.partyBSigned;
+                    history[idx].partyBSignedAt = Date.now();
+                }
+                if (signData.supervisorSigned !== undefined) {
+                    history[idx].supervisorSigned = signData.supervisorSigned;
+                    history[idx].supervisorSignedAt = Date.now();
+                }
+                localStorage.setItem(key, JSON.stringify(history));
+            }
+        };
+        
+        // 更新历史记录（锁定后）
+        window.updateHistoryAfterLock = function(roomId) {
+            const key = 'betHistory_v2';
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            const idx = history.findIndex(h => h.roomId === roomId);
+            
+            if (idx >= 0) {
+                history[idx].status = 'locked';
+                history[idx].lockedAt = Date.now();
+                localStorage.setItem(key, JSON.stringify(history));
+            }
+        };
         
         // Render history
         window.renderHistory = function() {
