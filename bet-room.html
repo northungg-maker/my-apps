@@ -1330,30 +1330,52 @@
         </div>
     </div>
     
-    <!-- History Detail Modal -->
-    <div id="history-detail-modal" class="modal">
+    <!-- 进入房间密码验证弹窗 -->
+    <div id="enter-room-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 class="modal-title">🔐 进入房间</h3>
+            <div id="enter-room-info" style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
+                <!-- 房间信息 -->
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: #666; display: block; margin-bottom: 6px;">选择身份</label>
+                <select id="enter-role-select" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px;">
+                    <option value="">请选择身份</option>
+                    <option value="executorA">甲方（发起人）</option>
+                    <option value="executorB">乙方</option>
+                    <option value="supervisor">监督方</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="font-size: 13px; color: #666; display: block; margin-bottom: 6px;">输入密码</label>
+                <input type="password" id="enter-password-input" placeholder="****" maxlength="4" 
+                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 24px; letter-spacing: 12px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="closeModal('enter-room-modal')" style="flex: 1;">取消</button>
+                <button class="btn btn-primary" onclick="verifyAndEnterRoom()" style="flex: 1;">进入房间</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 房间操作弹窗（锁定状态的房间） -->
+    <div id="room-actions-modal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
-            <h3 class="modal-title" id="history-detail-title">契约详情</h3>
-            <div id="history-detail-body" style="text-align: left; margin: 16px 0; font-size: 14px; line-height: 1.8;">
-                <!-- 动态填充 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 class="modal-title" style="margin: 0;">🔒 房间已锁定</h3>
+                <span id="room-status-badge" style="background: #22c55e; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">进行中</span>
             </div>
-            <div id="history-detail-actions" style="display: none; margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee;">
-                <p style="font-size: 13px; color: #666; margin-bottom: 12px;">选择身份并输入密码后可操作</p>
-                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                    <select id="history-role-select" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                        <option value="">选择身份</option>
-                        <option value="executorA">甲方（发起人）</option>
-                        <option value="executorB">乙方</option>
-                        <option value="supervisor">监督方</option>
-                    </select>
-                    <input type="password" id="history-password-input" placeholder="输入密码" maxlength="4" style="width: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 18px; letter-spacing: 8px;">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-success" onclick="historyActionComplete()" style="flex: 1;">✓ 我完成了</button>
-                    <button class="btn btn-danger" onclick="historyActionGiveUp()" style="flex: 1;">✗ 我放弃了</button>
-                </div>
+            <div id="room-actions-content" style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; line-height: 1.8;">
+                <!-- 契约内容 -->
             </div>
-            <button class="btn btn-secondary" onclick="closeModal('history-detail-modal')" style="width: 100%; margin-top: 12px;">关闭</button>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
+                ⚠️ 确认操作后将无法撤销，请确保已与对方沟通。
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="roomActionComplete()" style="flex: 1;">✓ 我完成了</button>
+                <button class="btn btn-danger" onclick="roomActionGiveUp()" style="flex: 1;">✗ 我放弃了</button>
+            </div>
+            <button class="btn btn-secondary" onclick="closeModal('room-actions-modal')" style="width: 100%; margin-top: 12px;">关闭</button>
         </div>
     </div>
 
@@ -3062,104 +3084,40 @@ ${statusText || '等待签署...'}
             event.target.value = '';
         };
         
-        // View history detail - 重构版
+        // 点击历史记录 → 显示密码验证弹窗
         window.viewHistoryDetail = async function(index) {
             const key = 'betHistory_v2';
             const history = JSON.parse(localStorage.getItem(key) || '[]');
             const h = history[index];
             
-            // 设置当前房间 ID
-            currentRoomId = h.roomId;
+            // 保存当前操作的索引
+            window.pendingHistoryIndex = index;
             
-            // 从 Firebase 加载完整数据
-            const snapshot = await get(ref(db, 'rooms/' + h.roomId));
-            const roomData = snapshot.exists() ? snapshot.val() : null;
-            
+            // 显示房间基本信息
             const deadline = new Date(h.deadline);
-            
-            // 构建详情内容
-            let bodyHtml = `
-                <div style="margin-bottom: 16px;">
-                    <span style="background: #f0f0f0; padding: 4px 12px; border-radius: 12px; font-size: 12px;">房间号: ${h.roomId}</span>
+            document.getElementById('enter-room-info').innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>房间号：</span><strong>${h.roomId}</strong>
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <strong>甲方：</strong>${h.partyA?.name || '-'}
-                    ${roomData?.partyASigned ? '<span style="color: #22c55e;">✓ 已签</span>' : '<span style="color: #999;">待签</span>'}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>任务：</span><span>${h.goal}</span>
                 </div>
-            `;
-            
-            if (h.partyB || roomData?.partyB) {
-                bodyHtml += `
-                    <div style="margin-bottom: 12px;">
-                        <strong>乙方：</strong>${h.partyB?.name || roomData?.partyB?.name || '-'}
-                        ${roomData?.partyBSigned ? '<span style="color: #22c55e;">✓ 已签</span>' : '<span style="color: #999;">待签</span>'}
-                    </div>
-                `;
-            }
-            
-            if (h.supervisor || roomData?.supervisor) {
-                bodyHtml += `
-                    <div style="margin-bottom: 12px;">
-                        <strong>监督方：</strong>${h.supervisor || roomData?.supervisor || '-'}
-                        ${roomData?.supervisorSigned ? '<span style="color: #22c55e;">✓ 已签</span>' : '<span style="color: #999;">待签</span>'}
-                    </div>
-                `;
-            }
-            
-            bodyHtml += `
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin: 16px 0;">
-                    <strong>任务：</strong><br>${h.goal}<br><br>
-                    <strong>截止：</strong>${deadline.toLocaleString('zh-CN')}<br><br>
-                    <strong>代价：</strong>${h.stake}
-                </div>
-                <div style="text-align: center;">
-                    <strong>状态：</strong>
-                    <span style="padding: 4px 12px; border-radius: 12px; font-size: 14px; background: ${getStatusColor(h.status)}; color: white;">
-                        ${getStatusText(h.status)}
-                    </span>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>截止：</span><span>${deadline.toLocaleString('zh-CN')}</span>
                 </div>
             `;
             
-            document.getElementById('history-detail-body').innerHTML = bodyHtml;
+            // 重置表单
+            document.getElementById('enter-role-select').value = '';
+            document.getElementById('enter-password-input').value = '';
             
-            // 如果状态是进行中，显示操作按钮
-            const actionsDiv = document.getElementById('history-detail-actions');
-            if (h.status === 'pending' || h.status === 'active') {
-                actionsDiv.style.display = 'block';
-            } else {
-                actionsDiv.style.display = 'none';
-            }
-            
-            document.getElementById('history-detail-modal').classList.add('active');
+            document.getElementById('enter-room-modal').classList.add('active');
         };
         
-        // 状态颜色辅助函数
-        function getStatusColor(status) {
-            const colors = {
-                'pending': '#3b82f6',
-                'active': '#22c55e',
-                'completed': '#10b981',
-                'failed': '#ef4444',
-                'locked': '#6366f1'
-            };
-            return colors[status] || '#999';
-        }
-        
-        function getStatusText(status) {
-            const texts = {
-                'pending': '进行中',
-                'active': '进行中',
-                'completed': '已完成',
-                'failed': '已违约',
-                'locked': '已锁定'
-            };
-            return texts[status] || status;
-        }
-        
-        // 历史记录操作 - 完成
-        window.historyActionComplete = async function() {
-            const role = document.getElementById('history-role-select').value;
-            const password = document.getElementById('history-password-input').value;
+        // 验证密码并进入房间
+        window.verifyAndEnterRoom = async function() {
+            const role = document.getElementById('enter-role-select').value;
+            const password = document.getElementById('enter-password-input').value;
             
             if (!role) {
                 showToast('请选择身份');
@@ -3170,8 +3128,12 @@ ${statusText || '等待签署...'}
                 return;
             }
             
-            // 验证密码
-            const snapshot = await get(ref(db, 'rooms/' + currentRoomId));
+            const key = 'betHistory_v2';
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            const h = history[window.pendingHistoryIndex];
+            
+            // 从 Firebase 验证密码
+            const snapshot = await get(ref(db, 'rooms/' + h.roomId));
             const room = snapshot.val();
             
             if (!room) {
@@ -3187,50 +3149,94 @@ ${statusText || '等待签署...'}
                 return;
             }
             
-            // 设置当前角色并执行完成
+            // 验证成功，设置全局变量
+            currentRoomId = h.roomId;
             currentRole = role;
-            await window.submitComplete();
             
-            closeModal('history-detail-modal');
+            // 关闭密码弹窗，显示房间操作弹窗
+            closeModal('enter-room-modal');
+            showRoomActionsModal(room, h);
+        };
+        
+        // 显示房间操作弹窗（锁定状态的房间）
+        function showRoomActionsModal(room, historyRecord) {
+            const deadline = new Date(room.deadline || historyRecord.deadline);
+            
+            // 构建契约内容
+            let contentHtml = `
+                <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #ddd;">
+                    <span style="font-size: 12px; color: #888;">房间号</span><br>
+                    <strong style="font-size: 16px;">${historyRecord.roomId}</strong>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <span style="font-size: 12px; color: #888;">甲方</span><br>
+                    <strong>${room.partyA?.name || historyRecord.partyA?.name || '-'}</strong>
+                    ${room.partyASigned ? '<span style="color: #22c55e; margin-left: 8px;">✓ 已签</span>' : ''}
+                </div>
+            `;
+            
+            if (room.partyB || historyRecord.partyB) {
+                contentHtml += `
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-size: 12px; color: #888;">乙方</span><br>
+                        <strong>${room.partyB?.name || historyRecord.partyB?.name || '-'}</strong>
+                        ${room.partyBSigned ? '<span style="color: #22c55e; margin-left: 8px;">✓ 已签</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            if (room.supervisor || historyRecord.supervisor) {
+                contentHtml += `
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-size: 12px; color: #888;">监督方</span><br>
+                        <strong>${room.supervisor || historyRecord.supervisor || '-'}</strong>
+                        ${room.supervisorSigned ? '<span style="color: #22c55e; margin-left: 8px;">✓ 已签</span>' : ''}
+                    </div>
+                `;
+            }
+            
+            contentHtml += `
+                <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #ddd;">
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-size: 12px; color: #888;">任务内容</span><br>
+                        ${room.goal || historyRecord.goal}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-size: 12px; color: #888;">截止时间</span><br>
+                        ${deadline.toLocaleString('zh-CN')}
+                    </div>
+                    <div>
+                        <span style="font-size: 12px; color: #888;">违约代价</span><br>
+                        <strong style="color: #ef4444;">${room.stake || historyRecord.stake}</strong>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('room-actions-content').innerHTML = contentHtml;
+            document.getElementById('room-actions-modal').classList.add('active');
+        }
+        
+        // 房间操作 - 完成
+        window.roomActionComplete = async function() {
+            if (!currentRoomId || !currentRole) {
+                showToast('请重新进入房间');
+                return;
+            }
+            
+            await window.submitComplete();
+            closeModal('room-actions-modal');
             renderHistory();
         };
         
-        // 历史记录操作 - 放弃
-        window.historyActionGiveUp = async function() {
-            const role = document.getElementById('history-role-select').value;
-            const password = document.getElementById('history-password-input').value;
-            
-            if (!role) {
-                showToast('请选择身份');
-                return;
-            }
-            if (!password || password.length !== 4) {
-                showToast('请输入4位密码');
+        // 房间操作 - 放弃
+        window.roomActionGiveUp = async function() {
+            if (!currentRoomId || !currentRole) {
+                showToast('请重新进入房间');
                 return;
             }
             
-            // 验证密码
-            const snapshot = await get(ref(db, 'rooms/' + currentRoomId));
-            const room = snapshot.val();
-            
-            if (!room) {
-                showToast('房间数据不存在');
-                return;
-            }
-            
-            const passwordKey = role === 'executorA' ? 'partyAPassword' : 
-                               role === 'executorB' ? 'partyBPassword' : 'supervisorPassword';
-            
-            if (room[passwordKey] !== password) {
-                showToast('密码错误');
-                return;
-            }
-            
-            // 设置当前角色并执行放弃
-            currentRole = role;
             await window.submitGiveUp();
-            
-            closeModal('history-detail-modal');
+            closeModal('room-actions-modal');
             renderHistory();
         };
         
