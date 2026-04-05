@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>对赌房间 - 用代价逼出执行力</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            min-height: 100%;
+            color: #1a1a1a;
+            padding: 0;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 16px;
+            min-height: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 24px 0 32px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .header p {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #f0f0f0;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            background: #f5f5f5;
+            padding: 4px;
+            border-radius: 12px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .tab.active {
+            background: #fff;
+            color: #1a1a1a;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #eee;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            color: #1a1a1a;
+            font-size: 14px;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group input[type="datetime-local"] {
+            line-height: 1.4;
+        }
+        
+        .form-group input::-webkit-date-and-time-value {
+            text-align: left;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007aff;
+            background: #fff;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            min-width: 0;
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007aff;
+            color: #fff;
+        }
+        
+        .btn-primary:active {
+            background: #0062cc;
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #1a1a1a;
+        }
+        
+        .btn-danger {
+            background: #ff3b30;
+            color: #fff;
+        }
+        
+        .btn-success {
+            background: #34c759;
+            color: #fff;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Mode Select */
+        .mode-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-option {
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .mode-option.selected {
+            border-color: #007aff;
+            background: rgba(0, 122, 255, 0.05);
+        }
+        
+        .mode-option-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .mode-option-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .mode-option-desc {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        /* Room Status */
+        .room-status {
+            text-align: center;
+            padding: 16px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-badge.waiting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-badge.failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .countdown {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 20px 0;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+        }
+        
+        .countdown.urgent {
+            color: #ff3b30;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .goal-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        
+        .goal-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .goal-card-icon {
+            font-size: 16px;
+        }
+        
+        .goal-card-title {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .goal-card-content {
+            font-size: 15px;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        
+        .stake-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+        
+        .participants {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 24px 0;
+        }
+        
+        .participant {
+            text-align: center;
+        }
+        
+        .participant-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 8px;
+        }
+        
+        .participant-avatar.ready {
+            background: #d4edda;
+        }
+        
+        .participant-role {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 2px;
+        }
+        
+        .participant-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        /* Room Code */
+        .room-code-section {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+        
+        .room-code {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: #007aff;
+            font-family: 'SF Mono', 'Monaco', monospace;
+        }
+        
+        .room-code-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+        
+        .copy-btn {
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: #007aff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        /* History */
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+        
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .history-icon.win {
+            background: #d4edda;
+        }
+        
+        .history-icon.lose {
+            background: #f8d7da;
+        }
+        
+        .history-content {
+            flex: 1;
+        }
+        
+        .history-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+            font-size: 14px;
+        }
+        
+        .history-meta {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 340px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+            color: #1a1a1a;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .success-content {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+        
+        .success-content h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .success-content p {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .success-room-id {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .success-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .success-actions .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .success-actions .close-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* Result */
+        .result-section {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .result-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .result-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .result-sub {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Goal Progress (for dual mode) */
+        .goal-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+        
+        .goal-progress-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .goal-progress-info {
+            flex: 1;
+        }
+        
+        .goal-progress-name {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .goal-progress-text {
+            font-size: 13px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .goal-progress-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .goal-progress-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .goal-progress-status.done {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .goal-progress-status.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Waiting hint */
+        .waiting-hint {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            padding: 24px;
+        }
+        
+        .waiting-hint-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 对赌房间</h1>
+            <p>用代价逼出执行力</p>
+            <span class="badge">✨ 云端同步</span>
+        </div>
+        
+        <!-- 大厅视图 -->
+        <div id="lobby-view">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('create')">创建</div>
+                <div class="tab" onclick="switchTab('join')">加入</div>
+                <div class="tab" onclick="switchTab('history')">历史</div>
+            </div>
+            
+            <!-- 创建房间 -->
+            <div id="section-create" class="section active">
+                <!-- 模式选择 -->
+                <div class="card-title" style="margin-bottom: 12px; font-size: 14px;">选择模式</div>
+                <div class="mode-select">
+                    <div class="mode-option selected" onclick="selectMode('single')">
+                        <div class="mode-option-icon">👥</div>
+                        <div class="mode-option-title">单向监督</div>
+                        <div class="mode-option-desc">我做事，你监督</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('dual')">
+                        <div class="mode-option-icon">⚔️</div>
+                        <div class="mode-option-title">双向对赌</div>
+                        <div class="mode-option-desc">各定目标，谁先输谁赢</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div id="single-form">
+                        <div class="form-group">
+                            <label>🎯 目标任务</label>
+                            <textarea id="goal" rows="2" placeholder="例如：每天运动30分钟，坚持7天"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📅 开始日期</label>
+                                <input type="date" id="start-date">
+                            </div>
+                            <div class="form-group">
+                                <label>🏁 截止日期</label>
+                                <input type="date" id="deadline-date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>⏰ 截止时间</label>
+                            <input type="time" id="deadline-time" value="23:59">
+                        </div>
+                        <div class="form-group">
+                            <label>💎 赌注</label>
+                            <input type="text" id="stake-value" placeholder="例如：输了请吃顿大餐">
+                        </div>
+                        <div class="form-group">
+                            <label>👤 我的角色</label>
+                            <select id="my-role">
+                                <option value="executor">执行方 - 我来做</option>
+                                <option value="supervisor">监督方 - 我来监督</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="dual-form" style="display: none;">
+                        <div class="form-group">
+                            <label>🎯 我的目标</label>
+                            <textarea id="my-goal" rows="2" placeholder="你的目标"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>🎯 对方的目标（可选）</label>
+                            <textarea id="peer-goal" rows="2" placeholder="对方的目标（对方加入后可修改）"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📅 开始日期</label>
+                                <input type="date" id="dual-start-date">
+                            </div>
+                            <div class="form-group">
+                                <label>🏁 截止日期</label>
+                                <input type="date" id="dual-deadline-date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>⏰ 截止时间</label>
+                            <input type="time" id="dual-deadline-time" value="23:59">
+                        </div>
+                        <div class="form-group">
+                            <label>💎 赌注（输家给赢家）</label>
+                            <input type="text" id="dual-stake" placeholder="例如：200元红包">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="createRoom()" style="margin-top: 8px;">创建房间</button>
+                </div>
+            </div>
+            
+            <!-- 加入房间 -->
+            <div id="section-join" class="section">
+                <div class="card">
+                    <div class="form-group">
+                        <label>🔐 输入房间号</label>
+                        <input type="text" id="join-code" placeholder="6位房间号" maxlength="6" style="text-transform: uppercase; text-align: center; font-size: 24px; letter-spacing: 4px;">
+                    </div>
+                    <button class="btn btn-primary" onclick="joinRoom()">加入房间</button>
+                </div>
+            </div>
+            
+            <!-- 历史记录 -->
+            <div id="section-history" class="section">
+                <div id="history-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📜</div>
+                        <p>暂无历史记录</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 房间视图 -->
+        <div id="room-view" style="display: none;">
+            <div class="card">
+                <div class="room-status">
+                    <span id="room-status-badge" class="status-badge waiting">等待加入</span>
+                </div>
+                
+                <!-- 房间号展示 -->
+                <div id="room-code-section" class="room-code-section">
+                    <div class="room-code" id="display-room-code">------</div>
+                    <div class="room-code-label">房间号（发给对方加入）</div>
+                    <button class="copy-btn" onclick="copyRoomCode()">📋 复制房间号</button>
+                </div>
+                
+                <!-- 目标展示 -->
+                <div id="goal-display">
+                    <!-- 动态填充 -->
+                </div>
+                
+                <!-- 倒计时 -->
+                <div class="countdown" id="countdown">--:--:--</div>
+                
+                <!-- 参与者 -->
+                <div class="participants" id="participants">
+                    <!-- 动态填充 -->
+                </div>
+                
+                <!-- 等待提示 -->
+                <div id="waiting-hint" class="waiting-hint">
+                    <div class="waiting-hint-icon">⏳</div>
+                    <p>等待对方加入...</p>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div id="action-buttons" class="actions" style="display: none;">
+                    <button class="btn btn-success" onclick="confirmComplete()">✓ 我完成了</button>
+                    <button class="btn btn-danger" onclick="showGiveUp()">✗ 认输</button>
+                </div>
+                
+                <!-- 监督方提示 -->
+                <div id="supervisor-hint" style="display: none; text-align: center; padding: 20px; color: #999;">
+                    <p>你是监督方，等待执行方完成任务</p>
+                    <button class="btn btn-secondary" style="margin-top: 12px;" onclick="exitRoom()">离开房间</button>
+                </div>
+                
+                <!-- 结果展示 -->
+                <div id="result-section" class="result-section" style="display: none;">
+                    <div class="result-icon" id="result-icon">🎉</div>
+                    <div class="result-text" id="result-text">-</div>
+                    <div class="result-sub" id="result-sub">-</div>
+                    <button class="btn btn-secondary" style="margin-top: 20px;" onclick="exitRoom()">返回大厅</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- 成功弹窗 -->
+    <div id="success-modal" class="success-modal">
+        <div class="success-content">
+            <h3>🎉 房间创建成功！</h3>
+            <p>把房间号发给对方加入</p>
+            <div class="success-room-id" id="success-room-id"></div>
+            <div class="success-actions">
+                <button class="copy-btn" onclick="window.copySuccessRoomId()">📋 复制房间号</button>
+                <button class="close-btn" onclick="window.closeSuccessModal();window.enterRoom(window.currentRoomId);">进入房间</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 完成确认 -->
+    <div id="complete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">🎉 确认完成？</div>
+            <div class="modal-body">
+                确定你已完成目标？完成后将赢得赌注！
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('complete-modal')">再想想</button>
+                <button class="btn btn-success" onclick="submitComplete()">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 认输确认 -->
+    <div id="giveup-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">😢 确认认输？</div>
+            <div class="modal-body">
+                认输后需要兑现赌注！确定要放弃吗？
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('giveup-modal')">再坚持</button>
+                <button class="btn btn-danger" onclick="submitGiveUp()">认输</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, off } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWehugCLQOp6uWX497fy2wSuvi1n0x_Gk",
+            authDomain: "bet-room-722bd.firebaseapp.com",
+            databaseURL: "https://bet-room-722bd-default-rtdb.firebaseio.com",
+            projectId: "bet-room-722bd",
+            storageBucket: "bet-room-722bd.firebasestorage.app",
+            messagingSenderId: "877203000899",
+            appId: "1:877203000899:web:f59f21ff7600d89c990ef6"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        // ⚠️ 关键：将 Firebase 函数挂载到 window 供 onclick 使用
+        window.db = db;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.onValue = onValue;
+        window.update = update;
+        window.off = off;
+        
+        window.currentRoomId = null;
+        window.currentRole = null;
+        window.currentMode = 'single';
+        window.countdownInterval = null;
+        window.roomListener = null;
+        
+        // Toast 提示
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2500);
+            }
+        };
+        
+        // 成功弹窗
+        window.showSuccessModal = function(roomId) {
+            const modal = document.getElementById('success-modal');
+            const roomIdDisplay = document.getElementById('success-room-id');
+            if (modal && roomIdDisplay) {
+                roomIdDisplay.textContent = roomId;
+                modal.style.display = 'flex';
+            }
+        };
+        
+        window.closeSuccessModal = function() {
+            const modal = document.getElementById('success-modal');
+            if (modal) modal.style.display = 'none';
+        };
+        
+        window.copySuccessRoomId = function() {
+            const roomId = document.getElementById('success-room-id').textContent;
+            navigator.clipboard.writeText(roomId).then(() => {
+                window.showToast('已复制房间号：' + roomId);
+            }).catch(() => {
+                window.showToast('复制失败，请手动复制');
+            });
+        };
+        
+        // 生成房间号
+window.generateRoomId = function() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // Toast
+window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        // 切换标签
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            
+            const tabIndex = { create: 1, join: 2, history: 3 }[tab];
+            document.querySelector('.tab:nth-child(' + tabIndex + ')').classList.add('active');
+            document.getElementById('section-' + tab).classList.add('active');
+            
+            if (tab === 'history') renderHistory();
+        };
+        
+        // 选择模式
+        window.selectMode = function(mode) {
+            window.currentMode = mode;
+            document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector('.mode-option:nth-child(' + (mode === 'single' ? '1' : '2') + ')').classList.add('selected');
+            
+            document.getElementById('single-form').style.display = mode === 'single' ? 'block' : 'none';
+            document.getElementById('dual-form').style.display = mode === 'dual' ? 'block' : 'none';
+        };
+        
+        // 创建房间
+        window.createRoom = async function() {
+            const roomId = generateRoomId();
+            let roomData;
+            
+            if (window.currentMode === 'single') {
+                const goal = document.getElementById('goal').value.trim();
+                const startDate = document.getElementById('start-date').value;
+                const deadlineDate = document.getElementById('deadline-date').value;
+                const deadlineTime = document.getElementById('deadline-time').value;
+                const stakeValue = document.getElementById('stake-value').value.trim();
+                const myRole = document.getElementById('my-role').value;
+                
+                if (!goal || !startDate || !deadlineDate || !stakeValue) {
+                    showToast('请填写完整信息');
+                    return;
+                }
+                
+                const start = new Date(startDate);
+                const deadline = new Date(`${deadlineDate}T${deadlineTime}`);
+                if (deadline <= new Date()) {
+                    showToast('截止时间必须在未来');
+                    return;
+                }
+                if (deadline <= start) {
+                    showToast('截止时间必须在开始时间之后');
+                    return;
+                }
+                
+                const duration = Math.ceil((deadline - start) / (1000 * 60 * 60 * 24));
+                
+                roomData = {
+                    id: roomId,
+                    mode: 'single',
+                    goal: goal,
+                    startDate: start.getTime(),
+                    deadline: deadline.getTime(),
+                    duration: duration,
+                    stakeValue: stakeValue,
+                    status: 'waiting',
+                    createdAt: Date.now(),
+                    executor: myRole === 'executor' ? 'creator' : null,
+                    supervisor: myRole === 'supervisor' ? 'creator' : null,
+                    executorDone: false,
+                    result: null
+                };
+                
+                window.currentRole = myRole;
+            } else {
+                // 双向对赌
+                const myGoal = document.getElementById('my-goal').value.trim();
+                const peerGoal = document.getElementById('peer-goal').value.trim();
+                const startDate = document.getElementById('dual-start-date').value;
+                const deadlineDate = document.getElementById('dual-deadline-date').value;
+                const deadlineTime = document.getElementById('dual-deadline-time').value;
+                const stake = document.getElementById('dual-stake').value.trim();
+                
+                if (!myGoal || !startDate || !deadlineDate || !stake) {
+                    showToast('请填写完整信息');
+                    return;
+                }
+                
+                const start = new Date(startDate);
+                const deadline = new Date(`${deadlineDate}T${deadlineTime}`);
+                if (deadline <= new Date()) {
+                    showToast('截止时间必须在未来');
+                    return;
+                }
+                if (deadline <= start) {
+                    showToast('截止时间必须在开始时间之后');
+                    return;
+                }
+                
+                const duration = Math.ceil((deadline - start) / (1000 * 60 * 60 * 24));
+                
+                roomData = {
+                    id: roomId,
+                    mode: 'dual',
+                    goalA: myGoal,
+                    goalB: peerGoal || '待对方填写',
+                    startDate: start.getTime(),
+                    deadline: deadline.getTime(),
+                    duration: duration,
+                    stakeValue: stake,
+                    status: 'waiting',
+                    createdAt: Date.now(),
+                    executorA: 'creator',
+                    executorB: null,
+                    executorADone: false,
+                    executorBDone: false,
+                    result: null
+                };
+                
+                window.currentRole = 'executorA';
+            }
+            
+            try {
+                await set(ref(db, 'rooms/' + roomId), roomData);
+                window.currentRoomId = roomId;
+                showToast('房间创建成功！');
+                // 显示成功弹窗
+                showSuccessModal(roomId);
+                window.enterRoom(roomId);
+            } catch (error) {
+                showToast('创建失败：' + error.message);
+                console.error('创建房间失败:', error);
+            }
+        };
+        
+        // 加入房间
+        window.joinRoom = async function() {
+            const code = document.getElementById('join-code').value.trim().toUpperCase();
+            if (code.length !== 6) {
+                showToast('请输入6位房间号');
+                return;
+            }
+            
+            try {
+                const snapshot = await get(ref(db, 'rooms/' + code));
+                if (!snapshot.exists()) {
+                    showToast('房间不存在');
+                    return;
+                }
+                
+                const room = snapshot.val();
+                if (room.status !== 'waiting') {
+                    showToast('该房间已开始或已结束');
+                    return;
+                }
+                
+                if (room.mode === 'single') {
+                    // 单向模式
+                    if (!room.executor && room.supervisor) {
+                        window.currentRole = 'executor';
+                        await update(ref(db, 'rooms/' + code), { 
+                            executor: 'joiner', 
+                            status: 'active' 
+                        });
+                    } else if (room.executor && !room.supervisor) {
+                        window.currentRole = 'supervisor';
+                        await update(ref(db, 'rooms/' + code), { 
+                            supervisor: 'joiner', 
+                            status: 'active' 
+                        });
+                    } else {
+                        showToast('该房间已满');
+                        return;
+                    }
+                } else {
+                    // 双向模式
+                    if (!room.executorB) {
+                        window.currentRole = 'executorB';
+                        await update(ref(db, 'rooms/' + code), { 
+                            executorB: 'joiner',
+                            status: 'active'
+                        });
+                    } else {
+                        showToast('该房间已满');
+                        return;
+                    }
+                }
+                
+                window.currentRoomId = code;
+                showToast('成功加入房间！');
+                enterRoom(code);
+            } catch (error) {
+                showToast('加入失败：' + error.message);
+            }
+        };
+        
+        // 进入房间
+window.enterRoom = function(roomId) {
+            document.getElementById('lobby-view').style.display = 'none';
+            document.getElementById('room-view').style.display = 'block';
+            
+            window.roomListener = onValue(ref(db, 'rooms/' + roomId), (snapshot) => {
+                if (snapshot.exists()) {
+                    updateRoomDisplay(snapshot.val());
+                } else {
+                    showToast('房间已关闭');
+                    exitRoom();
+                }
+            });
+        }
+        
+        // 更新房间显示
+window.updateRoomDisplay = function(room) {
+            document.getElementById('display-room-code').textContent = room.id;
+            
+            // 状态徽章
+            const badge = document.getElementById('room-status-badge');
+            const statusText = { waiting: '等待加入', active: '进行中', completed: '已完成', failed: '已失败' };
+            badge.textContent = statusText[room.status] || room.status;
+            badge.className = 'status-badge ' + room.status;
+            
+            // 目标展示
+            const goalDisplay = document.getElementById('goal-display');
+            const startDateStr = room.startDate ? new Date(room.startDate).toLocaleDateString('zh-CN') : '未设置';
+            const durationText = room.duration ? `共 ${room.duration} 天` : '';
+            
+            if (room.mode === 'single') {
+                goalDisplay.innerHTML = `
+                    <div class="goal-card">
+                        <div class="goal-card-header">
+                            <span class="goal-card-icon">🎯</span>
+                            <span class="goal-card-title">目标</span>
+                        </div>
+                        <div class="goal-card-content">${room.goal}</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #999;">
+                            📅 ${startDateStr} 开始 ${durationText ? '· ' + durationText : ''}
+                        </div>
+                        <div class="stake-tag">💎 赌注：${room.stakeValue}</div>
+                    </div>
+                `;
+            } else {
+                goalDisplay.innerHTML = `
+                    <div class="goal-card">
+                        <div class="goal-card-header">
+                            <span class="goal-card-icon">🎯</span>
+                            <span class="goal-card-title">A 的目标</span>
+                            ${room.executorADone ? '<span class="goal-progress-status done">✓ 完成</span>' : ''}
+                        </div>
+                        <div class="goal-card-content">${room.goalA}</div>
+                    </div>
+                    <div class="goal-card">
+                        <div class="goal-card-header">
+                            <span class="goal-card-icon">🎯</span>
+                            <span class="goal-card-title">B 的目标</span>
+                            ${room.executorBDone ? '<span class="goal-progress-status done">✓ 完成</span>' : ''}
+                        </div>
+                        <div class="goal-card-content">${room.goalB}</div>
+                    </div>
+                    <div style="text-align: center; font-size: 12px; color: #999; margin: -8px 0 8px;">
+                        📅 ${startDateStr} 开始 ${durationText ? '· ' + durationText : ''}
+                    </div>
+                    <div class="stake-tag" style="justify-content: center;">💎 赌注：${room.stakeValue}</div>
+                `;
+            }
+            
+            // 参与者
+            const participantsDiv = document.getElementById('participants');
+            if (room.mode === 'single') {
+                participantsDiv.innerHTML = `
+                    <div class="participant">
+                        <div class="participant-avatar ${room.executor ? 'ready' : ''}">${room.executor ? '💪' : '?'}</div>
+                        <div class="participant-role">执行方</div>
+                        <div class="participant-name">${room.executor ? (room.executor === 'creator' ? '创建者' : '参与者') : '等待中'}</div>
+                    </div>
+                    <div class="participant">
+                        <div class="participant-avatar ${room.supervisor ? 'ready' : ''}">${room.supervisor ? '👀' : '?'}</div>
+                        <div class="participant-role">监督方</div>
+                        <div class="participant-name">${room.supervisor ? (room.supervisor === 'creator' ? '创建者' : '参与者') : '等待中'}</div>
+                    </div>
+                `;
+            } else {
+                participantsDiv.innerHTML = `
+                    <div class="participant">
+                        <div class="participant-avatar ${room.executorA ? 'ready' : ''}">${room.executorADone ? '✅' : '🅰️'}</div>
+                        <div class="participant-role">A</div>
+                        <div class="participant-name">${room.executorA ? '创建者' : '等待中'}</div>
+                    </div>
+                    <div class="participant">
+                        <div class="participant-avatar ${room.executorB ? 'ready' : ''}">${room.executorBDone ? '✅' : '🅱️'}</div>
+                        <div class="participant-role">B</div>
+                        <div class="participant-name">${room.executorB ? '参与者' : '等待中'}</div>
+                    </div>
+                `;
+            }
+            
+            // 根据状态显示不同内容
+            if (room.status === 'waiting') {
+                document.getElementById('room-code-section').style.display = 'block';
+                document.getElementById('waiting-hint').style.display = 'block';
+                document.getElementById('action-buttons').style.display = 'none';
+                document.getElementById('supervisor-hint').style.display = 'none';
+                document.getElementById('result-section').style.display = 'none';
+                document.getElementById('countdown').textContent = '--:--:--';
+            } else if (room.status === 'active') {
+                document.getElementById('room-code-section').style.display = 'none';
+                document.getElementById('waiting-hint').style.display = 'none';
+                document.getElementById('result-section').style.display = 'none';
+                
+                const isExecutor = (room.mode === 'single' && window.currentRole === 'executor') ||
+                                   (room.mode === 'dual' && (window.currentRole === 'executorA' || window.currentRole === 'executorB'));
+                
+                if (isExecutor) {
+                    // 双向模式下检查是否已完成
+                    if (room.mode === 'dual') {
+                        const myDone = window.currentRole === 'executorA' ? room.executorADone : room.executorBDone;
+                        if (myDone) {
+                            document.getElementById('action-buttons').style.display = 'none';
+                            document.getElementById('supervisor-hint').style.display = 'block';
+                            document.getElementById('supervisor-hint').innerHTML = '<p>你已完成目标，等待对方...</p>';
+                        } else {
+                            document.getElementById('action-buttons').style.display = 'grid';
+                            document.getElementById('supervisor-hint').style.display = 'none';
+                        }
+                    } else {
+                        document.getElementById('action-buttons').style.display = 'grid';
+                        document.getElementById('supervisor-hint').style.display = 'none';
+                    }
+                } else {
+                    document.getElementById('action-buttons').style.display = 'none';
+                    document.getElementById('supervisor-hint').style.display = 'block';
+                }
+                
+                startCountdown(room.deadline);
+            } else {
+                // completed 或 failed
+                clearInterval(window.countdownInterval);
+                document.getElementById('room-code-section').style.display = 'none';
+                document.getElementById('waiting-hint').style.display = 'none';
+                document.getElementById('action-buttons').style.display = 'none';
+                document.getElementById('supervisor-hint').style.display = 'none';
+                document.getElementById('result-section').style.display = 'block';
+                
+                if (room.status === 'completed') {
+                    document.getElementById('result-icon').textContent = '🎉';
+                    document.getElementById('result-text').textContent = '目标达成！';
+                    document.getElementById('result-text').style.color = '#34c759';
+                    document.getElementById('result-sub').textContent = room.mode === 'dual' ? '双方都完成了！' : '执行方获胜！';
+                } else {
+                    document.getElementById('result-icon').textContent = '😢';
+                    document.getElementById('result-text').textContent = '任务失败';
+                    document.getElementById('result-text').style.color = '#ff3b30';
+                    document.getElementById('result-sub').textContent = '需要兑现赌注';
+                }
+                
+                saveToHistory(room);
+            }
+        }
+        
+        // 倒计时
+window.startCountdown = function(deadline) {
+            clearInterval(window.countdownInterval);
+            
+            window.countdownInterval = setInterval(() => {
+                const now = Date.now();
+                const diff = deadline - now;
+                
+                if (diff <= 0) {
+                    clearInterval(window.countdownInterval);
+                    document.getElementById('countdown').textContent = '00:00:00';
+                    if (window.currentRole === 'executor' || window.currentRole === 'executorA' || window.currentRole === 'executorB') {
+                        submitGiveUp(true);
+                    }
+                    return;
+                }
+                
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                const el = document.getElementById('countdown');
+                el.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                el.classList.toggle('urgent', diff < 3600000);
+            }, 1000);
+        }
+        
+        // 完成
+        window.confirmComplete = function() {
+            document.getElementById('complete-modal').classList.add('active');
+        };
+        
+        window.submitComplete = async function() {
+            closeModal('complete-modal');
+            
+            try {
+                if (window.currentMode === 'single' || window.currentRole === 'executor') {
+                    await update(ref(db, 'rooms/' + window.currentRoomId), {
+                        status: 'completed',
+                        result: 'success',
+                        completedAt: Date.now()
+                    });
+                } else {
+                    // 双向模式
+                    const updateData = window.currentRole === 'executorA' 
+                        ? { executorADone: true }
+                        : { executorBDone: true };
+                    
+                    // 检查是否都完成了
+                    const snapshot = await get(ref(db, 'rooms/' + window.currentRoomId));
+                    const room = snapshot.val();
+                    const bothDone = (window.currentRole === 'executorA' ? true : room.executorADone) &&
+                                     (window.currentRole === 'executorB' ? true : room.executorBDone);
+                    
+                    if (bothDone) {
+                        updateData.status = 'completed';
+                        updateData.result = 'success';
+                    }
+                    
+                    await update(ref(db, 'rooms/' + window.currentRoomId), updateData);
+                }
+            } catch (error) {
+                showToast('提交失败：' + error.message);
+            }
+        };
+        
+        // 认输
+        window.showGiveUp = function() {
+            document.getElementById('giveup-modal').classList.add('active');
+        };
+        
+        window.submitGiveUp = async function(isTimeout = false) {
+            if (!isTimeout) closeModal('giveup-modal');
+            
+            try {
+                await update(ref(db, 'rooms/' + window.currentRoomId), {
+                    status: 'failed',
+                    result: 'giveup',
+                    failedAt: Date.now(),
+                    failedBy: window.currentRole
+                });
+            } catch (error) {
+                showToast('提交失败：' + error.message);
+            }
+        };
+        
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('active');
+        };
+        
+        // 复制房间号
+        window.copyRoomCode = function() {
+            const code = document.getElementById('display-room-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('已复制：' + code);
+            }).catch(() => {
+                showToast('复制失败，请手动复制');
+            });
+        };
+        
+        // 退出房间
+        window.exitRoom = function() {
+            if (window.currentRoomId) {
+                off(ref(db, 'rooms/' + window.currentRoomId));
+            }
+            clearInterval(window.countdownInterval);
+            window.currentRoomId = null;
+            window.currentRole = null;
+            
+            document.getElementById('room-view').style.display = 'none';
+            document.getElementById('lobby-view').style.display = 'block';
+        };
+        
+        // 保存历史
+        async function saveToHistory(room) {
+            const key = 'betHistory_' + (localStorage.getItem('userId') || 'default');
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            if (!history.find(h => h.id === room.id)) {
+                history.push({
+                    id: room.id,
+                    goal: room.goal || (room.goalA + ' vs ' + room.goalB),
+                    stake: room.stakeValue,
+                    status: room.status,
+                    myRole: window.currentRole,
+                    mode: room.mode,
+                    date: Date.now()
+                });
+                localStorage.setItem(key, JSON.stringify(history));
+            }
+        }
+        
+        // 渲染历史
+window.renderHistory = function() {
+            const key = 'betHistory_' + (localStorage.getItem('userId') || 'default');
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            const container = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📜</div>
+                        <p>暂无历史记录</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = history.reverse().map(h => `
+                <div class="history-item">
+                    <div class="history-icon ${h.status === 'completed' ? 'win' : 'lose'}">
+                        ${h.status === 'completed' ? '✓' : '✗'}
+                    </div>
+                    <div class="history-content">
+                        <div class="history-title">${h.goal}</div>
+                        <div class="history-meta">
+                            赌注：${h.stake} · ${new Date(h.date).toLocaleDateString('zh-CN')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 初始化
+        window.onload = function() {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const todayStr = today.toISOString().split('T')[0];
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            
+            // 单向模式
+            document.getElementById('start-date').value = todayStr;
+            document.getElementById('start-date').min = todayStr;
+            document.getElementById('deadline-date').value = tomorrowStr;
+            document.getElementById('deadline-date').min = todayStr;
+            
+            // 双向模式
+            document.getElementById('dual-start-date').value = todayStr;
+            document.getElementById('dual-start-date').min = todayStr;
+            document.getElementById('dual-deadline-date').value = tomorrowStr;
+            document.getElementById('dual-deadline-date').min = todayStr;
+            
+            if (!localStorage.getItem('userId')) {
+                localStorage.setItem('userId', 'user_' + Math.random().toString(36).substr(2, 9));
+            }
+        };
+    </script>
+</body>
+</html>
