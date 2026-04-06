@@ -1370,6 +1370,10 @@
             <div id="room-actions-content" style="background: #f8f9fa; padding: 16px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; line-height: 1.8;">
                 <!-- 契约内容 -->
             </div>
+            <!-- 签署按钮区域（未签署角色显示） -->
+            <div id="sign-action-area" style="display: none;">
+                <button class="btn btn-primary" onclick="initSignFromHistory()" style="width: 100%; margin-bottom: 12px;">✍️ 签署契约</button>
+            </div>
             <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
                 ⚠️ 确认操作后将无法撤销，请确保已与对方沟通。
             </div>
@@ -3112,10 +3116,6 @@ ${statusText || '等待签署...'}
                 showToast('请选择身份');
                 return;
             }
-            if (!password || password.length !== 4) {
-                showToast('请输入4位密码');
-                return;
-            }
             
             const key = 'betHistory_v2';
             const history = JSON.parse(localStorage.getItem(key) || '[]');
@@ -3135,16 +3135,23 @@ ${statusText || '等待签署...'}
             
             const storedPassword = room[passwordKey];
             
-            // 如果该角色还没设置密码（未签署过），密码必须留空才能进入
+            // 如果该角色还没设置密码（未签署过）
             if (!storedPassword) {
-                if (password && password.trim() !== '') {
-                    showToast('该角色未设置密码，请留空密码进入');
+                // 密码可以为空，也可以输入（方便用户提前设置密码）
+                if (password && password.length !== 4) {
+                    showToast('密码必须是4位数字');
                     return;
                 }
                 currentRoomId = h.roomId;
                 currentRole = role;
                 closeModal('enter-room-modal');
                 showRoomActionsModal(room, h);
+                return;
+            }
+            
+            // 该角色已设置密码，必须验证
+            if (!password || password.length !== 4) {
+                showToast('请输入4位密码');
                 return;
             }
             
