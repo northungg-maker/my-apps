@@ -3131,7 +3131,18 @@ ${statusText || '等待签署...'}
             const passwordKey = role === 'executorA' ? 'partyAPassword' : 
                                role === 'executorB' ? 'partyBPassword' : 'supervisorPassword';
             
-            if (room[passwordKey] !== password) {
+            const storedPassword = room[passwordKey];
+            
+            // 如果该角色还没设置密码（未签署过），允许直接进入
+            if (!storedPassword) {
+                currentRoomId = h.roomId;
+                currentRole = role;
+                closeModal('enter-room-modal');
+                showRoomActionsModal(room, h);
+                return;
+            }
+            
+            if (storedPassword !== password) {
                 showToast('密码错误');
                 return;
             }
