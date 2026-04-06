@@ -1224,7 +1224,7 @@
                     <button class="btn btn-outline" onclick="copyContractInfo()">📋 复制契约信息</button>
                 </div>
                 <div class="action-row">
-                    <button class="btn btn-outline" onclick="exportContractPDF()">📄 导出契约PDF</button>
+                    <button class="btn btn-outline" onclick="exportContractImage()">🖼️ 导出契约图片</button>
                 </div>
                 <div class="action-row">
                     <button class="btn btn-secondary" onclick="exitRoom()">退出房间</button>
@@ -2510,138 +2510,37 @@ ${statusText || '等待签署...'}
         };
         
         // Export contract PDF
-        window.exportContractPDF = function() {
+        window.exportContractImage = function() {
             if (!currentContract) {
                 showToast('契约信息加载中...');
                 return;
             }
             
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const deadline = new Date(currentContract.deadline);
-            const signedAt = new Date(currentContract.signedAt);
-            
-            // Title
-            doc.setFontSize(20);
-            doc.text('Behavior Contract', 105, 20, { align: 'center' });
-            doc.setFontSize(12);
-            doc.text('行为契约', 105, 28, { align: 'center' });
-            
-            // Subtitle
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text('本契约一经签署，即具有约束效力', 105, 38, { align: 'center' });
-            
-            // Contract ID
-            doc.setFontSize(9);
-            doc.text(`Contract ID: ${currentContract.contractId}`, 105, 45, { align: 'center' });
-            
-            doc.setTextColor(0);
-            let y = 60;
-            
-            // Parties
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Parties / 当事人', 20, y);
-            doc.setFont(undefined, 'normal');
-            y += 8;
-            
-            doc.setFontSize(10);
-            doc.text(`Party A / 甲方: ${currentContract.partyA.name} (Executor / 执行方)`, 25, y);
-            y += 6;
-            
-            if (currentContract.partyB) {
-                doc.text(`Party B / 乙方: ${currentContract.partyB.name} (Executor / 执行方)`, 25, y);
-                y += 6;
+            // 找到契约详情展示的区域
+            const contractDisplay = document.getElementById('contract-display');
+            if (!contractDisplay) {
+                showToast('找不到契约展示区域');
+                return;
             }
             
-            if (currentContract.supervisor) {
-                doc.text(`Supervisor / 监督方: ${currentContract.supervisor}`, 25, y);
-                y += 6;
-            }
+            showToast('正在生成图片...');
             
-            y += 10;
-            
-            // Content
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Execution Content / 执行内容', 20, y);
-            doc.setFont(undefined, 'normal');
-            y += 8;
-            
-            doc.setFontSize(10);
-            if (currentContract.mode === 'single') {
-                const lines = doc.splitTextToSize(`Task / 任务: ${currentContract.goal}`, 170);
-                doc.text(lines, 25, y);
-                y += lines.length * 5 + 2;
-            } else {
-                const linesA = doc.splitTextToSize(`${currentContract.partyA.name}: ${currentContract.partyA.goal}`, 170);
-                doc.text(linesA, 25, y);
-                y += linesA.length * 5 + 2;
-                
-                const linesB = doc.splitTextToSize(`${currentContract.partyB.name}: ${currentContract.partyB.goal}`, 170);
-                doc.text(linesB, 25, y);
-                y += linesB.length * 5 + 2;
-            }
-            
-            const standardLines = doc.splitTextToSize(`Standard / 完成标准: ${currentContract.completionStandard}`, 170);
-            doc.text(standardLines, 25, y);
-            y += standardLines.length * 5 + 2;
-            
-            doc.text(`Period / 执行周期: ${currentContract.startDate} to ${deadline.toLocaleDateString('zh-CN')}`, 25, y);
-            y += 10;
-            
-            // Terms
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Terms / 约束条款', 20, y);
-            doc.setFont(undefined, 'normal');
-            y += 8;
-            
-            doc.setFontSize(10);
-            doc.text(`Stake / 押注代价: ${currentContract.stake}`, 25, y);
-            y += 6;
-            
-            const penaltyLines = doc.splitTextToSize(`Penalty / 违约处理: ${currentContract.penaltyClause}`, 170);
-            doc.text(penaltyLines, 25, y);
-            y += penaltyLines.length * 5 + 10;
-            
-            // Risk Warning
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(180, 0, 0);
-            doc.text('Risk Warning / 风险声明', 20, y);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(100);
-            y += 8;
-            
-            doc.setFontSize(9);
-            const riskText = 'This contract is a voluntary behavioral binding agreement. The system serves only as a recording and execution tool. Users are responsible for the outcomes of their own actions. / 本契约为自愿行为约束协议，系统仅作为记录与执行工具，用户对自身行为结果负责。';
-            const riskLines = doc.splitTextToSize(riskText, 170);
-            doc.text(riskLines, 25, y);
-            y += riskLines.length * 5 + 10;
-            
-            // Signature
-            doc.setTextColor(0);
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Signature / 签署', 20, y);
-            doc.setFont(undefined, 'normal');
-            y += 10;
-            
-            doc.setFontSize(10);
-            doc.text(`Signed by / 签署人: ${currentContract.signedBy}`, 25, y);
-            y += 6;
-            doc.text(`Time / 时间: ${signedAt.toLocaleString('zh-CN')}`, 25, y);
-            y += 6;
-            doc.text(`Contract ID / 契约编号: ${currentContract.contractId}`, 25, y);
-            y += 6;
-            doc.text(`Status / 状态: ${currentContract.status === 'locked' ? '已生效 (Active)' : currentContract.status}`, 25, y);
-            
-            // Save
-            const filename = `Contract_${currentContract.contractId}.pdf`;
-            doc.save(filename);
-            showToast('契约已导出');
+            html2canvas(contractDisplay, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            }).then(canvas => {
+                // 转成PNG下载
+                const link = document.createElement('a');
+                link.download = `Contract_${currentContract.contractId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('契约图片已导出');
+            }).catch(err => {
+                console.error('导出失败:', err);
+                showToast('导出失败，请重试');
+            });
         };
         
         // Exit room
@@ -2951,7 +2850,10 @@ ${statusText || '等待签署...'}
                 
                 // 保存到本地
                 saveMyContract(currentRoomId, role);
-                updateHistoryAfterSign(currentRoomId, role);
+                // 更新历史记录（传对象格式）
+                const signData = {};
+                signData[signedField] = true;
+                updateHistoryAfterSign(currentRoomId, signData);
                 
                 alert('签署成功！');
                 // 刷新房间信息
