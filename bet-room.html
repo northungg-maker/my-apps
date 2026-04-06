@@ -708,6 +708,8 @@
             padding: 24px;
             max-width: 400px;
             width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
         }
         
         .modal-title {
@@ -3133,8 +3135,12 @@ ${statusText || '等待签署...'}
             
             const storedPassword = room[passwordKey];
             
-            // 如果该角色还没设置密码（未签署过），允许直接进入
+            // 如果该角色还没设置密码（未签署过），密码必须留空才能进入
             if (!storedPassword) {
+                if (password && password.trim() !== '') {
+                    showToast('该角色未设置密码，请留空密码进入');
+                    return;
+                }
                 currentRoomId = h.roomId;
                 currentRole = role;
                 closeModal('enter-room-modal');
