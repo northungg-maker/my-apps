@@ -1815,6 +1815,9 @@
                 currentContract.partyASigned = true;
                 currentContract.partyASignedAt = Date.now();
                 currentContract.partyASignedBy = document.getElementById('signature-input').value.trim();
+                // 初始化乙方和监督方签署状态
+                currentContract.partyBSigned = false;
+                currentContract.supervisorSigned = false;
                 
                 console.log('[DEBUG] 准备写入数据库，roomId:', roomId);
                 
@@ -3132,7 +3135,7 @@ ${statusText || '等待签署...'}
             const history = JSON.parse(localStorage.getItem(key) || '[]');
             const h = history[window.pendingHistoryIndex];
             
-            // 从 Firebase 验证密码
+            // 从 Firebase 获取房间数据
             const snapshot = await get(ref(db, 'rooms/' + h.roomId));
             const room = snapshot.val();
             
@@ -3141,18 +3144,30 @@ ${statusText || '等待签署...'}
                 return;
             }
             
-            const passwordKey = role === 'executorA' ? 'partyAPassword' : 
-                               role === 'executorB' ? 'partyBPassword' : 'supervisorPassword';
+            // 获取所有角色的密码
+            const passwords = {
+                executorA: room.partyAPassword,
+                executorB: room.partyBPassword,
+                supervisor: room.supervisorPassword
+            };
             
-            const storedPassword = room[passwordKey];
+            const selectedPassword = passwords[role];
             
-            // 如果该角色还没设置密码（未签署过）
-            if (!storedPassword) {
-                // 密码可以为空，也可以输入（方便用户提前设置密码）
-                if (password && password.length !== 4) {
-                    showToast('密码必须是4位数字');
+            // 检查是否有任何角色已设置密码
+            const hasAnyPassword = passwords.executorA || passwords.executorB || passwords.supervisor;
+            
+            // 如果所选身份已设置密码
+            if (selectedPassword) {
+                // 必须输入正确密码
+                if (!password || password.length !== 4) {
+                    showToast('请输入4位密码');
                     return;
                 }
+                if (selectedPassword !== password) {
+                    showToast('密码错误');
+                    return;
+                }
+                // 验证成功
                 currentRoomId = h.roomId;
                 currentRole = role;
                 closeModal('enter-room-modal');
@@ -3160,22 +3175,37 @@ ${statusText || '等待签署...'}
                 return;
             }
             
-            // 该角色已设置密码，必须验证
-            if (!password || password.length !== 4) {
-                showToast('请输入4位密码');
+            // 所选身份未设置密码
+            // 检查是否其他身份已设置密码
+            if (hasAnyPassword) {
+                // 其他身份已设置密码，需要验证用户不是在冒充
+                if (password && password.length === 4) {
+                    // 检查密码是否匹配其他身份
+                    if (passwords.executorA === password) {
+                        showToast('您是甲方，请选择甲方身份进入');
+                        return;
+                    }
+                    if (passwords.executorB === password) {
+                        showToast('您是乙方，请选择乙方身份进入');
+                        return;
+                    }
+                    if (passwords.supervisor === password) {
+                        showToast('您是监督方，请选择监督方身份进入');
+                        return;
+                    }
+                    // 密码不匹配任何已设置的身份
+                    showToast('密码错误');
+                    return;
+                }
+                // 未输入密码，但所选身份未签署
+                showToast('该身份尚未签署，请确认身份后重试');
                 return;
             }
             
-            if (storedPassword !== password) {
-                showToast('密码错误');
-                return;
-            }
-            
-            // 验证成功，设置全局变量
+            // 所有身份都未设置密码（房间刚创建），允许进入
             currentRoomId = h.roomId;
             currentRole = role;
-            
-            // 关闭密码弹窗，显示房间操作弹窗
+            currentContract = room; // 设置当前契约数据
             closeModal('enter-room-modal');
             showRoomActionsModal(room, h);
         };
