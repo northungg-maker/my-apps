@@ -1166,7 +1166,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary" onclick="initiateSign('partyA')">确认签署</button>
+                    <button class="btn btn-primary" onclick="initiateCreateAndSign()">确认签署</button>
                     <button class="btn btn-secondary" style="margin-top: 12px;" onclick="goBackToPreview()">返回</button>
                 </div>
             </div>
@@ -2826,22 +2826,107 @@ ${statusText || '等待签署...'}
         };
         
         window.submitPassword = function(role) {
+            console.log('[DEBUG] submitPassword called, role:', role);
             const pwd = document.getElementById('pwd-input').value;
             const confirm = document.getElementById('pwd-confirm').value;
             if (!/^\d{4}$/.test(pwd)) { alert('请输入 4 位数字'); return; }
             if (pwd !== confirm) { alert('两次密码不一致'); return; }
             const cb = window._pwdOnConfirm;
+            console.log('[DEBUG] callback exists:', !!cb);
             closePasswordModal();
-            if (cb) cb(pwd);
+            if (cb) {
+                console.log('[DEBUG] calling callback with password');
+                cb(pwd);
+            } else {
+                console.log('[DEBUG] NO CALLBACK! Something wrong');
+            }
         };
         
-        // ========== 发起签署流程 ==========
+        // ========== 发起签署流程（加入已有房间）==========
         window.initiateSign = function(role) {
             showRulesModal(function() {
                 showPasswordModal(role, function(password) {
                     doSignContract(role, password);
                 });
             });
+        };
+
+        // ========== 发起创建+签署流程（创建新契约）==========
+        window.initiateCreateAndSign = function() {
+            console.log('[DEBUG] initiateCreateAndSign called');
+            // 先检查签名
+            const signatureName = document.getElementById('signature-input').value.trim();
+            if (!signatureName) {
+                showToast('请输入签名');
+                return;
+            }
+            
+            console.log('[DEBUG] signature OK, showing rules modal');
+            // 保存签名
+            signatureTime = new Date().toISOString();
+            currentContract.signedBy = signatureName;
+            currentContract.signedAt = signatureTime;
+            
+            // 显示规则弹窗
+            showRulesModal(function() {
+                console.log('[DEBUG] rules confirmed, showing password modal');
+                // 规则同意后，显示密码弹窗
+                showPasswordModal('partyA', function(password) {
+                    console.log('[DEBUG] password set, calling doCreateAndLock');
+                    // 密码设置后，执行创建并锁定
+                    doCreateAndLock(password);
+                });
+            });
+        };
+
+        // ========== 创建并锁定契约（单人/双方模式）==========
+        window.doCreateAndLock = async function(password) {
+            console.log('[DEBUG] doCreateAndLock called, password set:', !!password);
+            console.log('[DEBUG] currentContract.mode:', currentContract?.mode);
+            
+            const roomId = generateRoomId();
+            currentContract.roomId = roomId;
+            
+            // 单人模式：直接锁定
+            if (currentContract.mode === 'single') {
+                currentContract.status = 'locked';
+                currentContract.lockedAt = Date.now();
+                currentContract.partyAPassword = password;
+                
+                try {
+                    await set(ref(db, 'rooms/' + roomId), currentContract);
+                    saveToHistory(currentContract);
+                    saveMyContract(roomId, 'executor');
+                    showToast('契约已生效！房间号：' + roomId);
+                    currentRoomId = roomId;
+                    currentRole = 'executor';
+                    enterRoom(roomId);
+                } catch (err) {
+                    showToast('创建失败，请重试');
+                    console.error('[ERROR] 单人模式创建失败:', err);
+                }
+                return;
+            }
+            
+            // 双方模式：甲方先签署，等待乙方
+            currentContract.status = 'pending';
+            currentContract.partyASigned = true;
+            currentContract.partyASignedAt = Date.now();
+            currentContract.partyASignedBy = document.getElementById('signature-input').value.trim();
+            currentContract.partyAPassword = password;
+            
+            try {
+                await set(ref(db, 'rooms/' + roomId), currentContract);
+                saveToHistory(currentContract);
+                saveMyContract(roomId, 'partyA');
+                showToast('契约创建成功！房间号：' + roomId);
+                currentRoomId = roomId;
+                currentRole = 'partyA';
+                enterRoom(roomId);
+            } catch (err) {
+                showToast('创建失败，请重试');
+                console.error('[ERROR] 双方模式创建失败:', err);
+            }
         };
         
         // ========== 执行签署 ==========
