@@ -66,6 +66,12 @@
             display: flex;
             gap: 4px;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
         }
         
         .nav-tab {
@@ -602,8 +608,25 @@
                 grid-template-columns: 1fr;
             }
             .header-content {
-                flex-direction: column;
-                gap: 12px;
+                padding: 8px 12px;
+            }
+            .logo {
+                font-size: 18px;
+            }
+            .nav-tabs {
+                width: 100%;
+                padding: 4px 0;
+            }
+            .nav-tab {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+            body {
+                overflow-x: hidden;
+            }
+            .header {
+                position: sticky;
+                top: 0;
             }
         }
     </style>
