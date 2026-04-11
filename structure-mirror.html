@@ -647,7 +647,7 @@
             }
             
             // 分析结构类型
-            const structureType = analyzeStructure(validRels);
+            const structureResult = analyzeStructure(validRels, validVars);
             
             // 匹配认知偏误
             const bias = matchCognitiveBias(problem, validVars, validRels);
@@ -672,8 +672,21 @@
                 </div>
                 <div class="mb-4">
                     <span class="text-muted text-xs">结构类型</span>
-                    <p class="text-accent text-sm mt-1">${structureType}</p>
-                </div>
+                    <p class="text-accent text-sm mt-1">${structureResult.type}</p>
+                </div>`;
+            
+            // 显示可疑关系警告
+            if (structureResult.suspicious && structureResult.suspicious.length > 0) {
+                resultHTML += `
+                <div class="mb-4">
+                    <span class="text-muted text-xs">⚠️ 关系逻辑存疑</span>
+                    <div class="text-sm mt-2 text-gray-700">
+                        ${structureResult.suspicious.map(w => `<p class="mb-1">• ${w}</p>`).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            resultHTML += `
                 <div>
                     <span class="text-muted text-xs">🔥 你可能正在踩的坑</span>
                     <p class="text-accent mt-2">${bias.tip}</p>
@@ -690,7 +703,7 @@
         }
 
         // 分析结构类型
-        function analyzeStructure(relations) {
+        function analyzeStructure(relations, variables) {
             const fromSet = new Set(relations.map(r => r.from));
             const toSet = new Set(relations.map(r => r.to));
             
@@ -700,15 +713,62 @@
             const positiveCount = relations.filter(r => r.type === '+').length;
             const ratio = positiveCount / relations.length;
             
+            // 检测可疑关系
+            const suspicious = detectSuspiciousRelations(relations, variables);
+            
             if (hasLoop) {
                 if (ratio > 0.6) {
-                    return '增强回路 — 系统会自我放大，可能导致失控或爆发';
+                    let result = '增强回路 — 系统会自我放大';
+                    // 判断良性还是恶性
+                    const hasPositiveStart = hasPositiveStartNode(relations, variables);
+                    if (hasPositiveStart) {
+                        result += '（可能是良性循环：越...越...）';
+                    } else {
+                        result += '（可能是恶性循环：越...越...，最后失控）';
+                    }
+                    return { type: result, suspicious };
                 } else {
-                    return '平衡回路 — 系统会自我调节，趋于稳定';
+                    return { type: '平衡回路 — 系统会自我调节，趋于稳定', suspicious };
                 }
             } else {
-                return '线性结构 — 单向影响，没有反馈机制';
+                return { type: '线性结构 — 单向影响，没有反馈机制', suspicious };
             }
+        }
+        
+        // 检测可疑关系
+        function detectSuspiciousRelations(relations, variables) {
+            const warnings = [];
+            
+            // 定义常见的"反向"变量对
+            const negativePairs = [
+                { a: '工作强度', b: ['生活', '休息', '娱乐', '美女', '社交'], reason: '工作强度越高，通常这些越少，应该是(-)减弱' },
+                { a: '薪资', b: ['压力', '风险'], reason: '薪资和压力/风险的关系需要思考，高薪可能伴随高风险' },
+                { a: '稳定', b: ['创新', '挑战', '成长'], reason: '稳定可能意味着缺少挑战和创新' },
+                { a: '美女', b: ['薪资', '收入'], reason: '美女直接影响薪资？因果关系可能颠倒或缺失中间变量' }
+            ];
+            
+            relations.forEach(r => {
+                negativePairs.forEach(pair => {
+                    // 检查是否是反向关系但标记为正向
+                    if (r.type === '+') {
+                        if (r.from.includes(pair.a) && pair.b.some(b => r.to.includes(b))) {
+                            warnings.push(`"${r.from} → ${r.to}" 标记为增强，但 ${pair.reason}`);
+                        }
+                        if (r.to.includes(pair.a) && pair.b.some(b => r.from.includes(b))) {
+                            warnings.push(`"${r.from} → ${r.to}" 标记为增强，但 ${pair.reason}`);
+                        }
+                    }
+                });
+            });
+            
+            return warnings;
+        }
+        
+        // 判断是否有正向起始点
+        function hasPositiveStartNode(relations, variables) {
+            // 检查变量中是否有明显正向的起始点
+            const positiveKeywords = ['成长', '发展', '技能', '学习', '积累'];
+            return variables.some(v => positiveKeywords.some(k => v.includes(k)));
         }
 
         // 匹配认知偏误
