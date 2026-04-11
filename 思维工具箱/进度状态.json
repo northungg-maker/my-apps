@@ -1,0 +1,88 @@
+{
+  "projectName": "思维工具箱",
+  "lastUpdated": "2026-04-12",
+  "tools": [
+    {
+      "name": "四步法",
+      "stage": "想清楚",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "信息核真",
+      "stage": "想清楚",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "ARG三标准",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "权衡论证表",
+      "stage": "做决策",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "金字塔模型",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": false
+    },
+    {
+      "name": "MECE原则",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "结构化归因",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "实验法",
+      "stage": "做决策",
+      "status": "已完成",
+      "hasActionGuide": false
+    },
+    {
+      "name": "目标-手段评估表",
+      "stage": "做决策",
+      "status": "已完成",
+      "hasActionGuide": false
+    },
+    {
+      "name": "赋值法",
+      "stage": "做决策",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "价值判断三段论",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": true
+    },
+    {
+      "name": "常见逻辑谬误",
+      "stage": "想明白",
+      "status": "已完成",
+      "hasActionGuide": true
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "completed": 12,
+    "withActionGuide": 9,
+    "pendingEnhancement": 3
+  },
+  "notes": [
+    "2026-04-12: 为价值判断三段论、MECE原则、结构化归因、权衡论证表、信息核真添加行动指引",
+    "金字塔模型、实验法、目标-手段评估表为结构性工具，行动指引嵌入在表单字段中"
+  ]
+}
