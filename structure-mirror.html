@@ -7,91 +7,114 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-bg: #1a1a2e;
-            --secondary-bg: #16213e;
-            --card-bg: #0f3460;
-            --accent: #e94560;
-            --text-primary: #eaeaea;
-            --text-secondary: #a0a0a0;
-            --border: #2a2a4a;
+        * {
+            box-sizing: border-box;
         }
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
-            color: var(--text-primary);
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
             min-height: 100vh;
+            line-height: 1.6;
         }
         .card {
-            background: rgba(15, 52, 96, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            background: #fafafa;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #ff6b6b);
-            transition: all 0.3s ease;
+            background: #e63946;
+            color: white;
+            transition: all 0.2s ease;
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+            background: #d62839;
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
+            background: #1a1a1a;
+            color: white;
+            transition: all 0.2s ease;
         }
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #333;
         }
         .input-field {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #1a1a1a;
+            transition: all 0.2s ease;
         }
         .input-field:focus {
-            border-color: var(--accent);
+            border-color: #1a1a1a;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
         }
-        .module {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            display: none;
+        .input-field::placeholder {
+            color: #999;
         }
-        .module.visible {
+        /* 标签样式 - 黑底白字 */
+        .tag {
+            background: #1a1a1a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .tag-remove:hover {
             opacity: 1;
-            transform: translateY(0);
-            display: block;
         }
+        .tag-preset {
+            background: #1a1a1a;
+        }
+        .tag-custom {
+            background: #666;
+            border: 1px dashed #999;
+        }
+        /* 红色强调文字 */
+        .text-accent {
+            color: #e63946;
+        }
+        .text-muted {
+            color: #888;
+        }
+        /* 模板卡片 */
         .template-card {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            background: #fafafa;
+            border: 1px solid #eaeaea;
         }
         .template-card:hover {
-            transform: scale(1.02);
-            border-color: var(--accent);
+            border-color: #1a1a1a;
         }
         .template-card.selected {
-            border-color: var(--accent);
-            background: rgba(233, 69, 96, 0.1);
+            border-color: #1a1a1a;
+            background: #f5f5f5;
         }
+        /* 折叠动画 */
         .example-collapse {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s ease;
+            transition: max-height 0.4s ease;
         }
         .example-collapse.expanded {
             max-height: 2000px;
         }
+        /* 复制提示 */
         .copy-toast {
             position: fixed;
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--accent);
+            background: #1a1a1a;
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
@@ -102,147 +125,183 @@
         .copy-toast.show {
             opacity: 1;
         }
+        /* 模块显隐 */
+        .module {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            display: none;
+        }
+        .module.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        /* 关系选择器 */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231a1a1a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 28px;
+        }
+        /* 添加标签输入框 */
+        .add-tag-input {
+            border: 1px dashed #ccc;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            min-width: 80px;
+        }
+        .add-tag-input:focus {
+            border-color: #1a1a1a;
+            outline: none;
+        }
     </style>
 </head>
 <body class="pb-20">
     <!-- 首页 -->
-    <div id="home-page" class="max-w-md mx-auto px-4 pt-8">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold mb-2">🔗 因果链</h1>
-            <p class="text-gray-400 text-sm">基于系统动力学和认知心理学的决策分析工具</p>
-            <p class="text-gray-300 mt-2">看见问题的结构，发现自己的盲区</p>
+    <div id="home-page" class="max-w-md mx-auto px-5 pt-10">
+        <header class="text-center mb-10">
+            <h1 class="text-2xl font-semibold mb-2">因果链</h1>
+            <p class="text-muted text-sm mb-1">基于系统动力学和认知心理学</p>
+            <p class="text-accent text-sm">看见问题的结构，发现自己的盲区</p>
         </header>
 
         <!-- 案例展示 -->
-        <div class="card p-4 mb-6">
+        <div class="card p-5 mb-6">
             <div class="flex items-center justify-between cursor-pointer" onclick="toggleExample()">
-                <span class="font-medium">📖 先看一个例子</span>
-                <span id="example-arrow" class="text-xl transition-transform">▼</span>
+                <span class="text-sm font-medium">📖 先看一个例子</span>
+                <span id="example-arrow" class="text-sm transition-transform">▼</span>
             </div>
             <div id="example-content" class="example-collapse">
-                <div class="mt-4 pt-4 border-t border-gray-700">
+                <div class="mt-4 pt-4 border-t border-gray-200">
                     <div class="mb-4">
-                        <span class="text-gray-400 text-xs">问题</span>
-                        <p class="font-medium">要不要跳槽去新公司？</p>
+                        <span class="text-muted text-xs">问题</span>
+                        <p class="font-medium text-sm mt-1">要不要跳槽去新公司？</p>
                     </div>
                     <div class="mb-4">
-                        <span class="text-gray-400 text-xs">变量</span>
-                        <div class="flex flex-wrap gap-2 mt-1">
-                            <span class="px-2 py-1 bg-gray-700 rounded text-sm">薪资</span>
-                            <span class="px-2 py-1 bg-gray-700 rounded text-sm">发展空间</span>
-                            <span class="px-2 py-1 bg-gray-700 rounded text-sm">通勤时间</span>
+                        <span class="text-muted text-xs">变量</span>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="tag tag-preset">薪资</span>
+                            <span class="tag tag-preset">发展空间</span>
+                            <span class="tag tag-preset">通勤时间</span>
                         </div>
                     </div>
                     <div class="mb-4">
-                        <span class="text-gray-400 text-xs">关系链</span>
+                        <span class="text-muted text-xs">关系链</span>
                         <p class="text-sm mt-1">薪资 → 发展空间 ← 通勤时间</p>
-                        <p class="text-sm">通勤时间 → 薪资（影响工作状态）</p>
+                        <p class="text-sm">通勤时间 → 薪资</p>
                     </div>
                     <div class="mb-4">
-                        <span class="text-gray-400 text-xs">结构类型</span>
-                        <p class="text-sm text-yellow-400">增强回路 — 系统会自我放大</p>
+                        <span class="text-muted text-xs">结构类型</span>
+                        <p class="text-sm text-accent">增强回路 — 系统会自我放大</p>
                     </div>
-                    <div class="mb-4">
-                        <span class="text-gray-400 text-xs">人性镜像</span>
-                        <p class="text-sm text-pink-400">盯着薪资看的时候，薪资就被放大了。你可能忽略了通勤时间对长期状态的影响。</p>
+                    <div>
+                        <span class="text-muted text-xs">人性镜像</span>
+                        <p class="text-sm text-accent mt-1">盯着薪资看的时候，薪资就被放大了。你可能忽略了通勤时间对长期状态的影响。</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 模板选择 -->
-        <div class="mb-6">
-            <h2 class="font-medium mb-3">🎯 选一个模板开始</h2>
+        <div class="mb-8">
+            <h2 class="text-sm font-medium mb-4 text-muted">选择一个模板开始</h2>
             <div class="grid grid-cols-2 gap-3">
-                <div class="card template-card p-3" onclick="selectTemplate('career')">
-                    <div class="text-2xl mb-1">💼</div>
-                    <div class="font-medium">职业选择</div>
-                    <div class="text-xs text-gray-400">跳槽/转行</div>
+                <div class="card template-card p-4" onclick="selectTemplate('career')">
+                    <div class="text-xl mb-2">💼</div>
+                    <div class="font-medium text-sm">职业选择</div>
+                    <div class="text-xs text-muted">跳槽/转行</div>
                 </div>
-                <div class="card template-card p-3" onclick="selectTemplate('partnership')">
-                    <div class="text-2xl mb-1">🤝</div>
-                    <div class="font-medium">合伙创业</div>
-                    <div class="text-xs text-gray-400">找人合作</div>
+                <div class="card template-card p-4" onclick="selectTemplate('partnership')">
+                    <div class="text-xl mb-2">🤝</div>
+                    <div class="font-medium text-sm">合伙创业</div>
+                    <div class="text-xs text-muted">找人合作</div>
                 </div>
-                <div class="card template-card p-3" onclick="selectTemplate('relationship')">
-                    <div class="text-2xl mb-1">💕</div>
-                    <div class="font-medium">亲密关系</div>
-                    <div class="text-xs text-gray-400">感情决策</div>
+                <div class="card template-card p-4" onclick="selectTemplate('relationship')">
+                    <div class="text-xl mb-2">💕</div>
+                    <div class="font-medium text-sm">亲密关系</div>
+                    <div class="text-xs text-muted">感情决策</div>
                 </div>
-                <div class="card template-card p-3" onclick="selectTemplate('investment')">
-                    <div class="text-2xl mb-1">💰</div>
-                    <div class="font-medium">投资决策</div>
-                    <div class="text-xs text-gray-400">钱的问题</div>
+                <div class="card template-card p-4" onclick="selectTemplate('investment')">
+                    <div class="text-xl mb-2">💰</div>
+                    <div class="font-medium text-sm">投资决策</div>
+                    <div class="text-xs text-muted">钱的问题</div>
                 </div>
-                <div class="card template-card p-3 col-span-2" onclick="selectTemplate('custom')">
-                    <div class="text-2xl mb-1">✏️</div>
-                    <div class="font-medium">自定义问题</div>
-                    <div class="text-xs text-gray-400">从零开始</div>
+                <div class="card template-card p-4 col-span-2" onclick="selectTemplate('custom')">
+                    <div class="text-xl mb-2">✏️</div>
+                    <div class="font-medium text-sm">自定义问题</div>
+                    <div class="text-xs text-muted">从零开始</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 分析页面 -->
-    <div id="analysis-page" class="max-w-md mx-auto px-4 pt-6 hidden">
+    <div id="analysis-page" class="max-w-md mx-auto px-5 pt-8 hidden">
         <!-- 返回按钮 -->
-        <button onclick="goHome()" class="btn-secondary px-3 py-1 rounded-full text-sm mb-4">
+        <button onclick="goHome()" class="text-muted text-sm mb-6 flex items-center gap-1">
             ← 返回
         </button>
 
         <!-- 第一步：问题 -->
-        <div id="module1" class="card p-4 mb-4 visible">
+        <div id="module1" class="mb-6 visible">
             <div class="flex items-center gap-2 mb-3">
-                <span class="w-6 h-6 rounded-full bg-pink-600 text-white text-sm flex items-center justify-center">1</span>
-                <span class="font-medium">写下你的问题</span>
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">1</span>
+                <span class="text-sm font-medium">写下你的问题</span>
             </div>
             <textarea id="problem-input" class="input-field w-full rounded-lg p-3 text-sm" rows="2" placeholder="比如：要不要跳槽去新公司？"></textarea>
         </div>
 
         <!-- 第二步：变量 -->
-        <div id="module2" class="card p-4 mb-4 module">
+        <div id="module2" class="mb-6 module">
             <div class="flex items-center gap-2 mb-3">
-                <span class="w-6 h-6 rounded-full bg-pink-600 text-white text-sm flex items-center justify-center">2</span>
-                <span class="font-medium">这个问题里有哪些因素互相影响？</span>
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">2</span>
+                <span class="text-sm font-medium">这个问题里有哪些因素互相影响？</span>
             </div>
-            <p class="text-xs text-gray-400 mb-3">变量是会互相影响的因素，比如"薪资""通勤时间"</p>
-            <div id="variables-container">
-                <!-- 变量输入项会动态添加 -->
+            <p class="text-xs text-muted mb-3">变量是会互相影响的因素，点击 × 可删除预设标签</p>
+            
+            <!-- 预设标签 + 自定义标签 -->
+            <div id="variables-container" class="flex flex-wrap gap-2 mb-3">
+                <!-- 标签会动态添加 -->
             </div>
-            <button onclick="addVariable()" class="btn-secondary w-full py-2 rounded-lg mt-2 text-sm">
-                + 添加变量
-            </button>
+            
+            <!-- 添加自定义变量 -->
+            <div class="flex items-center gap-2">
+                <input type="text" id="custom-variable-input" class="add-tag-input flex-1" placeholder="+ 添加变量">
+                <button onclick="addCustomVariable()" class="btn-secondary px-3 py-1 rounded-full text-xs">添加</button>
+            </div>
         </div>
 
         <!-- 第三步：关系 -->
-        <div id="module3" class="card p-4 mb-4 module">
+        <div id="module3" class="mb-6 module">
             <div class="flex items-center gap-2 mb-3">
-                <span class="w-6 h-6 rounded-full bg-pink-600 text-white text-sm flex items-center justify-center">3</span>
-                <span class="font-medium">它们之间怎么互相影响？</span>
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">3</span>
+                <span class="text-sm font-medium">它们之间怎么互相影响？</span>
             </div>
-            <p class="text-xs text-gray-400 mb-3">箭头表示影响方向：(+)增强 (─)减弱</p>
+            <p class="text-xs text-muted mb-3">箭头表示影响方向：(+)增强 (-)减弱</p>
             <div id="relations-container">
                 <!-- 关系项会动态添加 -->
             </div>
-            <button onclick="addRelation()" class="btn-secondary w-full py-2 rounded-lg mt-2 text-sm">
-                + 添加关系
-            </button>
+            <button onclick="addRelation()" class="text-sm text-accent mt-2">+ 添加关系</button>
         </div>
 
         <!-- 第四步：分析 -->
-        <div id="module4" class="card p-4 mb-4 module">
-            <button onclick="analyze()" class="btn-primary w-full py-3 rounded-lg font-medium">
+        <div id="module4" class="mb-6 module">
+            <button onclick="analyze()" class="btn-primary w-full py-3 rounded-lg font-medium text-sm">
                 分析结构
             </button>
         </div>
 
         <!-- 结果展示 -->
-        <div id="result-container" class="card p-4 mb-4 hidden">
-            <h3 class="font-medium mb-3">📊 分析结果</h3>
+        <div id="result-container" class="card p-5 mb-6 hidden">
+            <h3 class="font-medium mb-4">分析结果</h3>
             <div id="result-content">
                 <!-- 分析结果会动态填充 -->
             </div>
-            <button onclick="copyToAI()" class="btn-primary w-full py-3 rounded-lg font-medium mt-4">
+            <button onclick="copyToAI()" class="btn-secondary w-full py-3 rounded-lg font-medium text-sm mt-4">
                 📋 一键复制到AI对话
             </button>
         </div>
@@ -364,7 +423,7 @@
         ];
 
         let currentTemplate = null;
-        let variables = [];
+        let variables = [];  // [{name: '薪资', isPreset: true}, ...]
         let relations = [];
 
         // 切换案例展示
@@ -378,7 +437,7 @@
         // 选择模板
         function selectTemplate(type) {
             currentTemplate = templates[type];
-            variables = [...currentTemplate.variables];
+            variables = currentTemplate.variables.map(v => ({ name: v, isPreset: true }));
             relations = JSON.parse(JSON.stringify(currentTemplate.relations));
             
             document.getElementById('home-page').classList.add('hidden');
@@ -400,55 +459,69 @@
             document.getElementById('module4').classList.remove('visible');
         }
 
-        // 渲染变量输入项
+        // 渲染变量标签
         function renderVariables() {
             const container = document.getElementById('variables-container');
             container.innerHTML = '';
             
-            // 确保至少有2个输入框
-            while (variables.length < 2) {
-                variables.push('');
-            }
-            
             variables.forEach((v, i) => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center gap-2 mb-2';
-                div.innerHTML = `
-                    <input type="text" 
-                           class="variable-input input-field flex-1 rounded-lg p-2 text-sm" 
-                           value="${v}" 
-                           placeholder="变量${i + 1}"
-                           onchange="updateVariable(${i}, this.value)"
-                           oninput="updateVariable(${i}, this.value)">
-                    ${variables.length > 2 ? `<button onclick="removeVariable(${i})" class="text-red-400 text-lg">×</button>` : ''}
+                const tag = document.createElement('span');
+                tag.className = `tag ${v.isPreset ? 'tag-preset' : 'tag-custom'}`;
+                tag.innerHTML = `
+                    ${v.name}
+                    <span class="tag-remove" onclick="removeVariable(${i})">×</span>
                 `;
-                container.appendChild(div);
+                container.appendChild(tag);
             });
         }
 
-        // 更新变量
-        function updateVariable(index, value) {
-            variables[index] = value;
+        // 添加自定义变量
+        function addCustomVariable() {
+            const input = document.getElementById('custom-variable-input');
+            const value = input.value.trim();
+            
+            if (!value) return;
+            
+            // 检查是否已存在
+            if (variables.some(v => v.name === value)) {
+                input.value = '';
+                return;
+            }
+            
+            variables.push({ name: value, isPreset: false });
+            input.value = '';
+            renderVariables();
             checkProgress();
         }
 
-        // 添加变量
-        function addVariable() {
-            variables.push('');
-            renderVariables();
-        }
+        // 回车添加变量
+        document.addEventListener('DOMContentLoaded', function() {
+            const customInput = document.getElementById('custom-variable-input');
+            if (customInput) {
+                customInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addCustomVariable();
+                    }
+                });
+            }
+        });
 
         // 删除变量
         function removeVariable(index) {
             variables.splice(index, 1);
             renderVariables();
+            // 清理包含该变量的关系
+            relations = relations.filter(r => {
+                const varNames = variables.map(v => v.name);
+                return varNames.includes(r.from) && varNames.includes(r.to);
+            });
             checkProgress();
         }
 
         // 检查进度并显示下一步
         function checkProgress() {
             const problem = document.getElementById('problem-input').value.trim();
-            const validVars = variables.filter(v => v.trim() !== '');
+            const validVars = variables.filter(v => v.name.trim() !== '');
             
             // 显示变量模块
             if (problem.length > 0) {
@@ -459,11 +532,15 @@
             if (validVars.length >= 2) {
                 document.getElementById('module3').classList.add('visible');
                 renderRelations();
+            } else {
+                document.getElementById('module3').classList.remove('visible');
             }
             
             // 显示分析按钮
             if (validVars.length >= 2 && getValidRelations().length >= 1) {
                 document.getElementById('module4').classList.add('visible');
+            } else {
+                document.getElementById('module4').classList.remove('visible');
             }
         }
 
@@ -472,14 +549,20 @@
             const container = document.getElementById('relations-container');
             container.innerHTML = '';
             
-            const validVars = variables.filter(v => v.trim() !== '');
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+            
+            // 如果变量变了，更新关系中的引用
+            relations.forEach(r => {
+                if (!validVars.includes(r.from)) r.from = validVars[0] || '';
+                if (!validVars.includes(r.to)) r.to = validVars[1] || validVars[0] || '';
+            });
             
             // 初始化关系
-            while (relations.length < 1) {
+            if (relations.length === 0 && validVars.length >= 2) {
                 relations.push({
-                    from: validVars[0] || '',
+                    from: validVars[0],
                     type: '+',
-                    to: validVars[1] || ''
+                    to: validVars[1]
                 });
             }
             
@@ -492,12 +575,12 @@
                 
                 div.innerHTML = `
                     ${fromSelect}
-                    <select class="input-field rounded px-2 py-1" onchange="updateRelation(${i}, 'type', this.value)">
+                    <select class="input-field rounded-lg px-2 py-1 text-sm" onchange="updateRelation(${i}, 'type', this.value)">
                         <option value="+" ${r.type === '+' ? 'selected' : ''}>→(+)</option>
                         <option value="-" ${r.type === '-' ? 'selected' : ''}>→(-)</option>
                     </select>
                     ${toSelect}
-                    ${relations.length > 1 ? `<button onclick="removeRelation(${i})" class="text-red-400 text-lg">×</button>` : ''}
+                    ${relations.length > 1 ? `<span class="text-accent cursor-pointer text-lg" onclick="removeRelation(${i})">×</span>` : ''}
                 `;
                 container.appendChild(div);
             });
@@ -505,7 +588,7 @@
 
         // 创建选择框
         function createSelect(options, selected, onchange) {
-            let html = `<select class="input-field rounded px-2 py-1 flex-1" onchange="${onchange}">`;
+            let html = `<select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="${onchange}">`;
             options.forEach(opt => {
                 html += `<option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt}</option>`;
             });
@@ -521,7 +604,7 @@
 
         // 添加关系
         function addRelation() {
-            const validVars = variables.filter(v => v.trim() !== '');
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
             if (validVars.length >= 2) {
                 relations.push({
                     from: validVars[0],
@@ -547,7 +630,7 @@
         // 分析
         function analyze() {
             const problem = document.getElementById('problem-input').value.trim();
-            const validVars = variables.filter(v => v.trim() !== '');
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
             const validRels = getValidRelations();
             
             if (!problem || validVars.length < 2 || validRels.length < 1) {
@@ -564,29 +647,29 @@
             // 渲染结果
             let resultHTML = `
                 <div class="mb-4">
-                    <span class="text-gray-400 text-xs">你的问题</span>
-                    <p class="font-medium">${problem}</p>
+                    <span class="text-muted text-xs">你的问题</span>
+                    <p class="font-medium text-sm mt-1">${problem}</p>
                 </div>
                 <div class="mb-4">
-                    <span class="text-gray-400 text-xs">变量</span>
-                    <div class="flex flex-wrap gap-2 mt-1">
-                        ${validVars.map(v => `<span class="px-2 py-1 bg-gray-700 rounded text-sm">${v}</span>`).join('')}
+                    <span class="text-muted text-xs">变量</span>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        ${validVars.map(v => `<span class="tag tag-preset">${v}</span>`).join('')}
                     </div>
                 </div>
                 <div class="mb-4">
-                    <span class="text-gray-400 text-xs">关系链</span>
-                    <div class="text-sm mt-1">
-                        ${validRels.map(r => `${r.from} →(${r.type === '+' ? '+' : '-'})→ ${r.to}`).join('<br>')}
+                    <span class="text-muted text-xs">关系链</span>
+                    <div class="text-sm mt-2">
+                        ${validRels.map(r => `<p>${r.from} →(${r.type === '+' ? '+' : '-'})→ ${r.to}</p>`).join('')}
                     </div>
                 </div>
                 <div class="mb-4">
-                    <span class="text-gray-400 text-xs">结构类型</span>
-                    <p class="text-yellow-400">${structureType}</p>
+                    <span class="text-muted text-xs">结构类型</span>
+                    <p class="text-accent text-sm mt-1">${structureType}</p>
                 </div>
-                <div class="mb-4">
-                    <span class="text-gray-400 text-xs">🔥 你可能正在踩的坑</span>
-                    <p class="text-pink-400 mt-1">${bias.tip}</p>
-                    <p class="text-xs text-gray-500 mt-1">—— ${bias.name}（${bias.source}）</p>
+                <div>
+                    <span class="text-muted text-xs">🔥 你可能正在踩的坑</span>
+                    <p class="text-accent mt-2">${bias.tip}</p>
+                    <p class="text-xs text-muted mt-1">—— ${bias.name}（${bias.source}）</p>
                 </div>
             `;
             
@@ -666,7 +749,7 @@
         // 一键复制
         function copyToAI() {
             const problem = document.getElementById('problem-input').value.trim();
-            const validVars = variables.filter(v => v.trim() !== '');
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
             const validRels = getValidRelations();
             
             const text = `我在分析一个问题：【${problem}】
