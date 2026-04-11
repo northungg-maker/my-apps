@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结构镜 · 看见问题的结构</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --primary: #dc3545;
+            --primary-hover: #c82333;
+            --primary-light: rgba(220, 53, 69, 0.1);
+            --text: #1d1d1f;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        /* Step indicator */
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--border);
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.done {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Module */
+        .module {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .module-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-number {
+            background: var(--primary-light);
+            color: var(--primary);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Input */
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-light);
+        }
+
+        /* Variables list */
+        .variables-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .variable-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .variable-item input {
+            flex: 1;
+        }
+
+        .btn-remove {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Relations */
+        .relations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .relation-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        .relation-select {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .relation-type {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .relation-positive {
+            color: var(--success);
+        }
+
+        .relation-negative {
+            color: var(--primary);
+        }
+
+        /* Results */
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-section {
+            margin-bottom: 32px;
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-content {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.7;
+        }
+
+        .result-structure {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* 人性镜像 */
+        .human-mirror {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+        }
+
+        .human-mirror .result-title {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .human-mirror .result-content {
+            color: white;
+        }
+
+        .mirror-text {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mirror-line {
+            padding-left: 16px;
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Reset button */
+        .reset-section {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .btn-reset:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .module {
+                padding: 20px;
+            }
+
+            .relation-item {
+                flex-wrap: wrap;
+            }
+
+            .relation-select {
+                min-width: 0;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 结构镜</h1>
+            <p class="subtitle">看见问题的结构，看见自己的盲区</p>
+        </header>
+
+        <!-- Steps -->
+        <div class="steps">
+            <div class="step active" data-step="1">1</div>
+            <div class="step" data-step="2">2</div>
+            <div class="step" data-step="3">3</div>
+            <div class="step" data-step="4">4</div>
+        </div>
+
+        <!-- Module 1: Problem Input -->
+        <div class="module" id="module1">
+            <div class="module-title">
+                <span class="module-number">1</span>
+                你想分析的问题是什么？
+            </div>
+            <input type="text" id="problemInput" placeholder="例如：我要不要和这个人一起做生意？">
+        </div>
+
+        <!-- Module 2: Variables -->
+        <div class="module" id="module2">
+            <div class="module-title">
+                <span class="module-number">2</span>
+                添加关键变量
+            </div>
+            <div class="variables-list" id="variablesList">
+                <div class="variable-item">
+                    <input type="text" placeholder="输入变量名，如：信任" class="variable-input">
+                    <button class="btn-remove" onclick="removeVariable(this)">×</button>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="addVariable()">+ 添加变量</button>
+        </div>
+
+        <!-- Module 3: Relations -->
+        <div class="module hidden" id="module3">
+            <div class="module-title">
+                <span class="module-number">3</span>
+                建立变量之间的关系
+            </div>
+            <div class="relations-list" id="relationsList"></div>
+            <button class="btn btn-secondary" onclick="addRelation()">+ 添加关系</button>
+        </div>
+
+        <!-- Module 4: Analysis Button -->
+        <div class="module hidden" id="module4">
+            <div class="module-title">
+                <span class="module-number">4</span>
+                开始分析
+            </div>
+            <button class="btn btn-primary btn-block" onclick="analyze()">🔍 分析结构</button>
+        </div>
+
+        <!-- Results -->
+        <div class="results" id="results">
+            <!-- Structure Analysis -->
+            <div class="module result-section">
+                <div class="result-title">系统结构类型</div>
+                <div class="result-content">
+                    <span class="result-structure" id="structureType">增强回路</span>
+                </div>
+            </div>
+
+            <div class="module result-section">
+                <div class="result-title">风险提示</div>
+                <div class="result-content" id="riskHint">该系统可能形成一个由信任与利益驱动的恶性循环。</div>
+            </div>
+
+            <div class="module result-section">
+                <div class="result-title">关键影响点</div>
+                <div class="result-content" id="keyPoint">关键影响点在：利益分配机制。</div>
+            </div>
+
+            <!-- Human Mirror -->
+            <div class="human-mirror result-section">
+                <div class="result-title">一个可能被忽略的人性因素</div>
+                <div class="result-content">
+                    <div class="mirror-text" id="mirrorText">
+                        <div class="mirror-line">你现在更倾向于相信这件事是可控的。</div>
+                        <div class="mirror-line">因为人会高估自己对局势的掌控能力。</div>
+                        <div class="mirror-line">这会让你在出现偏差时反应不足，风险往往是累积后爆发的。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reset -->
+        <div class="reset-section hidden" id="resetSection">
+            <button class="btn btn-reset" onclick="resetAll()">重新开始</button>
+        </div>
+
+        <footer>
+            <a href="../认知工具集/index.html">← 返回认知工具集</a>
+        </footer>
+    </div>
+
+    <script>
+        // Data
+        let variables = [];
+        let relations = [];
+
+        // DOM Elements
+        const problemInput = document.getElementById('problemInput');
+        const variablesList = document.getElementById('variablesList');
+        const relationsList = document.getElementById('relationsList');
+        const module3 = document.getElementById('module3');
+        const module4 = document.getElementById('module4');
+        const results = document.getElementById('results');
+        const resetSection = document.getElementById('resetSection');
+        const steps = document.querySelectorAll('.step');
+
+        // Add variable input
+        function addVariable() {
+            const item = document.createElement('div');
+            item.className = 'variable-item';
+            item.innerHTML = `
+                <input type="text" placeholder="输入变量名" class="variable-input">
+                <button class="btn-remove" onclick="removeVariable(this)">×</button>
+            `;
+            variablesList.appendChild(item);
+        }
+
+        // Remove variable
+        function removeVariable(btn) {
+            const items = variablesList.querySelectorAll('.variable-item');
+            if (items.length > 1) {
+                btn.parentElement.remove();
+            }
+        }
+
+        // Collect variables and show next step
+        function collectVariables() {
+            const inputs = variablesList.querySelectorAll('.variable-input');
+            variables = [];
+            inputs.forEach(input => {
+                const val = input.value.trim();
+                if (val) variables.push(val);
+            });
+
+            if (variables.length < 2) {
+                alert('请至少添加2个变量');
+                return false;
+            }
+            return true;
+        }
+
+        // Add relation selector
+        function addRelation() {
+            if (!collectVariables()) return;
+
+            const item = document.createElement('div');
+            item.className = 'relation-item';
+            item.innerHTML = `
+                <select class="relation-select from-var">
+                    ${variables.map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+                <select class="relation-select relation-type" onchange="updateRelationLabel(this)">
+                    <option value="+">影响 (+)</option>
+                    <option value="-">抑制 (-)</option>
+                </select>
+                <select class="relation-select to-var">
+                    ${variables.map(v => `<option value="${v}">${v}</option>`).join('')}
+                </select>
+                <button class="btn-remove" onclick="removeRelation(this)">×</button>
+            `;
+            relationsList.appendChild(item);
+        }
+
+        // Remove relation
+        function removeRelation(btn) {
+            btn.parentElement.remove();
+        }
+
+        // Update relation label
+        function updateRelationLabel(select) {
+            // Already showing + or - in the option text
+        }
+
+        // Analyze structure
+        function analyze() {
+            if (!collectVariables()) return;
+
+            // Collect relations
+            relations = [];
+            const items = relationsList.querySelectorAll('.relation-item');
+            items.forEach(item => {
+                const from = item.querySelector('.from-var').value;
+                const type = item.querySelector('.relation-type').value;
+                const to = item.querySelector('.to-var').value;
+                if (from !== to) {
+                    relations.push({ from, type, to });
+                }
+            });
+
+            if (relations.length === 0) {
+                alert('请至少添加1个关系');
+                return;
+            }
+
+            // Detect structure
+            const structure = detectStructure();
+            const risk = generateRiskHint(structure);
+            const keyPoint = generateKeyPoint();
+            const humanMirror = generateHumanMirror();
+
+            // Update UI
+            document.getElementById('structureType').textContent = structure.type;
+            document.getElementById('riskHint').textContent = risk;
+            document.getElementById('keyPoint').textContent = keyPoint;
+
+            const mirrorLines = document.getElementById('mirrorText');
+            mirrorLines.innerHTML = humanMirror.map(line => 
+                `<div class="mirror-line">${line}</div>`
+            ).join('');
+
+            // Show results
+            results.classList.add('show');
+            resetSection.classList.remove('hidden');
+
+            // Update steps
+            updateSteps(4, true);
+
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Detect system structure (simplified)
+        function detectStructure() {
+            // Check for loops (simplified: count positive vs negative relations)
+            const positiveCount = relations.filter(r => r.type === '+').length;
+            const negativeCount = relations.filter(r => r.type === '-').length;
+
+            // Check if there's a loop (simplified heuristic)
+            const hasLoop = hasLoopSimple();
+
+            if (hasLoop) {
+                if (negativeCount === 0) {
+                    return { type: '增强回路（越滚越大）', loop: true };
+                } else {
+                    return { type: '平衡回路（趋于稳定）', loop: true };
+                }
+            } else {
+                if (positiveCount > negativeCount) {
+                    return { type: '增长倾向（单向推动）', loop: false };
+                } else {
+                    return { type: '抑制倾向（阻力较大）', loop: false };
+                }
+            }
+        }
+
+        // Simple loop detection (A->B and B->A, or longer chains)
+        function hasLoopSimple() {
+            if (relations.length < 2) return false;
+
+            // Build adjacency
+            const adj = {};
+            variables.forEach(v => adj[v] = []);
+            relations.forEach(r => {
+                adj[r.from].push(r.to);
+            });
+
+            // DFS for any cycle
+            for (const start of variables) {
+                const visited = new Set();
+                const stack = [[start, [start]]];
+
+                while (stack.length > 0) {
+                    const [node, path] = stack.pop();
+                    const neighbors = adj[node] || [];
+
+                    for (const next of neighbors) {
+                        if (next === start && path.length > 1) {
+                            return true; // Found a loop back to start
+                        }
+                        if (!path.includes(next)) {
+                            stack.push([next, [...path, next]]);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Generate risk hint
+        function generateRiskHint(structure) {
+            const hints = {
+                '增强回路（越滚越大）': '该系统会持续强化，但增强回路往往有边界。一旦突破临界点，可能急速反转。',
+                '平衡回路（趋于稳定）': '该系统有自我调节机制，但平衡往往意味着"卡住"，需要打破某个抑制点才能改变。',
+                '增长倾向（单向推动）': '这是一个单向推动的系统，没有闭环反馈，容易忽视隐藏的反作用力。',
+                '抑制倾向（阻力较大）': '该系统阻力较大，推动困难。问题往往不在力量不够，而在忽略了关键的抑制因素。'
+            };
+            return hints[structure.type] || '系统存在结构性风险，建议检查关键变量的影响路径。';
+        }
+
+        // Generate key point
+        function generateKeyPoint() {
+            if (relations.length === 0) return '请添加更多关系以识别关键点。';
+
+            // Find most connected variable
+            const connectionCount = {};
+            variables.forEach(v => connectionCount[v] = 0);
+            relations.forEach(r => {
+                connectionCount[r.from]++;
+                connectionCount[r.to]++;
+            });
+
+            let maxVar = variables[0];
+            let maxCount = 0;
+            for (const [v, count] of Object.entries(connectionCount)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    maxVar = v;
+                }
+            }
+
+            return `关键影响点在：「${maxVar}」—— 它连接最多其他变量，是系统的核心节点。`;
+        }
+
+        // Generate human mirror (关键！)
+        function generateHumanMirror() {
+            const varText = variables.join(' ');
+            const hasMoney = /钱|利益|收益|分配|利润|收入/.test(varText);
+            const hasTime = /时间|长期|延迟|短期|持续/.test(varText);
+            const hasPeople = /我|他|她|合伙人|朋友|老板|员工/.test(varText);
+            const positiveCount = relations.filter(r => r.type === '+').length;
+            const negativeCount = relations.filter(r => r.type === '-').length;
+
+            // Match human archetype (priority order)
+            // 1. 利益遮蔽型
+            if (hasMoney) {
+                return [
+                    '你现在更倾向于相信这件事是合理的。',
+                    '因为你在这个结构里是有收益的一方，人会天然为自己的利益找理由。',
+                    '这会让你忽略潜在风险，问题往往是在利益兑现前爆发。'
+                ];
+            }
+
+            // 2. 关系盲区型
+            if (hasPeople && !hasMoney) {
+                return [
+                    '你在用「人好不好」来判断这件事。',
+                    '因为人更容易从性格出发，而忽略结构。',
+                    '但真正决定行为的，往往是激励，而不是人品。'
+                ];
+            }
+
+            // 3. 控制幻觉型
+            if (positiveCount > negativeCount * 2) {
+                return [
+                    '你现在更倾向于相信这件事是可控的。',
+                    '因为人会高估自己对局势的掌控能力，尤其是正向因素较多时。',
+                    '这会让你在出现偏差时反应不足，风险往往是累积后爆发的。'
+                ];
+            }
+
+            // 4. 短期偏好型
+            if (!hasTime) {
+                return [
+                    '你现在更关注短期结果。',
+                    '因为人天然更在意眼前的收益和反馈。',
+                    '但很多问题的代价，是在时间里慢慢显现的。'
+                ];
+            }
+
+            // 5. 过度简化型
+            if (variables.length <= 2) {
+                return [
+                    '你正在用一个非常简单的模型看待这件事。',
+                    '因为大脑倾向于用最少的信息快速做判断。',
+                    '但现实往往比这个复杂得多，遗漏的部分才是风险来源。'
+                ];
+            }
+
+            // 6. 单边归因型 (default)
+            const hasLoop = hasLoopSimple();
+            if (!hasLoop) {
+                return [
+                    '你现在在用单一因果解释问题。',
+                    '因为人习惯找一个「原因」来让世界变简单。',
+                    '但大多数问题其实是循环系统，而不是单向因果。'
+                ];
+            }
+
+            // Fallback
+            return [
+                '你可能忽略了一些隐藏因素。',
+                '因为人总是倾向于看到自己想看到的。',
+                '建议重新审视变量的完整性，尤其是长期和风险相关因素。'
+            ];
+        }
+
+        // Update step indicators
+        function updateSteps(currentStep, done = false) {
+            steps.forEach((step, index) => {
+                const num = index + 1;
+                step.classList.remove('active', 'done');
+                if (num < currentStep) {
+                    step.classList.add('done');
+                } else if (num === currentStep && !done) {
+                    step.classList.add('active');
+                } else if (num === currentStep && done) {
+                    step.classList.add('done');
+                }
+            });
+        }
+
+        // Show module 3 only when we have 2+ non-empty variables
+        function checkVariablesAndShow() {
+            const inputs = document.querySelectorAll('.variable-input');
+            let count = 0;
+            inputs.forEach(input => {
+                if (input.value.trim()) count++;
+            });
+            
+            if (count >= 2) {
+                variables = [];
+                inputs.forEach(input => {
+                    const val = input.value.trim();
+                    if (val) variables.push(val);
+                });
+                
+                module3.classList.remove('hidden');
+                module4.classList.remove('hidden');
+                updateSteps(2);
+            } else {
+                module3.classList.add('hidden');
+                module4.classList.add('hidden');
+            }
+        }
+
+        // Reset all
+        function resetAll() {
+            problemInput.value = '';
+            variablesList.innerHTML = `
+                <div class="variable-item">
+                    <input type="text" placeholder="输入变量名，如：信任" class="variable-input">
+                    <button class="btn-remove" onclick="removeVariable(this)">×</button>
+                </div>
+            `;
+            relationsList.innerHTML = '';
+            module3.classList.add('hidden');
+            module4.classList.add('hidden');
+            results.classList.remove('show');
+            resetSection.classList.add('hidden');
+            variables = [];
+            relations = [];
+            updateSteps(1);
+            problemInput.focus();
+        }
+
+        // Bind events to variable inputs (delegated)
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('variable-input')) {
+                checkVariablesAndShow();
+            }
+        });
+
+        // Initialize
+        problemInput.addEventListener('focus', () => updateSteps(1));
+
+        // Auto-add first relation when module 3 shows
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.id === 'module3' && !mutation.target.classList.contains('hidden')) {
+                    if (relationsList.children.length === 0) {
+                        collectVariables();
+                        addRelation();
+                    }
+                    updateSteps(3);
+                }
+            });
+        });
+        observer.observe(module3, { attributes: true, attributeFilter: ['class'] });
+    </script>
+</body>
+</html>
