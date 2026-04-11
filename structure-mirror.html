@@ -158,6 +158,11 @@
             border-color: #1a1a1a;
             outline: none;
         }
+        /* 新变量选项样式 */
+        option[value="__ADD_NEW__"] {
+            color: #e63946;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="pb-20">
@@ -270,7 +275,7 @@
             
             <!-- 添加自定义变量 -->
             <div class="flex items-center gap-2">
-                <input type="text" id="custom-variable-input" class="add-tag-input flex-1" placeholder="+ 添加变量">
+                <input type="text" id="custom-variable-input" class="add-tag-input flex-1" placeholder="+ 添加变量" onkeypress="if(event.key==='Enter')addCustomVariable()">
                 <button onclick="addCustomVariable()" class="btn-secondary px-3 py-1 rounded-full text-xs">添加</button>
             </div>
         </div>
@@ -281,7 +286,7 @@
                 <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">3</span>
                 <span class="text-sm font-medium">它们之间怎么互相影响？</span>
             </div>
-            <p class="text-xs text-muted mb-3">箭头表示影响方向：(+)增强 (-)减弱</p>
+            <p class="text-xs text-muted mb-3">选择下拉菜单中的"+ 新变量..."可以直接添加新变量</p>
             <div id="relations-container">
                 <!-- 关系项会动态添加 -->
             </div>
@@ -494,27 +499,13 @@
             checkProgress();
         }
 
-        // 回车添加变量
-        document.addEventListener('DOMContentLoaded', function() {
-            const customInput = document.getElementById('custom-variable-input');
-            if (customInput) {
-                customInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        addCustomVariable();
-                    }
-                });
-            }
-        });
-
         // 删除变量
         function removeVariable(index) {
             variables.splice(index, 1);
             renderVariables();
             // 清理包含该变量的关系
-            relations = relations.filter(r => {
-                const varNames = variables.map(v => v.name);
-                return varNames.includes(r.from) && varNames.includes(r.to);
-            });
+            const varNames = variables.map(v => v.name);
+            relations = relations.filter(r => varNames.includes(r.from) && varNames.includes(r.to));
             checkProgress();
         }
 
@@ -569,31 +560,48 @@
             relations.forEach((r, i) => {
                 const div = document.createElement('div');
                 div.className = 'flex items-center gap-2 mb-2 text-sm';
-                
-                const fromSelect = createSelect(validVars, r.from, `updateRelation(${i}, 'from', this.value)`);
-                const toSelect = createSelect(validVars, r.to, `updateRelation(${i}, 'to', this.value)`);
-                
                 div.innerHTML = `
-                    ${fromSelect}
+                    <select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="handleRelationSelect(this, ${i}, 'from')">
+                        ${validVars.map(v => `<option value="${v}" ${v === r.from ? 'selected' : ''}>${v}</option>`).join('')}
+                        <option value="__ADD_NEW__" style="color: #e63946;">+ 新变量...</option>
+                    </select>
                     <select class="input-field rounded-lg px-2 py-1 text-sm" onchange="updateRelation(${i}, 'type', this.value)">
                         <option value="+" ${r.type === '+' ? 'selected' : ''}>→(+)</option>
                         <option value="-" ${r.type === '-' ? 'selected' : ''}>→(-)</option>
                     </select>
-                    ${toSelect}
+                    <select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="handleRelationSelect(this, ${i}, 'to')">
+                        ${validVars.map(v => `<option value="${v}" ${v === r.to ? 'selected' : ''}>${v}</option>`).join('')}
+                        <option value="__ADD_NEW__" style="color: #e63946;">+ 新变量...</option>
+                    </select>
                     ${relations.length > 1 ? `<span class="text-accent cursor-pointer text-lg" onclick="removeRelation(${i})">×</span>` : ''}
                 `;
                 container.appendChild(div);
             });
         }
 
-        // 创建选择框
-        function createSelect(options, selected, onchange) {
-            let html = `<select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="${onchange}">`;
-            options.forEach(opt => {
-                html += `<option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt}</option>`;
-            });
-            html += '</select>';
-            return html;
+        // 处理关系选择变化（包括添加新变量）
+        function handleRelationSelect(selectEl, relationIndex, field) {
+            if (selectEl.value === '__ADD_NEW__') {
+                const newVar = prompt('输入新变量名：');
+                if (newVar && newVar.trim()) {
+                    const trimmed = newVar.trim();
+                    // 检查是否已存在
+                    if (!variables.some(v => v.name === trimmed)) {
+                        variables.push({ name: trimmed, isPreset: false });
+                        renderVariables();
+                    }
+                    // 更新关系
+                    relations[relationIndex][field] = trimmed;
+                    renderRelations();
+                    checkProgress();
+                } else {
+                    // 重置为第一个变量
+                    const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+                    selectEl.value = validVars[0];
+                }
+            } else {
+                relations[relationIndex][field] = selectEl.value;
+            }
         }
 
         // 更新关系
@@ -706,7 +714,6 @@
         // 匹配认知偏误
         function matchCognitiveBias(problem, vars, rels) {
             const text = problem + ' ' + vars.join(' ');
-            const relText = rels.map(r => r.from + r.to).join(' ');
             
             let bestMatch = cognitiveBiases[0];
             let bestScore = 0;
