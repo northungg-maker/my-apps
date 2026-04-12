@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有限人生 - 时间与选择的校准器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.8;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .module {
+            margin-bottom: 48px;
+        }
+        
+        .module-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .input-group {
+            flex: 1;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #fff;
+        }
+        
+        .output-box {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .output-main {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .output-note {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .probability-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .probability-item:last-child {
+            border-bottom: none;
+        }
+        
+        .probability-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .probability-value {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .death-factors {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .death-factor {
+            font-size: 14px;
+            color: #666;
+            padding-left: 12px;
+            border-left: 2px solid #ddd;
+        }
+
+        .accent-red {
+            color: #c04040;
+        }
+
+        .ellipsis-red {
+            color: #c04040;
+        }
+        
+        .transition {
+            text-align: center;
+            padding: 48px 0;
+            margin: 24px 0;
+        }
+        
+        .transition-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-option:hover {
+            border-color: #ccc;
+        }
+        
+        .radio-option.selected {
+            border-color: #1a1a1a;
+            background: #f5f5f5;
+        }
+        
+        .radio-option input {
+            margin-right: 12px;
+        }
+        
+        .radio-label {
+            font-size: 15px;
+        }
+        
+        .result-box {
+            background: #1a1a1a;
+            color: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 48px;
+        }
+        
+        .result-conclusion {
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .result-hint {
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 32px;
+        }
+        
+        .btn-primary {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: #333;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .source-note {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #fff;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>有限人生</h1>
+    <p class="subtitle">在有限时间的前提下，重新审视你的选择</p>
+    
+    <!-- 第一部分：生命刻度 -->
+    <p class="section-title">第一部分 · 生命刻度</p>
+    
+    <!-- 模块1：基础信息 -->
+    <div class="module">
+        <p class="module-title">你的当前状态</p>
+        <div class="input-row">
+            <div class="input-group">
+                <label>年龄</label>
+                <input type="number" id="age" min="1" max="120" placeholder="输入你的年龄">
+            </div>
+            <div class="input-group">
+                <label>性别（可选）</label>
+                <select id="gender">
+                    <option value="">不选择</option>
+                    <option value="male">男</option>
+                    <option value="female">女</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模块2：剩余时间 -->
+    <div class="module" id="remaining-time-module" style="display: none;">
+        <p class="module-title">如果按平均情况</p>
+        <div class="output-box">
+            <p class="output-main" id="remaining-years">你大约还有 X 年</p>
+            <p class="output-note">这是统计平均值，不代表个体结果</p>
+            <p class="output-note" style="margin-top: 16px; color: #888;" id="reflection-hint">这时间，够你做一件怎样的事？</p>
+        </div>
+    </div>
+    
+    <!-- 模块3：概率区间 -->
+    <div class="module" id="probability-module" style="display: none;">
+        <p class="module-title">生命的不确定性</p>
+        <div class="output-box">
+            <div class="probability-list">
+                <div class="probability-item">
+                    <span class="probability-label">活到70岁的概率</span>
+                    <span class="probability-value" id="prob-70">--</span>
+                </div>
+                <div class="probability-item">
+                    <span class="probability-label">活到80岁的概率</span>
+                    <span class="probability-value" id="prob-80">--</span>
+                </div>
+                <div class="probability-item">
+                    <span class="probability-label">活到90岁的概率</span>
+                    <span class="probability-value" id="prob-90">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模块4：死亡结构 -->
+    <div class="module" id="death-module" style="display: none;">
+        <p class="module-title">不可完全控制的部分</p>
+        <div class="death-factors">
+            <p class="death-factor">慢性疾病</p>
+            <p class="death-factor">意外事件</p>
+            <p class="death-factor">突发情况</p>
+            <p class="death-factor ellipsis-red">……</p>
+        </div>
+    </div>
+    
+    <!-- 过渡 -->
+    <div class="transition" id="transition-section" style="display: none;">
+        <p class="transition-text">在这样的<span class="accent-red">有限</span>时间条件下，再看这件事</p>
+    </div>
+    
+    <!-- 第二部分：意义校准 -->
+    <p class="section-title" id="part2-title" style="display: none;">第二部分 · 意义校准</p>
+    
+    <!-- 模块5：当前行为 -->
+    <div class="module" id="behavior-module" style="display: none;">
+        <p class="module-title">你现在在做或准备做的事情</p>
+        <textarea id="current-action" placeholder="例如：做这个项目 / 换工作 / 继续一段关系"></textarea>
+    </div>
+    
+    <!-- 模块6：主观价值 -->
+    <div class="module" id="value-module" style="display: none;">
+        <p class="module-title">你对这件事的真实态度</p>
+        <div class="radio-group" id="value-options">
+            <label class="radio-option">
+                <input type="radio" name="value" value="very_care">
+                <span class="radio-label">我非常在意</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="value" value="somewhat_care">
+                <span class="radio-label">我有点在意</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="value" value="should_do">
+                <span class="radio-label">我只是觉得应该做</span>
+            </label>
+        </div>
+    </div>
+    
+    <!-- 模块7：时间选择 -->
+    <div class="module" id="time-choice-module" style="display: none;">
+        <p class="module-title">如果时间有限</p>
+        <p style="font-size: 14px; color: #666; margin-bottom: 16px;">如果你只剩有限的时间，你还会做这件事吗？</p>
+        <div class="radio-group" id="time-options">
+            <label class="radio-option">
+                <input type="radio" name="time_choice" value="definitely">
+                <span class="radio-label">一定会</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="time_choice" value="uncertain">
+                <span class="radio-label">不确定</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="time_choice" value="probably_not">
+                <span class="radio-label">大概率不会</span>
+            </label>
+        </div>
+    </div>
+    
+    <!-- 提交按钮 -->
+    <button class="btn btn-primary" id="submit-btn" style="display: none;">重新看一眼这件事</button>
+    
+    <!-- 结果输出 -->
+    <div class="result-box hidden" id="result-box">
+        <p class="result-conclusion" id="result-conclusion"></p>
+        <p class="result-hint" id="result-hint"></p>
+    </div>
+    
+    <!-- 数据来源 -->
+    <p class="source-note" id="source-note" style="display: none;">
+        数据来源：世界银行WDI（2023）+ 中国国家统计局统计年鉴 + Coale-Demeny模型生命表，仅供参考
+    </p>
+
+    <script>
+        // ========== 中国人寿命数据（2023年统计）==========
+        // 数据来源：世界银行WDI + 国家统计局 + Coale-Demeny模型生命表
+        // 
+        // 剩余预期寿命表：按性别、年龄段
+        const LIFE_TABLE = {
+            male: {
+                0: 75, 20: 56, 30: 48, 40: 39, 
+                50: 30, 60: 21, 70: 14, 80: 8, 90: 4
+            },
+            female: {
+                0: 81, 20: 61, 30: 53, 40: 44,
+                50: 34, 60: 25, 70: 17, 80: 10, 90: 5
+            },
+            average: {
+                0: 78, 20: 59, 30: 51, 40: 42,
+                50: 32, 60: 23, 70: 15, 80: 9, 90: 4
+            }
+        };
+        
+        // 条件生存概率：当前年龄X岁，活到目标年龄的概率
+        // 基于生命表简化计算
+        const SURVIVAL_PROB = {
+            male: {
+                20: { 70: 0.78, 80: 0.52, 90: 0.17 },
+                30: { 70: 0.76, 80: 0.50, 90: 0.16 },
+                40: { 70: 0.73, 80: 0.47, 90: 0.15 },
+                50: { 70: 0.68, 80: 0.42, 90: 0.12 },
+                60: { 70: 0.58, 80: 0.33, 90: 0.08 }
+            },
+            female: {
+                20: { 70: 0.87, 80: 0.67, 90: 0.28 },
+                30: { 70: 0.86, 80: 0.65, 90: 0.27 },
+                40: { 70: 0.83, 80: 0.62, 90: 0.25 },
+                50: { 70: 0.80, 80: 0.57, 90: 0.21 },
+                60: { 70: 0.74, 80: 0.49, 90: 0.16 }
+            },
+            average: {
+                20: { 70: 0.82, 80: 0.60, 90: 0.23 },
+                30: { 70: 0.81, 80: 0.58, 90: 0.22 },
+                40: { 70: 0.78, 80: 0.55, 90: 0.20 },
+                50: { 70: 0.74, 80: 0.50, 90: 0.16 },
+                60: { 70: 0.66, 80: 0.41, 90: 0.12 }
+            }
+        };
+        
+        // ==========工具函数==========
+        function getAgeGroup(age) {
+            if (age < 25) return 20;
+            if (age < 35) return 30;
+            if (age < 45) return 40;
+            if (age < 55) return 50;
+            if (age < 65) return 60;
+            if (age < 75) return 70;
+            return 80;
+        }
+        
+        function getRemainingYears(age, gender) {
+            const table = LIFE_TABLE[gender] || LIFE_TABLE.average;
+            const ageGroup = getAgeGroup(age);
+            return table[ageGroup] || 0;
+        }
+        
+        function getSurvivalProb(age, gender) {
+            const table = SURVIVAL_PROB[gender] || SURVIVAL_PROB.average;
+            const ageGroup = getAgeGroup(age);
+            return table[ageGroup] || { 70: '--', 80: '--', 90: '--' };
+        }
+        
+        function formatPercent(prob) {
+            if (typeof prob === 'number') {
+                return Math.round(prob * 100) + '%';
+            }
+            return '--';
+        }
+        
+        function getReflectionHint(age, remaining) {
+            // 20-30岁
+            if (age < 30) {
+                if (remaining > 40) return "一切皆有可能，但先想清楚你要什么";
+                if (remaining > 20) return "足够完成任何一件事——但只能选一两件";
+                return "什么对你最重要？现在就该开始";
+            }
+            // 30-50岁
+            if (age < 50) {
+                if (remaining > 30) return "足够重新开始——但不再是任意选择";
+                if (remaining > 15) return "该聚焦了，哪些事非做不可？";
+                return "哪些事，现在不做就来不及了？";
+            }
+            // 50-65岁
+            if (age < 65) {
+                if (remaining > 20) return "还有时间完成那件一直拖的事";
+                if (remaining > 10) return "简化、聚焦、完成";
+                return "什么是最重要的？该说的别拖了";
+            }
+            // 65岁以上
+            if (remaining > 15) return "足够认真完成想做的事";
+            if (remaining > 5) return "好好做自己，见想见的人";
+            return "好好告别，好好珍惜";
+        }
+        
+        // ==========状态管理==========
+        let state = {
+            step: 1, // 1: 输入年龄, 2: 意义校准, 3: 显示结果
+            age: null,
+            gender: null,
+            currentAction: '',
+            value: null,
+            timeChoice: null
+        };
+        
+        // ==========DOM元素==========
+        const ageInput = document.getElementById('age');
+        const genderSelect = document.getElementById('gender');
+        const remainingTimeModule = document.getElementById('remaining-time-module');
+        const probabilityModule = document.getElementById('probability-module');
+        const deathModule = document.getElementById('death-module');
+        const transitionSection = document.getElementById('transition-section');
+        const part2Title = document.getElementById('part2-title');
+        const behaviorModule = document.getElementById('behavior-module');
+        const valueModule = document.getElementById('value-module');
+        const timeChoiceModule = document.getElementById('time-choice-module');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultBox = document.getElementById('result-box');
+        const sourceNote = document.getElementById('source-note');
+        
+        // ==========事件监听==========
+        ageInput.addEventListener('input', updateLifeData);
+        genderSelect.addEventListener('change', updateLifeData);
+        
+        function updateLifeData() {
+            const age = parseInt(ageInput.value);
+            const gender = genderSelect.value || null;
+            
+            if (!age || age < 1 || age > 120) {
+                hideModules();
+                return;
+            }
+            
+            state.age = age;
+            state.gender = gender;
+            
+            // 计算剩余时间
+            const remaining = getRemainingYears(age, gender);
+            document.getElementById('remaining-years').innerHTML = `你大约还有 <span class="accent-red">${remaining}</span> 年`;
+            
+            // 根据年龄和剩余年限设置引导语
+            const hint = getReflectionHint(age, remaining);
+            document.getElementById('reflection-hint').textContent = hint;
+            
+            // 计算概率
+            const prob = getSurvivalProb(age, gender);
+            document.getElementById('prob-70').textContent = formatPercent(prob[70]);
+            document.getElementById('prob-80').textContent = formatPercent(prob[80]);
+            document.getElementById('prob-90').textContent = formatPercent(prob[90]);
+            
+            // 显示模块
+            remainingTimeModule.style.display = 'block';
+            probabilityModule.style.display = 'block';
+            deathModule.style.display = 'block';
+            transitionSection.style.display = 'block';
+            part2Title.style.display = 'block';
+            behaviorModule.style.display = 'block';
+            valueModule.style.display = 'block';
+            timeChoiceModule.style.display = 'block';
+            submitBtn.style.display = 'block';
+            sourceNote.style.display = 'block';
+            
+            state.step = 2;
+        }
+        
+        function hideModules() {
+            remainingTimeModule.style.display = 'none';
+            probabilityModule.style.display = 'none';
+            deathModule.style.display = 'none';
+            transitionSection.style.display = 'none';
+            part2Title.style.display = 'none';
+            behaviorModule.style.display = 'none';
+            valueModule.style.display = 'none';
+            timeChoiceModule.style.display = 'none';
+            submitBtn.style.display = 'none';
+            sourceNote.style.display = 'none';
+        }
+        
+        // Radio选项样式
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('input');
+                input.checked = true;
+                
+                // 更新样式
+                const group = this.closest('.radio-group');
+                group.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+        
+        // 提交按钮
+        submitBtn.addEventListener('click', showResult);
+        
+        function showResult() {
+            // 获取值
+            const valueRadio = document.querySelector('input[name="value"]:checked');
+            const timeRadio = document.querySelector('input[name="time_choice"]:checked');
+            const action = document.getElementById('current-action').value.trim();
+            
+            if (!valueRadio || !timeRadio) {
+                alert('请先完成所有选项');
+                return;
+            }
+            
+            state.value = valueRadio.value;
+            state.timeChoice = timeRadio.value;
+            state.currentAction = action;
+            
+            // 生成结论
+            const result = generateConclusion(state);
+            
+            document.getElementById('result-conclusion').textContent = result.conclusion;
+            document.getElementById('result-hint').textContent = result.hint;
+            resultBox.classList.remove('hidden');
+            
+            // 滚动到结果
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // ==========结论生成逻辑==========
+        function generateConclusion(state) {
+            const { value, timeChoice, currentAction } = state;
+            
+            // 组合判断
+            const conclusions = {
+                // 非常在意
+                'very_care-definitely': {
+                    conclusion: '这件事对你来说是核心。',
+                    hint: '你清楚它在人生中的位置，继续保持这种清醒。'
+                },
+                'very_care-uncertain': {
+                    conclusion: '这件事很重要，但你在犹豫。',
+                    hint: '犹豫通常不是因为不清楚价值，而是因为害怕代价。问自己：在怕什么？'
+                },
+                'very_care-probably_not': {
+                    conclusion: '你在意这件事，但时间有限时你不会选它。',
+                    hint: '这说明它重要，但不是最重要的。它在你的"想做清单"上，但不在"人生清单"上。'
+                },
+                // 有点在意
+                'somewhat_care-definitely': {
+                    conclusion: '这件事的优先级是对的，但你的驱动力不够强。',
+                    hint: '"有点在意"加上"一定会做"，听起来像是：做了对，但不做也行。你确定这是你的选择吗？'
+                },
+                'somewhat_care-uncertain': {
+                    conclusion: '这件事处于模糊地带。',
+                    hint: '既不在意到必须做，也不在意到可以不做。它占用了你的时间，却没有占据你的心。'
+                },
+                'somewhat_care-probably_not': {
+                    conclusion: '你并不是真的想做这件事。',
+                    hint: '它可能是你在"应付"的事情，而不是在选择的事情。'
+                },
+                // 应该做
+                'should_do-definitely': {
+                    conclusion: '你在替别人活你的人生。',
+                    hint: '"应该做"不是你的声音。你在回应环境，而不是在做选择。'
+                },
+                'should_do-uncertain': {
+                    conclusion: '这件事不是出于你的意愿。',
+                    hint: '你不是在做选择，你是在"被安排"。问问自己：如果没有人期待，你还会做吗？'
+                },
+                'should_do-probably_not': {
+                    conclusion: '你已经知道答案了。',
+                    hint: '你只是在等一个明确的许可。这是你的时间，你可以决定。'
+                }
+            };
+            
+            const key = `${value}-${timeChoice}`;
+            return conclusions[key] || {
+                conclusion: '你的选择透露了一些东西。',
+                hint: '认真看一看这个答案，它已经告诉你结果了。'
+            };
+        }
+    </script>
+</body>
+</html>
