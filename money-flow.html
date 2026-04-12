@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钱从哪里来 - 变现路径识别器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+        .module {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        .module-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #111;
+        }
+        .input-box {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            outline: none;
+        }
+        .input-box:focus {
+            border-color: #E53935;
+        }
+        .input-box::placeholder {
+            color: #999;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+            accent-color: #E53935;
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .radio-item input {
+            width: 16px;
+            height: 16px;
+            accent-color: #E53935;
+        }
+        .sub-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        .sub-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: #E53935;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #C62828;
+        }
+        .result {
+            display: none;
+            margin-top: 40px;
+        }
+        .result.show {
+            display: block;
+        }
+        .result-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        .result-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #E53935;
+        }
+        .result-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .result-content {
+            font-size: 14px;
+            color: #333;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+        .tag.red { background: #FFEBEE; color: #C62828; }
+        .tag.green { background: #E8F5E9; color: #2E7D32; }
+        .tag.yellow { background: #FFF8E1; color: #F57F17; }
+        .tag.gray { background: #f5f5f5; color: #666; }
+        .tag.blue { background: #E3F2FD; color: #1565C0; }
+        .tag.dark { background: #424242; color: #fff; }
+        .tag.purple { background: #F3E5F5; color: #7B1FA2; }
+        .tag.orange { background: #FFF3E0; color: #E65100; }
+        
+        .data-box {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+        .data-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .data-row:last-child {
+            margin-bottom: 0;
+        }
+        .data-label {
+            width: 140px;
+            color: #666;
+            flex-shrink: 0;
+        }
+        .data-value {
+            flex: 1;
+            color: #333;
+        }
+        .data-source {
+            font-size: 11px;
+            color: #999;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed #e0e0e0;
+        }
+        
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .dimension-item {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .dimension-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        .dimension-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .conclusion-box {
+            background: #fff;
+            border-left: 3px solid #E53935;
+            padding: 16px 20px;
+            margin-top: 12px;
+            border-radius: 0 6px 6px 0;
+        }
+        .conclusion-title {
+            font-weight: 600;
+            color: #E53935;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .conclusion-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.7;
+        }
+        
+        .disclaimer {
+            margin-top: 32px;
+            padding: 16px;
+            background: #fafafa;
+            border-left: 3px solid #999;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.8;
+        }
+        .disclaimer-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .source-card {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+        .source-row {
+            display: flex;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .source-row:last-child {
+            margin-bottom: 0;
+        }
+        .source-label {
+            width: 70px;
+            color: #666;
+            flex-shrink: 0;
+        }
+        .source-value {
+            flex: 1;
+        }
+        
+        .gray-warning {
+            background: #fff3e0;
+            border-left: 3px solid #FF6F00;
+            padding: 16px;
+            margin-top: 12px;
+            border-radius: 0 6px 6px 0;
+        }
+        .gray-warning-title {
+            font-weight: 600;
+            color: #E65100;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .idea-analysis {
+            background: #f5f5f5;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .idea-text {
+            font-size: 14px;
+            color: #333;
+        }
+        .idea-type {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>钱从哪里来</h1>
+    <p class="subtitle">变现路径识别器 · 说你的想法，看钱从哪来</p>
+
+    <div class="module">
+        <div class="module-title">你想通过什么方式弄到钱？</div>
+        <input type="text" class="input-box" id="idea" placeholder="什么都可以说：正经的、野路子、运气、灰色...我不评判">
+    </div>
+
+    <div class="module">
+        <div class="module-title">你现在有什么？（自有资源）</div>
+        <div class="checkbox-group" id="ownResources">
+            <label class="checkbox-item"><input type="checkbox" value="资金"> 资金</label>
+            <label class="checkbox-item"><input type="checkbox" value="技能"> 技能</label>
+            <label class="checkbox-item"><input type="checkbox" value="时间"> 时间</label>
+            <label class="checkbox-item"><input type="checkbox" value="信息差"> 信息差</label>
+        </div>
+
+        <div class="sub-section">
+            <div class="sub-title">你能调动什么？（外部助力）</div>
+            <div class="checkbox-group" id="externalResources">
+                <label class="checkbox-item"><input type="checkbox" value="人脉"> 人脉关系</label>
+                <label class="checkbox-item"><input type="checkbox" value="平台渠道"> 平台/渠道</label>
+                <label class="checkbox-item"><input type="checkbox" value="家庭支持"> 家庭背景支持</label>
+                <label class="checkbox-item"><input type="checkbox" value="时代红利"> 时代/行业红利</label>
+            </div>
+        </div>
+
+        <div class="sub-section">
+            <div class="sub-title">你的资源状态属于？</div>
+            <div class="radio-group" id="resourceLevel">
+                <label class="radio-item"><input type="radio" name="level" value="优势"> 明显优势</label>
+                <label class="radio-item"><input type="radio" name="level" value="一般"> 一般水平</label>
+                <label class="radio-item"><input type="radio" name="level" value="缺乏"> 基本没有</label>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn" onclick="generateResult()">生成钱的判断</button>
+
+    <div class="result" id="resultBox">
+        <div class="result-section">
+            <div class="result-label">① 你的想法分析</div>
+            <div class="result-content" id="ideaAnalysis"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">② 这笔钱的来源类型</div>
+            <div class="result-content" id="sourceType"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">③ 推荐路径</div>
+            <div class="result-content" id="recommendedPath"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">④ 数据参考（基于行业统计）</div>
+            <div class="result-content" id="dataReference"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">⑤ 六维度可能性评估</div>
+            <div class="result-content" id="dimensionAnalysis"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">⑥ 这条路适合你吗？</div>
+            <div class="result-content" id="conclusion"></div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">⑦ 下一步行动建议</div>
+            <div class="result-content" id="actions"></div>
+        </div>
+
+        <div class="disclaimer">
+            <div class="disclaimer-title">📊 评估说明</div>
+            <p><strong>数据来源：</strong>数据来自行业报告、平台公开数据、学术研究等，仅供参考。不同个体情况差异大，不可直接套用。</p>
+            <p><strong>灰色路径承认：</strong>偷、抢、贪污、诈骗、投机套利——这些都存在，都可能带来钱。我们不劝你别做，但会告诉你代价。</p>
+            <p><strong>你应该怎么用：</strong>把它当成"诚实的朋友"，不会只告诉你"努力"这一条路，而是把所有路摆出来，让你自己选。</p>
+        </div>
+    </div>
+
+    <script>
+        // 钱来源类型定义
+        const moneySources = {
+            '自己挣': {
+                tag: 'green',
+                description: '通过劳动、技能、创业赚钱',
+                examples: '上班、接单、开店、技能变现',
+                traits: '门槛是能力和付出，可持续',
+                pros: '可控、可持续、可积累',
+                cons: '慢、需要时间、需要有能卖的东西'
+            },
+            '别人给': {
+                tag: 'purple',
+                description: '继承、赠予、婚姻、家庭支持',
+                examples: '继承家产、父母支持、婚姻',
+                traits: '门槛是出身或关系，不可控',
+                pros: '可能直接跨越阶层',
+                cons: '完全不可控、看运气'
+            },
+            '系统分配': {
+                tag: 'blue',
+                description: '体制、政策红利、时代浪潮的位置',
+                examples: '体制内编制、政策补贴、行业红利',
+                traits: '门槛是入场券（身份、资格）',
+                pros: '稳定、可能有大红利',
+                cons: '需要入场资格、不可复制'
+            },
+            '运气砸中': {
+                tag: 'yellow',
+                description: '彩票、意外、被风口吹起来',
+                examples: '彩票、拆迁、踩中风口',
+                traits: '门槛是运气',
+                pros: '可能一夜翻身',
+                cons: '完全不可控、无法预期'
+            },
+            '撬动资源': {
+                tag: 'orange',
+                description: '用别人的资源赚钱（人脉、流量、信息差）',
+                examples: '撮合交易、流量变现、信息差套利',
+                traits: '门槛是有资源可撬',
+                pros: '可能放大收益',
+                cons: '需要先有资源、需要杠杆能力'
+            },
+            '灰色路径': {
+                tag: 'dark',
+                description: '游走边界的方式（偷、抢、贪污、诈骗、投机套利等）',
+                examples: '偷、抢、贪污、诈骗、投机、擦边、割韭菜',
+                traits: '门槛是胆量和运气',
+                pros: '短期可能快',
+                cons: '法律风险、道德成本、心理负担、不可持续'
+            }
+        };
+
+        // 灰色路径关键词
+        const grayKeywords = ['偷', '抢', '贪污', '诈骗', '赌', '投机', '擦边', '灰色', '违法', '黑市', '洗钱', '套利', '割韭菜', '传销', '非法', '赚快钱'];
+
+        // 路径数据（基于搜集的真实数据）
+        const pathsData = {
+            '灰色路径': {
+                description: '游走边界的变现方式',
+                successRate: { min: 40, max: 50, desc: '单次作案不被抓获率' },
+                dataPoints: [
+                    { label: '盗窃破案率', value: '15-30%', note: '监控覆盖率提升中' },
+                    { label: '电信诈骗破案率', value: '50%+', note: '打击趋严' },
+                    { label: '再犯率', value: '22.1%', note: '1984年至今持续上升' },
+                    { label: '最高刑罚', value: '无期-死刑', note: '根据涉案金额/类型' }
+                ],
+                dataSource: '最高检工作报告、司法统计、刑法',
+                dimensions: {
+                    successDifficulty: { level: '高', desc: '监控、快速反应、技术侦查持续强化' },
+                    failCost: { level: '极高', desc: '坐牢、案底、社会关系破裂、子女政审影响' },
+                    sustainability: { level: '极低', desc: '6%慢性习惯犯犯下51.9%罪行，最终必然被抓' },
+                    threshold: { level: '低', desc: '物理型犯罪无门槛，诈骗类需话术/账户群' },
+                    learningCurve: { level: '中', desc: '入门容易，精通难（规避侦查需持续学习）' },
+                    replicability: { level: '无', desc: '每次都是新赌局，不可复制' }
+                }
+            },
+            '流量变现': {
+                description: '通过广告、带货等方式变现流量',
+                successRate: { min: 2, max: 5, desc: '全职创作者变现率' },
+                dataPoints: [
+                    { label: 'YouTube达标率', value: '10-15%', note: '符合变现门槛的账号' },
+                    { label: '全职创作者占比', value: '2-5%', note: '能靠创作谋生的人' },
+                    { label: '新主播3月退出率', value: '70%', note: '直播电商数据' },
+                    { label: '直播转化率', value: '0.5-3%', note: '新手普遍低于1%' }
+                ],
+                dataSource: 'Linktree创作者报告、Backlinko、Influencer Marketing Hub',
+                dimensions: {
+                    successDifficulty: { level: '高', desc: '头部1%拿走90%+收益，竞争极激烈' },
+                    failCost: { level: '高', desc: '时间1-3年、金钱5-30万、机会成本巨大' },
+                    sustainability: { level: '不确定', desc: '依赖平台和政策，风险分散能力决定存续期' },
+                    threshold: { level: '中', desc: '设备易得，但成功需综合能力极强' },
+                    learningCurve: { level: '陡峭', desc: '12-18个月才能稳定赚钱，需持续学习' },
+                    replicability: { level: '中', desc: '爆款难复制，但模式可复制' }
+                }
+            },
+            '技能变现': {
+                description: '用技能直接接单或提供服务',
+                successRate: { min: 40, max: 60, desc: '有技能的人找到付费方的概率' },
+                dataPoints: [
+                    { label: '自由职业成功率', value: '40-60%', note: '有技能者大概率能找到客户' },
+                    { label: '收入中位数', value: '¥5,000-15,000/月', note: '取决于技能稀缺性' },
+                    { label: '起步周期', value: '3-6个月', note: '建立客户基础' }
+                ],
+                dataSource: 'Upwork、Fiverr平台数据、自由职业行业报告',
+                dimensions: {
+                    successDifficulty: { level: '中', desc: '有技能就有市场，但竞争存在' },
+                    failCost: { level: '中', desc: '主要是时间成本，金钱投入低' },
+                    sustainability: { level: '有', desc: '技能可积累、口碑可传播、长期可持续' },
+                    threshold: { level: '中', desc: '需要可变现的技能' },
+                    learningCurve: { level: '中', desc: '取决于技能本身，一般3-12个月入门' },
+                    replicability: { level: '高', desc: '技能一旦习得，可长期复用' }
+                }
+            },
+            '信息差套利': {
+                description: '利用信息差低买高卖',
+                successRate: { min: 20, max: 40, desc: '知道信息差且有渠道的人' },
+                dataPoints: [
+                    { label: '成功率', value: '20-40%', note: '取决于信息差窗口期' },
+                    { label: '窗口期', value: '不确定', note: '竞争会让利差消失' }
+                ],
+                dataSource: '商业案例分析',
+                dimensions: {
+                    successDifficulty: { level: '中高', desc: '需要找到信息差+有渠道执行' },
+                    failCost: { level: '中', desc: '可能亏损资金，但可控' },
+                    sustainability: { level: '低', desc: '信息差窗口期短，需要持续找新机会' },
+                    threshold: { level: '中高', desc: '需要信息差+资金+渠道' },
+                    learningCurve: { level: '中', desc: '需要对行业的理解' },
+                    replicability: { level: '低', desc: '每个信息差都是一次性的' }
+                }
+            },
+            '关系资源变现': {
+                description: '通过资源撮合变现人脉',
+                successRate: { min: 30, max: 50, desc: '有人脉能撮合成功的人' },
+                dataPoints: [
+                    { label: '成功率', value: '30-50%', note: '取决于人脉质量和撮合能力' },
+                    { label: '信任成本', value: '高', note: '人情债难还' }
+                ],
+                dataSource: '商业研究',
+                dimensions: {
+                    successDifficulty: { level: '中', desc: '取决于人脉质量和你的撮合能力' },
+                    failCost: { level: '中', desc: '可能损失人脉信任' },
+                    sustainability: { level: '中', desc: '人脉需要维护，否则会贬值' },
+                    threshold: { level: '高', desc: '需要有效人脉+信任关系' },
+                    learningCurve: { level: '低', desc: '不需要特殊技能' },
+                    replicability: { level: '中', desc: '模式可复制，但每次需要新资源' }
+                }
+            },
+            '直接交易': {
+                description: '用资金做产品或服务交易',
+                successRate: { min: 30, max: 50, desc: '小微创业存活率' },
+                dataPoints: [
+                    { label: '小微创业成功率', value: '30-50%', note: '3年存活率' },
+                    { label: '资金门槛', value: '不确定', note: '取决于行业' }
+                ],
+                dataSource: '工商数据、创业报告',
+                dimensions: {
+                    successDifficulty: { level: '中', desc: '取决于选品和渠道' },
+                    failCost: { level: '高中', desc: '资金占用、库存风险' },
+                    sustainability: { level: '有', desc: '稳定经营可积累客户' },
+                    threshold: { level: '高', desc: '需要启动资金' },
+                    learningCurve: { level: '中', desc: '需要学经营管理' },
+                    replicability: { level: '高', desc: '模式成熟后可复制' }
+                }
+            },
+            '需要先积累': {
+                description: '当前资源不足以支撑清晰的变现路径',
+                successRate: { min: 0, max: 10, desc: '没有资源基础' },
+                dataPoints: [
+                    { label: '基础资源', value: '资金或技能', note: '至少要有一样' }
+                ],
+                dataSource: '商业逻辑推演',
+                dimensions: {
+                    successDifficulty: { level: '极高', desc: '没有资源，路径不通' },
+                    failCost: { level: '高', desc: '盲目尝试浪费时间' },
+                    sustainability: { level: '无', desc: '没有基础，无法持续' },
+                    threshold: { level: '高', desc: '需要先积累核心资源' },
+                    learningCurve: { level: '不确定', desc: '先确定方向' },
+                    replicability: { level: '不确定', desc: '先确定方向' }
+                }
+            }
+        };
+
+        // 分析输入的想法
+        function analyzeIdea(idea) {
+            const lowerIdea = idea.toLowerCase();
+            const matchedGray = grayKeywords.filter(kw => lowerIdea.includes(kw));
+            
+            let sourceType = '';
+            let pathType = 'undetermined';
+            let detectedPath = null;
+            
+            if (matchedGray.length > 0) {
+                sourceType = '灰色路径';
+                pathType = 'gray';
+                detectedPath = '灰色路径';
+            } else if (lowerIdea.includes('继承') || lowerIdea.includes('家里') || lowerIdea.includes('父母') || lowerIdea.includes('婚姻')) {
+                sourceType = '别人给';
+                pathType = 'luck';
+                detectedPath = '需要先积累';
+            } else if (lowerIdea.includes('体制') || lowerIdea.includes('编制') || lowerIdea.includes('政策') || lowerIdea.includes('红利')) {
+                sourceType = '系统分配';
+                pathType = 'luck';
+                detectedPath = '需要先积累';
+            } else if (lowerIdea.includes('彩票') || lowerIdea.includes('运气') || lowerIdea.includes('风口') || lowerIdea.includes('意外')) {
+                sourceType = '运气砸中';
+                pathType = 'luck';
+                detectedPath = '需要先积累';
+            } else if (lowerIdea.includes('人脉') || lowerIdea.includes('关系') || lowerIdea.includes('撮合') || lowerIdea.includes('介绍')) {
+                sourceType = '撬动资源';
+                pathType = 'normal';
+                detectedPath = '关系资源变现';
+            } else if (lowerIdea.includes('短视频') || lowerIdea.includes('直播') || lowerIdea.includes('粉丝') || lowerIdea.includes('流量') || lowerIdea.includes('带货') || lowerIdea.includes('自媒体')) {
+                sourceType = '撬动资源';
+                pathType = 'normal';
+                detectedPath = '流量变现';
+            } else if (lowerIdea.includes('信息差') || lowerIdea.includes('倒卖') || lowerIdea.includes('中介') || lowerIdea.includes('套利')) {
+                sourceType = '撬动资源';
+                pathType = 'normal';
+                detectedPath = '信息差套利';
+            } else if (lowerIdea.includes('技能') || lowerIdea.includes('接单') || lowerIdea.includes('自由职业') || lowerIdea.includes('上班') || lowerIdea.includes('打工')) {
+                sourceType = '自己挣';
+                pathType = 'normal';
+                detectedPath = '技能变现';
+            } else if (lowerIdea.includes('卖货') || lowerIdea.includes('电商') || lowerIdea.includes('进货') || lowerIdea.includes('产品') || lowerIdea.includes('开店')) {
+                sourceType = '自己挣';
+                pathType = 'normal';
+                detectedPath = '直接交易';
+            } else {
+                sourceType = '自己挣';
+                pathType = 'normal';
+                detectedPath = null;
+            }
+            
+            return {
+                sourceType,
+                pathType,
+                detectedPath,
+                matchedGrayKeywords: matchedGray
+            };
+        }
+
+        function getSelectedValues(containerId) {
+            return Array.from(document.querySelectorAll('#' + containerId + ' input:checked')).map(cb => cb.value);
+        }
+
+        function getSelectedLevel() {
+            const radio = document.querySelector('input[name="level"]:checked');
+            return radio ? radio.value : '一般';
+        }
+
+        function analyzeResources(own, external, level) {
+            const all = [...own, ...external];
+            const hasCore = ['资金', '技能'].some(r => own.includes(r));
+            const hasLeverage = ['人脉', '平台渠道'].some(r => all.includes(r));
+            
+            let score = 0;
+            if (hasCore) score += 2;
+            if (hasLeverage) score += 1;
+            if (external.length > 0) score += 1;
+            if (level === '优势') score += 1;
+            if (level === '缺乏') score -= 1;
+            
+            return { hasCore, hasLeverage, score, all, own, level };
+        }
+
+        function getLevelTag(level) {
+            const map = {
+                '极高': 'red',
+                '高': 'orange',
+                '中高': 'yellow',
+                '中': 'yellow',
+                '低': 'gray',
+                '极低': 'gray',
+                '不确定': 'gray',
+                '有': 'green',
+                '无': 'gray',
+                '陡峭': 'orange',
+                '高': 'green'
+            };
+            return map[level] || 'gray';
+        }
+
+        function generateResult() {
+            const idea = document.getElementById('idea').value.trim();
+            const own = getSelectedValues('ownResources');
+            const external = getSelectedValues('externalResources');
+            const level = getSelectedLevel();
+            
+            if (!idea) {
+                alert('请填写你的想法');
+                return;
+            }
+            
+            const ideaAnalysis = analyzeIdea(idea);
+            const analysis = analyzeResources(own, external, level);
+            
+            // ① 想法分析
+            let ideaHtml = '<div class="idea-analysis">';
+            ideaHtml += '<div class="idea-text">"' + idea + '"</div>';
+            if (ideaAnalysis.pathType === 'gray') {
+                ideaHtml += '<div class="idea-type"><span class="tag dark">灰色路径</span> 你提到了：' + ideaAnalysis.matchedGrayKeywords.join('、') + '</div>';
+            } else {
+                ideaHtml += '<div class="idea-type"><span class="tag ' + moneySources[ideaAnalysis.sourceType].tag + '">' + ideaAnalysis.sourceType + '</span></div>';
+            }
+            ideaHtml += '</div>';
+            document.getElementById('ideaAnalysis').innerHTML = ideaHtml;
+            
+            // ② 钱来源类型
+            const source = moneySources[ideaAnalysis.sourceType];
+            let sourceHtml = '<span class="tag ' + source.tag + '">' + ideaAnalysis.sourceType + '</span><br>';
+            sourceHtml += '<div class="source-card">';
+            sourceHtml += '<div class="source-row"><div class="source-label">定义</div><div class="source-value">' + source.description + '</div></div>';
+            sourceHtml += '<div class="source-row"><div class="source-label">例子</div><div class="source-value">' + source.examples + '</div></div>';
+            sourceHtml += '<div class="source-row"><div class="source-label">门槛</div><div class="source-value">' + source.traits + '</div></div>';
+            sourceHtml += '</div>';
+            document.getElementById('sourceType').innerHTML = sourceHtml;
+            
+            // 确定推荐路径
+            let recPathKey;
+            if (ideaAnalysis.pathType === 'gray') {
+                recPathKey = '灰色路径';
+            } else if (ideaAnalysis.detectedPath) {
+                recPathKey = ideaAnalysis.detectedPath;
+            } else if (analysis.hasCore) {
+                recPathKey = own.includes('技能') ? '技能变现' : '直接交易';
+            } else if (analysis.hasLeverage) {
+                recPathKey = '关系资源变现';
+            } else {
+                recPathKey = '需要先积累';
+            }
+            
+            const pathData = pathsData[recPathKey];
+            
+            // ③ 推荐路径
+            document.getElementById('recommendedPath').innerHTML = 
+                '<span class="tag ' + (recPathKey === '灰色路径' ? 'dark' : 'red') + '">' + recPathKey + '</span> ' + pathData.description;
+            
+            // ④ 数据参考
+            let dataHtml = '<div class="data-box">';
+            dataHtml += '<div class="data-row"><div class="data-label">' + pathData.successRate.desc + '</div><div class="data-value"><strong>' + pathData.successRate.min + '-' + pathData.successRate.max + '%</strong></div></div>';
+            pathData.dataPoints.forEach(function(dp) {
+                dataHtml += '<div class="data-row"><div class="data-label">' + dp.label + '</div><div class="data-value">' + dp.value + ' <span style="color:#999;font-size:11px;">' + dp.note + '</span></div></div>';
+            });
+            dataHtml += '<div class="data-source">数据来源：' + pathData.dataSource + '</div>';
+            dataHtml += '</div>';
+            document.getElementById('dataReference').innerHTML = dataHtml;
+            
+            // ⑤ 六维度分析
+            const dims = pathData.dimensions;
+            let dimHtml = '<div class="dimension-grid">';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">单次成功难度</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.successDifficulty.level) + '">' + dims.successDifficulty.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.successDifficulty.desc + '</div></div>';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">失败代价</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.failCost.level) + '">' + dims.failCost.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.failCost.desc + '</div></div>';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">长期可持续性</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.sustainability.level) + '">' + dims.sustainability.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.sustainability.desc + '</div></div>';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">资源门槛</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.threshold.level) + '">' + dims.threshold.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.threshold.desc + '</div></div>';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">学习曲线</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.learningCurve.level) + '">' + dims.learningCurve.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.learningCurve.desc + '</div></div>';
+            dimHtml += '<div class="dimension-item"><div class="dimension-label">可复制性</div><div class="dimension-value"><span class="tag ' + getLevelTag(dims.replicability.level) + '">' + dims.replicability.level + '</span></div><div style="font-size:12px;color:#666;margin-top:4px;">' + dims.replicability.desc + '</div></div>';
+            dimHtml += '</div>';
+            document.getElementById('dimensionAnalysis').innerHTML = dimHtml;
+            
+            // ⑥ 结论
+            let conclusionHtml = '<div class="conclusion-box">';
+            if (recPathKey === '灰色路径') {
+                conclusionHtml += '<div class="conclusion-title">这条路适合你吗？</div>';
+                conclusionHtml += '<div class="conclusion-text">';
+                conclusionHtml += '数字上"成功率不低"（单次40-50%），但这是「单次不被抓」的概率，不是「可持续赚钱」的概率。<br><br>';
+                conclusionHtml += '代价是真实的：法律成本（坐牢）、道德成本、心理负担。<br><br>';
+                if (analysis.score >= 2) {
+                    conclusionHtml += '你有资源（' + analysis.all.join('、') + '），有退路，没必要赌这个。';
+                } else {
+                    conclusionHtml += '你缺资源——这不是贬低，而是事实。这条路对资源少的人风险极高。';
+                }
+                conclusionHtml += '</div>';
+            } else if (recPathKey === '需要先积累') {
+                conclusionHtml += '<div class="conclusion-title">这条路适合你吗？</div>';
+                conclusionHtml += '<div class="conclusion-text">';
+                conclusionHtml += '当前资源不足以支撑清晰的变现路径。<br><br>';
+                conclusionHtml += '建议先积累核心资源：资金或技能，至少要有一样。';
+                conclusionHtml += '</div>';
+            } else {
+                conclusionHtml += '<div class="conclusion-title">这条路适合你吗？</div>';
+                conclusionHtml += '<div class="conclusion-text">';
+                if (analysis.score >= 3) {
+                    conclusionHtml += '你的资源组合匹配度<strong>较高</strong>（有' + analysis.all.slice(0, 3).join('、') + '）。<br><br>';
+                    conclusionHtml += '这条路可以试，失败了代价' + dims.failCost.level + '，做成了' + (dims.sustainability.level === '有' ? '可持续' : '需要持续投入') + '。';
+                } else if (analysis.score >= 1) {
+                    conclusionHtml += '你的资源组合匹配度<strong>中等</strong>。<br><br>';
+                    conclusionHtml += '可以尝试，但需要补齐差距。失败代价' + dims.failCost.level + '。';
+                } else {
+                    conclusionHtml += '你的资源组合匹配度<strong>较低</strong>。<br><br>';
+                    conclusionHtml += '建议先积累基础资源，或选择其他路径。';
+                }
+                conclusionHtml += '</div>';
+            }
+            conclusionHtml += '</div>';
+            document.getElementById('conclusion').innerHTML = conclusionHtml;
+            
+            // ⑦ 行动建议
+            let actionsHtml = '<ul style="list-style:none;padding:0;">';
+            if (recPathKey === '灰色路径') {
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">这条路存在，而且可能来钱快——这点我们承认</li>';
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">但代价是真实的：法律风险、道德成本、心理负担</li>';
+                actionsHtml += '<li style="padding:8px 0;">如果这些你都想清楚了，那就选吧——我不会劝你别做</li>';
+            } else if (recPathKey === '需要先积累') {
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">先盘点自己有什么：列出3件你能做的事</li>';
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">找一个小切口：不追求大机会，先做小验证</li>';
+                actionsHtml += '<li style="padding:8px 0;">积累第一个可变现资源：技能或信息差</li>';
+            } else {
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">明确第一步动作：今天能做什么？</li>';
+                actionsHtml += '<li style="padding:8px 0;border-bottom:1px solid #eee;">设定验证周期：1周内验证假设</li>';
+                actionsHtml += '<li style="padding:8px 0;">接受失败代价：这条路失败了会损失什么？</li>';
+            }
+            actionsHtml += '</ul>';
+            document.getElementById('actions').innerHTML = actionsHtml;
+            
+            document.getElementById('resultBox').classList.add('show');
+        }
+    </script>
+</body>
+</html>
