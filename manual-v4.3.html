@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>执行手册_零起步版 V4.3</title>
+    <style>
+        :root { --primary: #1890ff; --success: #52c41a; --warning: #faad14; --danger: #f5222d; --text: #333; --text-light: #666; --bg: #f5f5f5; --card: #fff; --border: #e8e8e8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; padding-bottom: 20px; }
+        .container { padding: 12px; }
+        .header { background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%); color: #fff; padding: 16px 12px; margin: -12px -12px 16px; position: sticky; top: 0; z-index: 10; }
+        .header h1 { font-size: 18px; }
+        .header .meta { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--primary); margin: 16px 0 8px; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block; color: var(--text-light); }
+        .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-bottom: 8px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #fafafa; font-weight: 500; color: var(--text-light); font-size: 12px; }
+        .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .tag-green { background: #f6ffed; color: #52c41a; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+        .checkbox-item input { width: 18px; height: 18px; }
+        .info-box { background: #e6f7ff; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #1890ff; font-size: 13px; }
+        .warning-box { background: #fffbe6; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #faad14; font-size: 13px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .toast.show { opacity: 1; }
+        textarea.form-input { min-height: 60px; }
+        ul { padding-left: 20px; margin: 8px 0; }
+        li { margin: 4px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📖 执行手册_零起步版</h1>
+            <div class="meta">V4.3 | 从零起步，验证阶段专用</div>
+        </div>
+
+        <div class="info-box">
+            <strong>核心原则：</strong>不具备条件的流程暂时跳过，条件具备后再上。不要在验证成功前投入任何非必要资源。
+        </div>
+
+        <!-- 当前状态诊断 -->
+        <div class="card">
+            <div class="card-title">📊 一、当前状态诊断</div>
+            
+            <div class="section-title">1.1 我们现在有什么</div>
+            <div class="checkbox-item"><input type="checkbox" id="has1"><label for="has1">✅ 账号</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="has2"><label for="has2">✅ 手机</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="has3"><label for="has3">✅ 可以开始发内容</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="has4"><label for="has4">✅ AI助手（生成脚本、分析数据）</label></div>
+            
+            <div class="section-title">1.2 我们现在没有（暂时不需要）</div>
+            <table>
+                <tr><th>暂时没有</th><th>为什么不需要</th><th>什么时候才需要</th></tr>
+                <tr><td>产品</td><td>先验证方向，再设计产品</td><td>验证成功后</td></tr>
+                <tr><td>飞书数据库</td><td>数据量小，用这些表单即可</td><td>验证成功后</td></tr>
+                <tr><td>模板库</td><td>还没验证哪种模板有效</td><td>有有效模板后</td></tr>
+                <tr><td>话术库</td><td>还没有私信互动</td><td>有用户互动后</td></tr>
+                <tr><td>执行团队</td><td>验证阶段老板自己做</td><td>商业化后</td></tr>
+            </table>
+        </div>
+
+        <!-- 阶段0：验证阶段 -->
+        <div class="card">
+            <div class="card-title">🚀 二、阶段0：验证阶段（现在开始）</div>
+            
+            <div class="warning-box">
+                <strong>补充说明（重要）：</strong>验证阶段前3天，必须同时测试多个方向，不能只测一个。
+            </div>
+            
+            <div class="section-title">2.1 前3天：横向测试（A/B/C同时测）</div>
+            <table>
+                <tr><th>日期</th><th>方向</th><th>内容条数</th><th>完成</th></tr>
+                <tr>
+                    <td>Day 1</td>
+                    <td>
+                        <select class="form-input" id="d1dir">
+                            <option value="A">A方向</option>
+                            <option value="B">B方向</option>
+                            <option value="C">C方向</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-input" id="d1num" placeholder="条"></td>
+                    <td><input type="checkbox" id="d1done"></td>
+                </tr>
+                <tr>
+                    <td>Day 2</td>
+                    <td>
+                        <select class="form-input" id="d2dir">
+                            <option value="A">A方向</option>
+                            <option value="B">B方向</option>
+                            <option value="C">C方向</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-input" id="d2num" placeholder="条"></td>
+                    <td><input type="checkbox" id="d2done"></td>
+                </tr>
+                <tr>
+                    <td>Day 3</td>
+                    <td>
+                        <select class="form-input" id="d3dir">
+                            <option value="A">A方向</option>
+                            <option value="B">B方向</option>
+                            <option value="C">C方向</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-input" id="d3num" placeholder="条"></td>
+                    <td><input type="checkbox" id="d3done"></td>
+                </tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">测试方向说明</label>
+                <textarea class="form-input" id="test-dirs" placeholder="如：A=心理学爆款改写, B=职场干货, C=情感故事"></textarea>
+            </div>
+            
+            <div class="section-title">2.2 Day 4+：收敛到有反馈的方向</div>
+            <div class="form-group">
+                <label class="form-label">收敛后的方向</label>
+                <input type="text" class="form-input" id="final-dir" placeholder="如：A方向（心理学爆款改写）">
+            </div>
+            <div class="form-group">
+                <label class="form-label">收敛原因</label>
+                <textarea class="form-input" id="final-reason" placeholder="如：A方向评论率4.2%，B方向1.5%，C方向1.8%"></textarea>
+            </div>
+        </div>
+
+        <!-- 每日执行清单 -->
+        <div class="card">
+            <div class="card-title">📋 三、每日执行清单</div>
+            
+            <div class="form-group">
+                <label class="form-label">日期</label>
+                <input type="date" class="form-input" id="exec-date">
+            </div>
+            
+            <div class="section-title">早上（选题+生成）</div>
+            <div class="checkbox-item"><input type="checkbox" id="t1"><label for="t1">确定今日选题方向</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t2"><label for="t2">用AI生成脚本（或自己写）</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t3"><label for="t3">检查钩子是否够吸引</label></div>
+            
+            <div class="section-title">中午/下午（拍摄+发布）</div>
+            <div class="checkbox-item"><input type="checkbox" id="t4"><label for="t4">拍摄/录制内容</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t5"><label for="t5">剪辑/后期处理</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t6"><label for="t6">发布内容</label></div>
+            
+            <div class="section-title">晚上（数据+复盘）</div>
+            <div class="checkbox-item"><input type="checkbox" id="t7"><label for="t7">查看数据（播放量、评论数）</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t8"><label for="t8">标记需求型评论</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t9"><label for="t9">填写数据记录表</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="t10"><label for="t10">简单复盘：今天哪条最好？为什么？</label></div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">今日复盘总结</label>
+                <textarea class="form-input" id="daily-summary" placeholder="如：今天A方向表现最好，钩子用反常识开头效果不错"></textarea>
+            </div>
+        </div>
+
+        <!-- 方向判断标准 -->
+        <div class="card">
+            <div class="card-title">🎯 四、方向判断标准</div>
+            
+            <div class="info-box">
+                <strong>有效方向标准：</strong><br>
+                1. 评论率 ≥ 3%<br>
+                2. 有需求型评论（用户表达想学、想要、有问题要解决）
+            </div>
+            
+            <table>
+                <tr><th>评论率</th><th>判断</th><th>动作</th></tr>
+                <tr><td>&lt; 1%</td><td><span class="tag tag-orange">无效</span></td><td>放弃或大幅调整</td></tr>
+                <tr><td>1-2%</td><td><span class="tag tag-orange">待定</span></td><td>继续测试，观察趋势</td></tr>
+                <tr><td>2-3%</td><td><span class="tag tag-blue">有潜力</span></td><td>优化表达，继续测试</td></tr>
+                <tr><td>≥ 3%</td><td><span class="tag tag-green">有效</span></td><td>锁定方向，深耕</td></tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">当前方向判断</label>
+                <textarea class="form-input" id="dir-judge" placeholder="如：A方向评论率4.2%且有多条需求型评论，锁定A方向"></textarea>
+            </div>
+        </div>
+
+        <!-- 验证阶段目标 -->
+        <div class="card">
+            <div class="card-title">🏁 五、验证阶段目标</div>
+            
+            <div class="section-title">什么时候算验证成功？</div>
+            <div class="checkbox-item"><input type="checkbox" id="v1"><label for="v1">找到1-2个有效方向（评论率≥3% + 需求型评论）</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="v2"><label for="v2">连续14天评论率≥2%</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="v3"><label for="v3">需求型评论累计≥50条</label></div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">进度追踪</label>
+                <textarea class="form-input" id="progress" placeholder="如：Day 7，已找到A方向有效，需求评论累计28条"></textarea>
+            </div>
+        </div>
+
+        <!-- 常见问题 -->
+        <div class="card">
+            <div class="card-title">❓ 六、常见问题处理</div>
+            
+            <div class="form-group">
+                <label class="form-label">问题1：播放量很低怎么办？</label>
+                <div class="info-box">
+                    前期正常，先看评论率。如果评论率正常，说明内容有价值，播放量会慢慢涨。
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">问题2：评论率很低怎么办？</label>
+                <div class="info-box">
+                    检查钩子是否足够吸引人，检查是否有明确的痛点/共鸣点，检查结尾是否有引导互动。
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">问题3：没有需求型评论怎么办？</label>
+                <div class="info-box">
+                    内容是否太泛？尝试聚焦具体痛点。结尾可以加引导："你遇到过这种情况吗？"
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">遇到的问题记录</label>
+                <textarea class="form-input" id="problems" placeholder="记录你遇到的具体问题，复盘时用"></textarea>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="card">
+            <div class="card-title">💾 保存与导出</div>
+            <button class="btn btn-primary" onclick="saveData()">保存数据</button>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="exportText()">导出文本</button>
+                <button class="btn btn-outline" onclick="exportJSON()">导出JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'exec_manual_v43';
+        
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const obj = JSON.parse(data);
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    if (obj[el.id] !== undefined) {
+                        if (el.type === 'checkbox') {
+                            el.checked = obj[el.id];
+                        } else {
+                            el.value = obj[el.id];
+                        }
+                    }
+                });
+            }
+        }
+        
+        function saveData() {
+            const obj = {};
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+            showToast('保存成功');
+        }
+        
+        function exportText() {
+            let text = '【执行手册_零起步版 V4.3】\n\n';
+            
+            text += '一、当前状态诊断\n';
+            text += '已有资源: ';
+            text += document.getElementById('has1').checked ? '账号 ' : '';
+            text += document.getElementById('has2').checked ? '手机 ' : '';
+            text += document.getElementById('has3').checked ? '可发内容 ' : '';
+            text += document.getElementById('has4').checked ? 'AI助手 ' : '';
+            text += '\n\n';
+            
+            text += '二、验证阶段\n';
+            text += '测试方向: ' + (document.getElementById('test-dirs').value || '未填') + '\n';
+            text += 'Day1: ' + (document.getElementById('d1dir').value || '-') + ' ' + (document.getElementById('d1num').value || '0') + '条 ' + (document.getElementById('d1done').checked ? '✅' : '❌') + '\n';
+            text += 'Day2: ' + (document.getElementById('d2dir').value || '-') + ' ' + (document.getElementById('d2num').value || '0') + '条 ' + (document.getElementById('d2done').checked ? '✅' : '❌') + '\n';
+            text += 'Day3: ' + (document.getElementById('d3dir').value || '-') + ' ' + (document.getElementById('d3num').value || '0') + '条 ' + (document.getElementById('d3done').checked ? '✅' : '❌') + '\n';
+            text += '收敛方向: ' + (document.getElementById('final-dir').value || '未定') + '\n';
+            text += '收敛原因: ' + (document.getElementById('final-reason').value || '未填') + '\n\n';
+            
+            text += '三、每日执行清单（' + (document.getElementById('exec-date').value || '未选日期') + '）\n';
+            text += '早上: ';
+            text += document.getElementById('t1').checked ? '选题✅ ' : '';
+            text += document.getElementById('t2').checked ? '生成脚本✅ ' : '';
+            text += document.getElementById('t3').checked ? '检查钩子✅ ' : '';
+            text += '\n';
+            text += '下午: ';
+            text += document.getElementById('t4').checked ? '拍摄✅ ' : '';
+            text += document.getElementById('t5').checked ? '剪辑✅ ' : '';
+            text += document.getElementById('t6').checked ? '发布✅ ' : '';
+            text += '\n';
+            text += '晚上: ';
+            text += document.getElementById('t7').checked ? '看数据✅ ' : '';
+            text += document.getElementById('t8').checked ? '标需求评论✅ ' : '';
+            text += document.getElementById('t9').checked ? '填表✅ ' : '';
+            text += document.getElementById('t10').checked ? '复盘✅ ' : '';
+            text += '\n';
+            text += '今日总结: ' + (document.getElementById('daily-summary').value || '无') + '\n\n';
+            
+            text += '四、方向判断\n';
+            text += (document.getElementById('dir-judge').value || '未填') + '\n\n';
+            
+            text += '五、验证进度\n';
+            text += '找到有效方向: ' + (document.getElementById('v1').checked ? '✅' : '❌') + '\n';
+            text += '连续14天评论率≥2%: ' + (document.getElementById('v2').checked ? '✅' : '❌') + '\n';
+            text += '需求评论≥50条: ' + (document.getElementById('v3').checked ? '✅' : '❌') + '\n';
+            text += '进度: ' + (document.getElementById('progress').value || '未填') + '\n\n';
+            
+            text += '六、遇到的问题\n';
+            text += (document.getElementById('problems').value || '无') + '\n';
+            
+            copyToClipboard(text);
+        }
+        
+        function exportJSON() {
+            const obj = { exportTime: new Date().toISOString(), version: 'V4.3' };
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            copyToClipboard(JSON.stringify(obj, null, 2));
+        }
+        
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '100px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            document.body.appendChild(textarea);
+            
+            textarea.focus();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('✅ 已复制到剪贴板，请粘贴查看');
+                } else {
+                    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500));
+                }
+            } catch (err) {
+                alert('复制失败，请手动复制');
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(textarea);
+            }, 100);
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>

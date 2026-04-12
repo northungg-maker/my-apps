@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>表单合集 V4.4</title>
+    <style>
+        :root { --primary: #1890ff; --success: #52c41a; --warning: #faad14; --danger: #f5222d; --text: #333; --text-light: #666; --bg: #f5f5f5; --card: #fff; --border: #e8e8e8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; font-size: 14px; padding-bottom: 20px; }
+        .container { padding: 10px; }
+        .header { background: linear-gradient(135deg, #eb2f96 0%, #c41d7f 100%); color: #fff; padding: 14px 10px; margin: -10px -10px 12px; position: sticky; top: 0; z-index: 10; }
+        .header h1 { font-size: 17px; }
+        .header .meta { font-size: 11px; opacity: 0.9; margin-top: 3px; }
+        .tab-nav { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px; }
+        .tab-btn { flex: 0 0 auto; padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; background: #fff; color: var(--text); white-space: nowrap; }
+        .tab-btn.active { background: var(--primary); color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .form-group { margin-bottom: 10px; }
+        .form-label { font-size: 12px; font-weight: 500; margin-bottom: 4px; display: block; color: var(--text-light); }
+        .form-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .btn { display: block; width: 100%; padding: 10px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; margin-bottom: 6px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #fafafa; font-weight: 500; color: var(--text-light); font-size: 11px; }
+        .tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 10px; }
+        .tag-green { background: #f6ffed; color: #52c41a; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; }
+        .tag-red { background: #fff1f0; color: #f5222d; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 13px; }
+        .checkbox-item input { width: 16px; height: 16px; }
+        .info-box { background: #fff0f6; border-radius: 6px; padding: 8px; margin-bottom: 8px; border-left: 3px solid #eb2f96; font-size: 12px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: #fff; padding: 10px 20px; border-radius: 6px; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .toast.show { opacity: 1; }
+        textarea.form-input { min-height: 50px; font-size: 13px; }
+        .record-item { background: #fafafa; border-radius: 6px; padding: 8px; margin-bottom: 6px; }
+        .record-item .date { font-size: 11px; color: var(--text-light); }
+        .record-item .content { font-size: 13px; margin-top: 4px; }
+        .del-btn { float: right; color: #f5222d; font-size: 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 表单合集</h1>
+            <div class="meta">V4.4 | 6个核心表单 | 每日必用</div>
+        </div>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('tab1')">每日数据</button>
+            <button class="tab-btn" onclick="switchTab('tab2')">方向验证</button>
+            <button class="tab-btn" onclick="switchTab('tab3')">评论分析</button>
+            <button class="tab-btn" onclick="switchTab('tab4')">执行清单</button>
+            <button class="tab-btn" onclick="switchTab('tab5')">周复盘</button>
+            <button class="tab-btn" onclick="switchTab('tab6')">问题诊断</button>
+        </div>
+
+        <!-- Tab1: 每日数据记录 -->
+        <div id="tab1" class="tab-content active">
+            <div class="card">
+                <div class="card-title">📊 每日数据记录</div>
+                <div class="info-box">每天晚上填写，追踪数据趋势。评论率=评论÷播放×100% | 收藏率=收藏÷播放×100%</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日期</label>
+                        <input type="date" class="form-input" id="d1-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">方向</label>
+                        <input type="text" class="form-input" id="d1-dir" placeholder="A/B/C">
+                    </div>
+                </div>
+                
+                <table>
+                    <tr><th>条号</th><th>播放</th><th>评论</th><th>收藏</th><th>评论率</th><th>收藏率</th></tr>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="number" class="form-input" id="d1-v1" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-c1" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-s1" placeholder="0"></td>
+                        <td id="d1-r1">-</td>
+                        <td id="d1-sr1">-</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><input type="number" class="form-input" id="d1-v2" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-c2" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-s2" placeholder="0"></td>
+                        <td id="d1-r2">-</td>
+                        <td id="d1-sr2">-</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><input type="number" class="form-input" id="d1-v3" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-c3" placeholder="0"></td>
+                        <td><input type="number" class="form-input" id="d1-s3" placeholder="0"></td>
+                        <td id="d1-r3">-</td>
+                        <td id="d1-sr3">-</td>
+                    </tr>
+                </table>
+                
+                <div class="form-group" style="margin-top: 8px;">
+                    <label class="form-label">备注（哪条表现好/差，原因）</label>
+                    <textarea class="form-input" id="d1-note" placeholder="如：第2条评论率最高，钩子用了反常识开头"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <button class="btn btn-primary" onclick="saveDailyRecord()">保存这条记录</button>
+                    <button class="btn btn-outline" onclick="calcDailyRate()">计算评论率</button>
+                </div>
+                <button class="btn btn-success" onclick="exportDailyRecords()">导出所有每日记录</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📖 历史记录</div>
+                <div id="daily-records-list"></div>
+                <button class="btn btn-outline" onclick="clearDailyRecords()" style="margin-top: 6px;">清空记录</button>
+            </div>
+        </div>
+
+        <!-- Tab2: 方向验证记录 -->
+        <div id="tab2" class="tab-content">
+            <div class="card">
+                <div class="card-title">🧭 方向验证记录</div>
+                <div class="info-box">有新方向时填写。有效标准：评论率≥3% 或 收藏率≥2%</div>
+                
+                <div class="form-group">
+                    <label class="form-label">方向名称</label>
+                    <input type="text" class="form-input" id="d2-name" placeholder="如：心理学爆款改写">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">测试条数</label>
+                        <input type="number" class="form-input" id="d2-count" placeholder="条">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">平均评论率</label>
+                        <input type="text" class="form-input" id="d2-rate" placeholder="%">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">需求评论数</label>
+                        <input type="number" class="form-input" id="d2-need" placeholder="条">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">判断</label>
+                        <select class="form-input" id="d2-judge">
+                            <option value="">选择</option>
+                            <option value="有效">有效 ✅</option>
+                            <option value="待定">待定 ⏳</option>
+                            <option value="无效">无效 ❌</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">典型需求评论</label>
+                    <textarea class="form-input" id="d2-examples" placeholder="如：有课吗？怎么报名？能教我吗？"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveDirRecord()">保存</button>
+                    <button class="btn btn-success" onclick="exportTab2()">导出</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📖 方向汇总</div>
+                <div id="dir-records-list"></div>
+            </div>
+        </div>
+
+        <!-- Tab3: 评论内容分析 -->
+        <div id="tab3" class="tab-content">
+            <div class="card">
+                <div class="card-title">💬 评论内容分析</div>
+                <div class="info-box">每天填写。标记评论类型，发现需求方向。</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日期</label>
+                        <input type="date" class="form-input" id="d3-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评论总数</label>
+                        <input type="number" class="form-input" id="d3-total" placeholder="条">
+                    </div>
+                </div>
+                
+                <table>
+                    <tr><th>类型</th><th>数量</th><th>判断</th><th>典型案例</th></tr>
+                    <tr>
+                        <td><span class="tag tag-green">需求型</span></td>
+                        <td><input type="number" class="form-input" id="d3-n1" placeholder="0"></td>
+                        <td><input type="checkbox" id="d3-c1"></td>
+                        <td><input type="text" class="form-input" id="d3-e1" placeholder="案例"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag tag-blue">认可型</span></td>
+                        <td><input type="number" class="form-input" id="d3-n2" placeholder="0"></td>
+                        <td>-</td>
+                        <td><input type="text" class="form-input" id="d3-e2" placeholder="案例"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag tag-orange">质疑型</span></td>
+                        <td><input type="number" class="form-input" id="d3-n3" placeholder="0"></td>
+                        <td>-</td>
+                        <td><input type="text" class="form-input" id="d3-e3" placeholder="案例"></td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag tag-red">无关型</span></td>
+                        <td><input type="number" class="form-input" id="d3-n4" placeholder="0"></td>
+                        <td>-</td>
+                        <td><input type="text" class="form-input" id="d3-e4" placeholder="案例"></td>
+                    </tr>
+                </table>
+                
+                <div class="form-group" style="margin-top: 8px;">
+                    <label class="form-label">需求方向归纳</label>
+                    <textarea class="form-input" id="d3-summary" placeholder="如：60%的需求评论在问实操方法"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveCommentRecord()">保存</button>
+                    <button class="btn btn-success" onclick="exportTab3()">导出</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab4: 每日执行清单 -->
+        <div id="tab4" class="tab-content">
+            <div class="card">
+                <div class="card-title">✅ 每日执行清单</div>
+                <div class="info-box">每天打勾，确保执行到位。目标：≥2条/天</div>
+                
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" class="form-input" id="d4-date">
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <strong style="font-size: 13px;">早上</strong>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t1"><label for="d4-t1">选题确定</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t2"><label for="d4-t2">AI生成/手写脚本</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t3"><label for="d4-t3">检查钩子</label></div>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <strong style="font-size: 13px;">中午/下午</strong>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t4"><label for="d4-t4">拍摄/录制</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t5"><label for="d4-t5">剪辑/后处理</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t6"><label for="d4-t6">发布</label></div>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <strong style="font-size: 13px;">晚上</strong>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t7"><label for="d4-t7">查看数据</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t8"><label for="d4-t8">标记需求评论</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t9"><label for="d4-t9">填数据表</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="d4-t10"><label for="d4-t10">简单复盘</label></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">今日总结</label>
+                    <textarea class="form-input" id="d4-note" placeholder="今天做得好的/需改进的"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveExecRecord()">保存</button>
+                    <button class="btn btn-success" onclick="exportTab4()">导出</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab5: 周复盘模板 -->
+        <div id="tab5" class="tab-content">
+            <div class="card">
+                <div class="card-title">📅 周复盘模板</div>
+                <div class="info-box">每周五填写。回顾一周，判断趋势。</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">周次</label>
+                        <input type="text" class="form-input" id="d5-week" placeholder="如：Week 1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">日期范围</label>
+                        <input type="text" class="form-input" id="d5-range" placeholder="Day1-7">
+                    </div>
+                </div>
+                
+                <table>
+                    <tr><th>指标</th><th>本周</th><th>上周</th><th>变化</th></tr>
+                    <tr>
+                        <td>发布条数</td>
+                        <td><input type="number" class="form-input" id="d5-w1" placeholder="条"></td>
+                        <td><input type="number" class="form-input" id="d5-l1" placeholder="条"></td>
+                        <td><span class="tag tag-blue" id="d5-c1">-</span></td>
+                    </tr>
+                    <tr>
+                        <td>平均评论率</td>
+                        <td><input type="text" class="form-input" id="d5-w2" placeholder="%"></td>
+                        <td><input type="text" class="form-input" id="d5-l2" placeholder="%"></td>
+                        <td><span class="tag tag-blue" id="d5-c2">-</span></td>
+                    </tr>
+                    <tr>
+                        <td>需求评论数</td>
+                        <td><input type="number" class="form-input" id="d5-w3" placeholder="条"></td>
+                        <td><input type="number" class="form-input" id="d5-l3" placeholder="条"></td>
+                        <td><span class="tag tag-blue" id="d5-c3">-</span></td>
+                    </tr>
+                </table>
+                
+                <div class="form-group" style="margin-top: 8px;">
+                    <label class="form-label">本周表现最好内容</label>
+                    <textarea class="form-input" id="d5-best" placeholder="哪几条？为什么好？"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">本周表现最差内容</label>
+                    <textarea class="form-input" id="d5-worst" placeholder="哪几条？为什么差？"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">下周优化重点</label>
+                    <textarea class="form-input" id="d5-next" placeholder="要调整什么？继续测试什么？"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveWeekRecord()">保存</button>
+                    <button class="btn btn-success" onclick="exportTab5()">导出</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab6: 问题诊断记录 -->
+        <div id="tab6" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔍 问题诊断记录</div>
+                <div class="info-box">遇到问题时填写。记录问题，方便复盘和求助AI。</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">日期</label>
+                        <input type="date" class="form-input" id="d6-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">问题类型</label>
+                        <select class="form-input" id="d6-type">
+                            <option value="">选择</option>
+                            <option value="播放低">播放量低</option>
+                            <option value="评论率低">评论率低</option>
+                            <option value="无需求评论">无需求评论</option>
+                            <option value="无流量">无流量</option>
+                            <option value="方向不清">方向不清</option>
+                            <option value="执行困难">执行困难</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">问题描述</label>
+                    <textarea class="form-input" id="d6-desc" placeholder="具体什么问题？发生几次了？"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">可能原因</label>
+                    <textarea class="form-input" id="d6-reason" placeholder="你觉得可能是什么原因？"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">已尝试方法</label>
+                    <textarea class="form-input" id="d6-tried" placeholder="试了什么？效果如何？"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">解决结果</label>
+                    <textarea class="form-input" id="d6-result" placeholder="问题解决了吗？怎么解决的？"></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveProblemRecord()">保存</button>
+                    <button class="btn btn-success" onclick="exportTab6()">导出</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📖 问题记录列表</div>
+                <div id="problem-records-list"></div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script>
+        // Tab切换
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        // 通用存储
+        const KEYS = {
+            daily: 'form_daily_records',
+            dir: 'form_dir_records',
+            comment: 'form_comment_records',
+            exec: 'form_exec_records',
+            week: 'form_week_records',
+            problem: 'form_problem_records'
+        };
+        
+        function getRecords(key) {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+        
+        function saveRecords(key, records) {
+            localStorage.setItem(key, JSON.stringify(records));
+        }
+        
+        // Tab1: 每日数据
+        function saveDailyRecord() {
+            const record = {
+                date: document.getElementById('d1-date').value,
+                dir: document.getElementById('d1-dir').value,
+                v1: document.getElementById('d1-v1').value,
+                c1: document.getElementById('d1-c1').value,
+                s1: document.getElementById('d1-s1').value,
+                r1: document.getElementById('d1-r1').textContent,
+                sr1: document.getElementById('d1-sr1').textContent,
+                v2: document.getElementById('d1-v2').value,
+                c2: document.getElementById('d1-c2').value,
+                s2: document.getElementById('d1-s2').value,
+                r2: document.getElementById('d1-r2').textContent,
+                sr2: document.getElementById('d1-sr2').textContent,
+                v3: document.getElementById('d1-v3').value,
+                c3: document.getElementById('d1-c3').value,
+                s3: document.getElementById('d1-s3').value,
+                r3: document.getElementById('d1-r3').textContent,
+                sr3: document.getElementById('d1-sr3').textContent,
+                note: document.getElementById('d1-note').value
+            };
+            const records = getRecords(KEYS.daily);
+            records.unshift(record);
+            saveRecords(KEYS.daily, records);
+            renderDailyRecords();
+            showToast('保存成功');
+        }
+        
+        function calcDailyRate() {
+            for (let i = 1; i <= 3; i++) {
+                const v = parseFloat(document.getElementById('d1-v' + i).value) || 0;
+                const c = parseFloat(document.getElementById('d1-c' + i).value) || 0;
+                const s = parseFloat(document.getElementById('d1-s' + i).value) || 0;
+                const commentRate = v > 0 ? (c / v * 100).toFixed(2) + '%' : '-';
+                const saveRate = v > 0 ? (s / v * 100).toFixed(2) + '%' : '-';
+                document.getElementById('d1-r' + i).textContent = commentRate;
+                document.getElementById('d1-sr' + i).textContent = saveRate;
+            }
+            showToast('计算完成');
+        }
+        
+        function renderDailyRecords() {
+            const records = getRecords(KEYS.daily);
+            const list = document.getElementById('daily-records-list');
+            list.innerHTML = records.slice(0, 20).map((r, i) => `
+                <div class="record-item">
+                    <span class="del-btn" onclick="delRecord('daily', ${i})">删除</span>
+                    <div class="date">${r.date || '无日期'} | 方向${r.dir || '-'}</div>
+                    <div class="content">
+                        条1: ${r.v1 || 0}播 ${r.c1 || 0}评 ${r.s1 || 0}藏 (评${r.r1} | 藏${r.sr1 || '-'}) |
+                        条2: ${r.v2 || 0}播 ${r.c2 || 0}评 ${r.s2 || 0}藏 (评${r.r2} | 藏${r.sr2 || '-'}) |
+                        条3: ${r.v3 || 0}播 ${r.c3 || 0}评 ${r.s3 || 0}藏 (评${r.r3} | 藏${r.sr3 || '-'})
+                    </div>
+                    ${r.note ? `<div style="font-size:11px;color:#666;margin-top:4px;">${r.note}</div>` : ''}
+                </div>
+            `).join('') || '<p style="color:#999;font-size:12px;">暂无记录</p>';
+        }
+        
+        function clearDailyRecords() {
+            if (confirm('确定清空所有每日数据记录？')) {
+                saveRecords(KEYS.daily, []);
+                renderDailyRecords();
+                showToast('已清空');
+            }
+        }
+        
+        function delRecord(key, idx) {
+            const records = getRecords(KEYS[key]);
+            records.splice(idx, 1);
+            saveRecords(KEYS[key], records);
+            if (key === 'daily') renderDailyRecords();
+            else if (key === 'dir') renderDirRecords();
+            else if (key === 'problem') renderProblemRecords();
+            showToast('已删除');
+        }
+        
+        // Tab2: 方向验证
+        function saveDirRecord() {
+            const record = {
+                name: document.getElementById('d2-name').value,
+                count: document.getElementById('d2-count').value,
+                rate: document.getElementById('d2-rate').value,
+                need: document.getElementById('d2-need').value,
+                judge: document.getElementById('d2-judge').value,
+                examples: document.getElementById('d2-examples').value
+            };
+            const records = getRecords(KEYS.dir);
+            records.unshift(record);
+            saveRecords(KEYS.dir, records);
+            renderDirRecords();
+            showToast('保存成功');
+        }
+        
+        function renderDirRecords() {
+            const records = getRecords(KEYS.dir);
+            const list = document.getElementById('dir-records-list');
+            list.innerHTML = records.map((r, i) => `
+                <div class="record-item">
+                    <span class="del-btn" onclick="delRecord('dir', ${i})">删除</span>
+                    <div style="font-weight:500;">${r.name || '未命名方向'}</div>
+                    <div class="content">
+                        ${r.count || 0}条 | 评论率${r.rate || 0}% | 需求${r.need || 0}条 |
+                        ${r.judge === '有效' ? '<span class="tag tag-green">有效</span>' : 
+                          r.judge === '待定' ? '<span class="tag tag-orange">待定</span>' : 
+                          '<span class="tag tag-red">无效</span>'}
+                    </div>
+                    ${r.examples ? `<div style="font-size:11px;color:#666;margin-top:4px;">${r.examples}</div>` : ''}
+                </div>
+            `).join('') || '<p style="color:#999;font-size:12px;">暂无记录</p>';
+        }
+        
+        // Tab6: 问题诊断
+        function saveProblemRecord() {
+            const record = {
+                date: document.getElementById('d6-date').value,
+                type: document.getElementById('d6-type').value,
+                desc: document.getElementById('d6-desc').value,
+                reason: document.getElementById('d6-reason').value,
+                tried: document.getElementById('d6-tried').value,
+                result: document.getElementById('d6-result').value
+            };
+            const records = getRecords(KEYS.problem);
+            records.unshift(record);
+            saveRecords(KEYS.problem, records);
+            renderProblemRecords();
+            showToast('保存成功');
+        }
+        
+        function renderProblemRecords() {
+            const records = getRecords(KEYS.problem);
+            const list = document.getElementById('problem-records-list');
+            list.innerHTML = records.map((r, i) => `
+                <div class="record-item">
+                    <span class="del-btn" onclick="delRecord('problem', ${i})">删除</span>
+                    <div class="date">${r.date || '无日期'} | ${r.type || '未分类'}</div>
+                    <div class="content">${r.desc || '无描述'}</div>
+                </div>
+            `).join('') || '<p style="color:#999;font-size:12px;">暂无记录</p>';
+        }
+        
+        // 导出函数
+        function exportDailyRecords() {
+            const records = getRecords(KEYS.daily);
+            if (records.length === 0) {
+                alert('暂无记录可导出');
+                return;
+            }
+            let text = '【每日数据记录】\n\n';
+            records.forEach((r, i) => {
+                text += `--- 第${i + 1}条 ---\n`;
+                text += `日期：${r.date || '无'}\n`;
+                text += `方向：${r.dir || '无'}\n`;
+                text += `条1：播放${r.v1 || 0} 评论${r.c1 || 0} (${r.r1})\n`;
+                text += `条2：播放${r.v2 || 0} 评论${r.c2 || 0} (${r.r2})\n`;
+                text += `条3：播放${r.v3 || 0} 评论${r.c3 || 0} (${r.r3})\n`;
+                if (r.note) text += `备注：${r.note}\n`;
+                text += '\n';
+            });
+            copyText(text);
+        }
+        
+        function exportTab2() {
+            const records = getRecords(KEYS.dir);
+            let text = '【方向验证记录】\n\n';
+            records.forEach((r, i) => {
+                text += `${i + 1}. ${r.name}\n`;
+                text += `   条数：${r.count || 0} | 评论率：${r.rate || 0}% | 需求评论：${r.need || 0}条\n`;
+                text += `   判断：${r.judge}\n`;
+                if (r.examples) text += `   案例：${r.examples}\n`;
+                text += '\n';
+            });
+            copyText(text);
+        }
+        
+        function exportTab3() {
+            let text = '【评论内容分析】\n';
+            text += `日期：${document.getElementById('d3-date').value}\n`;
+            text += `评论总数：${document.getElementById('d3-total').value || 0}条\n\n`;
+            text += `需求型：${document.getElementById('d3-n1').value || 0}条 案例：${document.getElementById('d3-e1').value || '-'}\n`;
+            text += `认可型：${document.getElementById('d3-n2').value || 0}条 案例：${document.getElementById('d3-e2').value || '-'}\n`;
+            text += `质疑型：${document.getElementById('d3-n3').value || 0}条 案例：${document.getElementById('d3-e3').value || '-'}\n`;
+            text += `无关型：${document.getElementById('d3-n4').value || 0}条 案例：${document.getElementById('d3-e4').value || '-'}\n\n`;
+            text += `需求归纳：${document.getElementById('d3-summary').value || '无'}`;
+            copyText(text);
+        }
+        
+        function exportTab4() {
+            let text = '【每日执行清单】\n';
+            text += `日期：${document.getElementById('d4-date').value}\n\n`;
+            text += '早上：';
+            text += document.getElementById('d4-t1').checked ? '选题✅ ' : '';
+            text += document.getElementById('d4-t2').checked ? '脚本✅ ' : '';
+            text += document.getElementById('d4-t3').checked ? '钩子✅' : '';
+            text += '\n下午：';
+            text += document.getElementById('d4-t4').checked ? '拍摄✅ ' : '';
+            text += document.getElementById('d4-t5').checked ? '剪辑✅ ' : '';
+            text += document.getElementById('d4-t6').checked ? '发布✅' : '';
+            text += '\n晚上：';
+            text += document.getElementById('d4-t7').checked ? '数据✅ ' : '';
+            text += document.getElementById('d4-t8').checked ? '标需求✅ ' : '';
+            text += document.getElementById('d4-t9').checked ? '填表✅ ' : '';
+            text += document.getElementById('d4-t10').checked ? '复盘✅' : '';
+            text += '\n\n总结：' + (document.getElementById('d4-note').value || '无');
+            copyText(text);
+        }
+        
+        function exportTab5() {
+            let text = '【周复盘】\n';
+            text += `周次：${document.getElementById('d5-week').value}\n`;
+            text += `日期：${document.getElementById('d5-range').value}\n\n`;
+            text += `发布：本周${document.getElementById('d5-w1').value || 0}条 vs 上周${document.getElementById('d5-l1').value || 0}条\n`;
+            text += `评论率：本周${document.getElementById('d5-w2').value || 0}% vs 上周${document.getElementById('d5-l2').value || 0}%\n`;
+            text += `需求评论：本周${document.getElementById('d5-w3').value || 0}条 vs 上周${document.getElementById('d5-l3').value || 0}条\n\n`;
+            text += `最好内容：${document.getElementById('d5-best').value || '无'}\n`;
+            text += `最差内容：${document.getElementById('d5-worst').value || '无'}\n`;
+            text += `下周优化：${document.getElementById('d5-next').value || '无'}`;
+            copyText(text);
+        }
+        
+        function exportTab6() {
+            const records = getRecords(KEYS.problem);
+            let text = '【问题诊断记录】\n\n';
+            records.forEach((r, i) => {
+                text += `${i + 1}. ${r.date || '无日期'} | ${r.type || '未分类'}\n`;
+                text += `   描述：${r.desc || '-'}\n`;
+                text += `   原因：${r.reason || '-'}\n`;
+                text += `   尝试：${r.tried || '-'}\n`;
+                text += `   结果：${r.result || '-'}\n\n`;
+            });
+            copyText(text);
+        }
+        
+        function copyText(text) {
+            // iOS兼容的复制方法
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '100px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            document.body.appendChild(textarea);
+            
+            // iOS需要使用setSelectionRange
+            textarea.focus();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('✅ 已复制到剪贴板，请粘贴查看');
+                } else {
+                    showToast('❌ 复制失败，请手动复制');
+                    // 显示文本让用户手动复制
+                    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500) + '...');
+                }
+            } catch (err) {
+                showToast('❌ 复制失败');
+                alert('复制失败，请手动复制');
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(textarea);
+            }, 100);
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1500);
+        }
+        
+        // 初始化渲染
+        renderDailyRecords();
+        renderDirRecords();
+        renderProblemRecords();
+    </script>
+</body>
+</html>

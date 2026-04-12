@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>阶段判定与产品期策略 V4.5</title>
+    <style>
+        :root { --primary: #1890ff; --success: #52c41a; --warning: #faad14; --danger: #f5222d; --text: #333; --text-light: #666; --bg: #f5f5f5; --card: #fff; --border: #e8e8e8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; padding-bottom: 20px; }
+        .container { padding: 12px; }
+        .header { background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%); color: #fff; padding: 16px 12px; margin: -12px -12px 16px; position: sticky; top: 0; z-index: 10; }
+        .header h1 { font-size: 18px; }
+        .header .meta { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--primary); margin: 16px 0 8px; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block; color: var(--text-light); }
+        .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-bottom: 8px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #fafafa; font-weight: 500; color: var(--text-light); font-size: 12px; }
+        .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .tag-green { background: #f6ffed; color: #52c41a; }
+        .tag-blue { background: #e6f7ff; color: #1890ff; }
+        .tag-orange { background: #fff7e6; color: #fa8c16; }
+        .tag-purple { background: #f9f0ff; color: #722ed1; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+        .checkbox-item input { width: 18px; height: 18px; }
+        .info-box { background: #e6fffb; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #13c2c2; font-size: 13px; }
+        .warning-box { background: #fffbe6; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #faad14; font-size: 13px; }
+        .success-box { background: #f6ffed; border-radius: 8px; padding: 10px; margin-bottom: 10px; border-left: 4px solid #52c41a; font-size: 13px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .toast.show { opacity: 1; }
+        textarea.form-input { min-height: 60px; }
+        .phase-indicator { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .phase-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .phase-trial { background: #fa8c16; }
+        .phase-standard { background: #1890ff; }
+        .phase-product { background: #52c41a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 阶段判定与产品期策略</h1>
+            <div class="meta">V4.5 | 自媒体战略核心框架</div>
+        </div>
+
+        <!-- 三阶段模型 -->
+        <div class="card">
+            <div class="card-title">📊 三阶段模型总览</div>
+            
+            <table>
+                <tr><th>阶段</th><th>核心目标</th><th>退出条件</th><th>当前</th></tr>
+                <tr>
+                    <td><span class="tag tag-orange">试错期</span></td>
+                    <td>找到有效方向</td>
+                    <td>锁定1-2个有效方向</td>
+                    <td style="text-align:center"><input type="radio" name="phase" id="phase1" value="试错期"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-blue">标准期</span></td>
+                    <td>稳定表达，积累需求</td>
+                    <td>需求评论≥100条</td>
+                    <td style="text-align:center"><input type="radio" name="phase" id="phase2" value="标准期"></td>
+                </tr>
+                <tr>
+                    <td><span class="tag tag-green">产品期</span></td>
+                    <td>验证商业闭环</td>
+                    <td>有稳定收入</td>
+                    <td style="text-align:center"><input type="radio" name="phase" id="phase3" value="产品期"></td>
+                </tr>
+            </table>
+            
+            <div class="phase-indicator" id="current-phase" style="display:none;">
+                <div class="phase-dot"></div>
+                <span>当前阶段：<strong></strong></span>
+            </div>
+        </div>
+
+        <!-- 试错期 -->
+        <div class="card">
+            <div class="card-title">🧪 试错期策略</div>
+            
+            <div class="info-box">
+                <strong>核心目标：</strong>多方向测试，找到1-2个有效方向<br>
+                <strong>有效方向标准：</strong>评论率≥3% + 有需求型评论
+            </div>
+            
+            <div class="section-title">你的试错期数据</div>
+            <table>
+                <tr><th>维度</th><th>现状</th><th>达标值</th><th>达标</th></tr>
+                <tr>
+                    <td>测试方向数</td>
+                    <td><input type="number" class="form-input" id="t1" placeholder="个"></td>
+                    <td>≥3个</td>
+                    <td><input type="checkbox" id="t1ok"></td>
+                </tr>
+                <tr>
+                    <td>有效方向数</td>
+                    <td><input type="number" class="form-input" id="t2" placeholder="个"></td>
+                    <td>≥1个</td>
+                    <td><input type="checkbox" id="t2ok"></td>
+                </tr>
+                <tr>
+                    <td>累计发布条数</td>
+                    <td><input type="number" class="form-input" id="t3" placeholder="条"></td>
+                    <td>≥30条</td>
+                    <td><input type="checkbox" id="t3ok"></td>
+                </tr>
+                <tr>
+                    <td>测试天数</td>
+                    <td><input type="number" class="form-input" id="t4" placeholder="天"></td>
+                    <td>≥14天</td>
+                    <td><input type="checkbox" id="t4ok"></td>
+                </tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">试错期总结</label>
+                <textarea class="form-input" id="trial-summary" placeholder="如：测试了3个方向，A方向评论率4.2%有效，B和C方向无效"></textarea>
+            </div>
+        </div>
+
+        <!-- 标准期 -->
+        <div class="card">
+            <div class="card-title">📈 标准期策略</div>
+            
+            <div class="info-box">
+                <strong>核心目标：</strong>深耕有效方向，优化表达稳定性，积累需求评论<br>
+                <strong>进入条件：</strong>锁定1-2个有效方向
+            </div>
+            
+            <div class="section-title">你的标准期数据</div>
+            <table>
+                <tr><th>维度</th><th>现状</th><th>达标值</th><th>达标</th></tr>
+                <tr>
+                    <td>日均发布</td>
+                    <td><input type="text" class="form-input" id="s1" placeholder="条/天"></td>
+                    <td>≥2条</td>
+                    <td><input type="checkbox" id="s1ok"></td>
+                </tr>
+                <tr>
+                    <td>平均评论率</td>
+                    <td><input type="text" class="form-input" id="s2" placeholder="%"></td>
+                    <td>≥2%</td>
+                    <td><input type="checkbox" id="s2ok"></td>
+                </tr>
+                <tr>
+                    <td>需求评论累计</td>
+                    <td><input type="number" class="form-input" id="s3" placeholder="条"></td>
+                    <td>≥100条</td>
+                    <td><input type="checkbox" id="s3ok"></td>
+                </tr>
+                <tr>
+                    <td>连续达标天数</td>
+                    <td><input type="number" class="form-input" id="s4" placeholder="天"></td>
+                    <td>≥14天</td>
+                    <td><input type="checkbox" id="s4ok"></td>
+                </tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">标准期总结</label>
+                <textarea class="form-input" id="standard-summary" placeholder="如：深耕A方向30天，评论率稳定在3.5%，需求评论累计85条"></textarea>
+            </div>
+        </div>
+
+        <!-- 产品期 -->
+        <div class="card">
+            <div class="card-title">💰 产品期策略</div>
+            
+            <div class="success-box">
+                <strong>核心目标：</strong>需求聚类 → 产品设计 → 变现验证<br>
+                <strong>进入条件：</strong>需求评论≥100条 + 能聚类出明确需求方向
+            </div>
+            
+            <div class="warning-box">
+                <strong>重要：</strong>不要在进入产品期前设计产品！需求验证后再设计。
+            </div>
+            
+            <div class="section-title">产品期核心动作</div>
+            
+            <h4 style="margin: 10px 0 6px; font-size: 13px;">1. 需求聚类</h4>
+            <table>
+                <tr><th>需求类型</th><th>出现次数</th><th>典型案例</th><th>产品候选</th></tr>
+                <tr>
+                    <td>知识型</td>
+                    <td><input type="number" class="form-input" id="p1" placeholder="次"></td>
+                    <td><input type="text" class="form-input" id="p1e" placeholder="如：有课吗"></td>
+                    <td><input type="checkbox" id="p1c"></td>
+                </tr>
+                <tr>
+                    <td>工具型</td>
+                    <td><input type="number" class="form-input" id="p2" placeholder="次"></td>
+                    <td><input type="text" class="form-input" id="p2e" placeholder="如：有模板吗"></td>
+                    <td><input type="checkbox" id="p2c"></td>
+                </tr>
+                <tr>
+                    <td>服务型</td>
+                    <td><input type="number" class="form-input" id="p3" placeholder="次"></td>
+                    <td><input type="text" class="form-input" id="p3e" placeholder="如：能咨询吗"></td>
+                    <td><input type="checkbox" id="p3c"></td>
+                </tr>
+                <tr>
+                    <td>社群型</td>
+                    <td><input type="number" class="form-input" id="p4" placeholder="次"></td>
+                    <td><input type="text" class="form-input" id="p4e" placeholder="如：有群吗"></td>
+                    <td><input type="checkbox" id="p4c"></td>
+                </tr>
+            </table>
+            
+            <h4 style="margin: 16px 0 6px; font-size: 13px;">2. 产品设计</h4>
+            <div class="form-group">
+                <label class="form-label">选定产品方向</label>
+                <input type="text" class="form-input" id="product-dir" placeholder="如：心理学入门课程">
+            </div>
+            <div class="form-group">
+                <label class="form-label">产品形态</label>
+                <select class="form-input" id="product-type">
+                    <option value="">选择产品形态</option>
+                    <option value="课程">课程/专栏</option>
+                    <option value="模板">模板/工具包</option>
+                    <option value="咨询">1对1咨询</option>
+                    <option value="社群">付费社群/训练营</option>
+                    <option value="服务">定制服务</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">产品卖点（基于需求）</label>
+                <textarea class="form-input" id="product-sell" placeholder="如：解决XX问题，帮助XX人群实现XX"></textarea>
+            </div>
+            
+            <h4 style="margin: 16px 0 6px; font-size: 13px;">3. 变现验证</h4>
+            <table>
+                <tr><th>指标</th><th>本周</th><th>累计</th></tr>
+                <tr>
+                    <td>私域新增</td>
+                    <td><input type="number" class="form-input" id="m1" placeholder="人"></td>
+                    <td><input type="number" class="form-input" id="m1t" placeholder="人"></td>
+                </tr>
+                <tr>
+                    <td>产品咨询</td>
+                    <td><input type="number" class="form-input" id="m2" placeholder="人"></td>
+                    <td><input type="number" class="form-input" id="m2t" placeholder="人"></td>
+                </tr>
+                <tr>
+                    <td>成交</td>
+                    <td><input type="number" class="form-input" id="m3" placeholder="单"></td>
+                    <td><input type="number" class="form-input" id="m3t" placeholder="单"></td>
+                </tr>
+                <tr>
+                    <td>收入</td>
+                    <td><input type="number" class="form-input" id="m4" placeholder="元"></td>
+                    <td><input type="number" class="form-input" id="m4t" placeholder="元"></td>
+                </tr>
+            </table>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">产品期总结</label>
+                <textarea class="form-input" id="product-summary" placeholder="如：上线课程测试版，首周咨询15人，成交3单，收入900元"></textarea>
+            </div>
+        </div>
+
+        <!-- 阶段判断器 -->
+        <div class="card">
+            <div class="card-title">🔍 阶段判断器</div>
+            
+            <div class="checkbox-item"><input type="checkbox" id="j1"><label for="j1">我有1-2个有效方向（评论率≥3% + 需求评论）</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="j2"><label for="j2">我已锁定方向，深耕超过14天</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="j3"><label for="j3">我已积累需求评论≥50条</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="j4"><label for="j4">我已积累需求评论≥100条</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="j5"><label for="j5">我能聚类出明确的需求方向</label></div>
+            <div class="checkbox-item"><input type="checkbox" id="j6"><label for="j6">我有稳定的流量入口</label></div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label class="form-label">系统判断结果</label>
+                <div id="judge-result" class="info-box">
+                    勾选上方条件后点击"判断阶段"
+                </div>
+                <button class="btn btn-primary" onclick="judgePhase()" style="margin-top: 8px;">判断阶段</button>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="card">
+            <div class="card-title">💾 保存与导出</div>
+            <button class="btn btn-primary" onclick="saveData()">保存数据</button>
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="exportText()">导出文本</button>
+                <button class="btn btn-outline" onclick="exportJSON()">导出JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const STORAGE_KEY = 'phase_strategy_v45';
+        
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const obj = JSON.parse(data);
+                document.querySelectorAll('input, select, textarea').forEach(el => {
+                    if (obj[el.id] !== undefined) {
+                        if (el.type === 'checkbox' || el.type === 'radio') {
+                            el.checked = obj[el.id];
+                        } else {
+                            el.value = obj[el.id];
+                        }
+                    }
+                });
+            }
+        }
+        
+        function saveData() {
+            const obj = {};
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+            showToast('保存成功');
+        }
+        
+        function judgePhase() {
+            const j1 = document.getElementById('j1').checked;
+            const j2 = document.getElementById('j2').checked;
+            const j3 = document.getElementById('j3').checked;
+            const j4 = document.getElementById('j4').checked;
+            const j5 = document.getElementById('j5').checked;
+            const j6 = document.getElementById('j6').checked;
+            
+            let result = '';
+            let phase = '';
+            
+            if (!j1) {
+                phase = '试错期';
+                result = '你还在<strong>试错期</strong>。继续测试方向，找到评论率≥3%的有效方向。';
+            } else if (!j3) {
+                phase = '试错期';
+                result = '你接近<strong>试错期末期</strong>。已找到有效方向，继续积累数据。';
+            } else if (!j4 || !j5) {
+                phase = '标准期';
+                result = '你已进入<strong>标准期</strong>。深耕方向，积累需求评论到100条，然后聚类需求。';
+            } else if (!j6) {
+                phase = '标准期';
+                result = '你在<strong>标准期末期</strong>。已积累足够需求，可以开始设计产品，测试流量入口。';
+            } else {
+                phase = '产品期';
+                result = '你已进入<strong>产品期</strong>！开始需求聚类、产品设计、变现验证。';
+            }
+            
+            document.getElementById('judge-result').innerHTML = result;
+            
+            // 自动勾选对应阶段
+            if (phase === '试错期') document.getElementById('phase1').checked = true;
+            else if (phase === '标准期') document.getElementById('phase2').checked = true;
+            else if (phase === '产品期') document.getElementById('phase3').checked = true;
+            
+            showToast('判断完成：' + phase);
+        }
+        
+        function exportText() {
+            let text = '【阶段判定与产品期策略 V4.5】\n\n';
+            
+            const phase = document.querySelector('input[name="phase"]:checked');
+            text += '当前阶段：' + (phase ? phase.value : '未选择') + '\n\n';
+            
+            text += '一、试错期数据\n';
+            text += '- 测试方向数：' + (document.getElementById('t1').value || '0') + '个 ' + (document.getElementById('t1ok').checked ? '✅' : '❌') + '\n';
+            text += '- 有效方向数：' + (document.getElementById('t2').value || '0') + '个 ' + (document.getElementById('t2ok').checked ? '✅' : '❌') + '\n';
+            text += '- 累计发布：' + (document.getElementById('t3').value || '0') + '条 ' + (document.getElementById('t3ok').checked ? '✅' : '❌') + '\n';
+            text += '- 测试天数：' + (document.getElementById('t4').value || '0') + '天 ' + (document.getElementById('t4ok').checked ? '✅' : '❌') + '\n';
+            text += '- 总结：' + (document.getElementById('trial-summary').value || '无') + '\n\n';
+            
+            text += '二、标准期数据\n';
+            text += '- 日均发布：' + (document.getElementById('s1').value || '0') + '条 ' + (document.getElementById('s1ok').checked ? '✅' : '❌') + '\n';
+            text += '- 平均评论率：' + (document.getElementById('s2').value || '0') + '% ' + (document.getElementById('s2ok').checked ? '✅' : '❌') + '\n';
+            text += '- 需求评论累计：' + (document.getElementById('s3').value || '0') + '条 ' + (document.getElementById('s3ok').checked ? '✅' : '❌') + '\n';
+            text += '- 连续达标：' + (document.getElementById('s4').value || '0') + '天 ' + (document.getElementById('s4ok').checked ? '✅' : '❌') + '\n';
+            text += '- 总结：' + (document.getElementById('standard-summary').value || '无') + '\n\n';
+            
+            text += '三、产品期数据\n';
+            text += '需求聚类：\n';
+            text += '- 知识型：' + (document.getElementById('p1').value || '0') + '次 ' + (document.getElementById('p1c').checked ? '产品候选✅' : '') + '\n';
+            text += '- 工具型：' + (document.getElementById('p2').value || '0') + '次 ' + (document.getElementById('p2c').checked ? '产品候选✅' : '') + '\n';
+            text += '- 服务型：' + (document.getElementById('p3').value || '0') + '次 ' + (document.getElementById('p3c').checked ? '产品候选✅' : '') + '\n';
+            text += '- 社群型：' + (document.getElementById('p4').value || '0') + '次 ' + (document.getElementById('p4c').checked ? '产品候选✅' : '') + '\n';
+            text += '- 产品方向：' + (document.getElementById('product-dir').value || '未定') + '\n';
+            text += '- 产品形态：' + (document.getElementById('product-type').value || '未选') + '\n';
+            text += '- 本周私域新增：' + (document.getElementById('m1').value || '0') + '人\n';
+            text += '- 本周咨询：' + (document.getElementById('m2').value || '0') + '人\n';
+            text += '- 本周成交：' + (document.getElementById('m3').value || '0') + '单\n';
+            text += '- 本周收入：' + (document.getElementById('m4').value || '0') + '元\n';
+            text += '- 总结：' + (document.getElementById('product-summary').value || '无') + '\n\n';
+            
+            text += '四、阶段判断\n';
+            text += '满足条件：';
+            text += document.getElementById('j1').checked ? '有效方向✅ ' : '';
+            text += document.getElementById('j2').checked ? '深耕14天✅ ' : '';
+            text += document.getElementById('j3').checked ? '需求≥50✅ ' : '';
+            text += document.getElementById('j4').checked ? '需求≥100✅ ' : '';
+            text += document.getElementById('j5').checked ? '需求可聚类✅ ' : '';
+            text += document.getElementById('j6').checked ? '稳定流量✅ ' : '';
+            text += '\n';
+            
+            copyToClipboard(text);
+        }
+        
+        function exportJSON() {
+            const obj = { exportTime: new Date().toISOString(), version: 'V4.5' };
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    obj[el.id] = el.checked;
+                } else {
+                    obj[el.id] = el.value;
+                }
+            });
+            copyToClipboard(JSON.stringify(obj, null, 2));
+        }
+        
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '100%';
+            textarea.style.height = '100px';
+            textarea.style.opacity = '1';
+            textarea.style.zIndex = '9999';
+            document.body.appendChild(textarea);
+            
+            textarea.focus();
+            textarea.setSelectionRange(0, 99999);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('✅ 已复制到剪贴板，请粘贴查看');
+                } else {
+                    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500));
+                }
+            } catch (err) {
+                alert('复制失败，请手动复制');
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(textarea);
+            }, 100);
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>
