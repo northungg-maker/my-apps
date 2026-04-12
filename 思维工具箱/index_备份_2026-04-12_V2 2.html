@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维工具箱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info-bg: #eff6ff;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        /* 工具导航 */
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: var(--bg);
+        }
+        
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* 主内容区 */
+        .main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .tool-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .tool-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tool-desc {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* 使用说明区域 */
+        .guide-section {
+            background: var(--info-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .guide-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .guide-toggle:hover {
+            text-decoration: underline;
+        }
+        
+        .guide-content {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border);
+        }
+        
+        .guide-content.show {
+            display: block;
+        }
+        
+        .guide-content ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .guide-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .guide-content strong {
+            color: var(--primary);
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* 按钮 */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* 输出区域 */
+        .output {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        .output.show {
+            display: block;
+        }
+        
+        .output h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .output-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+        
+        .copy-btn {
+            float: right;
+            font-size: 0.85rem;
+        }
+        
+        /* 首页流程图样式 */
+        .process-flow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stage-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            min-width: 200px;
+            max-width: 280px;
+            flex: 1;
+        }
+        
+        .stage-header {
+            padding: 1rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .stage-header.stage-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stage-header.stage-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stage-header.stage-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        
+        .stage-num {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+        
+        .stage-name {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+        
+        .stage-tools {
+            padding: 0.75rem;
+        }
+        
+        .tool-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tool-item:hover {
+            background: #e2e8f0;
+            transform: translateX(4px);
+        }
+        
+        .tool-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tool-label {
+            font-size: 0.7rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tool-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .tool-hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        
+        .stage-arrow {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            padding-top: 4rem;
+        }
+        
+        .ref-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 12px;
+            margin-top: 1.5rem;
+        }
+        
+        .ref-label {
+            font-weight: 600;
+            color: #7c2d12;
+            white-space: nowrap;
+        }
+        
+        .ref-card .tool-item {
+            flex: 1;
+            margin-bottom: 0;
+            background: rgba(255,255,255,0.8);
+        }
+        
+        /* 隐藏的工具面板 */
+        .tool-panel {
+            display: none;
+        }
+        
+        .tool-panel.active {
+            display: block;
+        }
+        
+        /* 开发中提示 */
+        .dev-note {
+            color: var(--text-light);
+            font-style: italic;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav {
+                padding: 0.75rem 1rem;
+            }
+            
+            .tool-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🧠 思维工具箱</h1>
+    </header>
+    
+    <nav class="nav">
+        <button class="nav-btn active" data-tool="overview">首页</button>
+        <button class="nav-btn" data-tool="four-steps">四步法</button>
+        <button class="nav-btn" data-tool="pyramid">金字塔模型</button>
+        <button class="nav-btn" data-tool="mece">MECE原则</button>
+        <button class="nav-btn" data-tool="tradeoff">权衡论证表</button>
+        <button class="nav-btn" data-tool="arg">ARG三标准</button>
+        <button class="nav-btn" data-tool="info-check">信息核真</button>
+        <button class="nav-btn" data-tool="goal-means">目标-手段</button>
+        <button class="nav-btn" data-tool="causality">因果分析</button>
+        <button class="nav-btn" data-tool="value-judge">价值判断</button>
+        <button class="nav-btn" data-tool="attribution">结构化归因</button>
+        <button class="nav-btn" data-tool="scoring">赋值法</button>
+        <button class="nav-btn" data-tool="fallacies">逻辑谬误</button>
+    </nav>
+    
+    <main class="main">
+        <!-- 首页总览 -->
+        <div id="overview" class="tool-panel active">
+            <div class="tool-card">
+                <h2 class="tool-title">独立思考的全流程</h2>
+                <p class="tool-desc">想清楚 → 想明白 → 做决策</p>
+                
+                <!-- 三阶段流程 -->
+                <div class="process-flow">
+                    <div class="stage-card">
+                        <div class="stage-header stage-1">
+                            <span class="stage-num">阶段一</span>
+                            <span class="stage-name">想清楚</span>
+                        </div>
+                        <div class="stage-tools">
+                            <div class="tool-item" data-goto="four-steps">
+                                <span class="tool-label">问题分析</span>
+                                <span class="tool-name">四步法</span>
+                            </div>
+                            <div class="tool-item" data-goto="info-check">
+                                <span class="tool-label">信息核真</span>
+                                <span class="tool-name">信息核真流程</span>
+                            </div>
+                            <div class="tool-item" data-goto="arg">
+                                <span class="tool-label">论证评估</span>
+                                <span class="tool-name">ARG三标准</span>
+                            </div>
+                            <div class="tool-item" data-goto="tradeoff">
+                                <span class="tool-label">论证评估</span>
+                                <span class="tool-name">权衡论证表</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-arrow">→</div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-header stage-2">
+                            <span class="stage-num">阶段二</span>
+                            <span class="stage-name">想明白</span>
+                        </div>
+                        <div class="stage-tools">
+                            <div class="tool-item" data-goto="pyramid">
+                                <span class="tool-label">结构化表达</span>
+                                <span class="tool-name">金字塔模型</span>
+                            </div>
+                            <div class="tool-item" data-goto="mece">
+                                <span class="tool-label">结构化表达</span>
+                                <span class="tool-name">MECE原则</span>
+                            </div>
+                            <div class="tool-item" data-goto="attribution">
+                                <span class="tool-label">因果分析</span>
+                                <span class="tool-name">结构化归因</span>
+                            </div>
+                            <div class="tool-item" data-goto="causality">
+                                <span class="tool-label">因果分析</span>
+                                <span class="tool-name">实验法</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-arrow">→</div>
+                    
+                    <div class="stage-card">
+                        <div class="stage-header stage-3">
+                            <span class="stage-num">阶段三</span>
+                            <span class="stage-name">做决策</span>
+                        </div>
+                        <div class="stage-tools">
+                            <div class="tool-item" data-goto="goal-means">
+                                <span class="tool-label">方案评估</span>
+                                <span class="tool-name">目标-手段评估表</span>
+                            </div>
+                            <div class="tool-item" data-goto="scoring">
+                                <span class="tool-label">方案评估</span>
+                                <span class="tool-name">赋值法</span>
+                            </div>
+                            <div class="tool-item" data-goto="value-judge">
+                                <span class="tool-label">价值判断</span>
+                                <span class="tool-name">价值判断三段论</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 参考卡 -->
+                <div class="ref-card">
+                    <span class="ref-label">🧾 参考卡</span>
+                    <div class="tool-item" data-goto="fallacies">
+                        <span class="tool-name">常见逻辑谬误</span>
+                        <span class="tool-hint">识别日常对话中的逻辑陷阱</span>
+                    </div>
+                </div>
+                
+                <!-- 使用指南 -->
+                <div class="guide-section" style="margin-top: 2rem;">
+                    <div class="guide-toggle" onclick="toggleGuide('overview-guide')">
+                        <span>📖 如何使用工具箱</span>
+                        <span id="overview-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="overview-guide" class="guide-content">
+                        <p><strong>三阶段使用逻辑：</strong></p>
+                        <ul>
+                            <li><strong>想清楚：</strong>面对复杂信息时，先搞清楚问题是什么、信息是否可信、论证是否成立</li>
+                            <li><strong>想明白：</strong>把想清楚的内容结构化，表达清晰，理清因果关系</li>
+                            <li><strong>做决策：</strong>在多个方案中选择最优解，或判断价值分歧</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>💡 建议：</strong></p>
+                        <ul>
+                            <li>不是每个问题都要用全部工具——根据场景选择合适的</li>
+                            <li>点击任意工具卡片可跳转到该工具</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 四步法 -->
+        <div id="four-steps" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">四步法 - 问题分析框架</h2>
+                <p class="tool-desc">面对复杂问题时，帮你拆解成可操作的思考路径</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('fs-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="fs-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="fs-guide" class="guide-content">
+                        <p><strong>四步法是什么？</strong></p>
+                        <p>四步法是分析问题的通用框架，帮助你系统地思考任何现象或问题。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>每一步的作用：</strong></p>
+                        <ul>
+                            <li><strong>是什么？</strong> — 描述事实。提供最基本的信息，避免观点和猜测。</li>
+                            <li><strong>怎么样？</strong> — 评估影响。这件事是好是坏？正面还是负面？</li>
+                            <li><strong>为什么？</strong> — 找出原因。负面问题要找根源，正面经验要找成功要素。</li>
+                            <li><strong>怎么办？</strong> — 提出方案。针对原因给出具体措施。</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>适用场景：</strong></p>
+                        <ul>
+                            <li>分析一个社会现象（如：为什么年轻人躺平？）</li>
+                            <li>分析一个问题事件（如：某产品为何失败？）</li>
+                            <li>制定方案前的现状分析</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>⚠️ 注意：</strong></p>
+                        <ul>
+                            <li>"是什么"必须是事实，不是观点</li>
+                            <li>"怎么样"要给出价值判断，不能模棱两可</li>
+                            <li>"为什么"要区分表面原因和深层原因</li>
+                            <li>"怎么办"要针对"为什么"找出的原因</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">1. 是什么？</label>
+                    <p class="form-hint">针对要讨论的现象，提供最基本的事实信息</p>
+                    <textarea id="fs-what" placeholder="描述这个现象/问题是什么..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">2. 怎么样？</label>
+                    <p class="form-hint">评估这件事的影响、后果、意义，做出价值判断</p>
+                    <textarea id="fs-how" placeholder="这件事的影响是什么？是正面还是负面？..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">3. 为什么？</label>
+                    <p class="form-hint">找出原因——负面则找问题根源，正面则找成功原因</p>
+                    <textarea id="fs-why" placeholder="造成这种情况的原因是什么？..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">4. 怎么办？</label>
+                    <p class="form-hint">针对原因给出具体的解决措施或推广方案</p>
+                    <textarea id="fs-action" placeholder="接下来应该做什么？具体方案是什么？..."></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateFourSteps()">生成分析</button>
+                    <button class="btn btn-secondary" onclick="clearFourSteps()">清空</button>
+                </div>
+                
+                <div id="fs-output" class="output">
+                    <button class="btn btn-secondary copy-btn" onclick="copyOutput('fs-output')">复制</button>
+                    <h3>📋 分析结果</h3>
+                    <div class="output-content" id="fs-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 金字塔模型 -->
+        <div id="pyramid" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">金字塔模型 - 结构化表达</h2>
+                <p class="tool-desc">想把想法说清楚时，帮你结构化输出</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('py-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="py-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="py-guide" class="guide-content">
+                        <p><strong>金字塔模型是什么？</strong></p>
+                        <p>金字塔模型是一种结构化表达方法，让你的观点清晰、有逻辑、容易被理解。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>核心原则：</strong></p>
+                        <ul>
+                            <li><strong>结论先行</strong> — 一开始就亮明观点，不要让对方猜</li>
+                            <li><strong>以上统下</strong> — 上层观点统率下层理由</li>
+                            <li><strong>归类分组</strong> — 将相关的信息归到同一组</li>
+                            <li><strong>逻辑递进</strong> — 理由按时间、结构或重要性排列</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>结构说明：</strong></p>
+                        <ul>
+                            <li>塔尖：核心结论（一个明确的观点）</li>
+                            <li>塔身：支撑理由（通常3个，不多不少）</li>
+                            <li>塔基：证据事实（支撑每个理由的具体信息）</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>适用场景：</strong></p>
+                        <ul>
+                            <li>汇报工作、提案</li>
+                            <li>写文章、演讲</li>
+                            <li>说服别人接受你的观点</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">核心结论</label>
+                    <p class="form-hint">一开始就亮明你的结论</p>
+                    <textarea id="py-conclusion" placeholder="我的观点是..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">理由一</label>
+                    <textarea id="py-r1" placeholder="第一..."></textarea>
+                    <div style="background:var(--bg);padding:0.75rem;border-radius:6px;margin-top:0.5rem;">
+                        <input type="text" id="py-r1-e1" placeholder="支撑证据1" style="width:45%;margin-right:5%;padding:0.5rem;border:1px solid var(--border);border-radius:4px;">
+                        <input type="text" id="py-r1-e2" placeholder="支撑证据2" style="width:45%;padding:0.5rem;border:1px solid var(--border);border-radius:4px;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">理由二</label>
+                    <textarea id="py-r2" placeholder="第二..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">理由三</label>
+                    <textarea id="py-r3" placeholder="第三..."></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generatePyramid()">生成表达</button>
+                    <button class="btn btn-secondary" onclick="clearPyramid()">清空</button>
+                </div>
+                
+                <div id="py-output" class="output">
+                    <button class="btn btn-secondary copy-btn" onclick="copyOutput('py-output')">复制</button>
+                    <h3>📋 结构化表达</h3>
+                    <div class="output-content" id="py-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MECE原则 -->
+        <div id="mece" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">MECE原则 - 分类检查</h2>
+                <p class="tool-desc">分类时帮你检查"不重不漏"，避免混乱</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('mece-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="mece-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="mece-guide" class="guide-content">
+                        <p><strong>MECE是什么？</strong></p>
+                        <p>MECE是麦肯锡提出的分类原则，确保你的分类既不重叠、也不遗漏。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>两个标准：</strong></p>
+                        <ul>
+                            <li><strong>ME (Mutually Exclusive) 相互独立</strong> — 各分类之间没有重叠，一个事物只能属于一个分类</li>
+                            <li><strong>CE (Collectively Exhaustive) 完全穷尽</strong> — 所有分类加起来覆盖全部情况，没有遗漏</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>为什么重要？</strong></p>
+                        <ul>
+                            <li>避免重复计算</li>
+                            <li>避免遗漏关键情况</li>
+                            <li>让分析更严谨</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>常见分类维度：</strong></p>
+                        <ul>
+                            <li>时间：过去、现在、未来</li>
+                            <li>空间：国内、国外</li>
+                            <li>程度：高、中、低</li>
+                            <li>属性：内部、外部</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">待分类对象</label>
+                    <textarea id="mece-target" placeholder="你想分类的事物是什么？"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分类维度</label>
+                    <textarea id="mece-dimension" placeholder="按什么标准分类？"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">分类结果（每行一个）</label>
+                    <textarea id="mece-categories" rows="5" placeholder="类别1&#10;类别2&#10;类别3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="checkMECE()">检查MECE</button>
+                </div>
+                <div id="mece-output" class="output">
+                    <button class="btn btn-secondary copy-btn" onclick="copyOutput('mece-output')">复制</button>
+                    <h3>📋 MECE检查结果</h3>
+                    <div class="output-content" id="mece-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 权衡论证表 -->
+        <div id="tradeoff" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">权衡论证表 - 利弊分析</h2>
+                <p class="tool-desc">面对两难选择时，帮你看清利弊、找到兼顾方案</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('to-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="to-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="to-guide" class="guide-content">
+                        <p><strong>权衡论证表是什么？</strong></p>
+                        <p>权衡论证表帮助你在做决策时，系统地列出利弊两方面的论证，避免只看到一面。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>使用步骤：</strong></p>
+                        <ul>
+                            <li><strong>第一步</strong> — 明确论题：该不该做某件事？</li>
+                            <li><strong>第二步</strong> — 列出所有利（好处）</li>
+                            <li><strong>第三步</strong> — 列出所有弊（坏处）</li>
+                            <li><strong>第四步</strong> — 判断轻重：哪个更重要？</li>
+                            <li><strong>第五步</strong> — 寻求兼顾：能否既保留好处，又避免坏处？</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>⚠️ 注意：</strong></p>
+                        <ul>
+                            <li>列好处时要诚实，不要刻意回避</li>
+                            <li>列坏处时要全面，不要遗漏</li>
+                            <li>判断轻重时要有标准，不是凭感觉</li>
+                            <li>兼顾方案是关键——大多数困境都有第三条路</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">论题/问题</label>
+                    <textarea id="to-question" placeholder="该不该做某件事？"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">利（好处）</label>
+                    <textarea id="to-pros" rows="3" placeholder="列出所有好处，每行一个"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">弊（坏处）</label>
+                    <textarea id="to-cons" rows="3" placeholder="列出所有坏处，每行一个"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">兼顾方案</label>
+                    <textarea id="to-balance" placeholder="如何保留好处、避免坏处？"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="generateTradeoff()">生成分析</button>
+                </div>
+                <div id="to-output" class="output">
+                    <button class="btn btn-secondary copy-btn" onclick="copyOutput('to-output')">复制</button>
+                    <h3>📋 权衡分析</h3>
+                    <div class="output-content" id="to-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ARG三标准 -->
+        <div id="arg" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">ARG三标准</h2>
+                <p class="tool-desc">评价一个论证是否有说服力</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('arg-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="arg-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="arg-guide" class="guide-content">
+                        <p><strong>ARG三标准是什么？</strong></p>
+                        <p>ARG是评价一个论证质量的三条标准，帮助你判断一个论证是否站得住脚。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>三个标准：</strong></p>
+                        <ul>
+                            <li><strong>A (Acceptability) 可接受性</strong> — 理由本身是否可信？是事实还是观点？</li>
+                            <li><strong>R (Relevance) 相关性</strong> — 理由与结论是否相关？有没有跑题？</li>
+                            <li><strong>G (Good Grounds/Gaps) 充分性</strong> — 理由是否足够支撑结论？有没有逻辑漏洞？</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>使用方法：</strong></p>
+                        <ul>
+                            <li>把一个论证拆成：理由 → 结论</li>
+                            <li>依次用A、R、G三个标准检验</li>
+                            <li>任何一条不通过，论证就有问题</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 信息核真流程 -->
+        <div id="info-check" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">信息核真流程</h2>
+                <p class="tool-desc">面对纷繁信息时，帮你辨别真伪、追溯源头</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('ic-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="ic-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="ic-guide" class="guide-content">
+                        <p><strong>信息核真是什么？</strong></p>
+                        <p>信息核真是辨别假消息的流程，帮助你判断一条信息是否可信。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>核真步骤：</strong></p>
+                        <ul>
+                            <li><strong>第一步</strong> — 追溯信源：这条信息最早从哪里来？</li>
+                            <li><strong>第二步</strong> — 判断信源可信度：发布者是谁？是否专业？</li>
+                            <li><strong>第三步</strong> — 交叉验证：其他信源是否也有报道？</li>
+                            <li><strong>第四步</strong> — 检查证据：有没有具体数据、图片、视频？</li>
+                            <li><strong>第五步</strong> — 判断结论：可信、存疑、还是虚假？</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>警惕信号：</strong></p>
+                        <ul>
+                            <li>信源不明或模糊</li>
+                            <li>标题情绪化、夸张</li>
+                            <li>没有具体数据或证据</li>
+                            <li>只有单方来源</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 目标-手段评估表 -->
+        <div id="goal-means" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">目标-手段评估表</h2>
+                <p class="tool-desc">评估一个方案是否能达成目标</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('gm-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="gm-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="gm-guide" class="guide-content">
+                        <p><strong>目标-手段评估是什么？</strong></p>
+                        <p>目标-手段评估帮助你系统地找出达成目标的多种方式，并评估选择最优方案。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>使用步骤：</strong></p>
+                        <ul>
+                            <li><strong>第一步</strong> — 明确目标：你想要达成什么？</li>
+                            <li><strong>第二步</strong> — 列出所有可能的手段（头脑风暴）</li>
+                            <li><strong>第三步</strong> — 评估每个手段：成本、效率、可行性</li>
+                            <li><strong>第四步</strong> — 选择最优方案</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>⚠️ 注意：</strong></p>
+                        <ul>
+                            <li>目标要具体、可衡量</li>
+                            <li>不要过早排除看似"不靠谱"的手段</li>
+                            <li>评估标准要提前确定</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 因果分析表 -->
+        <div id="causality" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">实验法/因果分析表</h2>
+                <p class="tool-desc">想判断因果关系时，用对照实验逻辑验证</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('ca-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="ca-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="ca-guide" class="guide-content">
+                        <p><strong>因果分析是什么？</strong></p>
+                        <p>因果分析帮助你判断A是否真的导致了B，避免混淆相关性和因果性。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>判断因果的标准：</strong></p>
+                        <ul>
+                            <li><strong>时间顺序</strong> — 原因必须在结果之前</li>
+                            <li><strong>共变关系</strong> — 原因变化，结果也跟着变</li>
+                            <li><strong>排除他因</strong> — 排除其他可能的解释</li>
+                            <li><strong>实验验证</strong> — 有对照组、实验组的验证</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>常见误区：</strong></p>
+                        <ul>
+                            <li>相关不等于因果（如：冰淇淋销量↑ 与 溺水↑）</li>
+                            <li>因果倒置（如：是因为压力大而失眠，不是失眠导致压力大）</li>
+                            <li>遗漏变量（如：真正的原因是第三个变量）</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 价值判断三段论 -->
+        <div id="value-judge" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">价值判断三段论</h2>
+                <p class="tool-desc">争论不下时，帮你看清分歧在哪个层面</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('vj-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="vj-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="vj-guide" class="guide-content">
+                        <p><strong>价值判断三段论是什么？</strong></p>
+                        <p>价值判断三段论帮助你分析分歧的来源：是事实不同，还是标准不同？</p>
+                        
+                        <p style="margin-top:1rem;"><strong>三段结构：</strong></p>
+                        <ul>
+                            <li><strong>大前提（标准）</strong> — 我们用什么标准来判断？（如：好政策应该让大多数人受益）</li>
+                            <li><strong>小前提（事实）</strong> — 实际情况是什么？（如：这个政策只让少数人受益）</li>
+                            <li><strong>结论</strong> — 结合标准和事实得出判断</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>分歧来源：</strong></p>
+                        <ul>
+                            <li><strong>事实层面分歧</strong> — 对事实认知不同（可以通过查证解决）</li>
+                            <li><strong>标准层面分歧</strong> — 价值观不同（需要讨论价值观）</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 结构化归因 -->
+        <div id="attribution" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">结构化归因</h2>
+                <p class="tool-desc">想弄清一件事为什么发生时，系统梳理原因</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('at-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="at-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="at-guide" class="guide-content">
+                        <p><strong>结构化归因是什么？</strong></p>
+                        <p>结构化归因是一个矩阵框架，帮助你全面、系统地找出问题的原因。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>两个维度：</strong></p>
+                        <ul>
+                            <li><strong>三个角度：知、能、愿</strong></li>
+                            <ul>
+                                <li>知：知道不知道？（认知层面）</li>
+                                <li>能：能不能做到？（能力层面）</li>
+                                <li>愿：愿不愿意做？（意愿层面）</li>
+                            </ul>
+                            <li><strong>两个方向：内因、外因</strong></li>
+                            <ul>
+                                <li>内因：个人/组织内部的原因</li>
+                                <li>外因：环境/外部的的原因</li>
+                            </ul>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>矩阵结构（共6格）：</strong></p>
+                        <table style="width:100%;border-collapse:collapse;margin-top:0.5rem;">
+                            <tr style="background:var(--bg);">
+                                <th style="border:1px solid var(--border);padding:8px;"></th>
+                                <th style="border:1px solid var(--border);padding:8px;">内因</th>
+                                <th style="border:1px solid var(--border);padding:8px;">外因</th>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border);padding:8px;font-weight:bold;">知</td>
+                                <td style="border:1px solid var(--border);padding:8px;">不知道（认知缺陷）</td>
+                                <td style="border:1px solid var(--border);padding:8px;">信息不透明</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border);padding:8px;font-weight:bold;">能</td>
+                                <td style="border:1px solid var(--border);padding:8px;">能力不足</td>
+                                <td style="border:1px solid var(--border);padding:8px;">资源不够</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border);padding:8px;font-weight:bold;">愿</td>
+                                <td style="border:1px solid var(--border);padding:8px;">意愿不足</td>
+                                <td style="border:1px solid var(--border);padding:8px;">激励不够</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 赋值法 -->
+        <div id="scoring" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">赋值法</h2>
+                <p class="tool-desc">多个方案纠结时，用量化帮你决策</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('sc-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="sc-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="sc-guide" class="guide-content">
+                        <p><strong>赋值法是什么？</strong></p>
+                        <p>赋值法是一种量化决策工具，把主观判断转化为分数，让决策更客观、可比较。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>使用步骤：</strong></p>
+                        <ul>
+                            <li><strong>第一步</strong> — 明确决策目标（如：选哪个offer？）</li>
+                            <li><strong>第二步</strong> — 列出评判维度（如：薪资、发展、通勤）</li>
+                            <li><strong>第三步</strong> — 确定各维度权重（如：薪资40%、发展40%、通勤20%）</li>
+                            <li><strong>第四步</strong> — 为每个选项在每个维度打分（1-10分）</li>
+                            <li><strong>第五步</strong> — 加权总分，比较选择</li>
+                        </ul>
+                        
+                        <p style="margin-top:1rem;"><strong>⚠️ 注意：</strong></p>
+                        <ul>
+                            <li>权重之和要等于100%</li>
+                            <li>维度要MECE（不重不漏）</li>
+                            <li>打分标准要提前定义</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+        
+        <!-- 常见逻辑谬误 -->
+        <div id="fallacies" class="tool-panel">
+            <div class="tool-card">
+                <h2 class="tool-title">常见逻辑谬误</h2>
+                <p class="tool-desc">识别日常对话中的逻辑陷阱，避免被带节奏</p>
+                
+                <!-- 使用说明 -->
+                <div class="guide-section">
+                    <div class="guide-toggle" onclick="toggleGuide('fa-guide')">
+                        <span>📖 使用说明</span>
+                        <span id="fa-guide-icon">▼ 展开</span>
+                    </div>
+                    <div id="fa-guide" class="guide-content">
+                        <p><strong>逻辑谬误是什么？</strong></p>
+                        <p>逻辑谬误是推理中的常见错误，低质量的论证往往无法通过ARG三标准的检验。</p>
+                        
+                        <p style="margin-top:1rem;"><strong>常见谬误类型：</strong></p>
+                        
+                        <p style="margin-top:0.5rem;"><strong>1. 不当预设（理由本身有问题）</strong></p>
+                        <ul>
+                            <li><strong>非黑即白</strong> — 只给出两个选项，实际上有更多选择</li>
+                            <li><strong>循环论证</strong> — 理由就是结论的另一种说法</li>
+                            <li><strong>虚假因果</strong> — 把相关性当成因果性</li>
+                        </ul>
+                        
+                        <p style="margin-top:0.5rem;"><strong>2. 不相关（理由与结论无关）</strong></p>
+                        <ul>
+                            <li><strong>偷换概念</strong> — 悄悄改变词语的定义</li>
+                            <li><strong>转移话题</strong> — 讨论另一个无关的话题</li>
+                            <li><strong>诉诸人身</strong> — 攻击说话的人而不是论证本身</li>
+                            <li><strong>诉诸大众</strong> — "大家都这么做"不代表就是对的</li>
+                            <li><strong>诉诸权威</strong> — 权威说的不一定对</li>
+                        </ul>
+                        
+                        <p style="margin-top:0.5rem;"><strong>3. 归纳谬误</strong></p>
+                        <ul>
+                            <li><strong>样本偏差</strong> — 以偏概全</li>
+                            <li><strong>幸存者偏差</strong> — 只看到成功的案例</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="dev-note">🚧 工具开发中，可先阅读上方使用说明...</p>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // 导航切换
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tool).classList.add('active');
+            });
+        });
+        
+        // 使用说明展开/收起
+        function toggleGuide(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▲ 收起' : '▼ 展开';
+        }
+        
+        // 四步法
+        function generateFourSteps() {
+            const what = document.getElementById('fs-what').value.trim();
+            const how = document.getElementById('fs-how').value.trim();
+            const why = document.getElementById('fs-why').value.trim();
+            const action = document.getElementById('fs-action').value.trim();
+            
+            if (!what) {
+                alert('请至少填写"是什么"');
+                return;
+            }
+            
+            const output = `【${what}】
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+📌 是什么？
+${what || '（未填写）'}
+
+📌 怎么样？
+${how || '（未填写）'}
+
+📌 为什么？
+${why || '（未填写）'}
+
+📌 怎么办？
+${action || '（未填写）'}
+
+━━━━━━━━━━━━━━━━━━━━━━`;
+            
+            document.getElementById('fs-content').textContent = output;
+            document.getElementById('fs-output').classList.add('show');
+            
+            // 保存到本地
+            saveToLocal('four-steps', { what, how, why, action });
+        }
+        
+        function clearFourSteps() {
+            document.getElementById('fs-what').value = '';
+            document.getElementById('fs-how').value = '';
+            document.getElementById('fs-why').value = '';
+            document.getElementById('fs-action').value = '';
+            document.getElementById('fs-output').classList.remove('show');
+        }
+        
+        // 金字塔模型
+        function generatePyramid() {
+            const conclusion = document.getElementById('py-conclusion').value.trim();
+            const r1 = document.getElementById('py-r1').value.trim();
+            const r1e1 = document.getElementById('py-r1-e1').value.trim();
+            const r1e2 = document.getElementById('py-r1-e2').value.trim();
+            const r2 = document.getElementById('py-r2').value.trim();
+            const r3 = document.getElementById('py-r3').value.trim();
+            
+            if (!conclusion) {
+                alert('请至少填写核心结论');
+                return;
+            }
+            
+            let output = `关于这个问题，我的观点是——
+
+【${conclusion}】
+
+我之所以这样认为，有三个理由：
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+第一、${r1 || '（未填写）'}`;
+            
+            if (r1e1 || r1e2) {
+                output += `\n    关于这一点，我有两方面证据：`;
+                if (r1e1) output += `\n    首先，${r1e1}`;
+                if (r1e2) output += `\n    其次，${r1e2}`;
+            }
+            
+            output += `\n\n第二、${r2 || '（未填写）'}`;
+            output += `\n\n第三、${r3 || '（未填写）'}`;
+            output += `\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n总之，我认为${conclusion}`;
+            
+            document.getElementById('py-content').textContent = output;
+            document.getElementById('py-output').classList.add('show');
+        }
+        
+        function clearPyramid() {
+            document.getElementById('py-conclusion').value = '';
+            document.getElementById('py-r1').value = '';
+            document.getElementById('py-r1-e1').value = '';
+            document.getElementById('py-r1-e2').value = '';
+            document.getElementById('py-r2').value = '';
+            document.getElementById('py-r3').value = '';
+            document.getElementById('py-output').classList.remove('show');
+        }
+        
+        // MECE检查
+        function checkMECE() {
+            const target = document.getElementById('mece-target').value.trim();
+            const dimension = document.getElementById('mece-dimension').value.trim();
+            const categories = document.getElementById('mece-categories').value.trim().split('\n').filter(c => c.trim());
+            
+            if (categories.length < 2) {
+                alert('请至少填写两个分类');
+                return;
+            }
+            
+            let output = `【${target}】的MECE检查\n\n`;
+            output += `分类维度：${dimension || '未指定'}\n\n`;
+            output += `分类结果：\n`;
+            categories.forEach((c, i) => {
+                output += `  ${i + 1}. ${c.trim()}\n`;
+            });
+            
+            output += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            output += `✅ ME检查（相互独立）：\n`;
+            output += `   请检查各分类之间是否有重叠？\n`;
+            output += `   如有重叠，需调整分类边界\n\n`;
+            output += `✅ CE检查（完全穷尽）：\n`;
+            output += `   请检查是否所有情况都被覆盖？\n`;
+            output += `   如有遗漏，需补充其他分类`;
+            
+            document.getElementById('mece-content').textContent = output;
+            document.getElementById('mece-output').classList.add('show');
+        }
+        
+        // 权衡论证
+        function generateTradeoff() {
+            const question = document.getElementById('to-question').value.trim();
+            const pros = document.getElementById('to-pros').value.trim().split('\n').filter(p => p.trim());
+            const cons = document.getElementById('to-cons').value.trim().split('\n').filter(c => c.trim());
+            const balance = document.getElementById('to-balance').value.trim();
+            
+            let output = `【${question || '问题论题'}】\n\n`;
+            
+            output += `✅ 利（好处）：\n`;
+            if (pros.length > 0) {
+                pros.forEach(p => output += `   • ${p.trim()}\n`);
+            } else {
+                output += `   （未填写）\n`;
+            }
+            
+            output += `\n❌ 弊（坏处）：\n`;
+            if (cons.length > 0) {
+                cons.forEach(c => output += `   • ${c.trim()}\n`);
+            } else {
+                output += `   （未填写）\n`;
+            }
+            
+            output += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            output += `⚖️ 兼顾方案：\n`;
+            output += balance ? `${balance}` : '（未填写）';
+            
+            document.getElementById('to-content').textContent = output;
+            document.getElementById('to-output').classList.add('show');
+        }
+        
+        // 复制功能
+        function copyOutput(id) {
+            const content = document.querySelector(`#${id} .output-content`).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('已复制到剪贴板');
+            });
+        }
+        
+        // 本地存储
+        function saveToLocal(tool, data) {
+            const all = JSON.parse(localStorage.getItem('thinking-tools') || '{}');
+            all[tool] = { ...data, timestamp: new Date().toISOString() };
+            localStorage.setItem('thinking-tools', JSON.stringify(all));
+        }
+        
+        // 加载历史
+        function loadFromLocal(tool) {
+            const all = JSON.parse(localStorage.getItem('thinking-tools') || '{}');
+            return all[tool] || null;
+        }
+        
+        // 页面加载时恢复
+        window.addEventListener('load', () => {
+            const data = loadFromLocal('four-steps');
+            if (data) {
+                if (data.what) document.getElementById('fs-what').value = data.what;
+                if (data.how) document.getElementById('fs-how').value = data.how;
+                if (data.why) document.getElementById('fs-why').value = data.why;
+                if (data.action) document.getElementById('fs-action').value = data.action;
+            }
+        });
+    </script>
+</body>
+</html>
