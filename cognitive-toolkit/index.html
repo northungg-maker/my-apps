@@ -5,279 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>认知工具集</title>
     <style>
-        :root {
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --primary: #dc3545;
-            --primary-hover: #c82333;
-            --text: #1d1d1f;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1000px;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.7;
+            max-width: 640px;
             margin: 0 auto;
-            padding: 60px 24px;
+            padding: 48px 20px;
         }
-
+        
+        /* 头部 */
         header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        h1 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            color: var(--text-light);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .sections {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .section {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .section:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 12px;
-        }
-
-        .section-icon {
-            font-size: 32px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .section-desc {
-            color: var(--text-light);
-            font-size: 15px;
-            margin-bottom: 16px;
-        }
-
-        .section-features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .feature-tag {
-            background: rgba(220, 53, 69, 0.1);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-
-        .divider {
-            height: 1px;
-            background: var(--border);
-            margin: 40px 0;
-        }
-
-        footer {
-            text-align: center;
-            color: var(--text-light);
-            font-size: 14px;
-            margin-top: 60px;
-        }
-
-        /* 工具集说明 */
-        .intro {
-            text-align: center;
             margin-bottom: 48px;
         }
-
-        .intro p {
-            color: var(--text-light);
-            font-size: 16px;
-            max-width: 600px;
-            margin: 0 auto;
+        
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
         }
-
-        /* 响应式 */
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 32px;
-            }
-            .section {
-                padding: 24px;
-            }
-            .section-title {
-                font-size: 20px;
-            }
+        
+        .tagline {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        
+        .intro {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        /* 分组 */
+        .group {
+            margin-bottom: 36px;
+        }
+        
+        .group-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        /* 工具卡片 */
+        .tools {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .tool {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            padding: 14px 16px;
+            border-radius: 8px;
+            background: #fafafa;
+            transition: background 0.2s;
+        }
+        
+        .tool:hover {
+            background: #f5f5f5;
+        }
+        
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        
+        .tool-icon {
+            font-size: 14px;
+            opacity: 0.6;
+        }
+        
+        .tool-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .tool-slogan {
+            font-size: 13px;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            line-height: 1.6;
+        }
+        
+        .tool-desc {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 底部声明 */
+        footer {
+            margin-top: 48px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .disclaimer {
+            font-size: 11px;
+            color: #bbb;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .copyright {
+            font-size: 11px;
+            color: #ccc;
+            text-align: center;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>💡 认知工具集</h1>
-            <p class="subtitle">你遇到什么问题？选择对应的工具，帮你想清楚、做判断</p>
-        </header>
+    <header>
+        <h1>认知工具集</h1>
+        <p class="tagline">工具是入口，答案在你自己</p>
+        <p class="intro">这里有一组工具，帮你理清人生的关键问题：时间、人、选择。它们不会替你做决定，但会让你看得更清楚。</p>
+    </header>
 
-        <div class="sections">
-            <!-- 思考与决策 -->
-            <a href="../thinking-tools/index.html" class="section">
-                <div class="section-header">
-                    <span class="section-icon">🧩</span>
-                    <span class="section-title">思考与决策</span>
+    <!-- 关于时间 -->
+    <div class="group">
+        <div class="group-title">关于时间</div>
+        <div class="tools">
+            <a href="https://northungg-maker.github.io/my-apps/finite-life.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">⏳</span>
+                    <span class="tool-name">有限人生</span>
                 </div>
-                <p class="section-desc">日常思考、信息分析、两难决策。12个批判性思维工具，帮你独立思考、看清问题本质。</p>
-                <div class="section-features">
-                    <span class="feature-tag">四步法</span>
-                    <span class="feature-tag">信息核真</span>
-                    <span class="feature-tag">价值判断</span>
-                    <span class="feature-tag">MECE原则</span>
-                    <span class="feature-tag">+8个工具</span>
-                </div>
-            </a>
-
-            <!-- 判断一个人 -->
-            <a href="https://northungg-maker.github.io/my-apps/personality-assistant-v3.1.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">👤</span>
-                    <span class="section-title">判断一个人</span>
-                </div>
-                <p class="section-desc">看人、识人、判断人品。通过言行细节和事件观察，评估一个人的人格特质和可靠性。</p>
-                <div class="section-features">
-                    <span class="feature-tag">人格特质分析</span>
-                    <span class="feature-tag">言行观察</span>
-                    <span class="feature-tag">可靠性评估</span>
-                </div>
-            </a>
-
-            <!-- 自我提升 -->
-            <a href="https://northungg-maker.github.io/my-apps/chengshi-system-v4.0.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">🎯</span>
-                    <span class="section-title">提升成事能力</span>
-                </div>
-                <p class="section-desc">判断自己或他人能不能成事。从能力、资源、执行力多维度评估，找到提升方向。</p>
-                <div class="section-features">
-                    <span class="feature-tag">能力评估</span>
-                    <span class="feature-tag">资源盘点</span>
-                    <span class="feature-tag">执行力分析</span>
-                </div>
-            </a>
-
-            <!-- 投资判断 -->
-            <a href="https://northungg-maker.github.io/my-apps/invest-scoring-system.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">📈</span>
-                    <span class="section-title">投资判断</span>
-                </div>
-                <p class="section-desc">价值投资判断工具。用量化评分系统评估投资标的，辅助理性决策。</p>
-                <div class="section-features">
-                    <span class="feature-tag">价值评分</span>
-                    <span class="feature-tag">风险评估</span>
-                    <span class="feature-tag">决策辅助</span>
-                </div>
-            </a>
-
-            <!-- 变现路径 -->
-            <a href="https://northungg-maker.github.io/my-apps/money-flow.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">💰</span>
-                    <span class="section-title">钱从哪里来</span>
-                </div>
-                <p class="section-desc">变现路径识别器。梳理你的能力、资源、市场，找到适合自己的赚钱方式。</p>
-                <div class="section-features">
-                    <span class="feature-tag">能力变现</span>
-                    <span class="feature-tag">资源盘点</span>
-                    <span class="feature-tag">路径规划</span>
-                </div>
-            </a>
-
-            <!-- 复杂决策 -->
-            <a href="https://northungg-maker.github.io/my-apps/critical-point-system.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">⚖️</span>
-                    <span class="section-title">复杂决策</span>
-                </div>
-                <p class="section-desc">芒格式格栅决策系统。多维度交叉验证，找到临界点，做出关键判断。</p>
-                <div class="section-features">
-                    <span class="feature-tag">多维度分析</span>
-                    <span class="feature-tag">临界点判断</span>
-                    <span class="feature-tag">格栅模型</span>
-                </div>
-            </a>
-
-            <!-- 因果链 -->
-            <a href="https://northungg-maker.github.io/my-apps/structure-mirror.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">🔗</span>
-                    <span class="section-title">因果链</span>
-                </div>
-                <p class="section-desc">看见问题的结构，发现自己的盲区。通过因果推演，找到问题根源和解法。</p>
-                <div class="section-features">
-                    <span class="feature-tag">结构分析</span>
-                    <span class="feature-tag">因果推演</span>
-                    <span class="feature-tag">盲区发现</span>
-                </div>
-            </a>
-
-            <!-- 有限人生 -->
-            <a href="https://northungg-maker.github.io/my-apps/finite-life.html" class="section" target="_blank">
-                <div class="section-header">
-                    <span class="section-icon">⏳</span>
-                    <span class="section-title">有限人生</span>
-                </div>
-                <p class="section-desc">时间与选择的校准器。输入年龄，看见剩余时间的真实尺度，重新审视什么值得做。</p>
-                <div class="section-features">
-                    <span class="feature-tag">生命倒计时</span>
-                    <span class="feature-tag">概率校准</span>
-                    <span class="feature-tag">选择反思</span>
-                </div>
+                <p class="tool-slogan">时间从不骗人，它在等你自己想清楚。</p>
+                <p class="tool-desc">输入年龄，看见剩余时间的真实尺度。</p>
             </a>
         </div>
-
-        <footer>
-            <p>认知工具集 · 帮你想清楚、做判断</p>
-        </footer>
     </div>
+
+    <!-- 关于人 -->
+    <div class="group">
+        <div class="group-title">关于人</div>
+        <div class="tools">
+            <a href="https://northungg-maker.github.io/my-apps/personality-assistant-v3.1.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">👤</span>
+                    <span class="tool-name">判断一个人</span>
+                </div>
+                <p class="tool-slogan">人不会告诉你他是谁，但他的行为会。</p>
+                <p class="tool-desc">通过言行细节和事件观察，评估一个人的人格特质。</p>
+            </a>
+            <a href="https://northungg-maker.github.io/my-apps/chengshi-system-v4.0.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">🎯</span>
+                    <span class="tool-name">成事能力</span>
+                </div>
+                <p class="tool-slogan">能成事的人，不一定聪明，但一定靠谱。</p>
+                <p class="tool-desc">从能力、资源、执行力多维度评估成事潜力。</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- 关于选择 -->
+    <div class="group">
+        <div class="group-title">关于选择</div>
+        <div class="tools">
+            <a href="https://northungg-maker.github.io/my-apps/structure-mirror.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">🔗</span>
+                    <span class="tool-name">因果链</span>
+                </div>
+                <p class="tool-slogan">看见结构，才能找到杠杆。</p>
+                <p class="tool-desc">通过因果推演，发现问题根源和解法。</p>
+            </a>
+            <a href="https://northungg-maker.github.io/my-apps/critical-point-system.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">⚖️</span>
+                    <span class="tool-name">复杂决策</span>
+                </div>
+                <p class="tool-slogan">真正难的不是选择，是看见所有选项。</p>
+                <p class="tool-desc">芒格式格栅决策，多维度交叉验证。</p>
+            </a>
+            <a href="../thinking-tools/index.html" class="tool">
+                <div class="tool-header">
+                    <span class="tool-icon">🧩</span>
+                    <span class="tool-name">思考工具箱</span>
+                </div>
+                <p class="tool-slogan">想不清楚，往往是因为问错了问题。</p>
+                <p class="tool-desc">12个批判性思维工具，独立思考、看清本质。</p>
+            </a>
+            <a href="https://northungg-maker.github.io/my-apps/invest-scoring-system.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">📈</span>
+                    <span class="tool-name">投资判断</span>
+                </div>
+                <p class="tool-slogan">好价格不等于好投资，好投资需要好判断。</p>
+                <p class="tool-desc">量化评分系统，辅助理性投资决策。</p>
+            </a>
+            <a href="https://northungg-maker.github.io/my-apps/money-flow.html" class="tool" target="_blank">
+                <div class="tool-header">
+                    <span class="tool-icon">💰</span>
+                    <span class="tool-name">钱从哪里来</span>
+                </div>
+                <p class="tool-slogan">赚钱不是追钱，是让钱找到你。</p>
+                <p class="tool-desc">梳理能力与资源，找到适合自己的变现路径。</p>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p class="disclaimer">信息源自互联网公开资料，仅供参考；本工具不构成任何投资、医疗、法律等专业建议，使用者须自行判断风险与责任；所有内容版权归原权利人所有，本站仅作整理呈现。</p>
+        <p class="copyright">认知工具集</p>
+    </footer>
 </body>
 </html>
