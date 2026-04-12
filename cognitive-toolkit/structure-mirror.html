@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>因果链 - 看见问题的结构，发现自己的盲区</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .card {
+            background: #fafafa;
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+        }
+        .btn-primary {
+            background: #e63946;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #d62839;
+        }
+        .btn-secondary {
+            background: #1a1a1a;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: #333;
+        }
+        .input-field {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #1a1a1a;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: #1a1a1a;
+            outline: none;
+        }
+        .input-field::placeholder {
+            color: #999;
+        }
+        /* 标签样式 - 黑底白字 */
+        .tag {
+            background: #1a1a1a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .tag-remove:hover {
+            opacity: 1;
+        }
+        .tag-preset {
+            background: #1a1a1a;
+        }
+        .tag-custom {
+            background: #666;
+            border: 1px dashed #999;
+        }
+        /* 红色强调文字 */
+        .text-accent {
+            color: #e63946;
+        }
+        .text-muted {
+            color: #888;
+        }
+        /* 模板卡片 */
+        .template-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fafafa;
+            border: 1px solid #eaeaea;
+        }
+        .template-card:hover {
+            border-color: #1a1a1a;
+        }
+        .template-card.selected {
+            border-color: #1a1a1a;
+            background: #f5f5f5;
+        }
+        /* 折叠动画 */
+        .example-collapse {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .example-collapse.expanded {
+            max-height: 2000px;
+        }
+        /* 复制提示 */
+        .copy-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .copy-toast.show {
+            opacity: 1;
+        }
+        /* 模块显隐 */
+        .module {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            display: none;
+        }
+        .module.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        /* 关系选择器 */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%231a1a1a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 28px;
+        }
+        /* 添加标签输入框 */
+        .add-tag-input {
+            border: 1px dashed #ccc;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            min-width: 80px;
+        }
+        .add-tag-input:focus {
+            border-color: #1a1a1a;
+            outline: none;
+        }
+        /* 新变量选项样式 */
+        option[value="__ADD_NEW__"] {
+            color: #e63946;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="pb-20">
+    <!-- 首页 -->
+    <div id="home-page" class="max-w-md mx-auto px-5 pt-10">
+        <header class="text-center mb-10">
+            <h1 class="text-2xl font-semibold mb-2">因果链</h1>
+            <p class="text-muted text-sm mb-1">基于系统动力学和认知心理学</p>
+            <p class="text-accent text-sm">看见问题的结构，发现自己的盲区</p>
+        </header>
+
+        <!-- 案例展示 -->
+        <div class="card p-5 mb-6">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleExample()">
+                <span class="text-sm font-medium">📖 先看一个例子</span>
+                <span id="example-arrow" class="text-sm transition-transform">▼</span>
+            </div>
+            <div id="example-content" class="example-collapse">
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="mb-4">
+                        <span class="text-muted text-xs">问题</span>
+                        <p class="font-medium text-sm mt-1">要不要跳槽去新公司？</p>
+                    </div>
+                    <div class="mb-4">
+                        <span class="text-muted text-xs">变量</span>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="tag tag-preset">薪资</span>
+                            <span class="tag tag-preset">发展空间</span>
+                            <span class="tag tag-preset">通勤时间</span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <span class="text-muted text-xs">关系链</span>
+                        <p class="text-sm mt-1">薪资 → 发展空间 ← 通勤时间</p>
+                        <p class="text-sm">通勤时间 → 薪资</p>
+                    </div>
+                    <div class="mb-4">
+                        <span class="text-muted text-xs">结构类型</span>
+                        <p class="text-sm text-accent">增强回路 — 系统会自我放大</p>
+                    </div>
+                    <div>
+                        <span class="text-muted text-xs">人性镜像</span>
+                        <p class="text-sm text-accent mt-1">盯着薪资看的时候，薪资就被放大了。你可能忽略了通勤时间对长期状态的影响。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模板选择 -->
+        <div class="mb-8">
+            <h2 class="text-sm font-medium mb-4 text-muted">选择一个模板开始</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="card template-card p-4" onclick="selectTemplate('career')">
+                    <div class="text-xl mb-2">💼</div>
+                    <div class="font-medium text-sm">职业选择</div>
+                    <div class="text-xs text-muted">跳槽/转行</div>
+                </div>
+                <div class="card template-card p-4" onclick="selectTemplate('partnership')">
+                    <div class="text-xl mb-2">🤝</div>
+                    <div class="font-medium text-sm">合伙创业</div>
+                    <div class="text-xs text-muted">找人合作</div>
+                </div>
+                <div class="card template-card p-4" onclick="selectTemplate('relationship')">
+                    <div class="text-xl mb-2">💕</div>
+                    <div class="font-medium text-sm">亲密关系</div>
+                    <div class="text-xs text-muted">感情决策</div>
+                </div>
+                <div class="card template-card p-4" onclick="selectTemplate('investment')">
+                    <div class="text-xl mb-2">💰</div>
+                    <div class="font-medium text-sm">投资决策</div>
+                    <div class="text-xs text-muted">钱的问题</div>
+                </div>
+                <div class="card template-card p-4 col-span-2" onclick="selectTemplate('custom')">
+                    <div class="text-xl mb-2">✏️</div>
+                    <div class="font-medium text-sm">自定义问题</div>
+                    <div class="text-xs text-muted">从零开始</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分析页面 -->
+    <div id="analysis-page" class="max-w-md mx-auto px-5 pt-8 hidden">
+        <!-- 返回按钮 -->
+        <button onclick="goHome()" class="text-muted text-sm mb-6 flex items-center gap-1">
+            ← 返回
+        </button>
+
+        <!-- 第一步：问题 -->
+        <div id="module1" class="mb-6 visible">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">1</span>
+                <span class="text-sm font-medium">写下你的问题</span>
+            </div>
+            <textarea id="problem-input" class="input-field w-full rounded-lg p-3 text-sm" rows="2" placeholder="比如：要不要跳槽去新公司？"></textarea>
+        </div>
+
+        <!-- 第二步：变量 -->
+        <div id="module2" class="mb-6 module">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">2</span>
+                <span class="text-sm font-medium">这个问题里有哪些因素互相影响？</span>
+            </div>
+            <p class="text-xs text-muted mb-3">变量是会互相影响的因素，点击 × 可删除预设标签</p>
+            
+            <!-- 预设标签 + 自定义标签 -->
+            <div id="variables-container" class="flex flex-wrap gap-2 mb-3">
+                <!-- 标签会动态添加 -->
+            </div>
+            
+            <!-- 添加自定义变量 -->
+            <div class="flex items-center gap-2">
+                <input type="text" id="custom-variable-input" class="add-tag-input flex-1" placeholder="+ 添加变量" onkeypress="if(event.key==='Enter')addCustomVariable()">
+                <button onclick="addCustomVariable()" class="btn-secondary px-3 py-1 rounded-full text-xs">添加</button>
+            </div>
+        </div>
+
+        <!-- 第三步：关系 -->
+        <div id="module3" class="mb-6 module">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-5 h-5 rounded-full bg-black text-white text-xs flex items-center justify-center">3</span>
+                <span class="text-sm font-medium">它们之间怎么互相影响？</span>
+            </div>
+            <p class="text-xs text-muted mb-3">选择下拉菜单中的"+ 新变量..."可以直接添加新变量</p>
+            <div id="relations-container">
+                <!-- 关系项会动态添加 -->
+            </div>
+            <button onclick="addRelation()" class="text-sm text-accent mt-2">+ 添加关系</button>
+        </div>
+
+        <!-- 第四步：分析 -->
+        <div id="module4" class="mb-6 module">
+            <button onclick="analyze()" class="btn-primary w-full py-3 rounded-lg font-medium text-sm">
+                分析结构
+            </button>
+        </div>
+
+        <!-- 结果展示 -->
+        <div id="result-container" class="card p-5 mb-6 hidden">
+            <h3 class="font-medium mb-4">分析结果</h3>
+            <div id="result-content">
+                <!-- 分析结果会动态填充 -->
+            </div>
+            <button onclick="copyToAI()" class="btn-secondary w-full py-3 rounded-lg font-medium text-sm mt-4">
+                📋 一键复制到AI对话
+            </button>
+        </div>
+    </div>
+
+    <!-- 复制成功提示 -->
+    <div id="copy-toast" class="copy-toast">已复制到剪贴板</div>
+
+    <script>
+        // 模板数据
+        const templates = {
+            career: {
+                name: '职业选择',
+                problem: '',
+                variables: ['薪资', '发展空间', '工作强度', '稳定性'],
+                relations: [
+                    { from: '薪资', type: '+', to: '稳定性' },
+                    { from: '工作强度', type: '-', to: '发展空间' }
+                ]
+            },
+            partnership: {
+                name: '合伙创业',
+                problem: '',
+                variables: ['信任度', '利益分配', '能力互补', '风险承担'],
+                relations: [
+                    { from: '信任度', type: '+', to: '利益分配' },
+                    { from: '利益分配', type: '-', to: '风险承担' }
+                ]
+            },
+            relationship: {
+                name: '亲密关系',
+                problem: '',
+                variables: ['情绪价值', '现实匹配', '付出平衡', '未来预期'],
+                relations: [
+                    { from: '情绪价值', type: '+', to: '付出平衡' },
+                    { from: '现实匹配', type: '-', to: '付出平衡' }
+                ]
+            },
+            investment: {
+                name: '投资决策',
+                problem: '',
+                variables: ['预期收益', '风险程度', '时间周期', '流动性'],
+                relations: [
+                    { from: '预期收益', type: '-', to: '风险程度' },
+                    { from: '风险程度', type: '-', to: '流动性' }
+                ]
+            },
+            custom: {
+                name: '自定义',
+                problem: '',
+                variables: [],
+                relations: []
+            }
+        };
+
+        // 认知偏误匹配规则
+        const cognitiveBiases = [
+            {
+                name: '损失厌恶',
+                keywords: ['风险', '损失', '亏', '赔'],
+                source: 'Kahneman & Tversky (1979)',
+                tip: '你害怕失去的痛苦，是你渴望得到的两倍。问问自己：是真的怕输，还是不敢赢？'
+            },
+            {
+                name: '沉没成本',
+                keywords: ['投入', '已经', '花了', '时间'],
+                source: 'Arkes & Blumer (1985)',
+                tip: '你舍不得的不是未来，是已经回不来的过去。及时止损，才是最大的盈利。'
+            },
+            {
+                name: '框架效应',
+                keywords: ['选择', '选项'],
+                source: 'Tversky & Kahneman (1981)',
+                tip: '换个说法你就换个选择？问题本身没变，是你的情绪被文字绑架了。'
+            },
+            {
+                name: '现状偏见',
+                keywords: ['现状', '维持', '不变'],
+                source: 'Samuelson & Zeckhauser (1988)',
+                tip: '不变不是安全，只是惯性。现在这个状态，真的是你想要的吗？'
+            },
+            {
+                name: '过度自信',
+                keywords: ['能力', '确定', '肯定'],
+                source: 'Lichtenstein & Fischhoff (1977)',
+                tip: '你以为了解的事情，可能比你以为的少一半。自信是好事，盲信是陷阱。'
+            },
+            {
+                name: '确认偏误',
+                keywords: ['觉得', '认为', '相信'],
+                source: 'Wason (1960)',
+                tip: '你只看见你想看见的。反对意见不是噪音，是你视角的盲区探测器。'
+            },
+            {
+                name: '短期偏好',
+                keywords: ['薪资', '收入', '工资', '钱'],
+                noKeywords: ['长期', '未来', '时间'],
+                source: 'Thaler (1981)',
+                tip: '盯着钱看的时候，钱就被放大了。你可能忽略了其他同样重要的因素。'
+            },
+            {
+                name: '规划谬误',
+                keywords: ['计划', '预计', '打算'],
+                source: 'Kahneman & Tversky (1979)',
+                tip: '你的计划总是太乐观。问问自己：这次有什么理由会比上次更顺利？'
+            },
+            {
+                name: '从众效应',
+                keywords: ['别人', '大家', '朋友'],
+                source: 'Asch (1956)',
+                tip: '大家都在做的事，不代表就是对的。羊群跑得快，方向不一定对。'
+            },
+            {
+                name: '权威偏见',
+                keywords: ['专家', '领导', '老板'],
+                source: 'Milgram (1963)',
+                tip: '专家也会错。头衔和背景，不是真相的担保书。他说的，你验证过吗？'
+            }
+        ];
+
+        let currentTemplate = null;
+        let variables = [];  // [{name: '薪资', isPreset: true}, ...]
+        let relations = [];
+
+        // 切换案例展示
+        function toggleExample() {
+            const content = document.getElementById('example-content');
+            const arrow = document.getElementById('example-arrow');
+            content.classList.toggle('expanded');
+            arrow.style.transform = content.classList.contains('expanded') ? 'rotate(180deg)' : '';
+        }
+
+        // 选择模板
+        function selectTemplate(type) {
+            currentTemplate = templates[type];
+            variables = currentTemplate.variables.map(v => ({ name: v, isPreset: true }));
+            relations = JSON.parse(JSON.stringify(currentTemplate.relations));
+            
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('analysis-page').classList.remove('hidden');
+            
+            renderVariables();
+            checkProgress();
+        }
+
+        // 返回首页
+        function goHome() {
+            document.getElementById('home-page').classList.remove('hidden');
+            document.getElementById('analysis-page').classList.add('hidden');
+            document.getElementById('result-container').classList.add('hidden');
+            
+            // 重置模块状态
+            document.getElementById('module2').classList.remove('visible');
+            document.getElementById('module3').classList.remove('visible');
+            document.getElementById('module4').classList.remove('visible');
+        }
+
+        // 渲染变量标签
+        function renderVariables() {
+            const container = document.getElementById('variables-container');
+            container.innerHTML = '';
+            
+            variables.forEach((v, i) => {
+                const tag = document.createElement('span');
+                tag.className = `tag ${v.isPreset ? 'tag-preset' : 'tag-custom'}`;
+                tag.innerHTML = `
+                    ${v.name}
+                    <span class="tag-remove" onclick="removeVariable(${i})">×</span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        // 添加自定义变量
+        function addCustomVariable() {
+            const input = document.getElementById('custom-variable-input');
+            const value = input.value.trim();
+            
+            if (!value) return;
+            
+            // 检查是否已存在
+            if (variables.some(v => v.name === value)) {
+                input.value = '';
+                return;
+            }
+            
+            variables.push({ name: value, isPreset: false });
+            input.value = '';
+            renderVariables();
+            checkProgress();
+        }
+
+        // 删除变量
+        function removeVariable(index) {
+            variables.splice(index, 1);
+            renderVariables();
+            // 清理包含该变量的关系
+            const varNames = variables.map(v => v.name);
+            relations = relations.filter(r => varNames.includes(r.from) && varNames.includes(r.to));
+            checkProgress();
+        }
+
+        // 检查进度并显示下一步
+        function checkProgress() {
+            const problem = document.getElementById('problem-input').value.trim();
+            const validVars = variables.filter(v => v.name.trim() !== '');
+            
+            // 显示变量模块
+            if (problem.length > 0) {
+                document.getElementById('module2').classList.add('visible');
+            }
+            
+            // 显示关系模块
+            if (validVars.length >= 2) {
+                document.getElementById('module3').classList.add('visible');
+                renderRelations();
+            } else {
+                document.getElementById('module3').classList.remove('visible');
+            }
+            
+            // 显示分析按钮
+            if (validVars.length >= 2 && getValidRelations().length >= 1) {
+                document.getElementById('module4').classList.add('visible');
+            } else {
+                document.getElementById('module4').classList.remove('visible');
+            }
+        }
+
+        // 渲染关系项
+        function renderRelations() {
+            const container = document.getElementById('relations-container');
+            container.innerHTML = '';
+            
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+            
+            // 如果变量变了，更新关系中的引用
+            relations.forEach(r => {
+                if (!validVars.includes(r.from)) r.from = validVars[0] || '';
+                if (!validVars.includes(r.to)) r.to = validVars[1] || validVars[0] || '';
+            });
+            
+            // 初始化关系
+            if (relations.length === 0 && validVars.length >= 2) {
+                relations.push({
+                    from: validVars[0],
+                    type: '+',
+                    to: validVars[1]
+                });
+            }
+            
+            relations.forEach((r, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2 mb-2 text-sm';
+                div.innerHTML = `
+                    <select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="handleRelationSelect(this, ${i}, 'from')">
+                        ${validVars.map(v => `<option value="${v}" ${v === r.from ? 'selected' : ''}>${v}</option>`).join('')}
+                        <option value="__ADD_NEW__" style="color: #e63946;">+ 新变量...</option>
+                    </select>
+                    <select class="input-field rounded-lg px-2 py-1 text-sm" onchange="updateRelation(${i}, 'type', this.value)">
+                        <option value="+" ${r.type === '+' ? 'selected' : ''}>→(+)</option>
+                        <option value="-" ${r.type === '-' ? 'selected' : ''}>→(-)</option>
+                    </select>
+                    <select class="input-field rounded-lg px-2 py-1 text-sm flex-1" onchange="handleRelationSelect(this, ${i}, 'to')">
+                        ${validVars.map(v => `<option value="${v}" ${v === r.to ? 'selected' : ''}>${v}</option>`).join('')}
+                        <option value="__ADD_NEW__" style="color: #e63946;">+ 新变量...</option>
+                    </select>
+                    ${relations.length > 1 ? `<span class="text-accent cursor-pointer text-lg" onclick="removeRelation(${i})">×</span>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 处理关系选择变化（包括添加新变量）
+        function handleRelationSelect(selectEl, relationIndex, field) {
+            if (selectEl.value === '__ADD_NEW__') {
+                const newVar = prompt('输入新变量名：');
+                if (newVar && newVar.trim()) {
+                    const trimmed = newVar.trim();
+                    // 检查是否已存在
+                    if (!variables.some(v => v.name === trimmed)) {
+                        variables.push({ name: trimmed, isPreset: false });
+                        renderVariables();
+                    }
+                    // 更新关系
+                    relations[relationIndex][field] = trimmed;
+                    renderRelations();
+                    checkProgress();
+                } else {
+                    // 重置为第一个变量
+                    const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+                    selectEl.value = validVars[0];
+                }
+            } else {
+                relations[relationIndex][field] = selectEl.value;
+            }
+        }
+
+        // 更新关系
+        function updateRelation(index, field, value) {
+            relations[index][field] = value;
+            checkProgress();
+        }
+
+        // 添加关系
+        function addRelation() {
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+            if (validVars.length >= 2) {
+                relations.push({
+                    from: validVars[0],
+                    type: '+',
+                    to: validVars[1]
+                });
+                renderRelations();
+            }
+        }
+
+        // 删除关系
+        function removeRelation(index) {
+            relations.splice(index, 1);
+            renderRelations();
+            checkProgress();
+        }
+
+        // 获取有效关系
+        function getValidRelations() {
+            return relations.filter(r => r.from && r.to && r.from !== r.to);
+        }
+
+        // 分析
+        function analyze() {
+            const problem = document.getElementById('problem-input').value.trim();
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+            const validRels = getValidRelations();
+            
+            if (!problem || validVars.length < 2 || validRels.length < 1) {
+                alert('请完成问题和变量设置');
+                return;
+            }
+            
+            // 分析结构类型
+            const structureResult = analyzeStructure(validRels, validVars);
+            
+            // 匹配认知偏误
+            const bias = matchCognitiveBias(problem, validVars, validRels);
+            
+            // 渲染结果
+            let resultHTML = `
+                <div class="mb-4">
+                    <span class="text-muted text-xs">你的问题</span>
+                    <p class="font-medium text-sm mt-1">${problem}</p>
+                </div>
+                <div class="mb-4">
+                    <span class="text-muted text-xs">变量</span>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        ${validVars.map(v => `<span class="tag tag-preset">${v}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <span class="text-muted text-xs">关系链</span>
+                    <div class="text-sm mt-2">
+                        ${validRels.map(r => `<p>${r.from} →(${r.type === '+' ? '+' : '-'})→ ${r.to}</p>`).join('')}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <span class="text-muted text-xs">结构类型</span>
+                    <p class="text-accent text-sm mt-1">${structureResult.type}</p>
+                </div>`;
+            
+            // 显示可疑关系警告
+            if (structureResult.suspicious && structureResult.suspicious.length > 0) {
+                resultHTML += `
+                <div class="mb-4">
+                    <span class="text-muted text-xs">⚠️ 关系逻辑存疑</span>
+                    <div class="text-sm mt-2 text-gray-700">
+                        ${structureResult.suspicious.map(w => `<p class="mb-1">• ${w}</p>`).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            resultHTML += `
+                <div>
+                    <span class="text-muted text-xs">🔥 你可能正在踩的坑</span>
+                    <p class="text-accent mt-2">${bias.tip}</p>
+                    <p class="text-xs text-muted mt-1">—— ${bias.name}（${bias.source}）</p>
+                </div>
+            `;
+            
+            document.getElementById('result-content').innerHTML = resultHTML;
+            document.getElementById('result-container').classList.remove('hidden');
+            document.getElementById('module4').classList.add('hidden');
+            
+            // 滚动到结果
+            document.getElementById('result-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 分析结构类型
+        function analyzeStructure(relations, variables) {
+            const fromSet = new Set(relations.map(r => r.from));
+            const toSet = new Set(relations.map(r => r.to));
+            
+            // 检查是否有闭环
+            const hasLoop = [...fromSet].some(v => toSet.has(v));
+            
+            const positiveCount = relations.filter(r => r.type === '+').length;
+            const ratio = positiveCount / relations.length;
+            
+            // 检测可疑关系
+            const suspicious = detectSuspiciousRelations(relations, variables);
+            
+            if (hasLoop) {
+                if (ratio > 0.6) {
+                    let result = '增强回路 — 系统会自我放大';
+                    // 判断良性还是恶性
+                    const hasPositiveStart = hasPositiveStartNode(relations, variables);
+                    if (hasPositiveStart) {
+                        result += '（可能是良性循环：越...越...）';
+                    } else {
+                        result += '（可能是恶性循环：越...越...，最后失控）';
+                    }
+                    return { type: result, suspicious };
+                } else {
+                    return { type: '平衡回路 — 系统会自我调节，趋于稳定', suspicious };
+                }
+            } else {
+                return { type: '线性结构 — 单向影响，没有反馈机制', suspicious };
+            }
+        }
+        
+        // 检测可疑关系
+        function detectSuspiciousRelations(relations, variables) {
+            const warnings = [];
+            
+            // 定义常见的"反向"变量对
+            const negativePairs = [
+                { a: '工作强度', b: ['生活', '休息', '娱乐', '美女', '社交'], reason: '工作强度越高，通常这些越少，应该是(-)减弱' },
+                { a: '薪资', b: ['压力', '风险'], reason: '薪资和压力/风险的关系需要思考，高薪可能伴随高风险' },
+                { a: '稳定', b: ['创新', '挑战', '成长'], reason: '稳定可能意味着缺少挑战和创新' },
+                { a: '美女', b: ['薪资', '收入'], reason: '美女直接影响薪资？因果关系可能颠倒或缺失中间变量' }
+            ];
+            
+            relations.forEach(r => {
+                negativePairs.forEach(pair => {
+                    // 检查是否是反向关系但标记为正向
+                    if (r.type === '+') {
+                        if (r.from.includes(pair.a) && pair.b.some(b => r.to.includes(b))) {
+                            warnings.push(`"${r.from} → ${r.to}" 标记为增强，但 ${pair.reason}`);
+                        }
+                        if (r.to.includes(pair.a) && pair.b.some(b => r.from.includes(b))) {
+                            warnings.push(`"${r.from} → ${r.to}" 标记为增强，但 ${pair.reason}`);
+                        }
+                    }
+                });
+            });
+            
+            return warnings;
+        }
+        
+        // 判断是否有正向起始点
+        function hasPositiveStartNode(relations, variables) {
+            // 检查变量中是否有明显正向的起始点
+            const positiveKeywords = ['成长', '发展', '技能', '学习', '积累'];
+            return variables.some(v => positiveKeywords.some(k => v.includes(k)));
+        }
+
+        // 匹配认知偏误
+        function matchCognitiveBias(problem, vars, rels) {
+            const text = problem + ' ' + vars.join(' ');
+            
+            let bestMatch = cognitiveBiases[0];
+            let bestScore = 0;
+            
+            for (const bias of cognitiveBiases) {
+                let score = 0;
+                
+                // 关键词匹配
+                for (const keyword of bias.keywords) {
+                    if (text.includes(keyword)) {
+                        score += 1;
+                    }
+                }
+                
+                // 排除词检查
+                if (bias.noKeywords) {
+                    for (const keyword of bias.noKeywords) {
+                        if (text.includes(keyword)) {
+                            score -= 1;
+                        }
+                    }
+                }
+                
+                // 关系特征
+                if (bias.name === '短期偏好' && vars.includes('薪资')) {
+                    if (!vars.some(v => v.includes('时间') || v.includes('长期'))) {
+                        score += 2;
+                    }
+                }
+                
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = bias;
+                }
+            }
+            
+            return bestMatch;
+        }
+
+        // 一键复制
+        function copyToAI() {
+            const problem = document.getElementById('problem-input').value.trim();
+            const validVars = variables.filter(v => v.name.trim() !== '').map(v => v.name);
+            const validRels = getValidRelations();
+            
+            const text = `我在分析一个问题：【${problem}】
+相关的变量有：${validVars.join('、')}
+结构关系是：
+${validRels.map(r => `${r.from} 影响 ${r.to}（${r.type === '+' ? '增强' : '减弱'}）`).join('\n')}
+
+请帮我进一步分析，我可能的盲区是什么？`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        }
+
+        // 监听问题输入
+        document.getElementById('problem-input').addEventListener('input', checkProgress);
+    </script>
+</body>
+</html>
