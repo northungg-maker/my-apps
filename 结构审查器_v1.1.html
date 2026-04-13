@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结构审查器 v1.1</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #222;
+        }
+        
+        .version-badge {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .scenario-card:hover {
+            border-color: #888;
+            transform: translateY(-2px);
+        }
+        
+        .scenario-card.selected {
+            border-color: #333;
+            background: #fafafa;
+        }
+        
+        .scenario-card h3 {
+            margin-bottom: 4px;
+        }
+        
+        .scenario-card p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #222;
+            border-left: 3px solid #333;
+            padding-left: 10px;
+        }
+        
+        .input-block {
+            margin-bottom: 20px;
+        }
+        
+        .input-block:last-child {
+            margin-bottom: 0;
+        }
+        
+        .input-block label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #444;
+        }
+        
+        .input-block textarea {
+            width: 100%;
+            height: 80px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .scale-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .scale-option {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s ease;
+            background: white;
+        }
+        
+        .scale-option:hover {
+            background: #f0f0f0;
+        }
+        
+        .scale-option.selected {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+        
+        /* ====== v1.1 高亮重点选项 ====== */
+        .scale-option.highlight-danger {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        .scale-option.highlight-danger:hover { background: #ffe0e0; }
+        .scale-option.highlight-danger.selected { background: #dc3545; border-color: #dc3545; }
+        
+        .scale-option.highlight-warning {
+            border-color: #fd7e14;
+            background: #fff8f0;
+        }
+        .scale-option.highlight-warning:hover { background: #ffe8d0; }
+        .scale-option.highlight-warning.selected { background: #fd7e14; border-color: #fd7e14; }
+        
+        .scale-option.highlight-key {
+            border-color: #0d6efd;
+            background: #f0f6ff;
+        }
+        .scale-option.highlight-key:hover { background: #d8e8ff; }
+        .scale-option.highlight-key.selected { background: #0d6efd; border-color: #0d6efd; }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover { background: #000; }
+        .btn:disabled { background: #999; cursor: not-allowed; }
+        .btn-secondary {
+            background: #666;
+            margin-top: 12px;
+        }
+        
+        .hidden { display: none; }
+        
+        /* ====== v1.1 诊断报告优化 ====== */
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .report-title { font-size: 18px; font-weight: 700; }
+        
+        .risk-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .risk-low { background: #d4edda; color: #155724; }
+        .risk-medium { background: #fff3cd; color: #856404; }
+        .risk-mediumhigh { background: #ffe0b3; color: #856404; }
+        .risk-high { background: #f8d7da; color: #721c24; }
+        
+        .structure-block {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .structure-header {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        
+        .structure-logic {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .structure-explain {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        
+        .pattern-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            color: white;
+        }
+        
+        .pattern-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .pattern-content { font-size: 14px; }
+        
+        .chip-section {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .chip-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .chip-score {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: 700;
+        }
+        .chip-score.weak { background: #f8d7da; color: #721c24; }
+        .chip-score.medium { background: #fff3cd; color: #856404; }
+        .chip-score.strong { background: #d4edda; color: #155724; }
+        
+        .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        
+        .chip-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .chip-item span:last-child { margin-left: 8px; font-weight: 600; }
+        
+        .action-box {
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .action-title { font-weight: 700; margin-bottom: 8px; }
+        .action-list { font-size: 14px; line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>结构审查器</h1>
+        <div class="version-badge">v1.1 · 高亮重点 · 模式识别</div>
+        
+        <div class="scenario-grid" id="scenarioGrid">
+            <div class="scenario-card" data-scenario="org">
+                <h3>组织困境</h3>
+                <p>在公司/组织里遇到了困境</p>
+            </div>
+            <div class="scenario-card" data-scenario="inst">
+                <h3>机构博弈</h3>
+                <p>跟某机构/平台打交道</p>
+            </div>
+            <div class="scenario-card" data-scenario="interpersonal">
+                <h3>人际关系</h3>
+                <p>私人关系的困境和博弈</p>
+            </div>
+            <div class="scenario-card" data-scenario="relation">
+                <h3>快速判断</h3>
+                <p>快速识别关系结构</p>
+            </div>
+        </div>
+        
+        <div id="inputSection" class="hidden"></div>
+        <div id="outputSection" class="hidden"></div>
+        <button id="copyBtn" class="btn btn-secondary hidden" onclick="copyAll()">复制全部</button>
+    </div>
+
+    <script>
+        // ====== 全局状态 ======
+        let selectedScenario = null;
+        let collectedData = null;
+        
+        // ====== 结构类型知识库 ======
+        const structures = {
+            oppression_highRisk: {
+                name: '压迫结构（高风险）',
+                logic: '对方单边决定 + 退出难 + 沉没成本深',
+                explain: '这是最危险的结构。你几乎没有谈判筹码，退出代价高昂，对方掌握几乎全部控制权。必须重新评估"是否真的无法退出"，或寻找外部制衡。'
+            },
+            oppression_mediumHigh: {
+                name: '压迫结构（中高风险）',
+                logic: '对方单边决定 + 能退出 + 资源控制差距大',
+                explain: '虽然你能退出，但对方在资源上高度控制你。你有一定筹码，但谈判空间有限。建议逐步建立替代资源、降低依赖。'
+            },
+            oppression_medium: {
+                name: '压迫结构（中等）',
+                logic: '对方单边决定 + 有谈判筹码',
+                explain: '对方在关键决策上有决定权，但你并非完全无能为力。需要用筹码换空间。'
+            },
+            repeatedGame: {
+                name: '博弈结构：重复博弈',
+                logic: '互动对称 + 长期关系',
+                explain: '这是相对理想的结构。长期对称博弈中，声誉为双方提供约束。你有谈判空间，可以用"未来合作"换取"现在让步"。'
+            },
+            singleGame: {
+                name: '博弈结构：单次博弈',
+                logic: '互动对称 + 单次',
+                explain: '双方力量差不多，但这是一次性互动。缺乏"未来惩罚"约束，对方可能选择背叛。小心一次性欺诈，注意保护自己。'
+            },
+            asymmetricBargain: {
+                name: '博弈结构：不对等博弈',
+                logic: '互动不对称 + 有谈判空间',
+                explain: '互动存在谈判空间，但对方力量更强。需要找到对方依赖你的地方，将其转化为筹码。'
+            },
+            weakGame: {
+                name: '弱博弈结构',
+                logic: '互动不对称 + 无谈判空间',
+                explain: '这是一个接近压迫的结构。力量不对称，且无谈判窗口。需要考虑两条路：要么退出，要么改变结构条件。'
+            },
+            sunkCost: {
+                name: '辅结构：沉没成本绑定',
+                logic: '投入太多 → 舍不得走',
+                explain: '你投入的时间、情感、机会成为"锁链"，让你不愿退出。记住：沉没成本不应影响未来决策。'
+            },
+            exitLocked: {
+                name: '辅结构：退出锁定',
+                logic: '退出困难 → 被迫接受',
+                explain: '退出成本（经济、情感、社会关系）过高，让你只能留在不合理的关系里。需要系统性地降低退出成本。'
+            },
+            emotionControl: {
+                name: '辅结构：情绪操控',
+                logic: '通过情绪操控维持不对等',
+                explain: '对方可能使用"忽冷忽热"、"冷战"、"愧疚诱导"等策略。识别它，是摆脱它的第一步。'
+            },
+            asymmetryDependency: {
+                name: '辅结构：不对等依赖',
+                logic: '你更依赖对方 → 讨价还价能力弱',
+                explain: '不对称依赖是谈判的核心变量。降低依赖度、提高替代性才能增强博弈能力。'
+            },
+            noNegotiation: {
+                name: '辅结构：谈判空间关闭',
+                logic: '无谈判窗口 → 只能接受或退出',
+                explain: '对方关闭谈判窗口，只剩"接受"和"退出"两选项。考虑哪条路的长期代价更低。'
+            }
+        };
+        
+        // ====== v1.1 结构模式知识库 ======
+        const patterns = {
+            lockedExploitation: {
+                name: '锁定剥削',
+                trigger: (a, c) => a.sunkCost === 'yes' && a.exitThreat === 'low' && a.bargainSpace === 'no',
+                explain: '典型危险模式：沉没成本深 + 无法退出 + 无谈判余地。你被结构性地锁定了。',
+                urgency: '高'
+            },
+            emotionalTrap: {
+                name: '情绪陷阱',
+                trigger: (a, c) => a.emotionControl === 'yes' && a.exitThreat === 'low',
+                explain: '情绪操控加上退出困难，是一种精神捆绑。对方用情绪操控让你"自愿"留下。',
+                urgency: '高'
+            },
+            resourceDependent: {
+                name: '资源依赖锁定',
+                trigger: (a, c) => a.resourceControl === 'high' && c.chip.total <= 8,
+                explain: '你高度依赖对方掌握的资源，且自身筹码薄弱。建议紧急开发替代资源。',
+                urgency: '中高'
+            },
+            weakButNegotiable: {
+                name: '弱势但可博弈',
+                trigger: (a, c) => a.bargainSpace === 'yes' && c.chip.total >= 9,
+                explain: '虽然力量不对称，但有谈判空间且有一定筹码。这是"可以谈"的结构，别浪费筹码。',
+                urgency: '中'
+            },
+            reputationGame: {
+                name: '声誉博弈',
+                trigger: (a, c) => a.repetition === 'repeat' && a.symmetry === 'yes',
+                explain: '长期对称博弈，声誉是你的武器。让对方知道"背叛有代价"，用未来合作换取当前让步。',
+                urgency: '低'
+            }
+        };
+        
+        // ====== 输入模板 ======
+        const inputTemplates = {
+            org: `
+                <div class="section">
+                    <div class="section-title">问题描述</div>
+                    <div class="input-block">
+                        <label>遇到什么困境？</label>
+                        <textarea id="situation" placeholder="具体描述..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">结构判断</div>
+                    
+                    <div class="input-block">
+                        <label>领导风格？</label>
+                        <div class="scale-group" data-field="unilateral">
+                            <div class="scale-option" data-value="no">民主研讨</div>
+                            <div class="scale-option highlight-danger" data-value="yes">一言堂</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>替代选择（外部机会）？</label>
+                        <div class="scale-group" data-field="exitThreat">
+                            <div class="scale-option highlight-key" data-value="high">有，随时能走</div>
+                            <div class="scale-option highlight-danger" data-value="low">几乎没有</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>沉没成本（在这家公司的时间、积累）？</label>
+                        <div class="scale-group" data-field="sunkCost">
+                            <div class="scale-option" data-value="no">不多</div>
+                            <div class="scale-option highlight-warning" data-value="yes">很多</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>能否单独谈判？</label>
+                        <div class="scale-group" data-field="bargainSpace">
+                            <div class="scale-option highlight-key" data-value="yes">能</div>
+                            <div class="scale-option highlight-danger" data-value="no">不能</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>资源控制差距（谁更依赖谁）？</label>
+                        <div class="scale-group" data-field="resourceControl">
+                            <div class="scale-option" data-value="low">差不多</div>
+                            <div class="scale-option highlight-warning" data-value="high">我更依赖公司</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>是否存在PUA/情绪操控？</label>
+                        <div class="scale-group" data-field="emotionControl">
+                            <div class="scale-option" data-value="no">没有</div>
+                            <div class="scale-option highlight-warning" data-value="sometimes">偶尔有</div>
+                            <div class="scale-option highlight-danger" data-value="yes">经常有</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">筹码自查</div>
+                    <div style="background:#fafafa; padding:20px;">
+                        <div class="input-block">
+                            <label>替代周期（找到类似工作需要多久）</label>
+                            <div class="scale-group" data-field="chipReplace">
+                                <div class="scale-option" data-value="1">不到1个月</div>
+                                <div class="scale-option" data-value="2">1-6个月</div>
+                                <div class="scale-option highlight-warning" data-value="3">超过6个月</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>资源控制（你掌握什么公司需要的）</label>
+                            <div class="scale-group" data-field="chipResource">
+                                <div class="scale-option highlight-warning" data-value="1">几乎没有</div>
+                                <div class="scale-option" data-value="2">部分控制</div>
+                                <div class="scale-option" data-value="3">独家控制关键资源</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>外部制衡（能带团队走/有客户资源/舆论影响力）</label>
+                            <div class="scale-group" data-field="chipExternal">
+                                <div class="scale-option highlight-warning" data-value="1">代价大</div>
+                                <div class="scale-option" data-value="2">可触发</div>
+                                <div class="scale-option" data-value="3">随时可用</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>退出威胁（离职对公司的损失）</label>
+                            <div class="scale-group" data-field="chipExit">
+                                <div class="scale-option highlight-warning" data-value="1">损失小</div>
+                                <div class="scale-option" data-value="2">损失中等</div>
+                                <div class="scale-option" data-value="3">损失巨大</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="diagnose()">生成诊断</button>
+            `,
+            inst: `
+                <div class="section">
+                    <div class="section-title">问题描述</div>
+                    <div class="input-block">
+                        <label>跟什么机构/平台发生什么问题？</label>
+                        <textarea id="situation" placeholder="具体描述..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">结构判断</div>
+                    
+                    <div class="input-block">
+                        <label>这是博弈，还是对方单边决定？</label>
+                        <div class="scale-group" data-field="unilateral">
+                            <div class="scale-option" data-value="no">双方互动</div>
+                            <div class="scale-option highlight-danger" data-value="yes">对方单边决定</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>替代选择？</label>
+                        <div class="scale-group" data-field="exitThreat">
+                            <div class="scale-option highlight-key" data-value="high">有</div>
+                            <div class="scale-option highlight-danger" data-value="low">无</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>沉没成本（已投入的金钱/时间/数据积累）？</label>
+                        <div class="scale-group" data-field="sunkCost">
+                            <div class="scale-option" data-value="no">无/少</div>
+                            <div class="scale-option highlight-warning" data-value="yes">有，多</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>谈判空间？</label>
+                        <div class="scale-group" data-field="bargainSpace">
+                            <div class="scale-option highlight-key" data-value="yes">有</div>
+                            <div class="scale-option highlight-danger" data-value="no">无</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>退出能力？</label>
+                        <div class="scale-group" data-field="exitThreat">
+                            <div class="scale-option highlight-key" data-value="high">能</div>
+                            <div class="scale-option highlight-danger" data-value="low">难</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>资源控制差距？</label>
+                        <div class="scale-group" data-field="resourceControl">
+                            <div class="scale-option" data-value="low">小</div>
+                            <div class="scale-option highlight-warning" data-value="high">大</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>是否存在情绪操控？</label>
+                        <div class="scale-group" data-field="emotionControl">
+                            <div class="scale-option" data-value="no">没有</div>
+                            <div class="scale-option highlight-warning" data-value="sometimes">偶尔有</div>
+                            <div class="scale-option highlight-danger" data-value="yes">经常有</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">筹码自查</div>
+                    <div style="background:#fafafa; padding:20px;">
+                        <div class="input-block">
+                            <label>替代周期</label>
+                            <div class="scale-group" data-field="chipReplace">
+                                <div class="scale-option" data-value="1">不到1个月</div>
+                                <div class="scale-option" data-value="2">1-6个月</div>
+                                <div class="scale-option highlight-warning" data-value="3">超过6个月</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>资源控制</label>
+                            <div class="scale-group" data-field="chipResource">
+                                <div class="scale-option highlight-warning" data-value="1">只能建议</div>
+                                <div class="scale-option" data-value="2">部分控制</div>
+                                <div class="scale-option" data-value="3">独家控制</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>外部制衡</label>
+                            <div class="scale-group" data-field="chipExternal">
+                                <div class="scale-option highlight-warning" data-value="1">代价大</div>
+                                <div class="scale-option" data-value="2">可触发</div>
+                                <div class="scale-option" data-value="3">随时可用</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>退出威胁</label>
+                            <div class="scale-group" data-field="chipExit">
+                                <div class="scale-option highlight-warning" data-value="1">我的损失更大</div>
+                                <div class="scale-option" data-value="2">对方损失>3倍</div>
+                                <div class="scale-option" data-value="3">对方损失>10倍</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="diagnose()">生成诊断</button>
+            `,
+            relation: `
+                <div class="section">
+                    <div class="section-title">快速判断</div>
+                    <div class="input-block">
+                        <label>发生了什么？</label>
+                        <textarea id="situation" placeholder="简述情况..."></textarea>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>这是互动还是单边？</label>
+                        <div class="scale-group" data-field="unilateral">
+                            <div class="scale-option" data-value="no">双方互动</div>
+                            <div class="scale-option highlight-danger" data-value="yes">对方单边决定</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>对称吗？</label>
+                        <div class="scale-group" data-field="symmetry">
+                            <div class="scale-option" data-value="yes">是</div>
+                            <div class="scale-option highlight-warning" data-value="no">否</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>单次还是长期？</label>
+                        <div class="scale-group" data-field="repetition">
+                            <div class="scale-option" data-value="single">单次</div>
+                            <div class="scale-option" data-value="repeat">长期</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>沉没成本（时间、情感、机会）？</label>
+                        <div class="scale-group" data-field="sunkCost">
+                            <div class="scale-option" data-value="no">无/少</div>
+                            <div class="scale-option highlight-warning" data-value="yes">有，多</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>谈判空间？</label>
+                        <div class="scale-group" data-field="bargainSpace">
+                            <div class="scale-option highlight-key" data-value="yes">有</div>
+                            <div class="scale-option highlight-danger" data-value="no">无</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>退出能力？</label>
+                        <div class="scale-group" data-field="exitThreat">
+                            <div class="scale-option highlight-key" data-value="high">能</div>
+                            <div class="scale-option highlight-danger" data-value="low">难</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>资源控制差距？</label>
+                        <div class="scale-group" data-field="resourceControl">
+                            <div class="scale-option" data-value="low">小</div>
+                            <div class="scale-option highlight-warning" data-value="high">大</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>是否存在情绪操控？</label>
+                        <div class="scale-group" data-field="emotionControl">
+                            <div class="scale-option" data-value="no">没有</div>
+                            <div class="scale-option highlight-warning" data-value="sometimes">偶尔有</div>
+                            <div class="scale-option highlight-danger" data-value="yes">经常有</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">筹码自查</div>
+                    <div style="background:#fafafa; padding:20px;">
+                        <div class="input-block">
+                            <label>替代周期</label>
+                            <div class="scale-group" data-field="chipReplace">
+                                <div class="scale-option" data-value="1">不到1个月</div>
+                                <div class="scale-option" data-value="2">1-6个月</div>
+                                <div class="scale-option highlight-warning" data-value="3">超过6个月</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>资源控制</label>
+                            <div class="scale-group" data-field="chipResource">
+                                <div class="scale-option highlight-warning" data-value="1">只能建议</div>
+                                <div class="scale-option" data-value="2">部分控制</div>
+                                <div class="scale-option" data-value="3">独家控制</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>外部制衡</label>
+                            <div class="scale-group" data-field="chipExternal">
+                                <div class="scale-option highlight-warning" data-value="1">代价大</div>
+                                <div class="scale-option" data-value="2">可触发</div>
+                                <div class="scale-option" data-value="3">随时可用</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>退出威胁</label>
+                            <div class="scale-group" data-field="chipExit">
+                                <div class="scale-option highlight-warning" data-value="1">我的损失更大</div>
+                                <div class="scale-option" data-value="2">对方损失>3倍</div>
+                                <div class="scale-option" data-value="3">对方损失>10倍</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="diagnose()">生成诊断</button>
+            `,
+            interpersonal: `
+                <div class="section">
+                    <div class="section-title">问题描述</div>
+                    <div class="input-block">
+                        <label>发生了什么？</label>
+                        <textarea id="situation" placeholder="具体问题..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">结构判断</div>
+                    
+                    <div class="input-block">
+                        <label>这是双方互动，还是对方单边决定？</label>
+                        <div class="scale-group" data-field="unilateral">
+                            <div class="scale-option" data-value="no">双方互动</div>
+                            <div class="scale-option highlight-danger" data-value="yes">对方单边决定</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>双方处境是否对称？</label>
+                        <div class="scale-group" data-field="symmetry">
+                            <div class="scale-option" data-value="yes">是</div>
+                            <div class="scale-option highlight-warning" data-value="no">否</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>单次还是长期？</label>
+                        <div class="scale-group" data-field="repetition">
+                            <div class="scale-option" data-value="single">单次</div>
+                            <div class="scale-option" data-value="repeat">长期</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>沉没成本（时间、情感、机会）？</label>
+                        <div class="scale-group" data-field="sunkCost">
+                            <div class="scale-option" data-value="no">无/少</div>
+                            <div class="scale-option highlight-warning" data-value="yes">有，多</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>是否有谈判空间？</label>
+                        <div class="scale-group" data-field="bargainSpace">
+                            <div class="scale-option highlight-key" data-value="yes">有</div>
+                            <div class="scale-option highlight-danger" data-value="no">无</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>退出能力？</label>
+                        <div class="scale-group" data-field="exitThreat">
+                            <div class="scale-option highlight-key" data-value="high">能退出</div>
+                            <div class="scale-option highlight-danger" data-value="low">难退出</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>资源控制差距（谁更依赖谁）？</label>
+                        <div class="scale-group" data-field="resourceControl">
+                            <div class="scale-option" data-value="low">差不多</div>
+                            <div class="scale-option highlight-warning" data-value="high">我更依赖对方</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-block">
+                        <label>是否存在情绪操控？</label>
+                        <div class="scale-group" data-field="emotionControl">
+                            <div class="scale-option" data-value="no">没有</div>
+                            <div class="scale-option highlight-warning" data-value="sometimes">偶尔有</div>
+                            <div class="scale-option highlight-danger" data-value="yes">经常有</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">筹码自查</div>
+                    <div style="background:#fafafa; padding:20px;">
+                        <div class="input-block">
+                            <label>替代周期（找到新的类似关系需要多久）</label>
+                            <div class="scale-group" data-field="chipReplace">
+                                <div class="scale-option" data-value="1">不到1个月</div>
+                                <div class="scale-option" data-value="2">1-6个月</div>
+                                <div class="scale-option highlight-warning" data-value="3">超过6个月</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>资源控制（你掌握什么对方需要的）</label>
+                            <div class="scale-group" data-field="chipResource">
+                                <div class="scale-option highlight-warning" data-value="1">几乎没有/只能建议</div>
+                                <div class="scale-option" data-value="2">部分控制</div>
+                                <div class="scale-option" data-value="3">独家控制关键资源</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>外部制衡（朋友、家人、舆论等）</label>
+                            <div class="scale-group" data-field="chipExternal">
+                                <div class="scale-option highlight-warning" data-value="1">代价大/效果弱</div>
+                                <div class="scale-option" data-value="2">可触发</div>
+                                <div class="scale-option" data-value="3">随时可用且有效</div>
+                            </div>
+                        </div>
+                        <div class="input-block">
+                            <label>退出威胁（如果结束关系，谁的损失更大）</label>
+                            <div class="scale-group" data-field="chipExit">
+                                <div class="scale-option highlight-warning" data-value="1">我的损失更大</div>
+                                <div class="scale-option" data-value="2">对方损失>3倍</div>
+                                <div class="scale-option" data-value="3">对方损失>10倍</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="diagnose()">生成诊断</button>
+            `
+        };
+        
+        // ====== 核心逻辑 ======
+        
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedScenario = this.dataset.scenario;
+                
+                document.getElementById('inputSection').innerHTML = inputTemplates[selectedScenario];
+                document.getElementById('inputSection').classList.remove('hidden');
+                document.getElementById('outputSection').classList.add('hidden');
+                document.getElementById('copyBtn').classList.add('hidden');
+                
+                bindScaleEvents();
+            });
+        });
+        
+        function bindScaleEvents() {
+            document.querySelectorAll('.scale-group').forEach(group => {
+                group.querySelectorAll('.scale-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (this.classList.contains('selected')) {
+                            this.classList.remove('selected');
+                        } else {
+                            group.querySelectorAll('.scale-option').forEach(o => o.classList.remove('selected'));
+                            this.classList.add('selected');
+                        }
+                    });
+                });
+            });
+        }
+        
+        function collectData() {
+            collectedData = {
+                scenario: selectedScenario,
+                situation: document.getElementById('situation')?.value || '',
+                answers: {},
+                chip: {}
+            };
+            
+            document.querySelectorAll('.scale-group').forEach(group => {
+                const field = group.dataset.field;
+                const selected = group.querySelector('.scale-option.selected');
+                if (selected) {
+                    const value = selected.dataset.value;
+                    if (field.startsWith('chip')) {
+                        collectedData.chip[field.replace('chip', '').toLowerCase()] = parseInt(value);
+                    } else {
+                        collectedData.answers[field] = value;
+                    }
+                }
+            });
+            
+            collectedData.chip.total = 
+                (collectedData.chip.replace || 0) + 
+                (collectedData.chip.resource || 0) + 
+                (collectedData.chip.external || 0) + 
+                (collectedData.chip.exit || 0);
+        }
+        
+        // ====== 结构判断逻辑 ======
+        
+        function analyzeStructures() {
+            const a = collectedData.answers;
+            const result = {
+                main: null,
+                sub: [],
+                risk: '中'
+            };
+            
+            if (a.unilateral === 'yes') {
+                if (a.exitThreat === 'low' && a.sunkCost === 'yes') {
+                    result.main = structures.oppression_highRisk;
+                    result.risk = '高';
+                } else if (a.exitThreat === 'high' && a.resourceControl === 'high') {
+                    result.main = structures.oppression_mediumHigh;
+                    result.risk = '中高';
+                } else {
+                    result.main = structures.oppression_medium;
+                    result.risk = '中';
+                }
+            } else {
+                if (a.symmetry === 'yes' && a.repetition === 'repeat') {
+                    result.main = structures.repeatedGame;
+                    result.risk = '低';
+                } else if (a.symmetry === 'yes' && a.repetition === 'single') {
+                    result.main = structures.singleGame;
+                    result.risk = '中';
+                } else if (a.symmetry === 'no' && a.bargainSpace === 'yes') {
+                    result.main = structures.asymmetricBargain;
+                    result.risk = '中高';
+                } else {
+                    result.main = structures.weakGame;
+                    result.risk = '高';
+                }
+            }
+            
+            const subStructures = [];
+            if (a.sunkCost === 'yes') subStructures.push({ structure: structures.sunkCost, priority: 3 });
+            if (a.exitThreat === 'low') subStructures.push({ structure: structures.exitLocked, priority: 4 });
+            if (a.emotionControl === 'yes' || a.emotionControl === 'sometimes') {
+                subStructures.push({ structure: structures.emotionControl, priority: a.emotionControl === 'yes' ? 2 : 5 });
+            }
+            if (a.symmetry === 'no' && a.resourceControl === 'high') subStructures.push({ structure: structures.asymmetryDependency, priority: 1 });
+            if (a.bargainSpace === 'no') subStructures.push({ structure: structures.noNegotiation, priority: 2 });
+            
+            subStructures.sort((x, y) => x.priority - y.priority);
+            result.sub = subStructures.slice(0, 2).map(s => s.structure);
+            
+            return result;
+        }
+        
+        // ====== v1.1 模式匹配 ======
+        function matchPatterns() {
+            const a = collectedData.answers;
+            const matched = [];
+            
+            for (const [key, pattern] of Object.entries(patterns)) {
+                if (pattern.trigger(a, collectedData)) {
+                    matched.push(pattern);
+                }
+            }
+            
+            // 按紧急度排序
+            const urgencyOrder = { '高': 1, '中高': 2, '中': 3, '低': 4 };
+            matched.sort((x, y) => urgencyOrder[x.urgency] - urgencyOrder[y.urgency]);
+            
+            return matched.slice(0, 2); // 最多显示2个模式
+        }
+        
+        // ====== 诊断生成 ======
+        
+        function diagnose() {
+            collectData();
+            
+            if (!collectedData.situation.trim()) {
+                alert('请描述遇到的情况');
+                return;
+            }
+            
+            const structureResult = analyzeStructures();
+            const matchedPatterns = matchPatterns();
+            
+            const riskClass = structureResult.risk === '高' ? 'risk-high' :
+                              structureResult.risk === '中高' ? 'risk-mediumhigh' :
+                              structureResult.risk === '低' ? 'risk-low' : 'risk-medium';
+            
+            const chipClass = collectedData.chip.total <= 5 ? 'weak' :
+                              collectedData.chip.total <= 8 ? 'medium' : 'strong';
+            const chipLabel = collectedData.chip.total <= 5 ? '筹码薄弱' :
+                              collectedData.chip.total <= 8 ? '筹码一般' : '筹码较强';
+            
+            let html = `
+                <div class="report-card">
+                    <div class="report-header">
+                        <div class="report-title">诊断结果</div>
+                        <div class="risk-badge ${riskClass}">风险：${structureResult.risk}</div>
+                    </div>
+                    
+                    <!-- 主结构 -->
+                    <div class="structure-block">
+                        <div class="structure-header">▸ ${structureResult.main.name}</div>
+                        <div class="structure-logic">${structureResult.main.logic}</div>
+                        <div class="structure-explain">${structureResult.main.explain}</div>
+                    </div>
+                    
+                    <!-- 辅结构 -->
+                    ${structureResult.sub.map(s => `
+                        <div class="structure-block" style="background:#fff; border-left:3px solid #666;">
+                            <div class="structure-header">${s.name}</div>
+                            <div class="structure-logic">${s.logic}</div>
+                        </div>
+                    `).join('')}
+            `;
+            
+            // v1.1 模式识别
+            if (matchedPatterns.length > 0) {
+                html += `
+                    <div class="pattern-section">
+                        <div class="pattern-title">⚡ 识别到结构模式</div>
+                        ${matchedPatterns.map(p => `
+                            <div class="pattern-content" style="margin-top:10px;">
+                                <strong>${p.name}</strong>（紧急度：${p.urgency}）<br>
+                                ${p.explain}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            html += `
+                    <!-- 筹码评估 -->
+                    <div class="chip-section">
+                        <div class="chip-title">
+                            筹码评估
+                            <span class="chip-score ${chipClass}">${chipLabel} · ${collectedData.chip.total}/12</span>
+                        </div>
+                        <div class="chip-list">
+                            <div class="chip-item"><span>替代周期</span><span>${collectedData.chip.replace || 0}分</span></div>
+                            <div class="chip-item"><span>资源控制</span><span>${collectedData.chip.resource || 0}分</span></div>
+                            <div class="chip-item"><span>外部制衡</span><span>${collectedData.chip.external || 0}分</span></div>
+                            <div class="chip-item"><span>退出威胁</span><span>${collectedData.chip.exit || 0}分</span></div>
+                        </div>
+                    </div>
+                    
+                </div>
+            `;
+            
+            document.getElementById('outputSection').innerHTML = html;
+            document.getElementById('outputSection').classList.remove('hidden');
+            document.getElementById('copyBtn').classList.remove('hidden');
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function copyAll() {
+            const scenarioNames = { org: '组织困境', inst: '机构博弈', interpersonal: '人际关系', relation: '快速判断' };
+            
+            let text = `=== 结构审查器 v1.1 诊断报告 ===\n\n`;
+            text += `【场景】${scenarioNames[selectedScenario]}\n`;
+            text += `【问题描述】${collectedData.situation}\n\n`;
+            text += document.getElementById('outputSection').innerText;
+            
+            navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+        }
+    </script>
+</body>
+</html>
