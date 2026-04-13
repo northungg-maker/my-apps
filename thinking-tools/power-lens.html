@@ -1,0 +1,2784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权力透视器 V2.1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #1a1a1a;
+            --gray: #666;
+            --light-gray: #e5e5e5;
+            --red: #d32f2f;
+            --white: #ffffff;
+            --bg: #fafafa;
+            --green: #2e7d32;
+            --orange: #f57c00;
+            --purple: #7b1fa2;
+            --yellow: #ffc107;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+        }
+        
+        /* ===== 导航 ===== */
+        .nav {
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .logo span {
+            color: var(--gray);
+            font-weight: 400;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav-tab {
+            font-size: 13px;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab:hover {
+            color: var(--black);
+        }
+        
+        .nav-tab.active {
+            color: var(--black);
+            border-bottom-color: var(--black);
+        }
+        
+        /* ===== 容器 ===== */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* ===== 页面标题 ===== */
+        .page-title {
+            margin-bottom: 40px;
+        }
+        
+        .page-title h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .page-title p {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+        
+        /* ===== 入口卡片 ===== */
+        .entry-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .entry-card {
+            border: 1px solid var(--light-gray);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .entry-card:hover {
+            border-color: var(--black);
+        }
+        
+        .entry-card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .entry-card p {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .entry-card .arrow {
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+        
+        /* ===== 模块切换标签 ===== */
+        .module-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .module-tab {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--gray);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .module-tab:hover {
+            color: var(--black);
+        }
+        
+        .module-tab.active {
+            color: var(--black);
+            border-bottom-color: var(--black);
+        }
+        
+        /* ===== 诊断区块 ===== */
+        .diagnosis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-label {
+            font-size: 12px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        .desc-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 16px;
+            border: 1px solid var(--light-gray);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .desc-input:focus {
+            outline: none;
+            border-color: var(--black);
+        }
+        
+        /* ===== 问题块 ===== */
+        .question-block {
+            margin-bottom: 24px;
+        }
+        
+        .question-block h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            border-color: var(--gray);
+        }
+        
+        .option.selected {
+            border-color: var(--black);
+            background: var(--bg);
+        }
+        
+        .option-dot {
+            width: 8px;
+            height: 8px;
+            border: 1px solid var(--gray);
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+        
+        .option.selected .option-dot {
+            background: var(--black);
+            border-color: var(--black);
+        }
+        
+        .option-text {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        /* ===== 按钮 ===== */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .btn-primary {
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            padding: 14px 28px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.85;
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--black);
+            border: 1px solid var(--light-gray);
+            padding: 14px 28px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--black);
+        }
+        
+        /* ===== 结果卡片 ===== */
+        .result-card {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            padding: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .type-badge.civilized { background: #e8f5e9; color: var(--green); }
+        .type-badge.control { background: #fff3e0; color: var(--orange); }
+        .type-badge.evil { background: #ffebee; color: var(--red); }
+        .type-badge.mixed { background: #f3e5f5; color: var(--purple); }
+        
+        .result-text {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--gray);
+        }
+        
+        .result-text strong {
+            color: var(--black);
+        }
+        
+        /* ===== 特征列表 ===== */
+        .feature-list {
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .feature-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon.check { color: var(--green); }
+        .feature-icon.warn { color: var(--orange); }
+        .feature-icon.danger { color: var(--red); }
+        
+        .feature-text {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        /* ===== 风险指示器 ===== */
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--bg);
+        }
+        
+        .risk-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .risk-dot.low { background: var(--green); }
+        .risk-dot.medium { background: var(--yellow); }
+        .risk-dot.high { background: var(--orange); }
+        .risk-dot.critical { background: var(--red); }
+        
+        .risk-text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        /* ===== 建议卡片 ===== */
+        .advice-card {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            padding: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .advice-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .advice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .advice-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px;
+            background: var(--bg);
+        }
+        
+        .advice-number {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--red);
+            flex-shrink: 0;
+        }
+        
+        .advice-text {
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        
+        /* ===== 博弈论卡片 ===== */
+        .game-card {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            padding: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .game-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .game-type {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white);
+            padding: 6px 14px;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .game-desc {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--gray);
+        }
+        
+        .game-desc strong {
+            color: var(--black);
+        }
+        
+        /* ===== 演化模拟器 ===== */
+        .evolution-section {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .evolution-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .behavior-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--light-gray);
+            font-size: 14px;
+            background: var(--white);
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .behavior-select:focus {
+            outline: none;
+            border-color: var(--black);
+        }
+        
+        .evolution-result {
+            background: var(--bg);
+            padding: 24px;
+            margin-top: 20px;
+        }
+        
+        .evolution-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .evolution-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .evolution-label {
+            font-size: 12px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .evolution-value {
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        
+        .evolution-value.risk {
+            color: var(--red);
+        }
+        
+        .evolution-value.benefit {
+            color: var(--green);
+        }
+        
+        /* ===== 理论参考 ===== */
+        .theory-reference {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .theory-reference h4 {
+            font-size: 11px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+        
+        .theory-item {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .theory-item span {
+            color: var(--black);
+            font-weight: 500;
+        }
+        
+        /* ===== 隐藏状态 ===== */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .module-content {
+            display: none;
+        }
+        
+        .module-content.active {
+            display: block;
+        }
+        
+        /* ===== 灰化量表 ===== */
+        .gray-scale {
+            display: flex;
+            gap: 2px;
+            margin-top: 12px;
+        }
+        
+        .gray-segment {
+            flex: 1;
+            height: 8px;
+            background: var(--light-gray);
+        }
+        
+        .gray-segment.filled {
+            background: var(--gray);
+        }
+        
+        .gray-segment.danger {
+            background: var(--red);
+        }
+        
+        /* ===== 理论深潜页 ===== */
+        .theory-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--light-gray);
+            flex-wrap: wrap;
+        }
+        
+        .theory-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            color: var(--gray);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        
+        .theory-tab:hover {
+            color: var(--black);
+        }
+        
+        .theory-tab.active {
+            color: var(--black);
+            border-bottom-color: var(--black);
+        }
+        
+        .theory-section {
+            display: none;
+        }
+        
+        .theory-section.active {
+            display: block;
+        }
+        
+        .theory-header {
+            margin-bottom: 30px;
+        }
+        
+        .theory-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .theory-header p {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        
+        .theory-block {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .theory-block h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .theory-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--black);
+        }
+        
+        .theory-content p {
+            margin-bottom: 12px;
+        }
+        
+        .theory-content ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .theory-content li {
+            margin-bottom: 6px;
+        }
+        
+        .theory-content strong {
+            color: var(--black);
+        }
+        
+        .theory-content .highlight {
+            background: #fff3e0;
+            padding: 2px 6px;
+        }
+        
+        /* ===== 三色灯预警 ===== */
+        .traffic-light {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .traffic-light-item {
+            flex: 1;
+            padding: 16px;
+            border: 1px solid var(--light-gray);
+            text-align: center;
+        }
+        
+        .traffic-light-item.green {
+            border-color: var(--green);
+            background: #e8f5e9;
+        }
+        
+        .traffic-light-item.yellow {
+            border-color: var(--yellow);
+            background: #fffde7;
+        }
+        
+        .traffic-light-item.red {
+            border-color: var(--red);
+            background: #ffebee;
+        }
+        
+        .traffic-light-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+        }
+        
+        .traffic-light-icon.green { background: var(--green); }
+        .traffic-light-icon.yellow { background: var(--yellow); }
+        .traffic-light-icon.red { background: var(--red); }
+        
+        .traffic-light-item h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .traffic-light-item p {
+            font-size: 12px;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+        
+        /* ===== 演化路径图 ===== */
+        .evolution-path {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg);
+            overflow-x: auto;
+        }
+        
+        .path-node {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .path-node-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid;
+        }
+        
+        .path-node-circle.civilized {
+            background: #e8f5e9;
+            border-color: var(--green);
+            color: var(--green);
+        }
+        
+        .path-node-circle.control {
+            background: #fff3e0;
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+        
+        .path-node-circle.evil {
+            background: #ffebee;
+            border-color: var(--red);
+            color: var(--red);
+        }
+        
+        .path-node-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .path-arrow {
+            font-size: 20px;
+            color: var(--light-gray);
+            margin: 0 16px;
+            flex-shrink: 0;
+        }
+        
+        /* ===== 临界点 ===== */
+        .critical-point {
+            border: 2px solid var(--red);
+            padding: 20px;
+            margin: 20px 0;
+            background: #fff5f5;
+        }
+        
+        .critical-point h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--red);
+            margin-bottom: 12px;
+        }
+        
+        .critical-point p {
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        
+        /* ===== 水井寓言故事卡片样式 ===== */
+        .story-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .story-intro {
+            font-size: 15px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .story-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .story-card {
+            background: #f8f9fa;
+            border-left: 4px solid var(--blue);
+            padding: 14px 16px;
+            margin-left: 0;
+        }
+        
+        .story-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 6px 0;
+        }
+        
+        .story-card p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+            margin: 0;
+        }
+        
+        .story-card .story-tag {
+            font-size: 12px;
+            color: var(--blue);
+            font-weight: 500;
+            margin-top: 8px;
+            display: block;
+        }
+        
+        .story-summary {
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f4f8 100%);
+            border-radius: 8px;
+        }
+        
+        .story-summary p {
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0 0 6px 0;
+        }
+        
+        .story-summary p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .story-summary .highlight {
+            font-size: 14px;
+            background: rgba(65, 105, 225, 0.1);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        /* ===== 主权博弈诊断模块样式 ===== */
+        .game-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .game-header { text-align: center; margin-bottom: 50px; }
+        .game-header h1 { font-size: 28px; font-weight: 600; margin-bottom: 15px; }
+        .game-header p { color: var(--gray); font-size: 15px; line-height: 1.8; }
+        .step-indicator { display: flex; justify-content: center; gap: 8px; margin: 30px 0; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e5e5; transition: all 0.3s ease; }
+        .step-dot.active { background: var(--black); transform: scale(1.2); }
+        .step-dot.completed { background: var(--black); }
+        .question-card { background: var(--white); border: 1px solid var(--light-gray); padding: 40px; margin-bottom: 30px; }
+        .progress-bar { display: flex; margin-bottom: 30px; gap: 4px; }
+        .progress-segment { flex: 1; height: 3px; background: var(--light-gray); }
+        .progress-segment.filled { background: var(--black); }
+        .question-title { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
+        .question-hint { color: var(--gray); font-size: 14px; margin-bottom: 30px; }
+        .options-grid { display: grid; gap: 15px; }
+        .option-btn { width: 100%; padding: 20px 24px; background: var(--bg); border: 1px solid var(--light-gray); text-align: left; cursor: pointer; transition: all 0.2s ease; font-family: inherit; font-size: 15px; }
+        .option-btn:hover { border-color: var(--black); }
+        .option-btn.selected { border-color: var(--black); background: var(--white); }
+        .option-label { font-weight: 500; margin-bottom: 6px; }
+        .option-desc { color: var(--gray); font-size: 13px; line-height: 1.6; }
+        .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .nav-btn { padding: 14px 28px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; font-family: inherit; }
+        .nav-btn.primary { background: var(--black); color: var(--white); }
+        .nav-btn.primary:disabled { background: var(--light-gray); color: var(--gray); cursor: not-allowed; }
+        .nav-btn.secondary { background: var(--white); color: var(--black); border: 1px solid var(--light-gray); }
+        .result-card { background: var(--white); border: 1px solid var(--light-gray); padding: 40px; }
+        .divider { height: 1px; background: var(--light-gray); margin: 30px 0; }
+        .result-section { margin-bottom: 30px; }
+        .result-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 10px; }
+        .result-value { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+        .result-desc { color: var(--gray); font-size: 14px; line-height: 1.7; }
+        .dilemma-block { padding: 20px; background: #fff8f8; border-left: 3px solid #e63946; margin-bottom: 15px; }
+        .dilemma-title { font-weight: 500; margin-bottom: 5px; }
+        .dilemma-desc { color: var(--gray); font-size: 14px; }
+        .trap-block { padding: 30px; background: #fff; border: 1px solid #e63946; margin-bottom: 20px; }
+        .trap-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .trap-icon { color: #e63946; font-size: 1.2em; }
+        .trap-name { font-size: 1.1em; font-weight: 500; }
+        .trap-explain { color: var(--gray); font-size: 14px; line-height: 1.7; margin-bottom: 15px; }
+        .trap-counter { background: #f8f8f8; padding: 15px 20px; font-size: 14px; line-height: 1.7; }
+        .trap-counter-label { font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--gray); }
+        .cognitive-block { background: #f8f8f8; padding: 20px; }
+        .cognitive-item { margin-bottom: 15px; }
+        .cognitive-item:last-child { margin-bottom: 0; }
+        .cognitive-wrong { text-decoration: line-through; color: var(--gray); margin-bottom: 5px; }
+        .cognitive-right { color: #2e7d32; }
+        .chip-list { display: grid; gap: 10px; }
+        .chip-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: #f8f8f8; }
+        .chip-marker { font-weight: 600; }
+        .chip-marker.positive { color: #2e7d32; }
+        .chip-marker.negative { color: #e63946; }
+        .action-block { background: var(--black); color: var(--white); padding: 40px; margin-top: 30px; }
+        .action-title { font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px; }
+        .action-step { display: flex; gap: 20px; margin-bottom: 25px; }
+        .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--white); color: var(--black); display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+        .step-title { font-weight: 500; margin-bottom: 5px; }
+        .step-desc { color: rgba(255,255,255,0.7); font-size: 14px; line-height: 1.6; }
+        .risk-block { padding: 20px; background: #fff8f8; border: 1px solid #ffebee; }
+        .risk-item { padding: 8px 0; color: #c62828; font-size: 14px; }
+        .risk-item::before { content: "• "; }
+        .evolution-section { padding: 40px; background: #f8f8f8; border: 1px solid var(--light-gray); margin-top: 30px; }
+        .evolution-header { text-align: center; margin-bottom: 30px; }
+        .evolution-title { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+        .evolution-subtitle { color: var(--gray); font-size: 14px; }
+        .evolution-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        @media (max-width: 600px) { .evolution-options { grid-template-columns: 1fr; } }
+        .evolution-option { padding: 20px; background: var(--white); border: 1px solid var(--light-gray); cursor: pointer; transition: all 0.2s ease; }
+        .evolution-option:hover { border-color: var(--black); }
+        .evolution-option.selected { border-color: var(--black); background: #fafafa; }
+        .evolution-option-title { font-weight: 500; margin-bottom: 6px; }
+        .evolution-option-desc { color: var(--gray); font-size: 13px; }
+        .evolve-btn { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; font-weight: 500; cursor: pointer; transition: all 0.2s ease; font-family: inherit; font-size: 15px; }
+        .evolve-btn:disabled { background: var(--light-gray); color: var(--gray); cursor: not-allowed; }
+        .evolution-history { margin-top: 30px; }
+        .history-round { background: var(--white); border: 1px solid var(--light-gray); margin-bottom: 20px; }
+        .history-header { padding: 15px 20px; background: #f8f8f8; border-bottom: 1px solid var(--light-gray); display: flex; justify-content: space-between; align-items: center; }
+        .history-round-num { font-weight: 500; }
+        .history-action { color: var(--gray); font-size: 14px; }
+        .history-content { padding: 20px; }
+        .history-result { font-size: 14px; line-height: 1.7; }
+        .history-metrics { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--light-gray); }
+        .metric-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+        .metric-label { color: var(--gray); }
+        .metric-change { font-weight: 500; }
+        .metric-change.positive { color: #2e7d32; }
+        .metric-change.negative { color: #c62828; }
+        .metric-change.neutral { color: var(--gray); }
+
+        /* ===== 新首页样式 ===== */
+        .hero-simple {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .hero-content {
+            max-width: 640px;
+        }
+        .hero-title {
+            font-size: 42px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 24px;
+        }
+        .hero-desc {
+            font-size: 15px;
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        .start-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .start-btn:hover {
+            background: #333;
+        }
+        .start-btn .arrow {
+            transition: transform 0.2s ease;
+        }
+        .start-btn:hover .arrow {
+            transform: translateX(4px);
+        }
+        .hero-title-sm {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            text-align: left;
+        }
+        .tool-card {
+            background: var(--white);
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tool-card:hover {
+            border-color: var(--black);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .tool-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .tool-name {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .tool-desc {
+            font-size: 13px;
+            color: var(--gray);
+        }
+        @media (max-width: 480px) {
+            .hero-title { font-size: 32px; }
+            .tools-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== 新首页样式 ===== */
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        .start-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .start-btn:hover {
+            background: #333;
+        }
+        .start-btn .arrow {
+            transition: transform 0.2s ease;
+        }
+        .start-btn:hover .arrow {
+            transform: translateX(4px);
+        }
+        .hero-title-sm {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        @media (max-width: 600px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== 首页隐藏导航栏 ===== */
+        body.hide-nav .nav {
+            display: none;
+        }
+        
+        /* ===== 工具入口页样式 ===== */
+        #page-tools .hero-simple {
+            padding-top: 20px;
+        }
+        #page-tools .hero-title-sm {
+            margin-top: 0;
+        }
+        
+        /* ===== 工具卡片 - 理论深潜特殊样式 ===== */
+        .tool-card.theory-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 1px solid #e0e0e0;
+        }
+        .tool-card.theory-card .tool-desc {
+            line-height: 1.6;
+        }
+        .tool-card.theory-card .tool-icon {
+            filter: saturate(50%);
+        }
+    </style>
+</head>
+<body class="hide-nav">
+
+    <!-- ===== 导航 ===== -->
+    <nav class="nav">
+        <div class="logo">权力<span>透视器</span></div>
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-page="home">首页</div>
+            <div class="nav-tab" data-page="theory">理论深潜</div>
+            <div class="nav-tab" data-page="diagnosis">诊断工具</div>
+            <div class="nav-tab" data-page="result">结果</div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- ===== 新首页 - 简洁版 ===== -->
+        <div class="page active" id="page-home">
+            <section class="hero-simple">
+                <div class="hero-content">
+                    <h1 class="hero-title">权力透视器</h1>
+                    <p class="hero-subtitle">看清权力的形状</p>
+                    <p class="hero-desc">
+                        一套权力诊断工具集，帮助你识别权力关系的结构类型、<br>
+                        灰化程度、演化趋势，以及在博弈中的真实位置。
+                    </p>
+                    <button class="start-btn" onclick="showPage('tools')">
+                        开始
+                        <span class="arrow">→</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 工具入口页 ===== -->
+        <div class="page" id="page-tools">
+            <section class="hero-simple">
+                <div class="hero-content">
+                    <h1 class="hero-title-sm">选择诊断工具</h1>
+                    <div class="tools-grid">
+                        <div class="tool-card theory-card" onclick="showPage('theory')">
+                            <div class="tool-icon">📚</div>
+                            <div class="tool-name">理论深潜</div>
+                            <div class="tool-desc">理解四种权力结构、信号灯预警、演化路径</div>
+                        </div>
+                        <div class="tool-card" onclick="startModule('game')">
+                            <div class="tool-icon">⚖️</div>
+                            <div class="tool-name">主权博弈诊断</div>
+                            <div class="tool-desc">识别你正在面对的权力困境类型</div>
+                        </div>
+                        <div class="tool-card" onclick="startModule('relation')">
+                            <div class="tool-icon">🔍</div>
+                            <div class="tool-name">关系诊断器</div>
+                            <div class="tool-desc">判断一段关系的权力结构类型</div>
+                        </div>
+                        <div class="tool-card" onclick="startModule('gray')">
+                            <div class="tool-icon">🏢</div>
+                            <div class="tool-name">组织灰化检测器</div>
+                            <div class="tool-desc">评估组织的腐化程度</div>
+                        </div>
+                        <div class="tool-card" onclick="startModule('evolution')">
+                            <div class="tool-icon">📈</div>
+                            <div class="tool-name">演化模拟器</div>
+                            <div class="tool-desc">预测结构的未来走向</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== 理论深潜页 ===== -->
+        <div class="page" id="page-theory">
+            <div class="page-title">
+                <h1>权力结构理论</h1>
+                <p>理解权力的运作方式，是看穿一切关系的关键。这里有四种基本结构、信号灯预警和演化路径。</p>
+            </div>
+            
+            <div class="theory-nav">
+                <div class="theory-tab active" data-theory="overview">概述</div>
+                <div class="theory-tab" data-theory="civilized">开放型</div>
+                <div class="theory-tab" data-theory="control">控制型</div>
+                <div class="theory-tab" data-theory="evil">邪恶型</div>
+                <div class="theory-tab" data-theory="mixed">混合型</div>
+                <div class="theory-tab" data-theory="evolution">演化路径</div>
+                <div class="theory-tab" data-theory="critical">临界点</div>
+            </div>
+            
+            <!-- ===== 概述 ===== -->
+            <div class="theory-section active" id="theory-overview">
+                <div class="theory-header">
+                    <h2>权力结构：关系的底层代码</h2>
+                    <p>任何关系——职场、感情、家庭、组织——都有权力结构。它决定了谁说了算、信息如何流动、退出有多难。权力结构不是善恶，但它决定了关系的健康程度。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>四种基本结构</h3>
+                    <div class="theory-content">
+                        <p>权力结构有四种基本形态，从开放到封闭：</p>
+                        <ul>
+                            <li><strong>开放型（文明型）</strong>：权力来自共识，规则透明，可自由退出</li>
+                            <li><strong>控制型</strong>：权力来自依赖，规则由一方制定，退出成本高</li>
+                            <li><strong>邪恶型</strong>：权力来自操控，规则不透明，退出不可预测</li>
+                            <li><strong>混合型</strong>：在不同议题上有不同的权力逻辑</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>三色灯预警</h3>
+                    <div class="theory-content">
+                        <p>结构健康与否，看三个核心维度：</p>
+                    </div>
+                    <div class="traffic-light">
+                        <div class="traffic-light-item green">
+                            <div class="traffic-light-icon green"></div>
+                            <h4>绿灯：规则稳定</h4>
+                            <p>规则透明、统一执行、可预期</p>
+                        </div>
+                        <div class="traffic-light-item yellow">
+                            <div class="traffic-light-icon yellow"></div>
+                            <h4>黄灯：信息可解释</h4>
+                            <p>决策有理由、可追溯、可质疑</p>
+                        </div>
+                        <div class="traffic-light-item red">
+                            <div class="traffic-light-icon red"></div>
+                            <h4>红灯：退出确定</h4>
+                            <p>退出成本可控、可预测、无报复</p>
+                        </div>
+                    </div>
+                    <div class="theory-content">
+                        <p><strong>判断逻辑：</strong>三灯全绿 = 结构健康；出现红灯 = 高危信号；黄灯闪烁 = 需要观察。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>演化路径</h3>
+                    <div class="theory-content">
+                        <p>权力结构不是静态的，它会演化。最常见的路径：</p>
+                    </div>
+                    <div class="evolution-path">
+                        <div class="path-node">
+                            <div class="path-node-circle civilized">开放型</div>
+                            <div class="path-node-label">权力来自共识</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle control">控制型</div>
+                            <div class="path-node-label">权力来自依赖</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle evil">邪恶型</div>
+                            <div class="path-node-label">权力来自操控</div>
+                        </div>
+                    </div>
+                    <div class="theory-content">
+                        <p><strong>滑落条件：</strong>开放型 → 控制型，当退出成本上升；控制型 → 邪恶型，当规则变得不透明。</p>
+                        <p><strong>修复窗口：</strong>滑落过程中有临界点，跨过就难回头。识别临界点，才能及时止损。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ===== 开放型 ===== -->
+            <div class="theory-section" id="theory-civilized">
+                <div class="theory-header">
+                    <h2>开放型结构（文明型）</h2>
+                    <p>权力的理想形态。权力来自共识，规则透明，退出自由。这是市场经济的底层逻辑，也是健康关系的基准线。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>核心特征</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>权力来源：</strong>共识与契约，不是强制</li>
+                            <li><strong>规则特点：</strong>透明、统一、可预期</li>
+                            <li><strong>信息流动：</strong>公开共享，没有黑箱</li>
+                            <li><strong>退出机制：</strong>自由退出，成本可控</li>
+                            <li><strong>纠错能力：</strong>问题可公开讨论，有修复通道</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>三色灯状态</h3>
+                    <div class="traffic-light">
+                        <div class="traffic-light-item green">
+                            <div class="traffic-light-icon green"></div>
+                            <h4>绿灯</h4>
+                            <p>规则透明稳定</p>
+                        </div>
+                        <div class="traffic-light-item green">
+                            <div class="traffic-light-icon green"></div>
+                            <h4>绿灯</h4>
+                            <p>信息可解释</p>
+                        </div>
+                        <div class="traffic-light-item green">
+                            <div class="traffic-light-icon green"></div>
+                            <h4>绿灯</h4>
+                            <p>退出成本可控</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>典型场景</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>市场竞争：</strong>消费者可以选择购买或离开，商家用价格和服务竞争</li>
+                            <li><strong>合同合作：</strong>双方自愿签署合同，违约有清晰的后果</li>
+                            <li><strong>民主组织：</strong>规则由成员共同制定，决策过程公开</li>
+                            <li><strong>健康关系：</strong>双方都有退出权，问题可以讨论</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>为什么它"文明"？</h3>
+                    <div class="theory-content">
+                        <p>因为它<strong>承认个体的选择权</strong>。权力不是从上面赐予的，而是从下面的共识生长出来的。你同意，权力才存在；你退出，权力就消失。</p>
+                        <p>这不是乌托邦，而是<strong>市场经济的底层逻辑</strong>。竞争的核心，就是让权力回到"同意"这个基础上。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>滑坡风险</h3>
+                    <div class="theory-content">
+                        <p>开放型不是永久的。当以下条件出现时，它会滑向控制型：</p>
+                        <ul>
+                            <li>退出成本上升（换工作越来越难）</li>
+                            <li>信息开始不对称（只有一方掌握关键信息）</li>
+                            <li>规则的制定权被垄断（你只能接受）</li>
+                        </ul>
+                        <p class="highlight">一旦滑落，自动修复能力会迅速下降。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block story-section">
+                    <h3>📖 水井寓言：文明之路</h3>
+                    <div class="theory-content">
+                        <p class="story-intro">同一个人、同一口井。但他做的事，完全不同。</p>
+                        
+                        <div class="story-cards">
+                            <div class="story-card">
+                                <h4>第1层：信而非控</h4>
+                                <p>他说："这口井大家都可以用，我只收一个合理的费用。"</p>
+                                <span class="story-tag">👉 人开始信他，不是因为离不开，是因为靠得住。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第2层：一起维持</h4>
+                                <p>我维护井，你们付钱，这是交换。甚至有人帮他修井、运水。</p>
+                                <span class="story-tag">👉 井不只是他的，是大家一起撑着的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第3层：一起定规则</h4>
+                                <p>人多了有点乱。他说："我们一起定一个规则吧。"大家讨论后定了排队、限量。</p>
+                                <span class="story-tag">👉 规则不是他的，是大家认的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第4层：一起扛风险</h4>
+                                <p>干旱了，水变少。他说："现在水不够，我们一起想办法。"</p>
+                                <span class="story-tag">👉 规则在变，但不是他改，是大家一起改。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第5层：系统可持续</h4>
+                                <p>水量、成本、未来风险——全部公开。甚至有人帮他算账、管理。</p>
+                                <span class="story-tag">👉 哪怕他不在，这套东西还能运转。</span>
+                            </div>
+                        </div>
+                        
+                        <div class="story-summary">
+                            <p><strong>文明版结局：</strong>他不在，规则还在，而且大家一起在维护。</p>
+                            <p class="highlight">一开始他是卖水的，后来他成了被信任的人，再后来，井变成了大家的事，最后，系统不需要他也能运转。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ===== 控制型 ===== -->
+            <div class="theory-section" id="theory-control">
+                <div class="theory-header">
+                    <h2>控制型结构</h2>
+                    <p>权力的常见形态。权力来自依赖，规则由一方制定，退出成本高。大多数公司、组织、甚至家庭，都处于这个区间。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>核心特征</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>权力来源：</strong>依赖关系，你需要但你不想被控制</li>
+                            <li><strong>规则特点：</strong>由一方制定，另一方只能接受</li>
+                            <li><strong>信息流动：</strong>关键信息不对等，决策理由模糊</li>
+                            <li><strong>退出机制：</strong>可以退出，但成本高或有惩罚</li>
+                            <li><strong>纠错能力：</strong>问题可以被提及，但解决取决于掌权者</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>三色灯状态</h3>
+                    <div class="traffic-light">
+                        <div class="traffic-light-item yellow">
+                            <div class="traffic-light-icon yellow"></div>
+                            <h4>黄灯</h4>
+                            <p>规则由一方制定</p>
+                        </div>
+                        <div class="traffic-light-item yellow">
+                            <div class="traffic-light-icon yellow"></div>
+                            <h4>黄灯</h4>
+                            <p>信息不完全透明</p>
+                        </div>
+                        <div class="traffic-light-item red">
+                            <div class="traffic-light-icon red"></div>
+                            <h4>红灯</h4>
+                            <p>退出成本高</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>典型场景</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>传统公司：</strong>老板制定规则，员工只能接受或走人，换工作成本高</li>
+                            <li><strong>支配型关系：</strong>一方主导决策，另一方有意见但说不算</li>
+                            <li><strong>垄断行业：</strong>消费者没有其他选择，只能接受霸王条款</li>
+                            <li><strong>官僚机构：</strong>规则自上而下，底层没有修改权</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>关键区别：控制型 vs 邪恶型</h3>
+                    <div class="theory-content">
+                        <p>控制型虽然让人不舒服，但它<strong>规则还是可见的</strong>。你知道老板会扣你工资，提前知道后果。这种"可预测性"是最后的底线。</p>
+                        <p>邪恶型连这个底线都打破了——规则不透明、随时变、你永远不知道会发生什么。</p>
+                        <p class="highlight">从控制型到邪恶型，有一个临界点：规则的透明度。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>修复窗口</h3>
+                    <div class="theory-content">
+                        <p>控制型还有修复空间，但需要以下条件：</p>
+                        <ul>
+                            <li>规则开始透明化（至少知道为什么）</li>
+                            <li>退出成本可控（有替代选择）</li>
+                            <li>有纠错通道（问题能被听到）</li>
+                        </ul>
+                        <p>如果这些条件都在消失，你在滑向邪恶型。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block story-section">
+                    <h3>📖 水井寓言：控制之路</h3>
+                    <div class="theory-content">
+                        <p class="story-intro">同一个人、同一口井。这一次，它变成了一条无法回头的路。</p>
+                        
+                        <div class="story-cards">
+                            <div class="story-card">
+                                <h4>第1层：依赖</h4>
+                                <p>时间一长，大家发现：没有这口井，生活会变得很麻烦。</p>
+                                <span class="story-tag">👉 这时候，权力开始出现了。但他一句命令都没说。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第2层：规则</h4>
+                                <p>他说："以后取水要排队，一人一天两桶。"大家有点不爽，但还是接受了。</p>
+                                <span class="story-tag">👉 因为他们已经离不开这口井了。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第3层：共识</h4>
+                                <p>慢慢地，大家开始自己说："排队是应该的""不然会乱"。</p>
+                                <span class="story-tag">👉 规则不再是他说的，是大家自己认同的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第4层：风险转嫁</h4>
+                                <p>有人断水了。别人会说："你自己没排队/没干活"。</p>
+                                <span class="story-tag">👉 风险不再是他的，是你的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第5层：黑箱</h4>
+                                <p>地下水有多少？他有没有别的水源？没人知道。</p>
+                                <span class="story-tag">👉 大家只能看到"表面"，看不到"真实结构"。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第6层：不需要出现了</h4>
+                                <p>规则在运转，人自己在遵守。甚至有人开始替他说话。</p>
+                                <span class="story-tag">👉 权力已经不是这个人了，而是整个系统本身。</span>
+                            </div>
+                        </div>
+                        
+                        <div class="story-summary">
+                            <p><strong>控制版结局：</strong>他不在，规则还在，但没人敢动。</p>
+                            <p class="highlight">一开始他只是卖水，后来他让人离不开水，再后来，他让人习惯规则，最后，他不在了，规则还在。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ===== 邪恶型 ===== -->
+            <div class="theory-section" id="theory-evil">
+                <div class="theory-header">
+                    <h2>邪恶型结构</h2>
+                    <p>权力的极端形态。权力来自操控，规则不透明，退出不可预测。这不是科幻设定，PUA、邪教、某些极端职场，都在这个区间。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>核心特征</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>权力来源：</strong>操控与信息垄断，不是依赖是控制</li>
+                            <li><strong>规则特点：</strong>不透明、随时变、执行不一致</li>
+                            <li><strong>信息流动：</strong>被筛选、被扭曲、制造信息不对称</li>
+                            <li><strong>退出机制：</strong>成本不可预测，可能有报复</li>
+                            <li><strong>纠错能力：</strong>问题不被承认，异议被压制</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>三色灯状态</h3>
+                    <div class="traffic-light">
+                        <div class="traffic-light-item red">
+                            <div class="traffic-light-icon red"></div>
+                            <h4>红灯</h4>
+                            <p>规则不透明</p>
+                        </div>
+                        <div class="traffic-light-item red">
+                            <div class="traffic-light-icon red"></div>
+                            <h4>红灯</h4>
+                            <p>信息被操控</p>
+                        </div>
+                        <div class="traffic-light-item red">
+                            <div class="traffic-light-icon red"></div>
+                            <h4>红灯</h4>
+                            <p>退出不可预测</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>典型场景</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>PUA操控：</strong>受害者不知道规则是什么，随时被打压，离开被威胁</li>
+                            <li><strong>邪教组织：</strong>信息被过滤，退出被污名化，规则不可质疑</li>
+                            <li><strong>极端职场：</strong>今天这样明天那样，没有标准，无法预期</li>
+                            <li><strong>家暴环境：</strong>规则随时变，错永远在你，离开有危险</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>为什么叫"邪恶"？</h3>
+                    <div class="theory-content">
+                        <p>因为它<strong>系统性地剥夺你的判断力</strong>。不是简单的不公平，而是让你失去判断什么是公平的能力。</p>
+                        <p>控制型还会告诉你规则是什么，邪恶型连规则都藏起来。你永远不知道今天做什么是对的，什么是错的。这种<strong>不可预测性</strong>是心理操控的核心。</p>
+                    </div>
+                </div>
+                
+                <div class="critical-point">
+                    <h4>⚠️ 识别信号</h4>
+                    <p>如果你在一段关系中感到：</p>
+                    <ul>
+                        <li>永远不知道什么会触发惩罚</li>
+                        <li>所有的错都被归到你身上</li>
+                        <li>你开始怀疑自己的判断</li>
+                        <li>想离开但害怕后果</li>
+                    </ul>
+                    <p><strong>这不是正常的控制型，这是邪恶型特征。优先保护自己，不要试图修复。</strong></p>
+                </div>
+                
+                <div class="theory-block story-section">
+                    <h3>📖 水井寓言：邪恶之路</h3>
+                    <div class="theory-content">
+                        <p class="story-intro">同一口井，这一次，它变成了无法反抗的系统。</p>
+                        
+                        <div class="story-cards">
+                            <div class="story-card">
+                                <h4>第1层：依赖被设计</h4>
+                                <p>没有这口井，生活会很难受。但这一次，他开始刻意维持这种依赖。</p>
+                                <span class="story-tag">👉 依赖不是自然形成的，是被设计的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第2层：资源被锁</h4>
+                                <p>别人也想打井。但他控制关键位置、抬高进入成本。</p>
+                                <span class="story-tag">👉 资源不只是稀缺，是被刻意锁住的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第3层：规则不透明</h4>
+                                <p>"取水要排队"，但慢慢变成：规则可以变，理由不说清。</p>
+                                <span class="story-tag">👉 共识变成了：不质疑规则。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第4层：利益倾斜</h4>
+                                <p>"可以多取水，但要帮我干活。"但后来有些人不用干活也能多拿。</p>
+                                <span class="story-tag">👉 利益开始倾斜，但你不知道为什么。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第5层：反对被压制</h4>
+                                <p>有人不服，不是被孤立，而是被限制、被针对、被排除。</p>
+                                <span class="story-tag">👉 表面没有冲突，但没人再敢反对。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第6层：博弈变操控</h4>
+                                <p>规则还在运转，但实际上：规则在被随意调整。你只能猜。</p>
+                                <span class="story-tag">👉 你永远不知道今天什么是对的。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第7层：风险被转嫁</h4>
+                                <p>有人断水了。大家说："这是你自己的问题"。</p>
+                                <span class="story-tag">👉 责任被推给个人。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第8层：信息不对称</h4>
+                                <p>水到底够不够？谁在决定规则？所有关键信息都被遮住了。</p>
+                                <span class="story-tag">👉 你只能看到"表面"，看不到"真实结构"。</span>
+                            </div>
+                            <div class="story-card">
+                                <h4>第9层：规则不稳定</h4>
+                                <p>决策不可预测、权力完全不透明。甚至连他也开始随意改。</p>
+                                <span class="story-tag">👉 权力不再是系统，而是失控的黑箱。</span>
+                            </div>
+                        </div>
+                        
+                        <div class="story-summary">
+                            <p><strong>邪恶版结局：</strong>当权力可以随意改规则时，它就不再是系统，而是失控。</p>
+                            <p class="highlight">一开始他只是卖水，后来他让人离不开水，再后来，他让规则变得没人能懂，最后，连规则本身也变得不可预测。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ===== 混合型 ===== -->
+            <div class="theory-section" id="theory-mixed">
+                <div class="theory-header">
+                    <h2>混合型结构</h2>
+                    <p>现实的常态。在不同议题上有不同的权力逻辑。工作中可能是开放型，升职可能是控制型，裁员可能是邪恶型。看结构要看具体议题。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>核心特征</h3>
+                    <div class="theory-content">
+                        <ul>
+                            <li><strong>权力来源：</strong>不同议题有不同的权力基础</li>
+                            <li><strong>规则特点：</strong>有些透明、有些模糊，分层处理</li>
+                            <li><strong>信息流动：</strong>某些信息公开，某些信息被控制</li>
+                            <li><strong>退出机制：</strong>不同议题的退出成本不同</li>
+                            <li><strong>纠错能力：</strong>某些问题可以讨论，某些问题被搁置</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>典型分布</h3>
+                    <div class="theory-content">
+                        <p>一个成熟的公司可能：</p>
+                        <ul>
+                            <li><strong>工作流程：</strong>开放型 —— 流程清晰、可讨论、可改进</li>
+                            <li><strong>薪酬体系：</strong>控制型 —— 标准由公司定，你只能接受</li>
+                            <li><strong>晋升机制：</strong>混合偏控制 —— 有规则但不完全透明</li>
+                            <li><strong>裁员决策：</strong>邪恶型特征 —— 不可预测、来不及反应</li>
+                        </ul>
+                        <p class="highlight">关键问题：哪些议题是核心？核心议题的结构类型决定整体风险。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>灰化光谱</h3>
+                    <div class="theory-content">
+                        <p>混合型不是简单的分类，而是一个光谱：</p>
+                        <ul>
+                            <li><strong>轻度灰化：</strong>多数议题开放，少数议题控制</li>
+                            <li><strong>中度灰化：</strong>核心议题控制，边缘议题开放</li>
+                            <li><strong>重度灰化：</strong>多数议题控制，少数邪恶型特征出现</li>
+                        </ul>
+                        <p>灰化检测器的功能，就是判断你在光谱的哪个位置。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>判断策略</h3>
+                    <div class="theory-content">
+                        <p>面对混合型结构，要问三个问题：</p>
+                        <ul>
+                            <li><strong>哪些议题对我最重要？</strong>（薪酬、晋升、工作内容）</li>
+                            <li><strong>这些议题的结构类型是什么？</strong></li>
+                            <li><strong>整体趋势是什么？</strong>开放议题在变少还是变多？</li>
+                        </ul>
+                        <p>不要用一个标签定义整个组织，要看议题分布和演化趋势。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ===== 演化路径 ===== -->
+            <div class="theory-section" id="theory-evolution">
+                <div class="theory-header">
+                    <h2>演化路径：结构的滑落与修复</h2>
+                    <p>权力结构不是静态的。它会演化——通常是滑落，偶尔能修复。理解演化路径，才能识别自己的位置和风险。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>滑落的经典路径</h3>
+                    <div class="evolution-path">
+                        <div class="path-node">
+                            <div class="path-node-circle civilized">开放型</div>
+                            <div class="path-node-label">共识权力</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle control">控制型</div>
+                            <div class="path-node-label">依赖权力</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle evil">邪恶型</div>
+                            <div class="path-node-label">操控权力</div>
+                        </div>
+                    </div>
+                    <div class="theory-content">
+                        <p><strong>开放型 → 控制型</strong>：当退出成本上升时</p>
+                        <ul>
+                            <li>行业垄断，换工作越来越难</li>
+                            <li>沉没成本增加，离开意味着放弃一切</li>
+                            <li>专业技能不可迁移，转行成本极高</li>
+                        </ul>
+                        <p><strong>控制型 → 邪恶型</strong>：当规则变得不透明时</p>
+                        <ul>
+                            <li>规则开始"因人而异"</li>
+                            <li>决策理由不再解释</li>
+                            <li>今天这样，明天那样，标准消失</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>为什么会滑落？</h3>
+                    <div class="theory-content">
+                        <p>滑落不是某人的阴谋，是<strong>权力自我强化的逻辑</strong>：</p>
+                        <ul>
+                            <li><strong>权力会寻找扩张空间</strong>：当你接受了一个不透明的规则，下一个不透明的规则更容易被接受</li>
+                            <li><strong>依赖会加深</strong>：你投入越多，离开成本越高，权力方越不需要考虑你的感受</li>
+                            <li><strong>信息会被垄断</strong>：权力方发现信息不对称可以带来更多控制，就没有动力透明化</li>
+                        </ul>
+                        <p class="highlight">滑落是自然趋势，修复需要刻意努力。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>修复的可能性</h3>
+                    <div class="theory-content">
+                        <p>修复是有窗口的：</p>
+                        <ul>
+                            <li><strong>开放型 → 控制型</strong>：可以修复。引入竞争、降低退出成本、透明化规则</li>
+                            <li><strong>控制型 → 邪恶型</strong>：临界点之前还能修复，跨过临界点就极难</li>
+                            <li><strong>邪恶型</strong>：基本无法从内部修复，只能退出</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="critical-point">
+                    <h4>⚠️ 临界点识别</h4>
+                    <p>从控制型到邪恶型，有一个关键临界点：</p>
+                    <p><strong>临界点标志：规则的透明度开始崩塌</strong></p>
+                    <ul>
+                        <li>规则开始"因人而异"执行</li>
+                        <li>决策理由不再需要解释</li>
+                        <li>异议开始被惩罚而不是被回应</li>
+                    </ul>
+                    <p><strong>一旦跨过这个点，修复成本将急剧上升。这是最后的退出窗口。</strong></p>
+                </div>
+            </div>
+            
+            <!-- ===== 临界点 ===== -->
+            <div class="theory-section" id="theory-critical">
+                <div class="theory-header">
+                    <h2>临界点：最后的退出窗口</h2>
+                    <p>临界点是结构滑落过程中的转折点。在这之前，修复还有可能；在这之后，几乎不可能从内部改变。</p>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>临界点1：退出成本失控</h3>
+                    <div class="theory-content">
+                        <p><strong>信号：</strong></p>
+                        <ul>
+                            <li>离开成本变得不可预测</li>
+                            <li>可能面临经济、社会关系、声誉的全面损失</li>
+                            <li>退出会被污名化或报复</li>
+                        </ul>
+                        <p><strong>判断：</strong>如果你在犹豫"离开会不会有麻烦"，说明已经接近临界点。</p>
+                        <p><strong>建议：</strong>这是最后的安全退出窗口。计算好成本，准备替代方案，尽快离开。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>临界点2：规则透明度崩塌</h3>
+                    <div class="theory-content">
+                        <p><strong>信号：</strong></p>
+                        <ul>
+                            <li>同样的事，不同人做有不同后果</li>
+                            <li>规则不再统一执行，开始"看人下菜碟"</li>
+                            <li>决策不需要解释理由</li>
+                        </ul>
+                        <p><strong>判断：</strong>如果你开始觉得"不知道什么会触发惩罚"，说明已经进入邪恶型特征区。</p>
+                        <p><strong>建议：</strong>放弃对规则的预期，转向保护自己。不要再试图适应规则，因为规则已经不存在。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>临界点3：信息渠道被切断</h3>
+                    <div class="theory-content">
+                        <p><strong>信号：</strong></p>
+                        <ul>
+                            <li>你的消息来源开始单一化</li>
+                            <li>不同的意见被过滤掉</li>
+                            <li>你越来越依赖"内部人"告诉你发生了什么</li>
+                        </ul>
+                        <p><strong>判断：</strong>信息隔离是操控的前提。如果你发现自己越来越不知道"外面"发生了什么，这是被操控的信号。</p>
+                        <p><strong>建议：</strong>重建外部信息渠道。联系离开的人、获取独立信息源。信息渠道是最后的自主权。</p>
+                    </div>
+                </div>
+                
+                <div class="theory-block">
+                    <h3>识别临界点的自查</h3>
+                    <div class="theory-content">
+                        <p>问自己三个问题：</p>
+                        <ul>
+                            <li><strong>我能预测离开的后果吗？</strong>不能 = 接近临界点</li>
+                            <li><strong>我知道今天做什么是对的吗？</strong>不知道 = 已经跨过</li>
+                            <li><strong>我有独立的信息渠道吗？</strong>没有 = 容易被操控</li>
+                        </ul>
+                        <p class="highlight">临界点之前，你还有选择权；临界点之后，你的选择权在被系统性地剥夺。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 诊断工具页 ===== -->
+        <div class="page" id="page-diagnosis">
+            <div class="page-title">
+                <h1 id="diagnosis-title">结构诊断</h1>
+                <p id="diagnosis-desc">回答问题，系统将生成诊断结果。</p>
+            </div>
+            
+            <!-- 模块切换标签 -->
+            <div class="module-tabs">
+                <div class="module-tab active" data-module="game" onclick="switchModule('game')">主权博弈</div>
+                <div class="module-tab" data-module="relation" onclick="switchModule('relation')">权力结构诊断</div>
+                <div class="module-tab" data-module="gray" onclick="switchModule('gray')">灰化检测</div>
+                <div class="module-tab" data-module="evolution" onclick="switchModule('evolution')">演化模拟</div>
+            </div>
+            
+            <!-- ===== 模块1：权力结构诊断 ===== -->
+            <!-- 主权博弈模块 -->
+            <div class="module-content active" id="module-game">
+                <div class="game-container">
+                    <div class="game-header">
+                        <h1>主权博弈诊断</h1>
+                        <p>通过十个关键维度，识别你正在面对的权力困境类型</p>
+                    </div>
+                    <div class="step-indicator">
+                        <div class="step-dot active" id="dot1"></div>
+                        <div class="step-dot" id="dot2"></div>
+                        <div class="step-dot" id="dot3"></div>
+                    </div>
+                    <div id="questionContainer"></div>
+                    <div id="resultContainer" style="display:none;"></div>
+                </div>
+            </div>
+
+            <div class="module-content" id="module-relation">
+                <div class="diagnosis-section">
+                    <div class="section-label">描述你观察到的结构</div>
+                    <textarea class="desc-input" id="relation-desc" placeholder="例如：公司里老板说了算，规则经常变，有些人特殊对待..."></textarea>
+                </div>
+                
+                <div class="diagnosis-section">
+                    <div class="section-label">结构判断（选择最符合的选项）</div>
+                    
+                    <div class="question-block">
+                        <h3>1. 关系的起点是什么？</h3>
+                        <div class="options" data-q="r1">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">自愿选择加入</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">需要但不主动想要</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">离不开且依赖加深</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>2. 规则是否透明？</h3>
+                        <div class="options" data-q="r2">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">规则公开、可验证</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">规则由别人制定</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">规则不透明、随时变</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>3. 共识如何形成？</h3>
+                        <div class="options" data-q="r3">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">大家一起商量</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">被说服接受</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">异议被压制</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>4. 信息是否透明？</h3>
+                        <div class="options" data-q="r4">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">信息公开共享</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">关键信息不知道</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">信息被筛选</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>5. 风险如何处理？</h3>
+                        <div class="options" data-q="r5">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">风险共担</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">风险转嫁</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">风险无法追责</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>6. 能否退出？</h3>
+                        <div class="options" data-q="r6">
+                            <div class="option" data-v="civilized"><div class="option-dot"></div><div class="option-text">可以退出，成本可控</div></div>
+                            <div class="option" data-v="control"><div class="option-dot"></div><div class="option-text">可以退出，但成本高</div></div>
+                            <div class="option" data-v="evil"><div class="option-dot"></div><div class="option-text">退出成本不可预测</div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-primary" onclick="runRelationDiagnosis()">生成诊断</button>
+                </div>
+            </div>
+            
+            <!-- ===== 模块2：灰化检测 ===== -->
+            <div class="module-content" id="module-gray">
+                <div class="diagnosis-section">
+                    <div class="section-label">组织现状描述</div>
+                    <textarea class="desc-input" id="gray-desc" placeholder="描述这个组织的情况..."></textarea>
+                </div>
+                
+                <div class="diagnosis-section">
+                    <div class="section-label">灰化指标检测（每项打分 1-5）</div>
+                    
+                    <div class="question-block">
+                        <h3>1. 规则是否统一执行？</h3>
+                        <div class="options" data-q="g1">
+                            <div class="option" data-v="1"><div class="option-dot"></div><div class="option-text">1 - 完全统一</div></div>
+                            <div class="option" data-v="2"><div class="option-dot"></div><div class="option-text">2 - 基本统一</div></div>
+                            <div class="option" data-v="3"><div class="option-dot"></div><div class="option-text">3 - 部分统一</div></div>
+                            <div class="option" data-v="4"><div class="option-dot"></div><div class="option-text">4 - 经常不统一</div></div>
+                            <div class="option" data-v="5"><div class="option-dot"></div><div class="option-text">5 - 完全不统一</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>2. 奖惩是否与行为挂钩？</h3>
+                        <div class="options" data-q="g2">
+                            <div class="option" data-v="1"><div class="option-dot"></div><div class="option-text">1 - 完全挂钩</div></div>
+                            <div class="option" data-v="2"><div class="option-dot"></div><div class="option-text">2 - 基本挂钩</div></div>
+                            <div class="option" data-v="3"><div class="option-dot"></div><div class="option-text">3 - 部分挂钩</div></div>
+                            <div class="option" data-v="4"><div class="option-dot"></div><div class="option-text">4 - 经常不挂钩</div></div>
+                            <div class="option" data-v="5"><div class="option-dot"></div><div class="option-text">5 - 与关系挂钩</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>3. 问题能否公开讨论？</h3>
+                        <div class="options" data-q="g3">
+                            <div class="option" data-v="1"><div class="option-dot"></div><div class="option-text">1 - 完全可以</div></div>
+                            <div class="option" data-v="2"><div class="option-dot"></div><div class="option-text">2 - 基本可以</div></div>
+                            <div class="option" data-v="3"><div class="option-dot"></div><div class="option-text">3 - 部分可以</div></div>
+                            <div class="option" data-v="4"><div class="option-dot"></div><div class="option-text">4 - 经常不能</div></div>
+                            <div class="option" data-v="5"><div class="option-dot"></div><div class="option-text">5 - 完全不能</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>4. 信息是否透明流通？</h3>
+                        <div class="options" data-q="g4">
+                            <div class="option" data-v="1"><div class="option-dot"></div><div class="option-text">1 - 完全透明</div></div>
+                            <div class="option" data-v="2"><div class="option-dot"></div><div class="option-text">2 - 基本透明</div></div>
+                            <div class="option" data-v="3"><div class="option-dot"></div><div class="option-text">3 - 部分透明</div></div>
+                            <div class="option" data-v="4"><div class="option-dot"></div><div class="option-text">4 - 信息被过滤</div></div>
+                            <div class="option" data-v="5"><div class="option-dot"></div><div class="option-text">5 - 严重不透明</div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <h3>5. 退出成本是否可预测？</h3>
+                        <div class="options" data-q="g5">
+                            <div class="option" data-v="1"><div class="option-dot"></div><div class="option-text">1 - 完全可预测</div></div>
+                            <div class="option" data-v="2"><div class="option-dot"></div><div class="option-text">2 - 基本可预测</div></div>
+                            <div class="option" data-v="3"><div class="option-dot"></div><div class="option-text">3 - 部分可预测</div></div>
+                            <div class="option" data-v="4"><div class="option-dot"></div><div class="option-text">4 - 经常不可预测</div></div>
+                            <div class="option" data-v="5"><div class="option-dot"></div><div class="option-text">5 - 完全不可预测</div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-primary" onclick="runGrayDiagnosis()">生成检测</button>
+                </div>
+            </div>
+            
+            <!-- ===== 模块3：演化模拟 ===== -->
+            <div class="module-content" id="module-evolution">
+                <div class="diagnosis-section">
+                    <div class="section-label">当前结构状态</div>
+                    <textarea class="desc-input" id="evolution-desc" placeholder="描述当前的结构状态..."></textarea>
+                </div>
+                
+                <div class="diagnosis-section">
+                    <div class="section-label">选择演化行为</div>
+                    <select class="behavior-select" id="behavior-select">
+                        <option value="">-- 选择一种行为 --</option>
+                        <option value="exit">提出退出</option>
+                        <option value="question">公开质疑规则</option>
+                        <option value="demand">要求信息公开</option>
+                        <option value="organize">组织联盟</option>
+                        <option value="comply">完全顺从</option>
+                        <option value="adapt">适应规则变化</option>
+                    </select>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-primary" onclick="runEvolutionSimulation()">模拟演化</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 结果页 ===== -->
+        <div class="page" id="page-result">
+            <div class="page-title">
+                <h1>诊断结果</h1>
+                <p>基于你的回答生成的分析报告</p>
+            </div>
+            
+            <div id="result-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 页面切换 =====
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            // 离开首页时显示导航栏
+            if (pageId !== 'home') {
+                document.body.classList.remove('hide-nav');
+            } else {
+                document.body.classList.add('hide-nav');
+            }
+            
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) targetPage.classList.add('active');
+            
+            const navTab = document.querySelector(`.nav-tab[data-page="${pageId}"]`);
+            if (navTab) navTab.classList.add('active');
+        }
+        
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => showPage(tab.dataset.page));
+        });
+        
+        // ===== 理论标签切换 =====
+        document.querySelectorAll('.theory-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.theory-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.theory-section').forEach(s => s.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById('theory-' + tab.dataset.theory).classList.add('active');
+            });
+        });
+        
+        // ===== 模块切换 =====
+        function startModule(moduleName) {
+            showPage('diagnosis');
+            switchModule(moduleName);
+        }
+
+        function switchModule(moduleName) {
+            document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.module-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`.module-tab[data-module="${moduleName}"]`).classList.add('active');
+            document.getElementById('module-' + moduleName).classList.add('active');
+            
+            const titles = {
+                game: { title: '主权博弈诊断', desc: '识别你正在面对的权力困境类型' },
+                relation: { title: '权力结构诊断', desc: '判断一段关系的权力结构类型' },
+                gray: { title: '灰化检测', desc: '评估组织的腐化程度' },
+                evolution: { title: '演化模拟', desc: '预测结构的未来走向' }
+            };
+            
+            document.getElementById('diagnosis-title').textContent = titles[moduleName].title;
+            document.getElementById('diagnosis-desc').textContent = titles[moduleName].desc;
+        }
+        
+        // ===== 选项点击 =====
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.parentElement;
+                question.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+        
+        // ===== 权力结构诊断 =====
+        function runRelationDiagnosis() {
+            const answers = {
+                r1: getSelectedValue('r1'),
+                r2: getSelectedValue('r2'),
+                r3: getSelectedValue('r3'),
+                r4: getSelectedValue('r4'),
+                r5: getSelectedValue('r5'),
+                r6: getSelectedValue('r6')
+            };
+            
+            // 计算各类型得分
+            const scores = { civilized: 0, control: 0, evil: 0 };
+            Object.values(answers).forEach(v => {
+                if (v && scores[v] !== undefined) scores[v]++;
+            });
+            
+            // 判断结构类型
+            let type = 'mixed';
+            let typeLabel = '混合型';
+            let typeClass = 'mixed';
+            
+            if (scores.evil >= 4) {
+                type = 'evil';
+                typeLabel = '邪恶型结构';
+                typeClass = 'evil';
+            } else if (scores.control >= 4) {
+                type = 'control';
+                typeLabel = '控制型结构';
+                typeClass = 'control';
+            } else if (scores.civilized >= 4) {
+                type = 'civilized';
+                typeLabel = '开放型结构';
+                typeClass = 'civilized';
+            }
+            
+            // 三色灯判断
+            const trafficLight = {
+                rule: answers.r2 === 'civilized' ? 'green' : (answers.r2 === 'evil' ? 'red' : 'yellow'),
+                info: answers.r4 === 'civilized' ? 'green' : (answers.r4 === 'evil' ? 'red' : 'yellow'),
+                exit: answers.r6 === 'civilized' ? 'green' : (answers.r6 === 'evil' ? 'red' : 'yellow')
+            };
+            
+            // 风险判断
+            let risk = 'medium';
+            let riskDot = 'medium';
+            let riskText = '中等风险';
+            
+            if (scores.evil >= 3) {
+                risk = 'critical';
+                riskDot = 'critical';
+                riskText = '高危风险：接近临界点';
+            } else if (scores.evil >= 1 && scores.control >= 3) {
+                risk = 'high';
+                riskDot = 'high';
+                riskText = '较高风险：正在滑落';
+            } else if (scores.civilized >= 4) {
+                risk = 'low';
+                riskDot = 'low';
+                riskText = '低风险：结构健康';
+            }
+            
+            const desc = document.getElementById('relation-desc').value;
+            
+            const resultHTML = `
+                <div class="result-card">
+                    <h3>结构类型</h3>
+                    <div class="type-badge ${typeClass}">${typeLabel}</div>
+                    <div class="result-text">
+                        ${getTypeDescription(type, scores)}
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>三色灯预警</h3>
+                    <div class="traffic-light">
+                        <div class="traffic-light-item ${trafficLight.rule}">
+                            <div class="traffic-light-icon ${trafficLight.rule}"></div>
+                            <h4>规则稳定性</h4>
+                            <p>${trafficLight.rule === 'green' ? '规则透明稳定' : (trafficLight.rule === 'red' ? '规则不透明' : '规则由一方制定')}</p>
+                        </div>
+                        <div class="traffic-light-item ${trafficLight.info}">
+                            <div class="traffic-light-icon ${trafficLight.info}"></div>
+                            <h4>信息可解释性</h4>
+                            <p>${trafficLight.info === 'green' ? '信息公开透明' : (trafficLight.info === 'red' ? '信息被操控' : '信息不完全透明')}</p>
+                        </div>
+                        <div class="traffic-light-item ${trafficLight.exit}">
+                            <div class="traffic-light-icon ${trafficLight.exit}"></div>
+                            <h4>退出确定性</h4>
+                            <p>${trafficLight.exit === 'green' ? '退出成本可控' : (trafficLight.exit === 'red' ? '退出不可预测' : '退出成本较高')}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>风险等级</h3>
+                    <div class="risk-indicator">
+                        <div class="risk-dot ${riskDot}"></div>
+                        <div class="risk-text">${riskText}</div>
+                    </div>
+                    <div class="result-text">
+                        ${getRiskAnalysis(type, scores)}
+                    </div>
+                </div>
+                
+                <div class="advice-card">
+                    <h3>行动建议</h3>
+                    <div class="advice-list">
+                        ${getAdvice(type, scores)}
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>演化路径</h3>
+                    <div class="evolution-path">
+                        <div class="path-node">
+                            <div class="path-node-circle civilized" style="${scores.civilized >= 4 ? '' : 'opacity:0.3'}">开放型</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle control" style="${scores.control >= 2 ? '' : 'opacity:0.3'}">控制型</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="path-node">
+                            <div class="path-node-circle evil" style="${scores.evil >= 1 ? '' : 'opacity:0.3'}">邪恶型</div>
+                        </div>
+                    </div>
+                    <div class="result-text">
+                        ${getEvolutionWarning(type, scores)}
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="showPage('theory')">深入学习理论</button>
+                    <button class="btn-primary" onclick="showPage('home')">返回首页</button>
+                </div>
+            `;
+            
+            document.getElementById('result-container').innerHTML = resultHTML;
+            showPage('result');
+        }
+        
+        // ===== 灰化检测 =====
+        function runGrayDiagnosis() {
+            const scores = {
+                g1: parseInt(getSelectedValue('g1')) || 3,
+                g2: parseInt(getSelectedValue('g2')) || 3,
+                g3: parseInt(getSelectedValue('g3')) || 3,
+                g4: parseInt(getSelectedValue('g4')) || 3,
+                g5: parseInt(getSelectedValue('g5')) || 3
+            };
+            
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            const avg = total / 5;
+            
+            let level, levelClass, levelDesc, scale;
+            
+            if (avg <= 1.5) {
+                level = '正常';
+                levelClass = 'civilized';
+                levelDesc = '组织规则透明、统一执行，退出成本可控。这是健康的组织形态。';
+                scale = 'normal';
+            } else if (avg <= 2.5) {
+                level = '轻度灰化';
+                levelClass = 'control';
+                levelDesc = '组织部分规则开始模糊，但整体还能运作。需要关注演化趋势。';
+                scale = 'light';
+            } else if (avg <= 3.5) {
+                level = '中度灰化';
+                levelClass = 'control';
+                levelDesc = '组织关键规则不统一，信息流通受阻。正在滑落。';
+                scale = 'medium';
+            } else if (avg <= 4.5) {
+                level = '重度灰化';
+                levelClass = 'evil';
+                levelDesc = '组织规则不透明、执行不一致，退出成本不可预测。接近临界点。';
+                scale = 'heavy';
+            } else {
+                level = '深灰失控';
+                levelClass = 'evil';
+                levelDesc = '组织完全丧失规则的确定性，退出风险极高。已跨过临界点。';
+                scale = 'critical';
+            }
+            
+            const resultHTML = `
+                <div class="result-card">
+                    <h3>灰化程度</h3>
+                    <div class="type-badge ${levelClass}">${level}</div>
+                    <div class="gray-scale">
+                        ${generateGrayScale(avg)}
+                    </div>
+                    <div class="result-text" style="margin-top:20px">
+                        <p><strong>综合评分：</strong>${avg.toFixed(1)} / 5.0</p>
+                        <p>${levelDesc}</p>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>各项指标</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon ${scores.g1 <= 2 ? 'check' : (scores.g1 >= 4 ? 'danger' : 'warn')}">${scores.g1 <= 2 ? '✓' : (scores.g1 >= 4 ? '⚠' : '○')}</div>
+                            <div class="feature-text">规则统一执行：${scores.g1}分</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon ${scores.g2 <= 2 ? 'check' : (scores.g2 >= 4 ? 'danger' : 'warn')}">${scores.g2 <= 2 ? '✓' : (scores.g2 >= 4 ? '⚠' : '○')}</div>
+                            <div class="feature-text">奖惩与行为挂钩：${scores.g2}分</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon ${scores.g3 <= 2 ? 'check' : (scores.g3 >= 4 ? 'danger' : 'warn')}">${scores.g3 <= 2 ? '✓' : (scores.g3 >= 4 ? '⚠' : '○')}</div>
+                            <div class="feature-text">问题公开讨论：${scores.g3}分</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon ${scores.g4 <= 2 ? 'check' : (scores.g4 >= 4 ? 'danger' : 'warn')}">${scores.g4 <= 2 ? '✓' : (scores.g4 >= 4 ? '⚠' : '○')}</div>
+                            <div class="feature-text">信息透明流通：${scores.g4}分</div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon ${scores.g5 <= 2 ? 'check' : (scores.g5 >= 4 ? 'danger' : 'warn')}">${scores.g5 <= 2 ? '✓' : (scores.g5 >= 4 ? '⚠' : '○')}</div>
+                            <div class="feature-text">退出成本可预测：${scores.g5}分</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advice-card">
+                    <h3>改善建议</h3>
+                    <div class="advice-list">
+                        ${getGrayAdvice(scores, avg)}
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="showPage('theory')">学习演化路径</button>
+                    <button class="btn-primary" onclick="showPage('home')">返回首页</button>
+                </div>
+            `;
+            
+            document.getElementById('result-container').innerHTML = resultHTML;
+            showPage('result');
+        }
+        
+        // ===== 演化模拟 =====
+        function runEvolutionSimulation() {
+            const behavior = document.getElementById('behavior-select').value;
+            const desc = document.getElementById('evolution-desc').value;
+            
+            if (!behavior) {
+                alert('请选择一种行为');
+                return;
+            }
+            
+            const simulations = {
+                exit: {
+                    title: '提出退出',
+                    aBehavior: '结构方收到退出信号',
+                    bResponse: '退出行为会触发成本评估',
+                    influence: '退出意愿会改变权力平衡',
+                    change: '如果退出成本低，结构可能改善；如果退出成本高，压制会加强',
+                    conflict: '退出威胁可能引发谈判或报复',
+                    final: '结果取决于退出成本是谁说了算'
+                },
+                question: {
+                    title: '公开质疑规则',
+                    aBehavior: '提出对规则的疑问',
+                    bResponse: '回应方式反映结构类型',
+                    influence: '规则的可质疑性是结构健康的关键指标',
+                    change: '开放型会讨论改进，控制型会解释，邪恶型会惩罚',
+                    conflict: '质疑可能引发规则调整或被压制',
+                    final: '观察回应方式可以判断结构类型'
+                },
+                demand: {
+                    title: '要求信息公开',
+                    aBehavior: '要求关键信息公开',
+                    bResponse: '信息方是否愿意透明化',
+                    influence: '信息透明度是权力的核心维度',
+                    change: '信息开放会削弱控制，信息封闭会加强控制',
+                    conflict: '信息要求可能被接受、拖延或拒绝',
+                    final: '回应方式揭示结构的真实类型'
+                },
+                organize: {
+                    title: '组织联盟',
+                    aBehavior: '联合其他人形成力量',
+                    bResponse: '结构方如何对待组织行为',
+                    influence: '联盟可以平衡权力不对称',
+                    change: '联盟成功会推动结构改善，联盟被打击会加速恶化',
+                    conflict: '组织行为是结构测试的敏感点',
+                    final: '结构性暴力的临界点：组织是否被允许'
+                },
+                comply: {
+                    title: '完全顺从',
+                    aBehavior: '接受所有规则和变化',
+                    bResponse: '顺从会被当作默认同意',
+                    influence: '顺从会强化现有结构',
+                    change: '没有反馈的结构会继续滑落',
+                    conflict: '顺从避免了冲突但放弃了修复机会',
+                    final: '顺从的代价是结构继续恶化'
+                },
+                adapt: {
+                    title: '适应规则变化',
+                    aBehavior: '跟随规则变化调整行为',
+                    bResponse: '变化加速还是减缓',
+                    influence: '适应表明规则方的主导权',
+                    change: '适应强化了"规则是别人的"这一事实',
+                    conflict: '适应减少了冲突但失去了可预期性',
+                    final: '适应是在接受控制型结构'
+                }
+            };
+            
+            const sim = simulations[behavior];
+            
+            const resultHTML = `
+                <div class="result-card">
+                    <h3>演化模拟：${sim.title}</h3>
+                    <div class="result-text">
+                        <p>模拟你的行为在结构中的反馈路径。</p>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3>演化路径</h3>
+                    <div class="evolution-result">
+                        <div class="evolution-item">
+                            <div class="evolution-label">你的行为</div>
+                            <div class="evolution-value">${sim.aBehavior}</div>
+                        </div>
+                        <div class="evolution-item">
+                            <div class="evolution-label">结构回应</div>
+                            <div class="evolution-value">${sim.bResponse}</div>
+                        </div>
+                        <div class="evolution-item">
+                            <div class="evolution-label">双向影响</div>
+                            <div class="evolution-value">${sim.influence}</div>
+                        </div>
+                        <div class="evolution-item">
+                            <div class="evolution-label">结构变化</div>
+                            <div class="evolution-value">${sim.change}</div>
+                        </div>
+                        <div class="evolution-item">
+                            <div class="evolution-label">冲突检测</div>
+                            <div class="evolution-value risk">${sim.conflict}</div>
+                        </div>
+                        <div class="evolution-item">
+                            <div class="evolution-label">最终状态</div>
+                            <div class="evolution-value benefit">${sim.final}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advice-card">
+                    <h3>观察要点</h3>
+                    <div class="result-text">
+                        ${getEvolutionAdvice(behavior)}
+                    </div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-secondary" onclick="showPage('theory')">学习临界点</button>
+                    <button class="btn-primary" onclick="showPage('home')">返回首页</button>
+                </div>
+            `;
+            
+            document.getElementById('result-container').innerHTML = resultHTML;
+            showPage('result');
+        }
+        
+        // ===== 辅助函数 =====
+        function getSelectedValue(q) {
+            const selected = document.querySelector(`.options[data-q="${q}"] .option.selected`);
+            return selected ? selected.dataset.v : null;
+        }
+        
+        function getTypeDescription(type, scores) {
+            const descs = {
+                civilized: `<strong>开放型结构。</strong>你的关系基于共识和契约，规则透明，退出自由。这是权力的理想形态。但也需要注意：开放型不是永久的，当退出成本上升、信息开始不对称时，结构会滑落。`,
+                control: `<strong>控制型结构。</strong>你的关系基于依赖，规则由一方制定，退出成本较高。这是最常见的权力形态。控制型还有修复空间，但如果规则开始不透明，你在滑向邪恶型。`,
+                evil: `<strong>邪恶型结构。</strong>你的关系中权力来自操控，规则不透明，退出不可预测。这不是正常的"不公平"，而是系统性地剥夺判断力。如果你识别出邪恶型特征，优先保护自己。`,
+                mixed: `<strong>混合型结构。</strong>你的关系在不同议题上有不同的权力逻辑。这是现实的常态。关键问题：核心议题（薪酬、晋升、决策权）的结构类型是什么？开放议题在变少还是变多？`
+            };
+            return descs[type];
+        }
+        
+        function getRiskAnalysis(type, scores) {
+            if (type === 'evil' || scores.evil >= 3) {
+                return `<strong>高危风险。</strong>你已接近或跨过临界点。退出成本不可预测，规则不透明。建议：不要试图修复，优先寻找安全退出通道。保留外部信息渠道，不要孤立自己。`;
+            } else if (type === 'control' || scores.control >= 3) {
+                return `<strong>中等风险。</strong>结构正在滑落。建议：关注规则的透明度变化，这是临界点的信号。保留选择权，不要让退出成本进一步上升。`;
+            } else {
+                return `<strong>低风险。</strong>结构相对健康。建议：保持警惕，关注演化的趋势。开放型不是永久的，需要维护。`;
+            }
+        }
+        
+        function getAdvice(type, scores) {
+            const advices = {
+                civilized: [
+                    `<span class="advice-number">01</span><div class="advice-text">保持当前的透明度和选择权</div>`,
+                    `<span class="advice-number">02</span><div class="advice-text">关注退出成本的变化趋势</div>`,
+                    `<span class="advice-number">03</span><div class="advice-text">维护纠错通道，问题早期暴露</div>`
+                ],
+                control: [
+                    `<span class="advice-number">01</span><div class="advice-text">识别规则透明度的变化，这是临界点信号</div>`,
+                    `<span class="advice-number">02</span><div class="advice-text">降低退出成本，保留替代选择</div>`,
+                    `<span class="advice-number">03</span><div class="advice-text">尝试推动规则透明化，观察回应方式</div>`,
+                    `<span class="advice-number">04</span><div class="advice-text">如果改革不可行，准备退出方案</div>`
+                ],
+                evil: [
+                    `<span class="advice-number">01</span><div class="advice-text"><strong>不要试图修复。</strong>邪恶型几乎无法从内部改变</div>`,
+                    `<span class="advice-number">02</span><div class="advice-text">优先保护自己，寻找安全退出通道</div>`,
+                    `<span class="advice-number">03</span><div class="advice-text">保留外部信息渠道，不要孤立自己</div>`,
+                    `<span class="advice-number">04</span><div class="advice-text">记录关键事件，保护证据</div>`
+                ],
+                mixed: [
+                    `<span class="advice-number">01</span><div class="advice-text">识别核心议题的结构类型</div>`,
+                    `<span class="advice-number">02</span><div class="advice-text">关注开放议题是否在变少</div>`,
+                    `<span class="advice-number">03</span><div class="advice-text">在可控议题上尝试改善</div>`,
+                    `<span class="advice-number">04</span><div class="advice-text">对高风险议题保留退出准备</div>`
+                ]
+            };
+            return advices[type].join('');
+        }
+        
+        function getEvolutionWarning(type, scores) {
+            if (scores.evil >= 2) {
+                return `<strong>警告：</strong>你已识别出邪恶型特征。结构滑落有临界点，跨过就难回头。规则不透明是最后一条线——如果这条线也断了，退出将变得极其危险。这是最后的退出窗口。`;
+            } else if (scores.control >= 3) {
+                return `<strong>注意：</strong>控制型结构正在滑落。关键观察点：规则是否开始"因人而异"？如果执行标准不统一，说明规则透明度在崩塌，这是进入邪恶型的临界点。`;
+            } else {
+                return `<strong>提示：</strong>当前结构相对稳定。但开放型不是永久的，它会滑落。关注退出成本是否上升、信息是否开始不对称、规则的制定权是否被垄断。`;
+            }
+        }
+        
+        function generateGrayScale(avg) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                let className = 'gray-segment';
+                if (i <= Math.ceil(avg)) {
+                    className += avg >= 4 ? ' danger' : ' filled';
+                }
+                html += `<div class="${className}"></div>`;
+            }
+            return html;
+        }
+        
+        function getGrayAdvice(scores, avg) {
+            const advices = [];
+            
+            if (scores.g1 >= 4) {
+                advices.push(`<div class="advice-item"><span class="advice-number">01</span><div class="advice-text">规则不统一执行：这是邪恶型特征。建议记录不一致的地方，作为自我保护。</div></div>`);
+            }
+            if (scores.g2 >= 4) {
+                advices.push(`<div class="advice-item"><span class="advice-number">02</span><div class="advice-text">奖惩不与行为挂钩：说明决策逻辑已脱离公开标准。不要试图猜测规则。</div></div>`);
+            }
+            if (scores.g3 >= 4) {
+                advices.push(`<div class="advice-item"><span class="advice-number">03</span><div class="advice-text">问题不能公开讨论：说明纠错通道关闭。问题会积累直到爆发。</div></div>`);
+            }
+            if (scores.g4 >= 4) {
+                advices.push(`<div class="advice-item"><span class="advice-number">04</span><div class="advice-text">信息不透明：权力来自信息不对称。重建外部信息渠道是关键。</div></div>`);
+            }
+            if (scores.g5 >= 4) {
+                advices.push(`<div class="advice-item"><span class="advice-number">05</span><div class="advice-text">退出不可预测：这是最高风险信号。退出窗口正在关闭。</div></div>`);
+            }
+            
+            if (advices.length === 0) {
+                advices.push(`<div class="advice-item"><span class="advice-number">01</span><div class="advice-text">组织相对健康。持续关注各项指标的变化趋势。</div></div>`);
+            }
+            
+            if (avg >= 3.5) {
+                advices.push(`<div class="advice-item"><span class="advice-number">!</span><div class="advice-text"><strong>综合建议：</strong>灰化程度较高，建议准备退出方案。邪恶型结构几乎无法从内部修复。</div></div>`);
+            } else if (avg >= 2.5) {
+                advices.push(`<div class="advice-item"><span class="advice-number">!</span><div class="advice-text"><strong>综合建议：</strong>中度灰化，还有修复空间。但需要警惕结构性暴力的临界点。</div></div>`);
+            }
+            
+            return advices.join('');
+        }
+        
+        function getEvolutionAdvice(behavior) {
+            const advices = {
+                exit: `<p><strong>观察要点：</strong>退出成本是谁说了算？如果结构方可以单方面提高退出成本，说明你在控制型或更深。如果退出成本不可预测，说明接近邪恶型。</p><p>退出威胁是测试结构的关键：观察回应是谈判还是惩罚。</p>`,
+                question: `<p><strong>观察要点：</strong>质疑规则后，回应方式是什么？</p><p>开放型：会讨论改进<br>控制型：会解释为什么<br>邪恶型：会让质疑者付出代价</p><p>这是最快的结构测试方法。</p>`,
+                demand: `<p><strong>观察要点：</strong>信息公开的要求如何被回应？</p><p>接受：结构还有改良空间<br>拖延：结构方有顾虑但没有压制<br>拒绝或惩罚：信息控制是权力的核心</p>`,
+                organize: `<p><strong>观察要点：</strong>组织行为是最敏感的结构测试。</p><p>如果组织被允许：说明还有谈判空间<br>如果组织被打击：说明结构性暴力存在<br>如果组织被分化瓦解：说明是成熟的控制型</p>`,
+                comply: `<p><strong>观察要点：</strong>顺从的代价是什么？</p><p>顺从会被当作默认同意，结构会继续滑落。你没有发出任何"需要改变"的信号，权力方没有压力改善。</p>`,
+                adapt: `<p><strong>观察要点：</strong>适应规则变化意味着什么？</p><p>你接受了"规则是别人的"这个前提。适应减少了短期冲突，但强化了长期的控制关系。你的可预期性在下降。</p>`
+            };
+            return advices[behavior];
+        }
+        // ===== 主权博弈模块 =====
+        let currentStep = 0;
+        let answers = {};
+        let currentGameState = null;
+        
+        const questions = [
+            { id: 'interaction', title: '谁能决定结果？', hint: '判断权力是否对称',
+              options: [{ value: 'single', label: '对方单方面决定', desc: '结果取决于对方的决定' },{ value: 'both', label: '双方互动决定', desc: '结果需要双方共同作用' }] },
+            { id: 'symmetry', title: '依赖是否对称？', hint: '谁更需要谁？',
+              options: [{ value: 'asymmetric', label: '你更需要对方', desc: '你失去这份关系的代价更大' },{ value: 'symmetric', label: '相互需要程度相当', desc: '双方都有意愿和能力' }] },
+            { id: 'resource', title: '资源差异有多大？', hint: '谁掌握关键资源？',
+              options: [{ value: 'absolute', label: '对方绝对优势', desc: '关键资源完全在对方手中' },{ value: 'strong', label: '对方明显优势', desc: '对方资源显著多于你' },{ value: 'balanced', label: '相对均衡', desc: '各自有核心资源' }] },
+            { id: 'negotiation', title: '能否谈判？', hint: '规则修改权在谁手里',
+              options: [{ value: 'no', label: '不能谈判', desc: '规则是对方定的' },{ value: 'limited', label: '有限谈判', desc: '细节可商量，核心不可动摇' },{ value: 'yes', label: '可以谈判', desc: '规则共同制定' }] },
+            { id: 'exit', title: '退出有多难？', hint: '离开的代价',
+              options: [{ value: 'impossible', label: '几乎不可能', desc: '退出等于失去一切' },{ value: 'hard', label: '代价很大', desc: '退出需承受重大损失' },{ value: 'medium', label: '有一定代价', desc: '退出带来不便但可控' },{ value: 'easy', label: '相对容易', desc: '退出成本低' }] },
+            { id: 'information', title: '信息透明吗？', hint: '谁知道什么？',
+              options: [{ value: 'hidden', label: '信息高度隐蔽', desc: '对方真实情况你几乎不知道' },{ value: 'partial', label: '部分透明', desc: '能看到一些，核心被隐藏' },{ value: 'open', label: '相对透明', desc: '双方都能获取关键信息' }] },
+            { id: 'history', title: '历史行为是什么？', hint: '过去如何对待你',
+              options: [{ value: 'exploitative', label: '持续剥削', desc: '对方习惯性占你便宜' },{ value: 'mixed', label: '好坏参半', desc: '有时公平有时不太公平' },{ value: 'fair', label: '基本公平', desc: '对方整体上尊重你' }] },
+            { id: 'alternative', title: '有替代选择吗？', hint: 'Plan B在哪里？',
+              options: [{ value: 'none', label: '没有替代', desc: '这是你唯一的选择' },{ value: 'costly', label: '有但成本高', desc: '替代方案存在但需付出代价' },{ value: 'available', label: '有可行的替代', desc: '你有多个选择可以转换' }] },
+            { id: 'accountability', title: '对方有约束吗？', hint: '谁来监督？',
+              options: [{ value: 'none', label: '完全无约束', desc: '没有外部力量可以制约' },{ value: 'weak', label: '约束很弱', desc: '形式上有但实际效果有限' },{ value: 'moderate', label: '有一定约束', desc: '违规会带来一定后果' },{ value: 'strong', label: '强约束', desc: '对方也受规则制约' }] },
+            { id: 'future', title: '关系有多长期？', hint: '一次性还是长期博弈',
+              options: [{ value: 'trapped', label: '被长期绑定', desc: '即使想退出也很难脱身' },{ value: 'long', label: '长期关系', desc: '双方都有持续合作预期' },{ value: 'medium', label: '中期关系', desc: '有一定时间跨度和回旋空间' },{ value: 'short', label: '短期或一次性', desc: '随时可以结束' }] }
+        ];
+        
+        function getGameType(ans) {
+            if (ans.interaction === 'single' && ans.symmetry === 'asymmetric' && ans.resource === 'absolute') return { type: '独裁博弈', desc: '对方拥有绝对控制权，这不是博弈，这是服从。', color: '#1a1a1a' };
+            if (ans.interaction === 'single' && ans.exit === 'impossible') return { type: '绑架博弈', desc: '你被完全锁定，没有选择权。筹码是零。', color: '#c62828' };
+            if (ans.interaction === 'both' && ans.negotiation === 'no' && ans.resource === 'balanced') return { type: '僵持博弈', desc: '双方有力量但无法谈判，长期僵持会演变成消耗战。', color: '#f57c00' };
+            if (ans.information === 'hidden' && ans.history === 'exploitative') return { type: '信息陷阱', desc: '你不掌握关键信息，对方一直在利用这一点。', color: '#7b1fa2' };
+            if (ans.alternative === 'none' && ans.exit === 'hard') return { type: '筹码荒', desc: '你没有替代选择，退出代价太高。议价能力已被榨干。', color: '#d32f2f' };
+            if (ans.symmetry === 'symmetric' && ans.negotiation === 'yes') return { type: '对等博弈', desc: '博弈中最健康的状态。双方都能影响结果。珍惜这种关系。', color: '#2e7d32' };
+            if (ans.resource === 'balanced' && ans.accountability === 'strong') return { type: '约束博弈', desc: '虽有权力差距，但规则约束双方。这是合作博弈的条件。', color: '#388e3c' };
+            if (ans.interaction === 'both' && ans.symmetry === 'asymmetric' && ans.negotiation === 'limited') return { type: '不对等博弈', desc: '你有一定筹码，但不足以翻转局面。小心被逐渐蚕食。', color: '#e65100' };
+            return { type: '复杂博弈', desc: '你的情况不典型，但权力不对等已经存在。', color: '#666' };
+        }
+        
+        function getDilemmas(ans) {
+            const d = [];
+            if (ans.exit === 'impossible' || ans.exit === 'hard') d.push({ title: '锁定困境', desc: '退出成本过高，你的"不"没有实际效力' });
+            if (ans.information === 'hidden' || ans.information === 'partial') d.push({ title: '信息黑箱', desc: '关键决策信息在对方手中，你是一半盲人' });
+            if (ans.negotiation === 'no') d.push({ title: '规则单定', desc: '规则由对方制定，你没有修改权' });
+            if (ans.alternative === 'none' || ans.alternative === 'costly') d.push({ title: '替代匮乏', desc: '没有靠谱的Plan B，议价基础薄弱' });
+            return d;
+        }
+        
+        function getTraps(ans) {
+            const t = [];
+            if (ans.history === 'exploitative' && ans.symmetry === 'asymmetric') t.push({ name: '温水煮青蛙', explain: '对方从小额剥削开始，你习惯了"还好"，直到某天发现已经被掏空。', counter: '画线：设定清晰止损点，一旦越过立刻行动。' });
+            if (ans.information === 'hidden' && ans.interaction === 'single') t.push({ name: '信息黑箱陷阱', explain: '对方用"你不懂"阻断你的判断，维护其垄断地位。', counter: '反向提问：要求对方用你能理解的方式解释。' });
+            if (ans.exit === 'hard' && ans.future === 'trapped') t.push({ name: '沉没成本牢笼', explain: '"已经投了这么多，现在放弃太可惜"成为你的精神枷锁。', counter: '归零思维：假设今天从零开始，你会选择进入这个关系吗？' });
+            if (ans.alternative === 'none' && ans.accountability === 'none') t.push({ name: '依赖陷阱', explain: '你被系统性地限制在其他选择之外。', counter: '创造选择：即使很难，也要开始构建逃离路径。' });
+            return t;
+        }
+        
+        function getCognitiveFixes(ans) {
+            const f = [];
+            if (ans.history === 'mixed') f.push({ wrong: '"有时对我还行，说明对方本质是好的"', right: '间歇性仁慈是操控的一部分，不影响结构判断' });
+            if (ans.negotiation === 'limited') f.push({ wrong: '"至少细节还可以谈，说明还有回旋余地"', right: '细节谈判是表象，核心规则不动才是关键' });
+            if (ans.exit === 'medium') f.push({ wrong: '"退出虽然有点麻烦，但也不是不行"', right: '任何有代价的退出，都会削弱你的议价底气' });
+            if (ans.resource === 'strong' && ans.accountability === 'weak') f.push({ wrong: '"对方资源强但也不是没有约束"', right: '弱约束等于无约束，权力会蔓延到约束失效的位置' });
+            return f;
+        }
+        
+        function getChips(ans) {
+            const c = [];
+            if (ans.interaction === 'both') c.push({ type: 'positive', text: '你的选择会影响结果' });
+            if (ans.symmetry === 'symmetric') c.push({ type: 'positive', text: '对方也依赖你' });
+            if (ans.alternative === 'available' || ans.alternative === 'costly') c.push({ type: 'positive', text: '有替代选项作为后路' });
+            if (ans.accountability === 'moderate' || ans.accountability === 'strong') c.push({ type: 'positive', text: '外部约束存在' });
+            if (ans.negotiation === 'yes' || ans.negotiation === 'limited') c.push({ type: 'positive', text: '有谈判渠道' });
+            if (ans.interaction === 'single') c.push({ type: 'negative', text: '无法影响结果' });
+            if (ans.symmetry === 'asymmetric') c.push({ type: 'negative', text: '你更依赖对方' });
+            if (ans.information === 'hidden') c.push({ type: 'negative', text: '信息严重不对称' });
+            if (ans.alternative === 'none') c.push({ type: 'negative', text: '没有替代选项' });
+            if (ans.accountability === 'none') c.push({ type: 'negative', text: '无外部约束' });
+            return c;
+        }
+        
+        function getActionSteps(ans, gameState) {
+            const s = [];
+            if (ans.information === 'hidden' || ans.information === 'partial') s.push({ title: '信息收集', desc: '确定关键信息缺口，找到可靠渠道获取' });
+            if (ans.alternative === 'none' || ans.alternative === 'costly') s.push({ title: '构建后路', desc: '每天花20%精力探索替代选项' });
+            if (gameState.type === '绑架博弈' || gameState.type === '独裁博弈') s.push({ title: '退出规划', desc: '评估退出成本清单，制定分阶段撤离方案' });
+            else if (ans.negotiation === 'no') s.push({ title: '争取谈判权', desc: '在规则制定环节主动发声，积累谈判筹码' });
+            else s.push({ title: '提升筹码', desc: '强化现有筹码，拓展新筹码' });
+            s.push({ title: '设定界限', desc: '明确划定"不可退让"的底线，并准备越线后的行动' });
+            return s;
+        }
+        
+        function getRisks(ans) {
+            const r = [];
+            if (ans.history === 'exploitative' && ans.future === 'trapped') r.push('长期剥削关系只会加剧，不会自动好转');
+            if (ans.exit === 'impossible' && ans.resource === 'absolute') r.push('零筹码状态下，任何反抗都可能招致报复');
+            if (ans.information === 'hidden') r.push('信息黑箱意味着你可能在不知情中签署对自己不利的条款');
+            if (ans.accountability === 'none' || ans.accountability === 'weak') r.push('无约束环境是权力滥用的温床');
+            if (ans.symmetry === 'asymmetric' && ans.alternative === 'none') r.push('过度依赖是系统性风险');
+            return r;
+        }
+        
+        function renderQuestion(step) {
+            const q = questions[step];
+            const progress = Array(questions.length).fill(0).map((_, i) => '<div class="progress-segment ' + (i <= step ? 'filled' : '') + '"></div>').join('');
+            const options = q.options.map(opt => '<div class="option-btn ' + (answers[q.id] === opt.value ? 'selected' : '') + '" onclick="selectOption(\'' + q.id + '\', \'' + opt.value + '\')"><div class="option-label">' + opt.label + '</div><div class="option-desc">' + opt.desc + '</div></div>').join('');
+            return '<div class="question-card"><div class="progress-bar">' + progress + '</div><div class="question-title">' + q.title + '</div><div class="question-hint">' + q.hint + '</div><div class="options-grid">' + options + '</div><div class="nav-buttons">' + (step > 0 ? '<button class="nav-btn secondary" onclick="prevStep()">上一步</button>' : '') + '<button class="nav-btn primary" onclick="nextStep()" ' + (!answers[q.id] ? 'disabled' : '') + '>' + (step === questions.length - 1 ? '查看结果' : '下一步') + '</button></div></div>';
+        }
+        
+        function renderResult() {
+            const gameState = getGameType(answers);
+            const dilemmas = getDilemmas(answers);
+            const traps = getTraps(answers);
+            const fixes = getCognitiveFixes(answers);
+            const chips = getChips(answers);
+            const steps = getActionSteps(answers, gameState);
+            const risks = getRisks(answers);
+            currentGameState = gameState;
+            
+            let html = '<div class="result-card"><div class="result-section"><div class="result-label">博弈类型诊断</div><div class="result-value" style="color:' + gameState.color + '">' + gameState.type + '</div><div class="result-desc">' + gameState.desc + '</div></div><div class="divider"></div><div class="result-section"><div class="result-label">困境结构</div>';
+            dilemmas.forEach(d => { html += '<div class="dilemma-block"><div class="dilemma-title">' + d.title + '</div><div class="dilemma-desc">' + d.desc + '</div></div>'; });
+            html += '</div>';
+            
+            if (traps.length > 0) { html += '<div class="result-section"><div class="result-label">识别到的陷阱</div>'; traps.forEach(t => { html += '<div class="trap-block"><div class="trap-header"><span class="trap-icon">⚠️</span><span class="trap-name">' + t.name + '</span></div><div class="trap-explain">' + t.explain + '</div><div class="trap-counter"><div class="trap-counter-label">破解思路</div>' + t.counter + '</div></div>'; }); html += '</div>'; }
+            if (fixes.length > 0) { html += '<div class="result-section"><div class="result-label">认知校正</div><div class="cognitive-block">'; fixes.forEach(f => { html += '<div class="cognitive-item"><div class="cognitive-wrong">' + f.wrong + '</div><div class="cognitive-right">→ ' + f.right + '</div></div>'; }); html += '</div></div>'; }
+            
+            html += '<div class="result-section"><div class="result-label">筹码清单</div><div class="chip-list">';
+            chips.forEach(c => { html += '<div class="chip-item"><span class="chip-marker ' + c.type + '">' + (c.type === 'positive' ? '✓' : '✗') + '</span><span>' + c.text + '</span></div>'; });
+            html += '</div></div>';
+            
+            if (risks.length > 0) { html += '<div class="result-section"><div class="result-label">风险提示</div><div class="risk-block">'; risks.forEach(r => { html += '<div class="risk-item">' + r + '</div>'; }); html += '</div></div>'; }
+            
+            html += '<div class="action-block"><div class="action-title">建议行动路径</div>';
+            steps.forEach((s, i) => { html += '<div class="action-step"><div class="step-num">' + (i+1) + '</div><div><div class="step-title">' + s.title + '</div><div class="step-desc">' + s.desc + '</div></div></div>'; });
+            html += '</div><div style="margin-top:30px;text-align:center;"><button class="nav-btn secondary" onclick="resetGame()">重新诊断</button></div></div>';
+            
+            return html;
+        }
+        
+        function selectOption(qid, val) { answers[qid] = val; document.getElementById('questionContainer').innerHTML = renderQuestion(currentStep); }
+        function nextStep() {
+            if (currentStep < questions.length - 1) { currentStep++; updateDots(); document.getElementById('questionContainer').innerHTML = renderQuestion(currentStep); }
+            else { document.getElementById('questionContainer').style.display = 'none'; document.getElementById('resultContainer').innerHTML = renderResult(); document.getElementById('resultContainer').style.display = 'block'; }
+        }
+        function prevStep() { if (currentStep > 0) { currentStep--; updateDots(); document.getElementById('questionContainer').innerHTML = renderQuestion(currentStep); } }
+        function updateDots() {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('dot' + i);
+                dot.classList.remove('active', 'completed');
+                if (i <= Math.floor(currentStep / 4) + 1) { if (i < Math.floor(currentStep / 4) + 1) dot.classList.add('completed'); else dot.classList.add('active'); }
+            }
+        }
+        function resetGame() { currentStep = 0; answers = {}; currentGameState = null; updateDots(); document.getElementById('dot1').classList.add('active'); document.getElementById('questionContainer').style.display = 'block'; document.getElementById('questionContainer').innerHTML = renderQuestion(0); document.getElementById('resultContainer').style.display = 'none'; }
+        
+        document.addEventListener('DOMContentLoaded', function() { const qc = document.getElementById('questionContainer'); if (qc) qc.innerHTML = renderQuestion(0); });
+    </script>
+</body>
+</html>
