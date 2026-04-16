@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>什么是系统动力学：彻底吃透</title>
+  <style>
+    :root{--black:#1a1a1a;--gray:#666;--light-gray:#f0f0f0;--red:#e63946;--white:#ffffff;--bg:#fafafa;--font-stack:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--spacing-xs:8px;--spacing-sm:16px;--spacing-md:24px;--spacing-lg:40px;--spacing-xl:60px;--spacing-xxl:80px}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--font-stack);background:var(--bg);color:var(--black);line-height:1.7;font-size:16px}
+    .header{padding:var(--spacing-xxl) var(--spacing-lg);text-align:center;background:var(--white);border-bottom:1px solid var(--light-gray)}
+    .header h1{font-size:28px;font-weight:600;letter-spacing:.02em}
+    .header .subtitle{color:var(--gray);margin-top:var(--spacing-sm);font-size:15px}
+    .header .tagline{display:inline-block;margin-top:var(--spacing-md);padding:6px 20px;border:1px solid var(--red);border-radius:999px;color:var(--red);font-size:13px;font-weight:500}
+    .header .positioning{display:inline-block;margin-top:var(--spacing-xs);padding:4px 14px;background:var(--light-gray);border-radius:999px;color:var(--gray);font-size:12px;margin-left:6px}
+    .progress-nav{display:flex;justify-content:center;gap:var(--spacing-sm);padding:var(--spacing-md) var(--spacing-lg);background:var(--white);border-bottom:1px solid var(--light-gray);position:sticky;top:0;z-index:100}
+    .progress-tab{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;cursor:pointer;transition:all .3s ease;border:1px solid var(--light-gray);background:var(--white);color:var(--gray)}
+    .progress-tab:hover{border-color:var(--gray)}
+    .progress-tab.active{background:var(--black);color:var(--white);border-color:var(--black)}
+    .progress-tab.completed{background:var(--light-gray);border-color:var(--light-gray)}
+    .container{max-width:1200px;margin:0 auto;padding:var(--spacing-xl) var(--spacing-lg)}
+    .lesson{display:none;animation:fadeIn .4s ease}
+    .lesson.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-xl)}
+    @media(max-width:900px){.content-grid{grid-template-columns:1fr}}
+    @media(max-width:600px){:root{--spacing-xs:6px;--spacing-sm:12px;--spacing-md:18px;--spacing-lg:24px;--spacing-xl:36px;--spacing-xxl:48px}.header{padding:var(--spacing-lg) var(--spacing-md)}.header h1{font-size:22px}.header .subtitle{font-size:13px}.progress-nav{padding:var(--spacing-sm) var(--spacing-md);gap:var(--spacing-xs)}.progress-tab{width:32px;height:32px;font-size:12px}.container{padding:var(--spacing-lg) var(--spacing-md)}.theory-section,.quiz-section{padding-left:0;padding-right:0;border:none}.quiz-section{padding-top:var(--spacing-lg);border-top:1px solid var(--light-gray)}.theory-section h2,.quiz-section h2{font-size:18px}.theory-card,.quiz-card{padding:var(--spacing-md);margin-bottom:var(--spacing-sm)}.theory-card h3,.quiz-card .quiz-question{font-size:15px}.theory-card p,.quiz-option,.mechanism-box p,.mechanism-box ul,.case-study .case-content{font-size:13px}.strategy-grid{grid-template-columns:1fr}.btn-next{padding:var(--spacing-sm) var(--spacing-lg);font-size:14px}.next-lesson{margin-top:var(--spacing-xl);padding-top:var(--spacing-lg)}}
+    .theory-section{padding-right:var(--spacing-md)}
+    .theory-section h2{font-size:22px;font-weight:600;margin-bottom:var(--spacing-lg);padding-bottom:var(--spacing-sm);border-bottom:2px solid var(--red);display:inline-block}
+    .theory-card{background:var(--white);border-radius:16px;padding:var(--spacing-lg);margin-bottom:var(--spacing-md);border:1px solid var(--light-gray);transition:all .3s ease}
+    .theory-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    .theory-card h3{font-size:17px;font-weight:600;margin-bottom:var(--spacing-sm)}
+    .theory-card p{color:var(--gray);font-size:15px}
+    .theory-card .example{margin-top:var(--spacing-sm);padding:var(--spacing-sm);background:var(--bg);border-radius:8px;font-size:14px;color:var(--black)}
+    .theory-card .example-title{font-weight:500;color:var(--red);font-size:13px;margin-bottom:4px}
+    .signal-list{list-style:none;margin-top:var(--spacing-sm)}
+    .signal-list li{padding:var(--spacing-xs) 0;padding-left:20px;position:relative;font-size:14px;color:var(--gray)}
+    .signal-list li::before{content:"→";position:absolute;left:0;color:var(--red)}
+    .mechanism-box{margin-top:var(--spacing-sm);padding:var(--spacing-md);background:var(--white);border-radius:12px;border-left:3px solid var(--red)}
+    .mechanism-box h4{font-size:14px;font-weight:600;margin-bottom:var(--spacing-xs);color:var(--black)}
+    .mechanism-box p{font-size:13px;color:var(--gray);margin-bottom:var(--spacing-xs)}
+    .mechanism-box ul{list-style:none;font-size:13px;color:var(--gray)}
+    .mechanism-box li{padding:2px 0;padding-left:12px;position:relative}
+    .mechanism-box li::before{content:"·";position:absolute;left:0;color:var(--red);font-weight:bold}
+    .quiz-section{padding-left:var(--spacing-md);border-left:1px solid var(--light-gray)}
+    @media(max-width:900px){.quiz-section{border-left:none;padding-left:0;padding-top:var(--spacing-lg);border-top:1px solid var(--light-gray)}}
+    .quiz-section h2{font-size:22px;font-weight:600;margin-bottom:var(--spacing-lg);padding-bottom:var(--spacing-sm);border-bottom:2px solid var(--black);display:inline-block}
+    .quiz-card{background:var(--white);border-radius:16px;padding:var(--spacing-lg);margin-bottom:var(--spacing-md);border:1px solid var(--light-gray)}
+    .quiz-card .quiz-type{font-size:12px;color:var(--red);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:var(--spacing-xs)}
+    .quiz-card .quiz-question{font-size:16px;font-weight:500;margin-bottom:var(--spacing-md)}
+    .quiz-options{display:flex;flex-direction:column;gap:var(--spacing-xs)}
+    .quiz-option{padding:var(--spacing-sm);border:1px solid var(--light-gray);border-radius:8px;cursor:pointer;font-size:14px;transition:all .2s ease;display:flex;align-items:flex-start;gap:var(--spacing-xs)}
+    .quiz-option:hover{border-color:var(--gray);background:var(--bg)}
+    .quiz-option.selected{border-color:var(--black);background:var(--black);color:var(--white)}
+    .quiz-option .option-letter{width:20px;height:20px;border-radius:50%;background:var(--light-gray);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+    .quiz-option.selected .option-letter{background:var(--red)}
+    .quiz-result{margin-top:var(--spacing-sm);padding:var(--spacing-sm);border-radius:8px;font-size:14px;display:none}
+    .quiz-card.answered.result-correct .quiz-result.correct{display:block;background:#e8f5e9;color:#2e7d32}
+    .quiz-card.answered.result-incorrect .quiz-result.incorrect{display:block;background:#ffebee;color:#c62828}
+    .next-lesson{text-align:center;margin-top:var(--spacing-xxl);padding-top:var(--spacing-xl);border-top:1px solid var(--light-gray)}
+    .btn-next{padding:var(--spacing-md) var(--spacing-xl);background:var(--white);color:var(--black);border:2px solid var(--black);border-radius:999px;font-family:var(--font-stack);font-size:15px;font-weight:500;cursor:pointer;transition:all .3s ease}
+    .btn-next:hover{background:var(--black);color:var(--white)}
+    .case-study{background:linear-gradient(135deg,#fafafa 0%,#fff 100%);border-radius:16px;padding:var(--spacing-lg);margin-top:var(--spacing-md);border:1px solid var(--light-gray)}
+    .case-study h4{font-size:15px;font-weight:600;margin-bottom:var(--spacing-sm);color:var(--black)}
+    .case-study .case-content{font-size:14px;color:var(--gray);line-height:1.8}
+    .case-study .case-insight{margin-top:var(--spacing-sm);padding:var(--spacing-sm);background:var(--white);border-radius:8px;font-size:13px;border-left:2px solid var(--red)}
+    .check-list{list-style:none;counter-reset:check}
+    .check-list li{counter-increment:check;padding:var(--spacing-sm);padding-left:40px;position:relative;font-size:14px;border-bottom:1px solid var(--light-gray)}
+    .check-list li::before{content:counter(check);position:absolute;left:0;width:24px;height:24px;background:var(--black);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+    .warning-box{background:#fff3e0;border-radius:12px;padding:var(--spacing-md);margin-top:var(--spacing-md);border-left:3px solid #ff9800}
+    .warning-box h4{font-size:14px;font-weight:600;color:#e65100;margin-bottom:var(--spacing-xs)}
+    .warning-box p{font-size:13px;color:#bf360c}
+    .strategy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--spacing-sm);margin-top:var(--spacing-sm)}
+    @media(max-width:600px){.strategy-grid{grid-template-columns:1fr}}
+    .strategy-item{padding:var(--spacing-sm);background:var(--white);border-radius:8px;border:1px solid var(--light-gray)}
+    .strategy-item h4{font-size:14px;font-weight:600;margin-bottom:4px}
+    .strategy-item p{font-size:13px;color:var(--gray)}
+    .cycle-diagram{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:var(--spacing-md) 0}
+    .cycle-node{padding:10px 18px;border-radius:999px;font-size:14px;font-weight:500;border:2px solid var(--black);background:var(--white)}
+    .cycle-arrow{font-size:20px;color:var(--red);font-weight:bold}
+    .highlight-text{font-size:18px;font-weight:600;text-align:center;padding:var(--spacing-md);margin:var(--spacing-md) 0;border-top:1px solid var(--light-gray);border-bottom:1px solid var(--light-gray)}
+    .highlight-text .red{color:var(--red)}
+    .summary-card{background:var(--white);border-radius:20px;padding:var(--spacing-xl);border:2px solid var(--black);text-align:center}
+    .summary-card .big-quote{font-size:24px;font-weight:700;line-height:1.4;margin-bottom:var(--spacing-md)}
+    .summary-card .keywords{display:flex;justify-content:center;gap:var(--spacing-sm);flex-wrap:wrap;margin-top:var(--spacing-md)}
+    .summary-card .keyword-tag{padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;background:var(--light-gray)}
+    .reading-list{list-style:none;margin-top:var(--spacing-md)}
+    .reading-list li{padding:var(--spacing-sm);border-bottom:1px solid var(--light-gray);font-size:14px;color:var(--gray)}
+    .reading-list li strong{color:var(--black)}
+    .reflection-input{width:100%;min-height:80px;margin-top:var(--spacing-sm);padding:var(--spacing-sm);border:1px solid var(--light-gray);border-radius:8px;font-family:var(--font-stack);font-size:14px;color:var(--black);resize:vertical;background:var(--bg)}
+    .reflection-input:focus{outline:none;border-color:var(--gray)}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>什么是系统动力学：彻底吃透</h1>
+    <p class="subtitle">识别系统运作机制、理解结构决定行为、设计可控循环</p>
+    <div>
+      <div class="tagline">搞清楚系统在干什么，你就不会再跟结果较劲</div>
+      <span class="positioning">认知升级工具</span>
+    </div>
+  </header>
+  <nav class="progress-nav">
+    <div class="progress-tab active" data-lesson="1">1</div>
+    <div class="progress-tab" data-lesson="2">2</div>
+    <div class="progress-tab" data-lesson="3">3</div>
+    <div class="progress-tab" data-lesson="4">4</div>
+    <div class="progress-tab" data-lesson="5">5</div>
+    <div class="progress-tab" data-lesson="6">6</div>
+  </nav>
+  <main class="container">
+
+    <!-- 第1讲：本质定义 -->
+    <section class="lesson active" id="lesson-1">
+      <div class="content-grid">
+        <div class="theory-section">
+          <h2>第1讲：系统动力学是什么</h2>
+          <div class="theory-card">
+            <h3>核心定义</h3>
+            <p><strong>系统动力学就是：结果不是偶然发生的，而是被一套"结构 + 反馈"反复生产出来的。</strong></p>
+            <p style="margin-top:var(--spacing-sm)">事情不是"怎么发生的"，而是"为什么总是反复这样发生"。同一个问题反复出现，不是运气差，是系统在循环生产它。创始人Jay W. Forrester于1956年在MIT提出这套方法论，最初叫"工业动力学"（Industrial Dynamics），后来扩展到城市、社会各个层面。</p>
+          </div>
+          <div class="theory-card">
+            <h3>四个维度拆解：为什么系统动力学重要</h3>
+            <div class="example">
+              <div class="example-title">维度一：结构决定行为</div>
+              同样的人放在不同的系统里，行为完全不同。决定结果的不是人，是人所在的系统结构。你看到的"问题"，往往是系统正常运行的结果。
+            </div>
+            <div class="example">
+              <div class="example-title">维度二：反馈驱动循环</div>
+              结果反过来影响输入，形成自我强化的循环。正反馈放大，负反馈调节。一旦循环跑起来，个人的意志力很难对抗系统力。
+            </div>
+            <div class="example">
+              <div class="example-title">维度三：存量与流量</div>
+              存量是系统的状态（你的存款、团队的信任、品牌声誉），流量是改变存量的进出（收入/支出、合作/冲突、好评/差评）。理解存量与流量，才能找到系统的杠杆点。
+            </div>
+            <div class="example">
+              <div class="example-title">维度四：延迟效应</div>
+              系统的反应往往不是即时的。今天改了结构，结果可能半年后才显现。大多数人等不了——所以他们总是在问题出现后才反应，而那时已经太晚了。
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>五个常见误区</h3>
+            <ul class="signal-list">
+              <li><strong>误区1："系统动力学就是系统思维"</strong> → 系统思维是更广的哲学框架，系统动力学是一套可建模、可仿真、可量化的方法论</li>
+              <li><strong>误区2："问题出在人身上"</strong> → 人是变量，结构才是常量。换人不改结构，新人也会被系统塑造成旧人的样子</li>
+              <li><strong>误区3："找到了原因就能解决"</strong> → 找到原因≠解决问题。关键是找到结构性杠杆点</li>
+              <li><strong>误区4："这是理工科的东西，跟生活无关"</strong> → 感情循环、职场内卷、家庭冲突——全是系统动力学问题</li>
+              <li><strong>误区5："改态度就能改结果"</strong> → 态度是流量，结构是存量。不改变反馈回路，态度再好也会被拉回原位</li>
+            </ul>
+          </div>
+          <div class="highlight-text">系统不会朝"你想要的方向"发展，<br>只会朝<span class="red">结构允许的方向</span>发展。</div>
+        </div>
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          <div class="quiz-card">
+            <div class="quiz-type">概念测试</div>
+            <div class="quiz-question">系统动力学的核心观点是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>只要找到原因，问题就能解决</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>结果是被结构与反馈反复生产出来的，不改结构就改不了结果</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>人的态度决定一切结果</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！系统动力学的核心洞察：相同结构产生相同结果。改结果要先改结构。</div>
+            <div class="quiz-result incorrect">✗ 找原因≠解决问题。关键是：这个结果是怎么被系统"生产"出来的？改结构才是治本。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">误区辨析</div>
+            <div class="quiz-question">"换个能力强的人，团队就好了"这个想法的问题在哪？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>人是变量，结构才是常量——不改激励和反馈，新人也会变旧人</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>能力不重要，态度才重要</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>换人太贵了，不值得</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！系统会把人塑造成它需要的样子。在允许摸鱼的系统里，最勤奋的人也会慢慢变懒。</div>
+            <div class="quiz-result incorrect">✗ 问题不在人的能力或成本，而在：同一个系统结构会生产出同一种人。换人不如换结构。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">回想一个你反复遇到的"同样的问题"——它是偶然发生的，还是被某个结构反复生产出来的？</div>
+            <textarea class="reflection-input" placeholder="写下你的思考..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="next-lesson"><button class="btn-next">进入第2讲 →</button></div>
+    </section>
+
+    <!-- 第2讲：运作机制 -->
+    <section class="lesson" id="lesson-2">
+      <div class="content-grid">
+        <div class="theory-section">
+          <h2>第2讲：系统怎么运作</h2>
+          <div class="theory-card">
+            <h3>核心循环</h3>
+            <p>任何系统，本质上都是一个闭环：</p>
+            <div class="cycle-diagram">
+              <span class="cycle-node">刺激</span><span class="cycle-arrow">→</span>
+              <span class="cycle-node">反应</span><span class="cycle-arrow">→</span>
+              <span class="cycle-node">结果</span><span class="cycle-arrow">→</span>
+              <span class="cycle-node">强化</span><span class="cycle-arrow">→</span>
+              <span class="cycle-node" style="border-color:var(--red)">循环↑</span>
+            </div>
+            <p style="margin-top:var(--spacing-sm)">循环一旦跑起来，系统就会越来越"像自己"。因为每一次强化都在告诉系统："上次这样做有效，这次继续。"关键点：决定一切的不是事件，而是结构。<strong>结构=变量之间的关系（谁影响谁），反馈=结果反过来改变输入。</strong></p>
+          </div>
+          <div class="theory-card">
+            <h3>存量与流量：系统的底层语言</h3>
+            <div class="mechanism-box">
+              <h4>存量（Stock）——系统的状态</h4>
+              <p>存量是累积量：银行卡余额、团队信任度、品牌声誉、知识储备。存量标征系统的状态，也是决策和行动的依据。</p>
+            </div>
+            <div class="mechanism-box" style="margin-top:var(--spacing-sm)">
+              <h4>流量（Flow）——改变存量的进出</h4>
+              <p>流量是时间段内的变化量：收入/支出是改变存款的流量；合作/冲突是改变信任的流量；好评/差评是改变声誉的流量。流入与流出的差值随时间积累，就形成了存量。</p>
+            </div>
+            <div class="example" style="margin-top:var(--spacing-sm)">
+              <div class="example-title">浴缸模型</div>
+              想象一个浴缸：水量是存量，水龙头进水和下水口出水是流量。水位取决于进水速度和出水速度的差值。如果你只看水位（结果），而不看进出水速率（流量），你永远搞不清水位为什么在变化。
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>两种反馈回路</h3>
+            <div class="mechanism-box">
+              <h4>正反馈（增强回路）——放大循环</h4>
+              <p>结果增强原来的方向，越来越多，越来越极端。</p>
+              <ul>
+                <li>越自信→表现越好→更自信→表现更好（良性正反馈）</li>
+                <li>越焦虑→越拖延→事情越积压→更焦虑（恶性正反馈）</li>
+                <li>越有钱→越容易赚钱→更有钱（复利效应）</li>
+              </ul>
+              <p style="margin-top:var(--spacing-xs)"><strong>注意：正反馈不是"变好"，是"被放大"。</strong>它可以是良性循环，也可以是恶性循环。</p>
+            </div>
+            <div class="mechanism-box" style="margin-top:var(--spacing-sm)">
+              <h4>负反馈（调节回路）——调节循环</h4>
+              <p>结果抑制原来的方向，维持稳定或来回震荡。</p>
+              <ul>
+                <li>体温过高→出汗降温→体温回落（身体恒温）</li>
+                <li>团队太闲→增加任务→团队太忙→减少任务→又太闲（来回震荡）</li>
+                <li>饿了→吃饭→不饿了→停止吃→又饿了（周期循环）</li>
+              </ul>
+              <p style="margin-top:var(--spacing-xs)"><strong>注意：负反馈不是"解决"，是"维持平衡"。</strong>但它可能导致震荡而非稳定。</p>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>真实案例：富国银行虚假账户丑闻</h3>
+            <div class="case-study">
+              <h4>结构如何"生产"出造假行为</h4>
+              <div class="case-content">
+                2016年，美国富国银行（Wells Fargo）曝出丑闻：员工在未经客户同意的情况下，开设了超过200万个虚假存款和信用卡账户。美国消费者金融保护局对其罚款1.85亿美元，约5300名员工被解雇。<br><br>
+                这不是5300个人集体变坏了。<strong>这是激励结构"生产"出来的行为。</strong><br><br>
+                富国银行的薪酬体系将员工收入与"交叉销售"指标强绑定——每位客户至少开8个账户。达不到目标的员工面临降级甚至辞退；达到目标的员工获得丰厚奖金。<br><br>
+                当合规开业的流量不足以完成KPI（存量目标），而造假几乎没有即时代价时，系统的正反馈回路就建立了：<strong>造假→完成指标→拿奖金→继续造假</strong>。造假行为被激励结构不断强化，直到系统崩溃。
+              </div>
+              <div class="case-insight">
+                <strong>系统动力学视角：</strong>不是人坏了，是系统在"正常运转"——它的结构本身就允许甚至鼓励这种行为。去掉KPI激励后的第二年，富国银行虚假账户新增量骤降99%。
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>关键变量</h3>
+            <div class="strategy-grid">
+              <div class="strategy-item">
+                <h4>反馈强度</h4>
+                <p>结果反过来影响输入的力度。强反馈=系统快速变化（可能过冲），弱反馈=变化缓慢（可能滞后）。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>延迟时间</h4>
+                <p>行动到结果之间的时间差。延迟越长，越容易过度反应或反应不足。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>存量规模</h4>
+                <p>存量越大，流量改变它的速度越慢。这就是"大企业病"——不是不想变，是变不动。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>回路数量</h4>
+                <p>系统中的反馈回路越多，行为越复杂。单回路系统可预测，多回路系统会涌现出"意想不到"的行为。</p>
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>边界条件</h3>
+            <p>系统动力学规律在以下条件下最强：</p>
+            <ul class="signal-list">
+              <li>反馈回路明确且闭合时</li>
+              <li>延迟效应存在但被忽视时</li>
+              <li>存量远大于单个流量时（惯性大）</li>
+              <li>多个反馈回路互相耦合时</li>
+            </ul>
+            <p style="margin-top:var(--spacing-sm)">系统动力学规律在以下条件下减弱：</p>
+            <ul class="signal-list">
+              <li>系统高度随机、无规律可循时</li>
+              <li>外部冲击远大于内部反馈力时</li>
+              <li>个体能动性远超系统约束时（极少数情况）</li>
+            </ul>
+          </div>
+        </div>
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          <div class="quiz-card">
+            <div class="quiz-type">机制理解</div>
+            <div class="quiz-question">在系统循环中，为什么"强化"是最关键的环节？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>因为强化决定了刺激的大小</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>因为强化让每次循环都比上次更容易——它是循环的引擎</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>因为强化代表了人的意志力</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！强化是循环的加速器。每次"有效"都让下一步的阻力更小——这就是为什么坏习惯一旦形成就很难改。</div>
+            <div class="quiz-result incorrect">✗ 强化的作用不在刺激端，而在循环端——它让上次的行为在这次更容易重复。这才是系统越来越"像自己"的原因。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">概念测试</div>
+            <div class="quiz-question">正反馈（增强回路）的本质是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>让事情变好的反馈</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>放大原有趋势的反馈——可以是变好，也可以是变坏</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>增加系统稳定性的反馈</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！正反馈=放大，不是"正向"或"变好"。越赌越输、越焦虑越拖延——全是正反馈，全是恶性循环。</div>
+            <div class="quiz-result incorrect">✗ "正"不是"好"，是"增强"。正反馈让人上瘾也让人崩溃——关键看放大的是哪个方向。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">案例理解</div>
+            <div class="quiz-question">富国银行5300名员工集体造假，根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>这些员工品德有问题</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>行业竞争太激烈</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>激励结构建立了"造假→达标→拿奖金→继续造假"的正反馈回路</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！去掉KPI激励后虚假账户新增量骤降99%——不是人变了，是系统变了。</div>
+            <div class="quiz-result incorrect">✗ 5300人不可能集体品德败坏。当系统把"造假"变成了最高效的达标路径，人就会自动选这条路。</div>
+          </div>
+        </div>
+      </div>
+      <div class="next-lesson"><button class="btn-next">进入第3讲 →</button></div>
+    </section>
+
+    <!-- 第3讲：现实案例 -->
+    <section class="lesson" id="lesson-3">
+      <div class="content-grid">
+        <div class="theory-section">
+          <h2>第3讲：系统动力学在现实中长什么样</h2>
+          <div class="theory-card">
+            <h3>场景一：合伙</h3>
+            <div class="case-study">
+              <h4>案例：一起吃苦可以，一起分钱不行</h4>
+              <div class="case-content">
+                老张和老王是大学同学，一起创业。前三年，两人吃泡面睡办公室，谁也不计较。<br><br>
+                第四年公司盈利了。老张负责业务，老王负责技术。老张觉得"客户都是我拉的"，老王觉得"没有我的产品你拿什么卖"。谁也说服不了谁。<br><br>
+                没有提前约定的分配规则，两个人从合伙人变成对簿公堂的仇人。<br><br>
+                系统动力学视角：合伙关系是一个"存量"（信任），"流量"是贡献和分配。亏损期，共同的"敌人"（竞争对手、市场压力）维持了信任存量；盈利期，分配的流量失衡导致信任存量被快速消耗。没有规则约束的分配=没有负反馈调节的回路=冲突正反馈直到崩溃。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>不是他们变了，是情境变了——代价从"一起亏钱"变成"我要少拿钱"。没有负反馈调节机制（提前约定的分配规则），正反馈放大冲突直到系统崩溃。
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>场景二：感情</h3>
+            <div class="case-study">
+              <h4>案例：越修复越崩溃</h4>
+              <div class="case-content">
+                小陈和女朋友总是因为同一件事吵架。每次吵完，小陈都主动道歉、解释、保证改。短暂和好后，下次还是因为同样的事吵。<br><br>
+                小陈以为他在"修复关系"，但从系统动力学看：他的道歉是正反馈——让对方学到"吵=你道歉=你退让"，于是下次对方更倾向于吵。道歉强化了吵架这个行为模式。<br><br>
+                关系的信任存量在被反复消耗，而小陈的"修复"实际上在加速这个消耗。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>道歉不改变系统结构——它只是短期止住了冲突的流量，但正反馈回路（吵→道歉→和好→再吵）完好无损。改互动模式（=改反馈结构）才是治本。
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>场景三：职场</h3>
+            <div class="case-study">
+              <h4>案例：能力很强但爱偷懒的人</h4>
+              <div class="case-content">
+                小刘是团队里技术最强的，但也是摸鱼最严重的。领导找他谈心，他说"我会改"——然后继续摸鱼。<br><br>
+                系统动力学拆解：摸鱼的流量（轻松、自由）是即时的正反馈，而努力工作的流量（可能加薪、可能升职）是延迟的、不确定的。努力工作的"存量"更新太慢，摸鱼的"流量"反馈又太快——系统自动选择了高即时反馈的路径。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>能力≠产出。能力是潜在存量，产出需要激励流量来激活。不绑定结果的机制=允许摸鱼的正反馈回路。
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>场景四：投资</h3>
+            <div class="case-study">
+              <h4>案例：永远追涨杀跌</h4>
+              <div class="case-content">
+                2021年基金大热，老赵跟风入场，赚了20%不肯止盈——"还在涨呢"。2022年市场回调，浮亏30%终于扛不住割肉——"再不跑更惨"。<br><br>
+                行为金融学把这叫<strong>处置效应</strong>：盈利时不愿止盈（贪婪正反馈），亏损时急于止损（恐惧正反馈）。两个正反馈回路交替运行，系统在贪婪和恐惧之间震荡。<br><br>
+                止盈止损规则是什么？是一个人为注入的<strong>负反馈调节回路</strong>——用规则对抗人性正反馈。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>投资亏损的本质往往不是信息不足，而是人性正反馈没被调节。止盈止损规则、定投计划——这些不是"技巧"，是对抗正反馈的结构性设计。
+              </div>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>场景五：商业</h3>
+            <div class="case-study">
+              <h4>案例：供应链的牛鞭效应</h4>
+              <div class="case-content">
+                系统动力学在供应链管理中有一个经典发现——<strong>牛鞭效应</strong>：零售端需求只波动了5%，但经过批发商、经销商、制造商逐级放大，到原材料供应商那里波动可能达到40%。<br><br>
+                为什么？因为每一级都在"安全库存"的正反馈中过度反应：下游多订一点→中游为了安全多备一点→上游看到的需求暴增→上游疯狂扩产→需求回落时全部积压。<br><br>
+                这不是谁犯了错，是延迟+正反馈+缺乏信息共享的结构必然产物。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>牛鞭效应是系统动力学的经典应用——它证明了，即使每个参与者都在做"理性决策"，系统的整体行为仍然可以极度非理性。
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          <div class="quiz-card">
+            <div class="quiz-type">案例分析</div>
+            <div class="quiz-question">合伙创业中，为什么"一起吃苦"时没问题，"一起分钱"时出问题？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>因为钱让人变坏</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>因为收益具体化时正反馈启动了；亏损时有共同敌人（负反馈）维持平衡</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>因为合伙人本来就不够信任</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！亏损期的"共同敌人"是天然的负反馈调节器；盈利期没有分配规则，冲突正反馈就失控了。</div>
+            <div class="quiz-result incorrect">✗ 不是"钱让人变坏"——而是利益具体化后，缺少负反馈机制来调节分配冲突。人性一直在运转，只是不同阶段系统的反馈结构不同。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">场景判断</div>
+            <div class="quiz-question">感情中"吵完道歉→和好→又吵"的死循环，根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>道歉态度不够真诚</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>两个人性格不合</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>道歉强化了"吵=对方退让"的正反馈回路——不改互动结构，循环不会停</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！道歉是正反馈的一部分——它让"吵"这个行为获得了"对方退让"的奖励。不打破回路，循环永不止。</div>
+            <div class="quiz-result incorrect">✗ 问题不在态度或性格，在系统结构：每次道歉都在强化对方"吵有效"的认知。改互动模式=改反馈结构。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">在你经历过的"反复出现的问题"中，你能识别出哪条反馈回路？那条正反馈是如何被强化的？</div>
+            <textarea class="reflection-input" placeholder="写下你的思考..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="next-lesson"><button class="btn-next">进入第4讲 →</button></div>
+    </section>
+
+    <!-- 第4讲：识别与应用 -->
+    <section class="lesson" id="lesson-4">
+      <div class="content-grid">
+        <div class="theory-section">
+          <h2>第4讲：怎么识别、怎么用</h2>
+          <div class="theory-card">
+            <h3>识别清单：10个"系统正在生产问题"的信号</h3>
+            <ol class="check-list">
+              <li><strong>同一个问题反复出现</strong>——修了又坏，坏了又修。不是修的技术不行，是系统在持续生产这个结果</li>
+              <li><strong>换人没用</strong>——换了三任主管，问题照旧。人在变，结构没变</li>
+              <li><strong>越努力越糟糕</strong>——你的干预让问题更严重了。你可能在加强正反馈回路</li>
+              <li><strong>短期见效、长期恶化</strong>——每次修复都管一时，但整体趋势在恶化。典型的延迟+正反馈</li>
+              <li><strong>各方都很努力但结果很差</strong>——每个人都在做"对的事"，但系统产出是错的。结构问题</li>
+              <li><strong>有人"例外"</strong>——规则对某些人无效，系统已经失衡了</li>
+              <li><strong>没有延迟缓冲</strong>——任何事情都要立刻反应，没有冷静期。正反馈最容易失控的环境</li>
+              <li><strong>只有正反馈没有负反馈</strong>——系统在持续放大某个方向，没有力量把它拉回来</li>
+              <li><strong>指标和目标错位</strong>——你在量化的不是你真正想要的（富国银行KPI就是经典案例）</li>
+              <li><strong>质疑被解读为"不信任"</strong>——不允许质疑的结构=正反馈最容易失控的结构</li>
+            </ol>
+          </div>
+          <div class="theory-card">
+            <h3>应用策略：改结构，不改人</h3>
+            <div class="mechanism-box">
+              <h4>作为管理者：改激励回路</h4>
+              <ul>
+                <li>不要靠"责任心"——责任心在没有反馈时蒸发</li>
+                <li>把收入和产出绑定：及时反馈的激励机制>纯信任</li>
+                <li>检查你的KPI：它是在驱动你想要的行为，还是在驱动"完成KPI"的行为？</li>
+                <li>注入负反馈：设校验机制、交叉审核、外部审查</li>
+              </ul>
+            </div>
+            <div class="mechanism-box" style="margin-top:var(--spacing-sm)">
+              <h4>作为合伙人：改分配结构</h4>
+              <ul>
+                <li>股权分配、退出机制、决策权——白纸黑字写清楚</li>
+                <li>设置动态调整机制：贡献和收益绑定，而不是固定不变</li>
+                <li>引入第三方调解（=外部负反馈），不要靠感情</li>
+              </ul>
+            </div>
+            <div class="mechanism-box" style="margin-top:var(--spacing-sm)">
+              <h4>作为个人：改反馈环境</h4>
+              <ul>
+                <li>拖延：把远期反馈变成即时反馈（找人监督、赌局、公开承诺）</li>
+                <li>情绪：识别"吵架→道歉→和好→再吵"的正反馈，改互动模式</li>
+                <li>决策：设"冷静期"——延迟24小时做重大决定，给负反馈调节的时间</li>
+                <li>投资：用规则替代心情——止盈止损、定投计划是注入负反馈</li>
+              </ul>
+            </div>
+          </div>
+          <div class="theory-card">
+            <h3>风险警示：系统动力学应用的三个坑</h3>
+            <div class="warning-box">
+              <h4>⚠️ 坑1：过度简化</h4>
+              <p>不是所有问题都是"结构问题"。有时候人确实有问题，有时候环境确实变了。不要拿着锤子看什么都像钉子。</p>
+            </div>
+            <div class="warning-box">
+              <h4>⚠️ 坑2：分析瘫痪</h4>
+              <p>理解系统不等于能立刻改系统。有些结构你改不了（宏观环境、他人行为），你需要的是在给定结构下做最优选择，而不是花三年画因果回路图。</p>
+            </div>
+            <div class="warning-box">
+              <h4>⚠️ 坑3：拿"系统"当借口</h4>
+              <p>"系统就是这样"不能成为不作为的理由。理解系统是为了找到杠杆点，不是为了认命。最差的做法是：看透了一切，然后什么都不做。</p>
+            </div>
+          </div>
+        </div>
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          <div class="quiz-card">
+            <div class="quiz-type">信号识别</div>
+            <div class="quiz-question">团队换了三任领导，问题照旧。这属于清单中的哪个信号？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>换人没用——人在变，结构没变</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>越努力越糟糕</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>只有正反馈没有负反馈</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！换三任领导问题照旧=结构在生产问题，不是人在生产问题。</div>
+            <div class="quiz-result incorrect">✗ 三任领导都没用，说明问题不在人，在结构。"换人没用"是最经典的系统信号。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">策略判断</div>
+            <div class="quiz-question">你的团队总是"短期冲刺、长期疲惫"。最好的干预是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>增加休息时间</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>找到让冲刺变成正反馈的激励结构，注入负反馈调节节奏</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>批评冲刺文化</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！冲刺是正反馈驱动的（冲刺→业绩→奖励→继续冲刺），需要注入负反馈（节奏约束）来调节，而不是单纯"多休息"。</div>
+            <div class="quiz-result incorrect">✗ 休息只是治标。系统会再次滑入冲刺模式，因为正反馈回路完好。改结构=改激励+注入调节机制。</div>
+          </div>
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">对照10个信号清单，你当前最头疼的问题命中了几个？你能画出它的反馈回路吗？</div>
+            <textarea class="reflection-input" placeholder="写下你的思考..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="next-lesson"><button class="btn-next">进入第5讲 →</button></div>
+    </section>
+
+    <!-- 第5讲：测验题库 -->
+    <section class="lesson" id="lesson-5">
+      <div class="content-grid">
+        <div class="theory-section">
+          <h2>第5讲：认知打击题库</h2>
+          <p style="margin-bottom:var(--spacing-md);color:var(--gray)">18道题，覆盖概念、机制、应用和场景。选错不可怕，以为自己对才可怕。</p>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">概念题</div>
+            <div class="quiz-question">1. 系统动力学中"存量"指的是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>系统中某个时刻的累积量——如存款、信任、知识</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>系统每时每刻的变化速度</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>系统中人的数量</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>系统的目标和功能</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 存量是状态，流量是变化。存款是存量，收入/支出是流量。改存量要改流量。</div>
+            <div class="quiz-result incorrect">✗ 存量=累积量（状态），流量=变化量（速度）。它们之间是浴缸和龙头的关系。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">概念题</div>
+            <div class="quiz-question">2. "越焦虑越拖延，越拖延越焦虑"属于什么类型的反馈？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>负反馈调节回路</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>正反馈增强回路（恶性循环）</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>不是反馈回路，是个人习惯</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>延迟效应</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 每一轮都在放大上一轮的趋势——这是正反馈（增强回路）的典型特征。可怕的是它会自我加速。</div>
+            <div class="quiz-result incorrect">✗ "越X越Y，越Y越X"是正反馈的标志。负反馈是"太X了→回来一点"，这里没有"回来"。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">判断题</div>
+            <div class="quiz-question">3. 正反馈一定让系统变好，负反馈一定让系统变差。</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>正确</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>错误——正反馈是"放大"，可以放大好的也可以放大坏的；负反馈是"调节"，维持稳定</span></div>
+            </div>
+            <div class="quiz-result correct">✓ "正"不是"好"，"负"不是"坏"。正=增强，负=调节。核反应堆里的控制棒就是负反馈——它防止爆炸。</div>
+            <div class="quiz-result incorrect">✗ 这是系统动力学最常见的误解！正反馈=放大（可以是好事也可以是灾难），负反馈=调节（维持稳定）。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：职场</div>
+            <div class="quiz-question">4. 团队效率下降，你决定加强管理。你该怎么做？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>多开会，多强调目标</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>找几个人批评一下，立威</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>重新设计激励和反馈机制</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>招更努力的人替换掉</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 效率是结构产物——没有激励不会拼，没有惩罚一定松，奖惩错位劣币驱逐良币。问题从来不是人，是系统。</div>
+            <div class="quiz-result incorrect">✗ 你选的本质都在犯同一个错：修"人"，而不是修"系统"。换人不改结构，新人也会变旧人。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：合伙</div>
+            <div class="quiz-question">5. 合伙人一开始很拼，稳定后开始松懈。你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>调整机制，让收益和贡献强绑定</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>跟他谈理想，唤醒初心</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>多给信任，他会回来的</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍，毕竟一起打拼过</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 他不是"变了"，是"恢复正常人性"——没有约束时偷懒更舒服。改机制，不改人。</div>
+            <div class="quiz-result incorrect">✗ 没有约束的勤奋才是异常，有约束的勤奋才是常态。你需要的是让"拼"成为系统内的最优选择。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：感情</div>
+            <div class="quiz-question">6. 伴侣越来越冷淡，你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>多付出，让对方感受到你的好</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>多沟通，了解对方怎么了</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>拉开距离，重建自身价值——改互动反馈结构</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍，感情总有起伏</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 越付出越被当成"免费资源"（正反馈）。拉开距离=注入负反馈，让对方重新感知你的价值。</div>
+            <div class="quiz-result incorrect">✗ 更多付出=更多正反馈=更被贬值。关系的价值不是投入量决定的，是互动结构决定的。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：投资</div>
+            <div class="quiz-question">7. 基金赚了20%，你怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>继续持有，还能涨</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>加仓</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>按预定规则止盈——用负反馈对抗贪婪正反馈</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>看心情</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 投资规则是人为注入的负反馈。"看心情"就是让人性正反馈接管——贪婪是天然的正反馈放大器。</div>
+            <div class="quiz-result incorrect">✗ "还能涨"是贪婪正反馈在说话。止盈规则是负反馈——它对抗的不是机会，是人性。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">机制题</div>
+            <div class="quiz-question">8. 项目总延期，根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>团队能力不足</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>需求变化太快</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>沟通不够</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>没有截止成本——延期没有即时代价，反馈回路缺失</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 延期=延迟没有代价=没有负反馈调节。设截止成本（延期扣薪/奖金与交付绑定），延期自动减少。</div>
+            <div class="quiz-result incorrect">✗ 就算团队能力很强、需求稳定，没有截止成本的系统照样延期。因为延期的收益（轻松）>按时的收益。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">机制题</div>
+            <div class="quiz-question">9. "牛鞭效应"说明了一个什么道理？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>供应链管理者不够聪明</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>信息透明就能解决问题</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>供应链应该去库存化</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>即使每个参与者都理性，系统整体行为仍可极度非理性——延迟+正反馈的必然产物</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 牛鞭效应是系统动力学的经典证明：个体理性≠集体理性。延迟+正反馈+逐级放大=系统必然失灵。</div>
+            <div class="quiz-result incorrect">✗ 牛鞭效应的参与者都不是笨蛋——他们在各自的位置上都做了"理性"决策。问题出在系统结构上。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：职场</div>
+            <div class="quiz-question">10. 员工摸鱼屡教不改，最有效的解决方案是？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>多提醒、多沟通</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>换人</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>改激励机制——摸鱼的成本必须>摸鱼的收益</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>加强监督</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 摸鱼是系统允许的行为——当摸鱼收益>努力收益时，理性选择就是摸鱼。改激励=改反馈结构。</div>
+            <div class="quiz-result incorrect">✗ 提醒和监督只是临时施压。人性的反馈计算不停止——只要摸鱼的收益>成本，人就会继续。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">综合题</div>
+            <div class="quiz-question">11. 你总做错误决策。根本原因最可能是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>不够聪明</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>决策机制有问题——错误是系统性的，不是随机的</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>经验不够</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>运气不好</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 反复犯同样的错=不是你笨，是你的决策系统有bug。同样的结构输入，产出同样的错误。</div>
+            <div class="quiz-result incorrect">✗ 智力和经验只是输入，决策机制才是处理器。改处理器，不要改输入。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：家庭</div>
+            <div class="quiz-question">12. 孩子不听话，你越管越叛逆。这个系统的正反馈回路是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>管→反抗→更管→更反抗（正反馈放大冲突）</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>管→听话→不管→不听话（负反馈调节）</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>不存在反馈回路</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 典型的正反馈失控——每一轮都在放大冲突。需要注入负反馈：给自主空间、建立协商机制。</div>
+            <div class="quiz-result incorrect">✗ "越管越叛逆"是正反馈的标志——每轮都在放大，不是在调节。需要打破这个回路。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">应用题</div>
+            <div class="quiz-question">13. 止盈止损规则的本质是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>一种投资技巧</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>人为注入的负反馈调节回路——对抗贪婪/恐惧的正反馈</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>心理安慰</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>止损不止盈</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 规则是结构设计——用负反馈对抗人性正反馈。没有规则的系统=让正反馈自由运行=必然崩溃。</div>
+            <div class="quiz-result incorrect">✗ 它远不止技巧或安慰。它是系统层面的结构干预——在正反馈失控前人为截断循环。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">场景题：商业</div>
+            <div class="quiz-question">14. 团队内卷越来越严重，最好的解法是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>劝大家别卷了</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>批评带头的</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>增加工作量让大家没空卷</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>改规则——内卷是正反馈驱动的结构性产物</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 内卷是规则的结果，不是人的选择。当规则奖励内卷（零和竞争），劝说无效。改奖励结构。</div>
+            <div class="quiz-result incorrect">✗ 劝说和批评只能治标。正反馈回路不断强化内卷——改回路才能治本。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">判断题</div>
+            <div class="quiz-question">15. "只要我意志力够强，就能对抗系统的负面积。"</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>错——意志力是消耗品，系统是永动机。改环境比改自己有效10倍</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>对——意志力是一切的根本</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 系统的力量是持续的，意志力是有限的。最好的做法是让系统为你工作，而不是你对抗系统。</div>
+            <div class="quiz-result incorrect">✗ 意志力对抗系统，短期可能行，长期必败。改环境（改反馈结构）才能一劳永逸。</div>
+          </div>
+
+          <div class="quiz-card" style="
+border-left:3px solid var(--red)">
+            <div class="quiz-type">应用题</div>
+            <div class="quiz-question">16. 你想减肥但总失败。用系统动力学分析，最可能的原因是？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>缺乏意志力</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">C</span><span>基因问题</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">B</span><span>环境的正反馈太强（零食随手可得）+负反馈太弱（体重变化延迟漫长）</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 减肥失败不是意志问题，是反馈结构问题：即时正反馈（吃=爽）远强于延迟负反馈（半年后才看到体重变化）。改环境=改反馈结构。</div>
+            <div class="quiz-result incorrect">✗ 不是意志力或基因的问题——是环境中"吃"的正反馈太即时太强，而"瘦"的负反馈太延迟太弱。改环境比改自己有效。</div>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">深度反思</div>
+            <div class="quiz-question">17. 回想一个你"反复在同一件事上跌倒"的经历。现在用系统动力学的视角重新看：是哪条反馈回路把你锁定在那个模式里的？你能注入什么新的负反馈来打破它？</div>
+            <textarea class="reflection-input" placeholder="写下你的思考..."></textarea>
+          </div>
+
+          <div class="quiz-card" style="border-left:3px solid var(--red)">
+            <div class="quiz-type">终极反思</div>
+            <div class="quiz-question">18. 读完这些题，你最大的"啊哈时刻"是什么？写下来——这可能是你今天最有价值的收获。</div>
+            <textarea class="reflection-input" placeholder="写下你的思考..."></textarea>
+          </div>
+        </div>
+        <div class="quiz-section" style="display:none">
+          <!-- 占位，第5讲题目直接在左侧理论区展示 -->
+        </div>
+      </div>
+      <div class="next-lesson"><button class="btn-next">进入第6讲 →</button></div>
+    </section>
+
+    <!-- 第6讲：核心总结 -->
+    <section class="lesson" id="lesson-6">
+      <div style="max-width:700px;margin:0 auto">
+        <div class="summary-card">
+          <div class="big-quote">
+            你以为你在解决问题，<br>其实你在维护<span style="color:var(--red)">问题的生产系统</span>。
+          </div>
+          <p style="color:var(--gray);font-size:15px;margin-top:var(--spacing-sm)">
+            搞清楚系统在干什么，你就不会再跟结果较劲。<br>
+            改结构，不是改人。<br>
+            注入负反馈，不是加强正反馈。
+          </p>
+          <div class="keywords">
+            <span class="keyword-tag">结构决定行为</span>
+            <span class="keyword-tag">正反馈放大</span>
+            <span class="keyword-tag">负反馈调节</span>
+            <span class="keyword-tag">存量与流量</span>
+            <span class="keyword-tag">改结构不改人</span>
+          </div>
+        </div>
+        <div class="theory-card" style="margin-top:var(--spacing-xl)">
+          <h3>一句话精髓</h3>
+          <p style="font-size:18px;font-weight:600;text-align:center;padding:var(--spacing-md) 0">
+            系统不会朝"你想要的方向"发展，<br>只会朝<span style="color:var(--red)">结构允许的方向</span>发展。<br>
+            <span style="font-size:14px;color:var(--gray);font-weight:400">所以别跟结果较劲，去改结构。</span>
+          </p>
+        </div>
+        <div class="theory-card" style="margin-top:var(--spacing-md)">
+          <h3>知识卡片</h3>
+          <div class="strategy-grid">
+            <div class="strategy-item">
+              <h4>存量与流量</h4>
+              <p>存量是状态（存款、信任、声誉），流量是改变存量的进出。改存量要通过改流量。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>正反馈（增强回路）</h4>
+              <p>放大原有趋势，可以变好也可以变坏。识别它是拆解问题的第一步。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>负反馈（调节回路）</h4>
+              <p>调节存量趋向目标，维持稳定。缺失负反馈=正反馈失控=系统崩溃。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>延迟效应</h4>
+              <p>行动到结果的时差。延迟让人过度反应或反应不足，是系统震荡的根源之一。</p>
+            </div>
+          </div>
+        </div>
+        <div class="theory-card" style="margin-top:var(--spacing-md)">
+          <h3>延伸阅读</h3>
+          <ul class="reading-list">
+            <li><strong>《系统之美》</strong> —— 德内拉·梅多斯 | 系统思维入门经典，Forrester学生所著，通俗清晰</li>
+            <li><strong>《第五项修炼》</strong> —— 彼得·圣吉 | 将系统动力学应用于组织学习，提出"学习型组织"</li>
+            <li><strong>《增长的极限》</strong> —— 梅多斯等 | 1972年用系统动力学模型预测全球资源危机，震惊世界</li>
+            <li><strong>《工业动力学》</strong> —— Jay W. Forrester | 系统动力学开山之作，MIT经典</li>
+            <li><strong>《思考，快与慢》</strong> —— 丹尼尔·卡尼曼 | 理解人类决策的双系统模型，与系统动力学互补</li>
+          </ul>
+        </div>
+        <div class="next-lesson" style="margin-top:var(--spacing-xxl)">
+          <p style="color:var(--gray);font-size:14px;margin-bottom:var(--spacing-md)">全部6讲已完成</p>
+          <button class="btn-next" onclick="switchLesson(1)">重新从第1讲开始 ↺</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll('.progress-tab');
+    const lessons = document.querySelectorAll('.lesson');
+    function switchLesson(num) {
+      lessons.forEach(l => l.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
+      document.getElementById('lesson-' + num).classList.add('active');
+      document.querySelector(`.progress-tab[data-lesson="${num}"]`).classList.add('active');
+      for (let i = 1; i < num; i++) {
+        document.querySelector(`.progress-tab[data-lesson="${i}"]`).classList.add('completed');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => { switchLesson(parseInt(tab.dataset.lesson)); });
+    });
+    document.querySelectorAll('.btn-next').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const currentLesson = document.querySelector('.lesson.active');
+        const currentNum = parseInt(currentLesson.id.replace('lesson-', ''));
+        const nextNum = currentNum + 1;
+        if (nextNum <= 6) switchLesson(nextNum);
+      });
+    });
+    document.querySelectorAll('.quiz-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const card = this.closest('.quiz-card');
+        const options = card.querySelectorAll('.quiz-option');
+        const isCorrect = this.dataset.correct === 'true';
+        options.forEach(opt => {
+          opt.classList.remove('selected');
+          opt.style.borderColor = '';
+          opt.style.background = '';
+        });
+        this.classList.add('selected');
+        card.classList.remove('answered', 'result-correct', 'result-incorrect');
+        card.classList.add('answered');
+        card.classList.add(isCorrect ? 'result-correct' : 'result-incorrect');
+        if (!isCorrect) {
+          options.forEach(opt => {
+            if (opt.dataset.correct === 'true') {
+              opt.style.borderColor = '#2e7d32';
+              opt.style.background = '#e8f5e9';
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
