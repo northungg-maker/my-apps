@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>什么是人性：彻底吃透</title>
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --gray: #666;
+      --light-gray: #f0f0f0;
+      --red: #e63946;
+      --white: #ffffff;
+      --bg: #fafafa;
+      
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      
+      --spacing-xs: 8px;
+      --spacing-sm: 16px;
+      --spacing-md: 24px;
+      --spacing-lg: 40px;
+      --spacing-xl: 60px;
+      --spacing-xxl: 80px;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: var(--font-stack);
+      background: var(--bg);
+      color: var(--black);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    
+    /* ===== Header ===== */
+    .header {
+      padding: var(--spacing-xxl) var(--spacing-lg);
+      text-align: center;
+      background: var(--white);
+      border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .header h1 { font-size: 28px; font-weight: 600; letter-spacing: 0.02em; }
+    .header .subtitle { color: var(--gray); margin-top: var(--spacing-sm); font-size: 15px; }
+    .header .tagline {
+      display: inline-block;
+      margin-top: var(--spacing-md);
+      padding: 6px 20px;
+      border: 1px solid var(--red);
+      border-radius: 999px;
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    /* ===== Progress Nav ===== */
+    .progress-nav {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: var(--white);
+      border-bottom: 1px solid var(--light-gray);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .progress-tab {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.3s ease;
+      border: 1px solid var(--light-gray); background: var(--white); color: var(--gray);
+    }
+    .progress-tab:hover { border-color: var(--gray); }
+    .progress-tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+    .progress-tab.completed { background: var(--light-gray); border-color: var(--light-gray); }
+    
+    /* ===== Main Container ===== */
+    .container { max-width: 1200px; margin: 0 auto; padding: var(--spacing-xl) var(--spacing-lg); }
+    
+    /* ===== Lesson Section ===== */
+    .lesson { display: none; animation: fadeIn 0.4s ease; }
+    .lesson.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* ===== Content Grid ===== */
+    .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); }
+    @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+    
+    /* ===== Mobile ===== */
+    @media (max-width: 600px) {
+      :root {
+        --spacing-xs: 6px; --spacing-sm: 12px; --spacing-md: 18px;
+        --spacing-lg: 24px; --spacing-xl: 36px; --spacing-xxl: 48px;
+      }
+      .header { padding: var(--spacing-lg) var(--spacing-md); }
+      .header h1 { font-size: 22px; }
+      .header .subtitle { font-size: 13px; }
+      .progress-nav { padding: var(--spacing-sm) var(--spacing-md); gap: var(--spacing-xs); }
+      .progress-tab { width: 32px; height: 32px; font-size: 12px; }
+      .container { padding: var(--spacing-lg) var(--spacing-md); }
+      .theory-section, .quiz-section { padding-left: 0; padding-right: 0; border: none; }
+      .quiz-section { padding-top: var(--spacing-lg); border-top: 1px solid var(--light-gray); }
+      .theory-section h2, .quiz-section h2 { font-size: 18px; }
+      .theory-card, .quiz-card { padding: var(--spacing-md); margin-bottom: var(--spacing-sm); }
+      .theory-card h3, .quiz-card .quiz-question { font-size: 15px; }
+      .theory-card p, .quiz-option, .mechanism-box p, .mechanism-box ul, .case-study .case-content { font-size: 13px; }
+      .strategy-grid { grid-template-columns: 1fr; }
+      .btn-next { padding: var(--spacing-sm) var(--spacing-lg); font-size: 14px; }
+      .next-lesson { margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); }
+    }
+    
+    /* ===== Theory Section ===== */
+    .theory-section { padding-right: var(--spacing-md); }
+    .theory-section h2 {
+      font-size: 22px; font-weight: 600; margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--red); display: inline-block;
+    }
+    
+    .theory-card {
+      background: var(--white); border-radius: 16px; padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md); border: 1px solid var(--light-gray);
+      transition: all 0.3s ease;
+    }
+    .theory-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .theory-card h3 { font-size: 17px; font-weight: 600; margin-bottom: var(--spacing-sm); }
+    .theory-card p { color: var(--gray); font-size: 15px; }
+    
+    .theory-card .example {
+      margin-top: var(--spacing-sm); padding: var(--spacing-sm);
+      background: var(--bg); border-radius: 8px; font-size: 14px; color: var(--black);
+    }
+    .theory-card .example-title { font-weight: 500; color: var(--red); font-size: 13px; margin-bottom: 4px; }
+    
+    .signal-list { list-style: none; margin-top: var(--spacing-sm); }
+    .signal-list li {
+      padding: var(--spacing-xs) 0; padding-left: 20px; position: relative;
+      font-size: 14px; color: var(--gray);
+    }
+    .signal-list li::before { content: "→"; position: absolute; left: 0; color: var(--red); }
+    
+    .mechanism-box {
+      margin-top: var(--spacing-sm); padding: var(--spacing-md);
+      background: var(--white); border-radius: 12px; border-left: 3px solid var(--red);
+    }
+    .mechanism-box h4 { font-size: 14px; font-weight: 600; margin-bottom: var(--spacing-xs); color: var(--black); }
+    .mechanism-box p { font-size: 13px; color: var(--gray); margin-bottom: var(--spacing-xs); }
+    .mechanism-box ul { list-style: none; font-size: 13px; color: var(--gray); }
+    .mechanism-box li { padding: 2px 0; padding-left: 12px; position: relative; }
+    .mechanism-box li::before { content: "·"; position: absolute; left: 0; color: var(--red); font-weight: bold; }
+    
+    /* ===== Quiz Section ===== */
+    .quiz-section { padding-left: var(--spacing-md); border-left: 1px solid var(--light-gray); }
+    @media (max-width: 900px) {
+      .quiz-section { border-left: none; padding-left: 0; padding-top: var(--spacing-lg); border-top: 1px solid var(--light-gray); }
+    }
+    .quiz-section h2 {
+      font-size: 22px; font-weight: 600; margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-sm); border-bottom: 2px solid var(--black); display: inline-block;
+    }
+    
+    .quiz-card {
+      background: var(--white); border-radius: 16px; padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-md); border: 1px solid var(--light-gray);
+    }
+    .quiz-card .quiz-type {
+      font-size: 12px; color: var(--red); font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--spacing-xs);
+    }
+    .quiz-card .quiz-question { font-size: 16px; font-weight: 500; margin-bottom: var(--spacing-md); }
+    
+    .quiz-options { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .quiz-option {
+      padding: var(--spacing-sm); border: 1px solid var(--light-gray); border-radius: 8px;
+      cursor: pointer; font-size: 14px; transition: all 0.2s ease;
+      display: flex; align-items: flex-start; gap: var(--spacing-xs);
+    }
+    .quiz-option:hover { border-color: var(--gray); background: var(--bg); }
+    .quiz-option.selected { border-color: var(--black); background: var(--black); color: var(--white); }
+    .quiz-option .option-letter {
+      width: 20px; height: 20px; border-radius: 50%; background: var(--light-gray);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 500; flex-shrink: 0;
+    }
+    .quiz-option.selected .option-letter { background: var(--red); }
+    
+    .quiz-result {
+      margin-top: var(--spacing-sm); padding: var(--spacing-sm); border-radius: 8px;
+      font-size: 14px; display: none;
+    }
+    .quiz-card.answered.result-correct .quiz-result.correct { display: block; background: #e8f5e9; color: #2e7d32; }
+    .quiz-card.answered.result-incorrect .quiz-result.incorrect { display: block; background: #ffebee; color: #c62828; }
+    
+    /* ===== Navigation ===== */
+    .next-lesson { text-align: center; margin-top: var(--spacing-xxl); padding-top: var(--spacing-xl); border-top: 1px solid var(--light-gray); }
+    .btn-next {
+      padding: var(--spacing-md) var(--spacing-xl); background: var(--white); color: var(--black);
+      border: 2px solid var(--black); border-radius: 999px;
+      font-family: var(--font-stack); font-size: 15px; font-weight: 500;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-next:hover { background: var(--black); color: var(--white); }
+    
+    /* ===== Case Study ===== */
+    .case-study {
+      background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
+      border-radius: 16px; padding: var(--spacing-lg); margin-top: var(--spacing-md);
+      border: 1px solid var(--light-gray);
+    }
+    .case-study h4 { font-size: 15px; font-weight: 600; margin-bottom: var(--spacing-sm); color: var(--black); }
+    .case-study .case-content { font-size: 14px; color: var(--gray); line-height: 1.8; }
+    .case-study .case-insight {
+      margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: var(--white);
+      border-radius: 8px; font-size: 13px; border-left: 2px solid var(--red);
+    }
+    
+    /* ===== Check List ===== */
+    .check-list { list-style: none; counter-reset: check; }
+    .check-list li {
+      counter-increment: check; padding: var(--spacing-sm); padding-left: 40px;
+      position: relative; font-size: 14px; border-bottom: 1px solid var(--light-gray);
+    }
+    .check-list li::before {
+      content: counter(check); position: absolute; left: 0;
+      width: 24px; height: 24px; background: var(--black); color: var(--white);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 500;
+    }
+    
+    /* ===== Warning Box ===== */
+    .warning-box {
+      background: #fff3e0; border-radius: 12px; padding: var(--spacing-md);
+      margin-top: var(--spacing-md); border-left: 3px solid #ff9800;
+    }
+    .warning-box h4 { font-size: 14px; font-weight: 600; color: #e65100; margin-bottom: var(--spacing-xs); }
+    .warning-box p { font-size: 13px; color: #bf360c; }
+    
+    /* ===== Strategy Grid ===== */
+    .strategy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+    @media (max-width: 600px) { .strategy-grid { grid-template-columns: 1fr; } }
+    .strategy-item { padding: var(--spacing-sm); background: var(--white); border-radius: 8px; border: 1px solid var(--light-gray); }
+    .strategy-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .strategy-item p { font-size: 13px; color: var(--gray); }
+    
+    /* ===== Cycle Diagram ===== */
+    .cycle-diagram {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px; margin: var(--spacing-md) 0;
+    }
+    .cycle-node {
+      padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 500;
+      border: 2px solid var(--black); background: var(--white);
+    }
+    .cycle-arrow { font-size: 20px; color: var(--red); font-weight: bold; }
+    
+    /* ===== Highlight ===== */
+    .highlight-text {
+      font-size: 18px; font-weight: 600; text-align: center;
+      padding: var(--spacing-md); margin: var(--spacing-md) 0;
+      border-top: 1px solid var(--light-gray); border-bottom: 1px solid var(--light-gray);
+    }
+    .highlight-text .red { color: var(--red); }
+    
+    /* ===== Summary Card ===== */
+    .summary-card {
+      background: var(--white); border-radius: 20px; padding: var(--spacing-xl);
+      border: 2px solid var(--black); text-align: center;
+    }
+    .summary-card .big-quote {
+      font-size: 24px; font-weight: 700; line-height: 1.4; margin-bottom: var(--spacing-md);
+    }
+    .summary-card .keywords {
+      display: flex; justify-content: center; gap: var(--spacing-sm); flex-wrap: wrap;
+      margin-top: var(--spacing-md);
+    }
+    .summary-card .keyword-tag {
+      padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 500;
+      background: var(--light-gray);
+    }
+    
+    /* ===== Reading List ===== */
+    .reading-list { list-style: none; margin-top: var(--spacing-md); }
+    .reading-list li {
+      padding: var(--spacing-sm); border-bottom: 1px solid var(--light-gray);
+      font-size: 14px; color: var(--gray);
+    }
+    .reading-list li strong { color: var(--black); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>什么是人性：彻底吃透</h1>
+    <p class="subtitle">识别人性运作机制、理解底层逻辑、设计可控系统</p>
+    <div class="tagline">搞清楚人性在干什么，你就不会再被它坑</div>
+  </header>
+  
+  <!-- Progress Navigation -->
+  <nav class="progress-nav">
+    <div class="progress-tab active" data-lesson="1">1</div>
+    <div class="progress-tab" data-lesson="2">2</div>
+    <div class="progress-tab" data-lesson="3">3</div>
+    <div class="progress-tab" data-lesson="4">4</div>
+    <div class="progress-tab" data-lesson="5">5</div>
+    <div class="progress-tab" data-lesson="6">6</div>
+  </nav>
+  
+  <!-- Main Container -->
+  <main class="container">
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第1讲：本质定义 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson active" id="lesson-1">
+      <div class="content-grid">
+        
+        <div class="theory-section">
+          <h2>第1讲：人性是什么</h2>
+          
+          <div class="theory-card">
+            <h3>核心定义</h3>
+            <p><strong>人性就是：只要没有代价，人一定会往"更舒服、更有利"的方向滑。</strong></p>
+            <p style="margin-top: var(--spacing-sm);">这不是贬义。这是生物进化的默认设定——所有生命都在追求"低成本、高回报"的路径。人之所以"有人性"，不是因为人特别坏，而是因为人特别会算账。</p>
+          </div>
+          
+          <div class="theory-card">
+            <h3>三个维度拆解</h3>
+            <div class="example">
+              <div class="example-title">维度一：趋利——人会自动靠近有利的选择</div>
+              有好处就上，这不是贪婪，是本能。问题在于：当好处是短期的、私人的，代价是长期的、别人的——人性就成了问题。
+            </div>
+            <div class="example">
+              <div class="example-title">维度二：避害——人会自动远离有风险的选择</div>
+              有代价就躲，这不是懦弱，是生存策略。问题在于：当"不作为"的代价被延迟时，人默认选"不作为"——拖延的本质。
+            </div>
+            <div class="example">
+              <div class="example-title">维度三：短期偏好——人永远高估眼前的收益</div>
+              这是行为经济学最扎实的发现。卡尼曼的前景理论证明：人对损失的感受是收益的2倍，对眼前利益的权重远超未来利益。
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>四个常见误区</h3>
+            <ul class="signal-list">
+              <li><strong>误区1："人性本恶"</strong> → 人性不是恶，是懒。懒比恶更危险——因为恶有意识，懒是自动的</li>
+              <li><strong>误区2："我是好人所以不会"</strong> → 情境决定行为，品格只是变量之一。斯坦福监狱实验证明：好人放在坏系统里，也会变坏</li>
+              <li><strong>误区3："意志力能战胜人性"</strong> → 靠意志力对抗人性，失败率90%+。有效的是改变环境，不是改变自己</li>
+              <li><strong>误区4："理解人性=变得冷漠"</strong> → 恰恰相反。理解人性让你不再对人性抱幻想，反而能更理性地善待他人</li>
+            </ul>
+          </div>
+          
+          <div class="highlight-text">
+            人性不是问题。<span class="red">不设防的人性</span>才是问题。
+          </div>
+        </div>
+        
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">概念测试</div>
+            <div class="quiz-question">人性的核心驱动力是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>人的恶意和自私本能</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>自动选择低成本、高回报的路径</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>社会环境对人的腐蚀</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！人性不是恶，是效率优先的本能选择。生物进化的默认设定，不需要恶意参与。</div>
+            <div class="quiz-result incorrect">✗ 人性不是"恶"，不是"自私"——是自动化的效率计算。差别在于：恶需要意图，效率选择是自动的、无意识的。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">误区辨析</div>
+            <div class="quiz-question">"我是好人，所以不会占便宜"这个想法的问题在哪？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>好人是假的，人人都会占便宜</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>品格只是变量之一，情境常常比品格更有力</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>好人不需要担心这个问题</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！斯坦福监狱实验证明：好人在特定情境下也会做出恶行。品格是变量，情境是放大器。</div>
+            <div class="quiz-result incorrect">✗ 问题不在于"好人会不会"，而在于"情境的力量"。当你否认情境的影响，你就失去了预判和防御的能力。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">回想一个你"知道不该做，但还是做了"的时刻。那次，是什么情境让你没能抵抗人性？</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="next-lesson">
+        <button class="btn-next">进入第2讲 →</button>
+      </div>
+    </section>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第2讲：运作机制 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson" id="lesson-2">
+      <div class="content-grid">
+        
+        <div class="theory-section">
+          <h2>第2讲：人性怎么运作</h2>
+          
+          <div class="theory-card">
+            <h3>核心循环</h3>
+            <p>人性不是一个"特点"，而是一个自我强化的循环系统：</p>
+            <div class="cycle-diagram">
+              <span class="cycle-node">刺激</span>
+              <span class="cycle-arrow">→</span>
+              <span class="cycle-node">反应</span>
+              <span class="cycle-arrow">→</span>
+              <span class="cycle-node">短期收益</span>
+              <span class="cycle-arrow">→</span>
+              <span class="cycle-node">强化</span>
+              <span class="cycle-arrow">→</span>
+              <span class="cycle-node" style="border-color: var(--red);">循环↑</span>
+            </div>
+            <p style="margin-top: var(--spacing-sm);">循环一旦启动，人就会越来越"像人性"，而不是越来越理性。因为每一次强化都在告诉你："上次这样做很爽，这次也可以。"</p>
+          </div>
+          
+          <div class="theory-card">
+            <h3>学术支撑：三个经典实验</h3>
+            
+            <div class="case-study">
+              <h4>① 米尔格拉姆服从实验（1961）</h4>
+              <div class="case-content">
+                耶鲁大学心理学家米尔格拉姆招募普通人当"老师"，在实验者指令下对学生施加电击（假的）。结果：65%的人施加了最高450伏电击——仅仅因为"权威人士让我这么做"。<br><br>
+                <strong>结论：</strong>普通人会在权威指令下做出反人性的事。不是他们坏，是情境太强。
+              </div>
+              <div class="case-insight">
+                <strong>人性教训：</strong>"我绝不会"这句话，在没有代价的情境下不成立。你以为的底线，只是还没被测试过。
+              </div>
+            </div>
+            
+            <div class="case-study">
+              <h4>② 斯坦福监狱实验（1971）</h4>
+              <div class="case-content">
+                津巴多把24名心理健康的普通大学生随机分成"看守"和"囚犯"。6天后被迫终止——看守开始虐待囚犯，囚犯出现心理崩溃。<br><br>
+                <strong>结论：</strong>不是坏人造成了坏系统，是坏系统制造了"坏人"。角色的力量远超个人的品格。
+              </div>
+              <div class="case-insight">
+                <strong>人性教训：</strong>不要考验人性——因为人性的表现取决于它所在的结构。改变结构，才能改变行为。
+              </div>
+            </div>
+            
+            <div class="case-study">
+              <h4>③ 损失厌恶实验（卡尼曼 & 特沃斯基，1979）</h4>
+              <div class="case-content">
+                前景理论的核心发现：人对损失的感受强度是同等收益的约2倍。丢100块的痛苦 > 捡100块的快乐。<br><br>
+                <strong>结论：</strong>人性的底层不是"贪"，是"怕"。怕失去的力度远超想得到的力度。
+              </div>
+              <div class="case-insight">
+                <strong>人性教训：</strong>想让人行动，让他看到"不行动会失去什么"比"行动能得到什么"有效2倍。
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>关键变量</h3>
+            <div class="strategy-grid">
+              <div class="strategy-item">
+                <h4>代价大小</h4>
+                <p>代价是否可见、是否即时。看不见的代价=不存在的代价。人不会为"未来可能的代价"改变当下的行为。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>收益可见性</h4>
+                <p>收益是否明确、是否即时。即时收益永远赢过远期收益——这是短视偏差的根源。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>社会规范</h4>
+                <p>周围人怎么做的。人是社会动物，"别人都这样"的暗示力极强——从众效应。</p>
+              </div>
+              <div class="strategy-item">
+                <h4>权力不对等</h4>
+                <p>谁掌握规则谁就控制人性。没有制衡的权力=人性脱缰的空间。</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>边界条件</h3>
+            <p>人性规律在以下条件下最强：</p>
+            <ul class="signal-list">
+              <li>代价不可见或被延迟时</li>
+              <li>收益即时且具体时</li>
+              <li>缺乏外部约束（规则、监督、惩罚）时</li>
+              <li>个体处于压力、疲劳、情绪波动时</li>
+            </ul>
+            <p style="margin-top: var(--spacing-sm);">人性规律在以下条件下减弱：</p>
+            <ul class="signal-list">
+              <li>代价即时且明确时</li>
+              <li>有强社会规范约束时</li>
+              <li>决策经过冷静期（延迟决策）时</li>
+              <li>有明确的身份认同和价值观锚定时</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">机制理解</div>
+            <div class="quiz-question">人性的自我强化循环中，最关键的环节是哪个？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>刺激——没有刺激就没有人性</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>强化——每次"爽"都在加深下次的选择</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>反应——人的选择决定了结果</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！强化是循环的引擎。每次获得短期收益，大脑就多记一条"这样做是对的"——这就是人性越来越强的原因。</div>
+            <div class="quiz-result incorrect">✗ 循环的每个环节都在起作用，但强化才是让循环加速的关键——它让每次选择都比上次更容易。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">实验理解</div>
+            <div class="quiz-question">米尔格拉姆实验的核心发现是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>大部分人天生残暴</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>普通人在权威指令下会做出反人性的事</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>电击可以改变人的行为</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！65%的人施加了最高电击——不是因为残暴，是因为权威的指令让"服从"的代价低于"反抗"的代价。</div>
+            <div class="quiz-result incorrect">✗ 实验参与者都是普通人，不是天生残暴者。核心发现在于情境的力量——当服从没有代价而反抗有代价时，大多数人选择服从。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">概念测试</div>
+            <div class="quiz-question">损失厌恶理论告诉我们，想让人改变行为，最有效的方式是？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>告诉对方改变后能得到什么好处</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>让对方看见不改变会失去什么</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>给对方足够多的奖励</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！损失的痛感是收益快感的2倍。"不改变会失去什么"比"改变能得到什么"更有效。</div>
+            <div class="quiz-result incorrect">✗ 卡尼曼的前景理论证明：人对损失的感受远强于对收益的感受。怕失去 > 想得到。</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="next-lesson">
+        <button class="btn-next">进入第3讲 →</button>
+      </div>
+    </section>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第3讲：现实案例 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson" id="lesson-3">
+      <div class="content-grid">
+        
+        <div class="theory-section">
+          <h2>第3讲：人性在现实中长什么样</h2>
+          
+          <div class="theory-card">
+            <h3>场景一：合伙</h3>
+            <div class="case-study">
+              <h4>案例：一起吃苦可以，一起分钱不行</h4>
+              <div class="case-content">
+                老张和老王是大学同学，一起创业。前三年，两人吃泡面睡办公室，谁也不计较。<br><br>
+                第四年公司盈利了。老张负责业务，老王负责技术。老张觉得"客户都是我拉的"，老王觉得"没有我的产品你拿什么卖"。谁也说服不了谁。<br><br>
+                没有提前约定的分配规则，两个人从合伙人变成对簿公堂的仇人。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>不是他们变了，是情境变了——代价从"一起亏钱"变成了"我要少拿钱"。当收益具体化，人性的自动计算就启动了。<strong>没约束的合伙=定时炸弹</strong>。
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>场景二：感情</h3>
+            <div class="case-study">
+              <h4>案例：越付出，越不被珍惜</h4>
+              <div class="case-content">
+                小陈对女朋友百依百顺：随叫随到、从不拒绝、主动付出。两年后，女朋友越来越冷淡，甚至开始嫌他"没主见"。<br><br>
+                小陈不理解：我对你这么好，你为什么不珍惜？<br><br>
+                因为在他女朋友的心理账户里，小陈的付出已经变成了"免费的"——免费的资源不会被珍惜，这是人性。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>经济学有一个基本定律：<strong>没有成本的东西不会被估值</strong>。感情里也一样——你的好如果永远零门槛，它就会贬值到零。
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>场景三：职场</h3>
+            <div class="case-study">
+              <h4>案例：能力很强但爱偷懒的人</h4>
+              <div class="case-content">
+                小刘是团队里技术最强的，但也是摸鱼最严重的。领导找他谈心，他说"我会改"——然后继续摸鱼。<br><br>
+                领导很困惑：他明明有能力，为什么不发挥？<br><br>
+                因为在当前的激励机制下，摸鱼的收益（轻松）是即时的，而努力的收益（可能加薪、可能升职）是延迟的、不确定的。人性在做精确的成本收益计算——只是这个计算的结果和公司期望的不一致。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>能力≠产出。能力是潜力，产出需要激励。不绑定结果的机制=允许人性选择偷懒的机制。
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>场景四：投资</h3>
+            <div class="case-study">
+              <h4>案例：永远追涨杀跌</h4>
+              <div class="case-content">
+                2021年基金大热，老赵跟风入场，赚了20%不肯止盈——"还在涨呢"。2022年市场回调，浮亏30%终于扛不住割肉——"再不跑更惨"。<br><br>
+                典型的追涨杀跌。行为金融学把这叫<strong>处置效应</strong>：盈利时不愿止盈（贪婪），亏损时急于止损（恐惧）。<br><br>
+                这不是老赵笨。这是人性在金钱面前的默认反应——损失厌恶让人比计划多拿，比计划早逃。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>投资亏损的本质往往不是信息不足，而是人性没被管理。止盈止损规则、定投计划——这些不是"技巧"，是<strong>对抗人性的结构性设计</strong>。
+              </div>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>场景五：社交</h3>
+            <div class="case-study">
+              <h4>案例：真诚换来利用</h4>
+              <div class="case-content">
+                小林性格直爽，对朋友掏心掏肺。结果发现：有的朋友只在需要帮忙时才出现，从不回报；有的人甚至把他分享的隐私当谈资。<br><br>
+                小林开始怀疑：真诚错了吗？<br><br>
+                真诚没错。但<strong>没有筛选的真诚</strong>，就是把无成本的好处开放给所有人——人性的自动计算会筛选出"拿好处不回报"的人。
+              </div>
+              <div class="case-insight">
+                <strong>关键点：</strong>真诚是策略，不是义务。什么时候真诚、对谁真诚、真诚到什么程度——这是边界问题，不是品质问题。
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">案例分析</div>
+            <div class="quiz-question">合伙创业中，为什么"一起吃苦"时没问题，"一起分钱"时出问题？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>因为钱让人变坏</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>因为收益具体化时，人性的自动计算启动了；亏损时，大家的"敌人"是外部的</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>因为合伙人本来就不够信任</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！人性一直在运转，只是在不同情境下表现不同。亏损时的"共同敌人"掩盖了分配矛盾，盈利时矛盾就浮出水面。</div>
+            <div class="quiz-result incorrect">✗ 不是"钱让人变坏"——而是利益具体化后，人性默认选择"对自己更有利"的路径。没有提前设规则，每个人都会觉得自己应得更多。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">场景判断</div>
+            <div class="quiz-question">感情中"越付出越不被珍惜"的根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>对方不懂感恩</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>没有成本的资源不会被估值——零门槛的好会自动贬值</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>付出方向不对</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！这是经济学基本定律在感情中的映射。零成本的资源=无限的资源=不需要珍惜的资源。</div>
+            <div class="quiz-result incorrect">✗ 不是个人品质的问题，而是结构性问题——当你把"好"变成无限供给的免费资源，人性会自动将它估值归零。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">在你经历过的"人性翻车"事件中，是代价太低、收益太高、还是约束缺失？你能提前设什么防？</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="next-lesson">
+        <button class="btn-next">进入第4讲 →</button>
+      </div>
+    </section>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第4讲：识别与应用 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson" id="lesson-4">
+      <div class="content-grid">
+        
+        <div class="theory-section">
+          <h2>第4讲：怎么识别、怎么用</h2>
+          
+          <div class="theory-card">
+            <h3>识别清单：10个"人性即将出事"的信号</h3>
+            <ol class="check-list">
+              <li><strong>没有明确规则</strong>：全靠"自觉"和"讲道理"——这等于给人性开了绿灯</li>
+              <li><strong>代价不可见</strong>：做了没人知道、没人追责——人性会自动计算"无代价=可做"</li>
+              <li><strong>收益即时可见</strong>：好处马上到手，坏处在远期——短视偏好会让你选错</li>
+              <li><strong>对方说"咱讲感情"</strong>：用感情替代规则=用感情掩盖不对等</li>
+              <li><strong>你开始觉得"不好意思"</strong>：不好意思拒绝、不好意思谈钱、不好意思设边界——你已经被人性拿捏了</li>
+              <li><strong>单向付出模式</strong>：你一直在给，对方一直在拿——没有回馈=消耗</li>
+              <li><strong>"先这样吧"</strong>：拖延规则就是放任人性——所有"以后再说"都是"永远不会"</li>
+              <li><strong>有人"例外"</strong>：规则对某些人无效——这个结构已经失衡了</li>
+              <li><strong>质疑被解读为"不信任"</strong>：不允许质疑的结构=人性最容易失控的结构</li>
+              <li><strong>你发现自己"也不确定"</strong>：边界模糊了，"正常"和"不正常"的分界线消失了</li>
+            </ol>
+          </div>
+          
+          <div class="theory-card">
+            <h3>应用策略：别靠人，靠结构</h3>
+            
+            <div class="mechanism-box">
+              <h4>在合伙中：先小人后君子</h4>
+              <ul>
+                <li>股权分配、退出机制、决策权——白纸黑字写清楚</li>
+                <li>不要相信"我们关系好不会出问题"——关系好在亏损时有效，在盈利时失效</li>
+                <li>设置动态调整机制：贡献和收益绑定，而不是固定不变</li>
+              </ul>
+            </div>
+            
+            <div class="mechanism-box">
+              <h4>在感情中：设置门槛</h4>
+              <ul>
+                <li>你的好必须有边界——不是无限供给，而是有条件的付出</li>
+                <li>延迟满足：不随叫随到，保留自己的空间和时间</li>
+                <li>稀缺才有价值——不是故意制造稀缺，而是真实地保留自己的重心</li>
+              </ul>
+            </div>
+            
+            <div class="mechanism-box">
+              <h4>在职场中：绑定结果</h4>
+              <ul>
+                <li>不要靠"责任心"——责任心在没代价时蒸发</li>
+                <li>把收入和产出绑定：提成制>固定薪；OKR+奖惩>纯信任</li>
+                <li>及时反馈：延迟的反馈=无效的反馈</li>
+              </ul>
+            </div>
+            
+            <div class="mechanism-box">
+              <h4>在社交中：设置筛选机制</h4>
+              <ul>
+                <li>真诚是策略，不是义务——先观察，再深入</li>
+                <li>对等测试：你付出一次，看对方是否回应。不回应=结束</li>
+                <li>设置信息边界：不是所有人都要知道你的全部</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="theory-card">
+            <h3>风险警示：人性应用的三个坑</h3>
+            
+            <div class="warning-box">
+              <h4>⚠️ 坑1：变成"只看利益"的人</h4>
+              <p>理解人性≠放弃善意。善意是有的，但善意要有边界。无边界的善意不是善良，是天真。</p>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ 坑2：过度控制</h4>
+              <p>设规则≠不信任。规则是让关系可持续的基础，不是对人的否定。"先小人后君子"恰恰是为了保护君子关系。</p>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ 坑3：拿"人性"当借口</h4>
+              <p>"人性就是这样"不能成为做坏事的理由。理解人性是为了预防，不是为了开脱。作恶的人说"人性如此"——那是在给自己的选择找遮羞布。</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="quiz-section">
+          <h2>检验你的理解</h2>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">信号识别</div>
+            <div class="quiz-question">对方说"咱讲感情，别谈钱"，这属于清单中的哪个信号？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>没有明确规则</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>用感情替代规则=用感情掩盖不对等</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>代价不可见</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！"讲感情"≠不要规则。恰恰是最需要规则的地方，才用感情来绕开规则。</div>
+            <div class="quiz-result incorrect">✗ "讲感情别谈钱"的本质是：用感情替代规则，让一方无法主张自己的正当权益。这是人性利用的典型手法。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">策略判断</div>
+            <div class="quiz-question">合伙创业，最好的股权分配时机是？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false">
+                <span class="option-letter">A</span>
+                <span>看到收益后再谈，那时候更清楚各自贡献</span>
+              </div>
+              <div class="quiz-option" data-answer="b" data-correct="true">
+                <span class="option-letter">B</span>
+                <span>开始之前就白纸黑字写清楚，包括退出机制</span>
+              </div>
+              <div class="quiz-option" data-answer="c" data-correct="false">
+                <span class="option-letter">C</span>
+                <span>根据关系好坏灵活决定</span>
+              </div>
+            </div>
+            <div class="quiz-result correct">✓ 正确！先小人后君子。关系好时设规则最容易，出了问题再谈已经来不及了。</div>
+            <div class="quiz-result incorrect">✗ 等到"更清楚"=等到人性已经启动计算。在利益还不具体的时候设规则，阻力最小、效果最好。</div>
+          </div>
+          
+          <div class="quiz-card">
+            <div class="quiz-type">反思题</div>
+            <div class="quiz-question">对照10个信号清单，你当前最重要的关系中有几个命中？你打算怎么处理？</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="next-lesson">
+        <button class="btn-next">进入第5讲 →</button>
+      </div>
+    </section>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第5讲：测验题库 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson" id="lesson-5">
+      <div class="content-grid">
+        
+        <div class="theory-section">
+          <h2>第5讲：认知打击题库</h2>
+          <p style="margin-bottom: var(--spacing-md); color: var(--gray);">20道题，覆盖合伙、感情、职场、投资、社交五大场景。每道题都是认知打击——选错不可怕，以为自己对才可怕。</p>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：合伙</div>
+            <div class="quiz-question">1. 合伙人一开始很拼，稳定后开始松懈、占便宜。你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>跟他谈理想，唤醒初心</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>多给信任，他会回来的</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>调整机制，让收益和贡献强绑定</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍，毕竟一起打拼过</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 他不是"变了"，是"恢复正常人性"——没有约束时偷懒更舒服。问题在你：你设计了一个允许人性失控的系统。</div>
+            <div class="quiz-result incorrect">✗ 你以为他变了，其实他只是回到了人性的默认状态。没有约束的勤奋才是异常——有约束的勤奋才是常态。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：合伙</div>
+            <div class="quiz-question">2. 朋友借钱不还，你催了几次都说"下周"。下一步？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>再催，总会还的</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>不再借，这次当学费</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>相信他是真的困难</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>找人帮忙催</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 一次放纵=默认规则。你的催促被他读成"还可以拖"。止损比追债重要。</div>
+            <div class="quiz-result incorrect">✗ 每次催促都在传递一个信号："我的底线还可以再推"。不设边界=鼓励继续。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：感情</div>
+            <div class="quiz-question">3. 伴侣越来越冷淡，你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>多付出，让他感受到你的好</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>多沟通，了解他怎么了</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>拉开距离，重建自身价值</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍，感情总有起伏</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 稀缺才有价值。付出过量只会让"你的好"继续贬值。重心回到自己身上，你的吸引力才会回来。</div>
+            <div class="quiz-result incorrect">✗ 越付出，对方越觉得你"随时都在"——零门槛的好=不需要珍惜的好。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：感情</div>
+            <div class="quiz-question">4. 关系里你越来越累，不断付出但对方习以为常。问题出在哪？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>付出还不够</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>投入结构失衡——不平衡一定恶化</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>对方不懂事</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>需要更多沟通</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 不平衡不会自动修正——你越补，天平越歪。调整投入结构，不是加更多码。</div>
+            <div class="quiz-result incorrect">✗ 更努力只会更累。问题不在投入的"量"，而在投入的"结构"——单方面付出=制造贬值。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：职场</div>
+            <div class="quiz-question">5. 员工迟到多次，说下次一定改。你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>再沟通一次</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>给他时间改</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>设惩罚机制</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>相信他的承诺</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 人不会因为承诺改变，只会因为成本改变。没有代价的承诺=空话。</div>
+            <div class="quiz-result incorrect">✗ "下次一定改"在没有代价的情况下=下次继续迟到。成本才驱动行为。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：职场</div>
+            <div class="quiz-question">6. 团队效率下降，大家都在摸鱼。该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>多开会提醒</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>加强监督</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>重设奖惩机制</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>换人</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 行为是被激励驱动的。摸鱼=当前机制奖励摸鱼。改变机制，行为自动改变。</div>
+            <div class="quiz-result incorrect">✗ 开会和监督只能短暂施压。人性的计算不停止——只要摸鱼的收益>努力的收益，人会继续摸鱼。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：职场</div>
+            <div class="quiz-question">7. 员工不主动，你鼓励也没用。为什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>他态度有问题</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>主动性是被激发的，不是被要求的</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>需要换人</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>多表扬</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 主动性=主动的收益>被动。当主动没有额外收益，人自然选择被动。</div>
+            <div class="quiz-result incorrect">✗ 主动性不是性格，是对激励的响应。没有激励的"主动"是反人性的。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：投资</div>
+            <div class="quiz-question">8. 基金赚了20%，你怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>继续持有，还能涨</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>按预定规则止盈</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>加仓</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>看心情</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 投资规则是反人性的结构设计。"看心情"就是让人性接管——人性的默认选择永远是贪。</div>
+            <div class="quiz-result incorrect">✗ "还能涨"是贪婪在说话。没有人知道顶在哪里，但规则可以让你不吃亏。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：投资</div>
+            <div class="quiz-question">9. 客户犹豫不下单，根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>价格太高</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>产品不够好</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>人默认不做决定——不被推动就不会动</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>需要更多解释</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 不做决定的收益（安全、不出错）>做决定的收益。制造决策点才能打破默认。</div>
+            <div class="quiz-result incorrect">✗ 犹豫不是因为信息不够，而是因为"不做决定"本身是零成本的选择。需要的是推动力，不是更多信息。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：社交</div>
+            <div class="quiz-question">10. 别人对你态度变差，最可能的原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>反思自己哪里做错了</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>你给的空间太大了——态度来自你给的边界</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>对方心情不好</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>需要更好沟通</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 态度是边界的结果。你没设边界=释放"可以这样对我"的信号。</div>
+            <div class="quiz-result incorrect">✗ 先别急着反思自己。态度变化往往是对你边界的探试——越退让，对方越得寸进尺。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：社交</div>
+            <div class="quiz-question">11. 朋友总找你帮忙但从不回报。你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>再帮一次，也许下次他会回报</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>设置边界——没有代价的索取不会停止</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>提醒他</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍了</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 没有代价的索取=被鼓励的索取。你每次帮忙都在告诉对方：继续找我。</div>
+            <div class="quiz-result incorrect">✗ "下次"永远不会来。当索取没有成本，它只会升级，不会自动停止。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：社交</div>
+            <div class="quiz-question">12. 别人占你便宜，你总是忍。结果会怎样？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>对方会良心发现</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>不设边界=鼓励继续——占便宜会变成习惯</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>对方会感激你的宽容</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>关系会慢慢变好</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 忍让传递的信号是：这样做没有代价。人性的自动计算会得出结论：继续。</div>
+            <div class="quiz-result incorrect">✗ 宽容不会换来感激，只会换来更多的试探。人性对"没有代价"的响应永远是"再来一次"。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">综合</div>
+            <div class="quiz-question">13. 你总做错误决策。根本原因是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>不够聪明</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>决策机制有问题——错误是系统性产物</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>经验不够</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>运气不好</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 反复犯同样的错=不是你笨，是你的决策系统有bug。改机制，不是改自己。</div>
+            <div class="quiz-result incorrect">✗ 智力和经验只是输入，决策机制才是处理器。同样的输入换不同的处理器，结果完全不同。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">综合</div>
+            <div class="quiz-question">14. 团队内卷越来越严重，最好的解法是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>劝大家别卷了</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>改规则——行为由系统驱动</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>批评带头的</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>忍</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 内卷是规则的结果，不是人的选择。当规则奖励内卷，劝说是无效的。</div>
+            <div class="quiz-result incorrect">✗ 劝说和批评只能治标。人性会根据激励重新调整行为——改规则才是治本。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">综合</div>
+            <div class="quiz-question">15. "不要考验人性"的真正含义是什么？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>人性不可靠，不要相信任何人</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>不要创造让人性失控的条件——用结构代替信任</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>人性经不起考验，所以不要测试</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 核心不是"信不信人"，而是"需不需要信"。有好的结构，你不需要信任；没有好的结构，信任也没用。</div>
+            <div class="quiz-result incorrect">✗ 不是说人不可靠——而是说不要依赖人的可靠性。设计好的结构，让可靠性变得不必要。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">深度反思</div>
+            <div class="quiz-question">16. 回想一个你"对人失望"的时刻。是你对人性的理解出了问题，还是你的防线出了问题？</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：职场</div>
+            <div class="quiz-question">17. 员工拖延交付，每次都差一点。根本原因？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>能力不行</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>没有截止成本——拖延没代价就会继续拖</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>态度不端正</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 拖延的本质是：拖延的成本<按时完成的成本。设截止成本，拖延自动消失。</div>
+            <div class="quiz-result incorrect">✗ 拖延不是态度问题，是成本问题。当拖延没有代价，理性的人就会选择拖延。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：商务</div>
+            <div class="quiz-question">18. 客户嫌贵，你该怎么办？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>降价</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>强化价值感——人买的是感觉</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>解释成本</span></div>
+              <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>放弃</span></div>
+            </div>
+            <div class="quiz-result correct">✓ "嫌贵"=价值感不够。降价只强化"你本来就不值这个价"的认知。</div>
+            <div class="quiz-result incorrect">✗ 降价是最差的策略——它告诉客户"你之前的价格有水分"。强化价值感才对。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">场景：商务</div>
+            <div class="quiz-question">19. 用户白嫖不付费，最好的办法？</div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>教育用户</span></div>
+              <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>优化内容</span></div>
+              <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>提高门槛——免费一定被滥用</span></div>
+            </div>
+            <div class="quiz-result correct">✓ 免费的资源=无限的资源。不设门槛=吸引只想白嫖的人。</div>
+            <div class="quiz-result incorrect">✗ 教育用户和优化内容都是增量投入，但不解决根本问题：免费的东西不会被珍惜。</div>
+          </div>
+          
+          <div class="quiz-card" style="border-left: 3px solid var(--red);">
+            <div class="quiz-type">终极反思</div>
+            <div class="quiz-question">20. 读完这些题，你最大的"啊哈时刻"是什么？写下来——这可能是你今天最有价值的收获。</div>
+          </div>
+        </div>
+        
+        <div class="quiz-section" style="display: none;">
+          <!-- 占位，第5讲题目直接在左侧理论区展示 -->
+        </div>
+      </div>
+      
+      <div class="next-lesson">
+        <button class="btn-next">进入第6讲 →</button>
+      </div>
+    </section>
+    
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- 第6讲：核心总结 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="lesson" id="lesson-6">
+      <div style="max-width: 700px; margin: 0 auto;">
+        
+        <div class="summary-card">
+          <div class="big-quote">
+            不要相信人性，<br>要<span style="color: var(--red);">设计</span>人性。
+          </div>
+          <p style="color: var(--gray); font-size: 15px; margin-top: var(--spacing-sm);">
+            不考验，不赌，不指望。<br>
+            让规则代替信任，让机制代替期待。<br>
+            结果自然发生，不需要你盯着。
+          </p>
+          
+          <div class="keywords">
+            <span class="keyword-tag">趋利避害</span>
+            <span class="keyword-tag">代价驱动</span>
+            <span class="keyword-tag">结构设计</span>
+            <span class="keyword-tag">短期偏差</span>
+            <span class="keyword-tag">不考验人性</span>
+          </div>
+        </div>
+        
+        <div class="theory-card" style="margin-top: var(--spacing-xl);">
+          <h3>一句话精髓</h3>
+          <p style="font-size: 18px; font-weight: 600; text-align: center; padding: var(--spacing-md) 0;">
+            人性不是问题，<span style="color: var(--red);">不设防的人性</span>才是问题。<br>
+            <span style="font-size: 14px; color: var(--gray); font-weight: 400;">防的不是人，是那个会自动选最舒服路径的系统。</span>
+          </p>
+        </div>
+        
+        <div class="theory-card" style="margin-top: var(--spacing-md);">
+          <h3>知识卡片</h3>
+          <div class="strategy-grid">
+            <div class="strategy-item">
+              <h4>底层逻辑</h4>
+              <p>人性=自动选择低成本高回报路径。这是进化默认值，不是道德问题。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>运作循环</h4>
+              <p>刺激→反应→短期收益→强化→循环。每次"爽"都在加深下次的选择。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>核心变量</h4>
+              <p>代价可见性、收益即时性、社会规范、权力不对等。</p>
+            </div>
+            <div class="strategy-item">
+              <h4>应对策略</h4>
+              <p>不靠人靠结构：设规则、设边界、绑定结果、设置筛选。</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="theory-card" style="margin-top: var(--spacing-md);">
+          <h3>延伸阅读</h3>
+          <ul class="reading-list">
+            <li><strong>《思考，快与慢》</strong> —— 丹尼尔·卡尼曼 | 理解人类决策的双系统模型和认知偏差</li>
+            <li><strong>《路西法效应》</strong> —— 菲利普·津巴多 | 斯坦福监狱实验的完整记录与深度分析</li>
+            <li><strong>《影响力》</strong> —— 罗伯特·西奥迪尼 | 六大影响力武器，理解人性如何被利用</li>
+            <li><strong>《合作的进化》</strong> —— 罗伯特·阿克塞尔罗德 | 重复博弈中合作如何产生，"以牙还牙"策略</li>
+            <li><strong>《自私的基因》</strong> —— 理查德·道金斯 | 从进化论视角理解利他行为的底层逻辑</li>
+          </ul>
+        </div>
+        
+        <div class="next-lesson" style="margin-top: var(--spacing-xxl);">
+          <p style="color: var(--gray); font-size: 14px; margin-bottom: var(--spacing-md);">全部6讲已完成</p>
+          <button class="btn-next" onclick="switchLesson(1)">重新从第1讲开始 ↺</button>
+        </div>
+      </div>
+    </section>
+    
+  </main>
+  
+  <script>
+    // 导航逻辑
+    const tabs = document.querySelectorAll('.progress-tab');
+    const lessons = document.querySelectorAll('.lesson');
+    
+    function switchLesson(num) {
+      lessons.forEach(l => l.classList.remove('active'));
+      tabs.forEach(t => t.classList.remove('active'));
+      
+      document.getElementById('lesson-' + num).classList.add('active');
+      document.querySelector(`.progress-tab[data-lesson="${num}"]`).classList.add('active');
+      
+      // 标记已完成的讲
+      for (let i = 1; i < num; i++) {
+        document.querySelector(`.progress-tab[data-lesson="${i}"]`).classList.add('completed');
+      }
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        switchLesson(parseInt(tab.dataset.lesson));
+      });
+    });
+    
+    // 下一讲按钮
+    document.querySelectorAll('.btn-next').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const currentLesson = document.querySelector('.lesson.active');
+        const currentNum = parseInt(currentLesson.id.replace('lesson-', ''));
+        const nextNum = currentNum + 1;
+        
+        if (nextNum <= 6) {
+          switchLesson(nextNum);
+        }
+      });
+    });
+    
+    // 答题逻辑
+    document.querySelectorAll('.quiz-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const card = this.closest('.quiz-card');
+        if (card.classList.contains('answered')) return;
+        
+        const isCorrect = this.dataset.correct === 'true';
+        card.classList.add('answered');
+        card.classList.add(isCorrect ? 'result-correct' : 'result-incorrect');
+        
+        // 标记选中
+        this.classList.add('selected');
+        
+        // 如果答错，也高亮正确答案
+        if (!isCorrect) {
+          card.querySelectorAll('.quiz-option').forEach(opt => {
+            if (opt.dataset.correct === 'true') {
+              opt.style.borderColor = '#2e7d32';
+              opt.style.background = '#e8f5e9';
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
