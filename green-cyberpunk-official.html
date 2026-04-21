@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>什么是管理：彻底吃透</title>
+<!--
+======================================== V2模板注释 ========
+【重要】网页生成在曲子之前，没有曲目信息可用
+
+生成新内容时替换以下占位符：
+什么是管理    → 当前主题名称（例：什么是管理）
+什么是管理   → 具体标题（例：什么是管理）
+掌握目标—约束—反馈系统，让机制替你管人      → 副标题（没有可写"[副标题]"）
+[VERSION]       → 版本号（递增，如v2.8.2）
+[TAGLINE]       → 固定风格标签（不改，始终为CYBER_PUNK_）
+
+装饰性通用元素（不变）：
+- CHAPTER_01/SCENE_01/TEST_001（序号标签）
+- 预期 vs 现实（对比格式）
+- 扫描线/网格/脉动动画
+- 所有绿色赛博朋克风格元素
+=============================================
+-->
+  <style>
+:root{--bg:#000000;--accent:#00ff00;--accent-dim:#00cc00;--white:#ffffff;--gray:#00ff88;--card:#0a0a0a;--glow:rgba(0,255,0,0.5);--glow-dim:rgba(0,255,0,0.2);}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--white);line-height:1.7;font-size:16px;overflow-x:hidden;}
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(0,255,0,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,0,0.12) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;animation:gridPulse 3s ease-in-out infinite alternate;}
+@keyframes gridPulse{from{opacity:0.4;}to{opacity:1;}}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.45),transparent);animation:scanline 6s linear infinite;pointer-events:none;z-index:999;}
+
+@keyframes scanline{from{top:0;}to{top:100vh;}}
+@keyframes scanline_slow{from{top:-5vh;}to{top:105vh;}}
+.boot-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:40px;font-family:"Courier New",Courier,monospace;transition:opacity 0.6s ease;}
+.boot-screen.fade-out{opacity:0;pointer-events:none}
+.boot-logo{font-size:11px;color:rgba(0,255,0,0.4);letter-spacing:0.1em;margin-bottom:30px;line-height:1.8;}
+.boot-line{font-size:13px;color:var(--accent);margin-bottom:6px;opacity:0;white-space:nowrap;overflow:hidden;letter-spacing:0.05em;}
+.boot-line.visible{opacity:1}
+.boot-progress{margin-top:20px;max-width:500px}
+.boot-progress-bar{height:2px;background:rgba(0,255,0,0.15);border-radius:1px;overflow:hidden;}
+.boot-progress-fill{height:100%;background:var(--accent);width:0%;box-shadow:0 0 8px var(--glow);transition:width 0.3s ease;}
+.boot-progress-text{font-size:11px;color:rgba(0,255,0,0.5);margin-top:6px;letter-spacing:0.1em;}
+.boot-granted{margin-top:30px;font-size:15px;font-weight:700;color:var(--accent);text-shadow:0 0 20px var(--glow),0 0 40px var(--glow);letter-spacing:0.2em;opacity:0;transition:opacity 0.5s ease;}
+.boot-granted.visible{opacity:1}
+.boot-skip{position:fixed;bottom:30px;right:30px;font-size:11px;color:rgba(0,255,0,0.25);letter-spacing:0.1em;font-family:"Courier New",Courier,monospace;cursor:pointer;transition:color 0.2s;}
+.boot-skip:hover{color:rgba(0,255,0,0.6)}
+.header{position:relative;padding:80px 40px 60px;text-align:center;background:linear-gradient(180deg,rgba(0,255,0,0.05) 0%,transparent 100%);border-bottom:1px solid rgba(0,255,0,0.2);z-index:1;}
+.header-cmd{font-family:"Courier New",Courier,monospace;font-size:12px;color:var(--accent);letter-spacing:0.1em;margin-bottom:20px;padding:0 20px;}
+.header-cmd span{opacity:0.6}
+.header h1{font-size:34px;font-weight:700;letter-spacing:.08em;text-shadow:0 0 20px var(--glow),0 0 40px var(--glow),0 0 60px var(--glow);color:var(--accent);margin-bottom:10px;}
+.header .subtitle{color:var(--gray);margin-top:8px;font-size:14px;letter-spacing:.05em}
+.header .tagline{display:inline-block;margin-top:16px;padding:6px 24px;border:1px solid var(--accent);border-radius:2px;color:var(--accent);font-size:12px;font-weight:600;font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;box-shadow:0 0 10px var(--glow),inset 0 0 10px rgba(0,255,0,0.1);text-shadow:0 0 8px var(--glow);}
+.header .positioning{display:inline-block;margin-top:8px;padding:3px 12px;background:rgba(0,255,0,0.08);border-radius:2px;color:var(--gray);font-size:11px;font-family:"Courier New",Courier,monospace;margin-left:8px;border:1px solid rgba(0,255,0,0.2);}
+.progress-nav{display:flex;justify-content:center;gap:12px;padding:20px 40px;background:rgba(0,0,0,0.9);border-bottom:1px solid rgba(0,255,0,0.15);position:sticky;top:0;z-index:100;backdrop-filter:blur(5px);}
+.progress-tab{width:44px;height:44px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;font-family:"Courier New",Courier,monospace;cursor:pointer;transition:all .3s ease;border:1px solid var(--accent-dim);background:transparent;color:var(--accent-dim);box-shadow:0 0 5px var(--glow-dim);user-select:none;}
+.progress-tab:hover{border-color:var(--accent);box-shadow:0 0 10px var(--glow);color:var(--accent);}
+.progress-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;box-shadow:0 0 15px var(--glow);}
+.progress-tab.completed{background:rgba(0,255,0,0.2);border-color:rgba(0,255,0,0.4);color:var(--accent);}
+.container{max-width:1200px;margin:0 auto;padding:50px 40px;z-index:1;position:relative;}
+.lesson{display:none;animation:fadeIn .4s ease}
+.lesson.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+@media(max-width:900px){.content-grid{grid-template-columns:1fr}}
+.theory-section h2{font-size:20px;font-weight:700;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--accent);color:var(--accent);font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;text-shadow:0 0 10px var(--glow);display:inline-block;}
+.theory-card{background:var(--card);border-radius:2px;padding:20px;margin-bottom:14px;border:1px solid rgba(0,255,0,0.15);transition:all .3s ease;box-shadow:0 0 10px rgba(0,255,0,0.05);}
+.theory-card:hover{border-color:var(--accent-dim);box-shadow:0 0 20px var(--glow-dim);}
+.theory-card h3{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--white);font-family:"Courier New",Courier,monospace;letter-spacing:0.05em;}
+.theory-card h3::before{content:"> ";color:var(--accent)}
+.theory-card p{color:var(--gray);font-size:14px}
+.example{margin-top:8px;padding:10px;background:rgba(0,255,0,0.05);border-radius:2px;font-size:13px;border-left:2px solid var(--accent-dim);color:var(--gray);}
+.example-title{font-weight:600;color:var(--accent);font-size:12px;margin-bottom:4px;font-family:"Courier New",Courier,monospace}
+.signal-list{list-style:none;margin-top:8px}
+.signal-list li{padding:5px 0 5px 16px;position:relative;font-size:13px;color:var(--gray);border-bottom:1px solid rgba(0,255,0,0.08);font-family:"Courier New",Courier,monospace;}
+.signal-list li:last-child{border-bottom:none}
+.signal-list li::before{content:"|_";position:absolute;left:0;color:var(--accent-dim);font-size:10px}
+.mechanism-box{margin-top:10px;padding:14px;background:rgba(0,255,0,0.04);border-radius:2px;border-left:2px solid var(--accent);}
+.mechanism-box h4{font-size:13px;font-weight:600;margin-bottom:4px;color:var(--accent);font-family:"Courier New",Courier,monospace}
+.mechanism-box p{font-size:12px;color:var(--gray)}
+.cycle-diagram{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px 0;}
+.cycle-node{padding:6px 12px;border-radius:2px;font-size:12px;font-weight:600;border:1px solid var(--accent-dim);background:rgba(0,255,0,0.05);color:var(--accent);font-family:"Courier New",Courier,monospace;box-shadow:0 0 8px var(--glow-dim);}
+.cycle-arrow{font-size:14px;color:var(--accent-dim);font-weight:bold;text-shadow:0 0 5px var(--glow)}
+.warning-box{background:rgba(255,60,0,0.06);border-radius:2px;padding:14px;margin-top:10px;border-left:2px solid #ff3c00;}
+.warning-box h4{font-size:13px;font-weight:600;color:#ff3c00;font-family:"Courier New",Courier,monospace;margin-bottom:4px}
+.warning-box p{font-size:12px;color:#ffaaaa}
+.highlight-text{font-size:15px;font-weight:600;text-align:center;padding:16px;margin:16px 0;border-top:1px solid rgba(0,255,0,0.2);border-bottom:1px solid rgba(0,255,0,0.2);font-family:"Courier New",Courier,monospace;color:var(--gray);}
+.highlight-text .red{color:var(--accent);text-shadow:0 0 8px var(--glow)}
+.strategy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;}
+.strategy-item{padding:10px;background:rgba(0,255,0,0.04);border-radius:2px;border:1px solid rgba(0,255,0,0.1);}
+.strategy-item h4{font-size:13px;font-weight:600;margin-bottom:3px;color:var(--white);font-family:"Courier New",Courier,monospace}
+.strategy-item p{font-size:12px;color:var(--gray)}
+.check-list{list-style:none;counter-reset:check}
+.check-list li{counter-increment:check;padding:6px 6px 6px 36px;position:relative;font-size:13px;border-bottom:1px solid rgba(0,255,0,0.08);color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.check-list li:last-child{border-bottom:none}
+.check-list li::before{content:"[" counter(check) "]";position:absolute;left:6px;color:var(--accent);font-size:12px}
+.case-study{background:rgba(0,255,0,0.04);border-radius:2px;padding:14px;margin-top:10px;border:1px solid rgba(0,255,0,0.12);}
+.case-study h4{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--white);font-family:"Courier New",Courier,monospace}
+.case-content{font-size:13px;color:var(--gray);line-height:1.7}
+.case-insight{margin-top:8px;padding:8px;background:rgba(0,255,0,0.06);border-radius:2px;font-size:12px;border-left:2px solid var(--accent);color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.case-insight strong{color:var(--accent)}
+.quiz-section{border-left:1px solid rgba(0,255,0,0.15);padding-left:30px;}
+@media(max-width:900px){.quiz-section{border-left:none;padding-left:0;border-top:1px solid rgba(0,255,0,0.15);padding-top:24px;margin-top:20px}}
+.quiz-section h2{font-size:20px;font-weight:700;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--accent);color:var(--accent);font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;text-shadow:0 0 10px var(--glow);}
+.quiz-card{background:var(--card);border-radius:2px;padding:16px;margin-bottom:12px;border:1px solid rgba(0,255,0,0.12);transition:all .3s ease;}
+.quiz-card:hover{border-color:var(--accent-dim);box-shadow:0 0 12px var(--glow-dim)}
+.quiz-type{font-size:10px;color:var(--accent-dim);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-family:"Courier New",Courier,monospace}
+.quiz-question{font-size:14px;font-weight:500;margin-bottom:10px;color:var(--white)}
+.quiz-options{display:flex;flex-direction:column;gap:5px}
+.quiz-option{padding:8px 12px;border:1px solid rgba(0,255,0,0.15);border-radius:2px;cursor:pointer;font-size:13px;transition:all .2s ease;display:flex;align-items:flex-start;gap:8px;color:var(--gray);background:rgba(0,255,0,0.02);font-family:"Courier New",Courier,monospace;}
+.quiz-option:hover{border-color:var(--accent);background:rgba(0,255,0,0.06);box-shadow:0 0 8px var(--glow-dim);}
+.quiz-option.selected{border-color:var(--accent);background:rgba(0,255,0,0.1);color:var(--accent);box-shadow:0 0 10px var(--glow);}
+.option-letter{width:20px;height:20px;border-radius:2px;background:rgba(0,255,0,0.1);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;color:var(--accent);font-family:"Courier New",Courier,monospace;}
+.quiz-option.selected .option-letter{background:var(--accent);color:#000;border-color:var(--accent);}
+.quiz-result{margin-top:6px;padding:6px;border-radius:2px;font-size:12px;display:none;font-family:"Courier New",Courier,monospace;}
+.quiz-card.answered.result-correct .quiz-result.correct{display:block;background:rgba(0,255,0,0.08);color:var(--accent);border:1px solid rgba(0,255,0,0.2)}
+.quiz-card.answered.result-incorrect .quiz-result.incorrect{display:block;background:rgba(255,60,0,0.08);color:#ff3c00;border:1px solid rgba(255,60,0,0.2)}
+.summary-section{max-width:800px;margin:0 auto;text-align:center;}
+.big-quote{font-size:26px;font-weight:700;line-height:1.5;color:var(--accent);text-shadow:0 0 20px var(--glow),0 0 40px var(--glow);margin-bottom:30px;}
+.summary-keywords{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.keyword-tag{padding:6px 16px;border-radius:2px;font-size:13px;font-weight:500;background:rgba(0,255,0,0.08);border:1px solid var(--accent-dim);color:var(--accent);font-family:"Courier New",Courier,monospace;box-shadow:0 0 8px var(--glow-dim);}
+.reading-list{list-style:none;text-align:left;margin-top:36px}
+.reading-list li{padding:10px 14px;border-bottom:1px solid rgba(0,255,0,0.1);font-size:13px;color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.reading-list li strong{color:var(--white)}
+.author-sig{text-align:center;margin:24px auto 0;padding:10px 0;border-top:1px solid rgba(0,255,0,0.15);}
+.author-sig h1{display:block;text-align:center;}
+.author-sig > div{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px;}
+.next-lesson{text-align:center;margin-top:50px;padding-top:30px;border-top:1px solid rgba(0,255,0,0.15)}
+.btn-next{padding:12px 36px;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:2px;font-family:"Courier New",Courier,monospace;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s ease;letter-spacing:0.1em;box-shadow:0 0 10px var(--glow-dim);}
+.btn-next:hover{background:var(--accent);color:#000;box-shadow:0 0 25px var(--glow);}
+.btn-prev{padding:12px 36px;background:transparent;color:var(--accent-dim);border:1px solid rgba(0,255,0,0.3);border-radius:2px;font-family:"Courier New",Courier,monospace;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s ease;letter-spacing:0.1em;margin-right:12px;}
+.btn-prev:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px var(--glow-dim);}
+.nav-buttons{display:flex;justify-content:center}
+.page-footer{margin-top:30px;text-align:center;font-size:10px;color:rgba(0,255,136,0.25);line-height:1.8;font-family:"Courier New",Courier,monospace;border-top:1px solid rgba(0,255,0,0.08);padding-top:16px;letter-spacing:0.05em;}
+@media(max-width:600px){.header{padding:48px 16px 36px}.header h1{font-size:24px}.progress-nav{padding:14px 16px;gap:8px}.progress-tab{width:34px;height:34px;font-size:11px}.container{padding:28px 16px}.big-quote{font-size:20px}.boot-screen{padding:24px 16px}.boot-line{font-size:11px}}
+  </style>
+</head>
+<body>
+<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.18) 0px,rgba(0,0,0,0.18) 1px,transparent 1px,transparent 3px);pointer-events:none;z-index:998;animation:gridPulse 3s ease-in-out infinite alternate;"></div>
+<div style="position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.5),transparent);filter:blur(2px);animation:scanline_slow 12s linear infinite;pointer-events:none;z-index:999;"></div>
+
+<div class="boot-screen" id="bootScreen">
+  <div class="boot-logo">SYSTEM_BUILD: v2.8.1<br>CORE: 什么是管理 // CONTENT_SYSTEM<br>────────────────────────────────</div>
+  <div id="bootLines">
+    <div class="boot-line" data-delay="0">&gt;_ INITIALIZING SYSTEM...</div>
+    <div class="boot-line" data-delay="300">&gt;_ LOADING KERNEL MODULES</div>
+    <div class="boot-line" data-delay="600">&gt;_ MOUNTING FILE SYSTEM</div>
+    <div class="boot-line" data-delay="900">&gt;_ LOADING MANAGEMENT PROTOCOL</div>
+    <div class="boot-line" data-delay="1200">&gt;_ PARSING CONTENT STREAMS</div>
+    <div class="boot-line" data-delay="1500">&gt;_ CALIBRATING UI ENGINE</div>
+    <div class="boot-line" data-delay="1800">&gt;_ BUILDING THEORY NODES</div>
+    <div class="boot-line" data-delay="2100">&gt;_ FINALIZING SYSTEM</div>
+  </div>
+  <div class="boot-progress">
+    <div class="boot-progress-bar"><div class="boot-progress-fill" id="bootProgress"></div></div>
+    <div class="boot-progress-text" id="bootProgressText">LOADING... 0%</div>
+  </div>
+  <div class="boot-granted" id="bootGranted">[ ACCESS GRANTED ]</div>
+  <div class="boot-skip" id="bootSkip">SKIP [ SPACE ] >></div>
+</div>
+
+<header class="header">
+  <div class="header-cmd">
+    <span>[00]</span> SYSTEM_BOOT // SERIES: 什么是系列<br>
+    <span>[01]</span> CORE_LOAD: ██████████ 100%<br>
+    <span>[02]</span> THEME_INIT // FOLLOW: 托罗～转啊转
+  </div>
+  <h1>什么是管理</h1>
+  <p class="subtitle">掌握目标—约束—反馈系统，让机制替你管人</p>
+  <div>
+    <div class="tagline">// CYBER_PUNK_ //</div>
+    <span class="positioning">SYS: v2.8.1</span>
+  </div>
+</header>
+
+<nav class="progress-nav">
+  <div class="progress-tab active" data-lesson="1">01</div>
+  <div class="progress-tab" data-lesson="2">02</div>
+  <div class="progress-tab" data-lesson="3">03</div>
+  <div class="progress-tab" data-lesson="4">04</div>
+  <div class="progress-tab" data-lesson="5">05</div>
+  <div class="progress-tab" data-lesson="6">06</div>
+</nav>
+
+<main class="container">
+
+<section class="lesson active" id="lesson-1">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第一章：本质定义 //</h2>
+      <div class="theory-card"><h3>核心定义</h3><p><strong>管理是对资源、流程和人员进行组织与控制以实现既定目标的过程。</strong></p></div>
+      <div class="theory-card">
+        <h3>四个维度</h3>
+        <div class="example"><div class="example-title">// 维度A：资源</div>人力，资金，时间，信息——管理的原材料</div>
+        <div class="example"><div class="example-title">// 维度B：流程</div>规则，机制，程序——让行为可预期的骨架</div>
+        <div class="example"><div class="example-title">// 维度C：人员</div>激励，约束，反馈——驱动人行动的核心杠杆</div>
+        <div class="example"><div class="example-title">// 维度D：目标</div>方向清晰，结果可衡量——系统运行的终点</div>
+      </div>
+      <div class="theory-card">
+        <h3>三个误区</h3>
+        <ul class="signal-list">
+          <li style="color:#ff3c00">// 误区01 // 管理就是管人 → 控制的不是人，而是行为方向</li>
+          <li style="color:#ff3c00">// 误区02 // 管理就是定KPI → KPI只是激励的一种</li>
+          <li style="color:#ff3c00">// 误区03 // 管理就是领导强 → 机制错，能力越强越危险</li>
+        </ul>
+      </div>
+      <div class="highlight-text">管理不是在改变人，<span class="red">而是在设计一个让人不得不这样做的系统</span> // CORE_THEOREM</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_001</div>
+        <div class="quiz-question">1. 管理的本质是什么？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>管住人，让人听话</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>设计系统，控制人的行为方向</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>制定规则，让所有人按规则走</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>分配任务，监督执行</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 管理是设计系统，不是管人本身</div>
+        <div class="quiz-result incorrect">// FAIL: 管理的核心是设计系统让人不得不这样做</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_002</div>
+        <div class="quiz-question">2. "管理就是定KPI"为什么是错的？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>KPI太抽象，员工看不懂</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>KPI会导致员工只追求数字</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>KPI只是激励的一种，激励错了方向全错</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>KPI太死板，不够灵活</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: KPI错了，所有人努力方向全错</div>
+        <div class="quiz-result incorrect">// FAIL: KPI是激励工具，激励错才是核心问题</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_003</div>
+        <div class="quiz-question">3. "管理就是领导强"这句话错在哪？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>领导不需要强</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>能力强不代表会管理</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>机制错了，能力越强破坏力越大</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>领导应该授权</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 机制错是根本问题，强人反而是灾难</div>
+        <div class="quiz-result incorrect">// FAIL: 机制错了，能力强反而更危险</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" style="visibility:hidden">// 上一章 //</button>
+      <button class="btn-next" data-target="2">>> 进入第二章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-2">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第二章：运作机制 //</h2>
+      <div class="theory-card"><h3>核心逻辑</h3><p>管理不是"管人"，而是一个<strong style="color:var(--accent)">目标—约束—反馈</strong>的控制系统。</p></div>
+      <div class="theory-card">
+        <h3>循环流程</h3>
+        <div class="cycle-diagram">
+          <span class="cycle-node">目标</span><span class="cycle-arrow">→</span><span class="cycle-node">分配</span><span class="cycle-arrow">→</span><span class="cycle-node">规则</span><span class="cycle-arrow">→</span><span class="cycle-node">执行</span><span class="cycle-arrow">→</span><span class="cycle-node">结果</span><span class="cycle-arrow">→</span><span class="cycle-node">反馈</span>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>四个关键变量</h3>
+        <div class="strategy-grid">
+          <div class="strategy-item"><h4>激励核心</h4><p>决定人为什么行动</p></div>
+          <div class="strategy-item"><h4>信息流</h4><p>决定决策是否失真</p></div>
+          <div class="strategy-item"><h4>责任机制</h4><p>决定是否有人真正负责</p></div>
+          <div class="strategy-item"><h4>反馈速度</h4><p>决定系统能否及时修正</p></div>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>正向循环</h3>
+        <div class="mechanism-box">
+          <p>目标清晰 + 激励一致 → 行为对齐 → 结果稳定 → 效率提升</p>
+          <div class="cycle-diagram" style="margin-top:10px">
+            <span class="cycle-node" style="border-color:var(--accent)">激励</span><span class="cycle-arrow">→</span><span class="cycle-node">行为</span><span class="cycle-arrow">→</span><span class="cycle-node">结果</span><span class="cycle-arrow">→</span><span class="cycle-node">强化</span><span class="cycle-arrow">→</span><span class="cycle-node" style="border-color:var(--accent)">激励</span>
+          </div>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>负向循环 // 警示</h3>
+        <div class="warning-box">
+          <h4 style="color:#ff3c00">// 系统失效：3条路径 //</h4>
+          <ul style="margin-top:8px;list-style:none">
+            <li style="color:#ff3c00">路径A： 激励错配 → 人做有利己的事</li>
+            <li style="color:#ff3c00">路径B： 信息失真 → 决策持续偏离</li>
+            <li style="color:#ff3c00">路径C： 只看结果 → 短期有效，长期崩盘</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-text">这个系统真正控制的，不是人，而是<span class="red">人的行为方向</span> // 目标锁定</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_004</div>
+        <div class="quiz-question">4. 激励错配会直接导致？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>员工积极性下降</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>团队氛围变差</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>人做对自己有利的事，而非对目标有利的事</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>管理成本增加</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 激励决定行为方向，错配导致偏离目标</div>
+        <div class="quiz-result incorrect">// FAIL: 激励错配的核心问题是行为偏离目标</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_005</div>
+        <div class="quiz-question">5. 信息失真会导致什么连锁反应？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>员工沟通成本增加</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>决策速度变慢</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>反馈回路断裂 → 决策越来越偏 → 问题持续放大</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>团队信任度下降</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 信息失真破坏反馈回路，导致决策持续偏离</div>
+        <div class="quiz-result incorrect">// FAIL: 信息失真的核心是反馈回路断裂</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_006</div>
+        <div class="quiz-question">6. 四个关键变量中，哪个最能判断一个管理系统是否健康？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>INCENTIVE（激励）</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>信息流</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>责任机制</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>四个都重要，但FEEDBACK_SPD（反馈速度）往往最被低估</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 反馈速度决定系统自我修正能力</div>
+        <div class="quiz-result incorrect">// FAIL: 反馈速度决定了系统能否及时修正</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="1">// 上一章 //</button>
+      <button class="btn-next" data-target="3">>> 进入第三章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-3">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第三章：现实场景 //</h2>
+      <div class="theory-card">
+        <h3>场景一：合伙</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 找靠谱的人就行<br><strong style="color:var(--accent)">现实：</strong> 机制不对，谁来都变形</div><div class="case-insight"><strong>// 系统提示：</strong> 靠谱的人遇上烂机制，会变成不靠谱的人——先改机制，再换人</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景二：关系</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 靠爱就能维持关系<br><strong style="color:var(--accent)">现实：</strong> 没有规则，迟早失控</div><div class="case-insight"><strong>// 系统提示：</strong> 关系是系统，规则是骨架。没有骨架，爱撑不住</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景三：职场</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 领导能力强就够了<br><strong style="color:var(--accent)">现实：</strong> 机制错了，能力越强问题越大</div><div class="case-insight"><strong>// 系统提示：</strong> 强人+烂机制=灾难，机制不对，好人也会做坏事</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景四：家庭</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 讲道理就能解决问题<br><strong style="color:var(--accent)">现实：</strong> 没有边界，讲什么都没用</div><div class="case-insight"><strong>// 系统提示：</strong> 家庭也需要规则和边界，规则不清，道理无效</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景五：社交</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 人脉靠感情<br><strong style="color:var(--accent)">现实：</strong> 没有交换结构，关系无法持续</div><div class="case-insight"><strong>// 系统提示：</strong> 关系是价值交换，不是感情存款。交换结构不对，关系会断</div></div>
+      </div>
+      <div class="highlight-text" style="margin-top:20px">系统不变，换人只是<span class="red">换了个执行系统的人</span> // REPEAT_ERR</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_007</div>
+        <div class="quiz-question">7. 合伙时"找靠谱的人"为什么不够？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>靠谱的人很难找</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>合伙要靠感情</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>机制不对，谁来都变形</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>靠谱的人成本太高</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 机制不对，好人也会变形</div>
+        <div class="quiz-result incorrect">// FAIL: 合伙的核心是机制，不是找什么人</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_008</div>
+        <div class="quiz-question">8. "职场中领导能力强就够了"，这句话的盲区是？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>领导不应该太强</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>没有好机制，能力强反而加速崩溃</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>领导应该依靠团队</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>能力强是必要条件</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 强人+烂机制=灾难</div>
+        <div class="quiz-result incorrect">// FAIL: 机制错了，能力强反而更危险</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="2">// 上一章 //</button>
+      <button class="btn-next" data-target="4">>> 进入第四章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-4">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第四章：价值体系 //</h2>
+      <div class="theory-card">
+        <h3>精通六步</h3>
+        <ol class="check-list">
+          <li><strong>AVOID_SURFACE:</strong> 知道激励才是核心，就不会被"看起来很忙"骗</li>
+          <li><strong>RECOGNIZE_FAKE:</strong> KPI错了，所有努力都是在浪费资源</li>
+          <li><strong>DECISION_OPT:</strong> 不再靠感觉，而是调整规则和激励</li>
+          <li><strong>SYSTEM_DESIGN:</strong> 把"靠人自觉"变成"机制驱动"</li>
+          <li><strong>REDUCE_FRICTION:</strong> 权责清晰，减少推诿和扯皮</li>
+          <li><strong>SCREEN_TALENT:</strong> 在正确机制下，谁有效一目了然</li>
+        </ol>
+      </div>
+      <div class="theory-card">
+        <h3>五个失败信号</h3>
+        <ul class="signal-list">
+          <li>激励说和奖的不是同一件事 → <span style="color:#ff3c00">激励失配</span></li>
+          <li>信息层层汇报变形 → <span style="color:#ff3c00">信息失真</span></li>
+          <li>权责不清，互相甩锅 → <span style="color:#ff3c00">责任失位</span></li>
+          <li>只看结果不管过程 → <span style="color:#ff3c00">短视模式</span></li>
+          <li>换人解决不了问题 → <span style="color:#ff3c00">系统失效</span></li>
+        </ul>
+      </div>
+      <div class="highlight-text">管理系统失效的五个信号，出现任意一个都要警惕 // 信号警示</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_009</div>
+        <div class="quiz-question">9. 领导事事亲力亲为，说明什么？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>领导很负责</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>领导很勤奋</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>机制没建立，系统失效</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>员工能力不行</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 领导亲力亲为是系统失效的信号，不是美德</div>
+        <div class="quiz-result incorrect">// FAIL: 领导亲力亲为说明机制没建立，不是勤奋</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_010</div>
+        <div class="quiz-question">10. 团队内部频繁甩锅，根本原因是？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>团队成员人品差</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>个别人素质低</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>权责不匹配，没人真正负责</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>团队压力大</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 甩锅是理性选择，权责不清时甩锅是保护自己</div>
+        <div class="quiz-result incorrect">// FAIL: 甩锅是系统问题，不是人品问题</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_011</div>
+        <div class="quiz-question">11. 出现"激励说和奖的不是同一件事"，意味着什么？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>员工会更有动力</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>需要调整薪酬</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>人在做对激励有利的事，而非对目标有利的事</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>说明KPI设置得太高</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 激励说和奖的不一致，是系统失效的明确信号</div>
+        <div class="quiz-result incorrect">// 失败：激励失配，系统在驱动错误行为</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="3">// 上一章 //</button>
+      <button class="btn-next" data-target="5">>> 进入第五章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-5">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第五章：认知突破 //</h2>
+      <div class="quiz-card" style="border-left:2px solid var(--accent)">
+        <div class="quiz-type">TEST_012</div>
+        <div class="quiz-question">12. 员工天天加班但产出低，最可能的原因是？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>不努力</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>能力差</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>激励机制有问题</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>态度问题</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 人会对激励做反应，不会对目标负责</div>
+        <div class="quiz-result incorrect">// FAIL: 产出低是激励问题，不是人不行</div>
+      </div>
+      <div class="quiz-card" style="border-left:2px solid var(--accent)">
+        <div class="quiz-type">TEST_013</div>
+        <div class="quiz-question">13. 目标不清晰会导致？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>灵活</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>自由</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>行为混乱</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>创新空间</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 目标不清晰=系统无方向=行为随机</div>
+        <div class="quiz-result incorrect">// FAIL: 目标不清晰是系统问题，不是灵活</div>
+      </div>
+      <div class="quiz-card" style="border-left:2px solid var(--accent)">
+        <div class="quiz-type">TEST_014</div>
+        <div class="quiz-question">14. KPI设置错误会？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>小问题，可调整</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>全员做错事，方向全偏</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>无影响，慢慢改</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>技术问题，换指标</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: KPI错了，所有人努力方向就错了</div>
+        <div class="quiz-result incorrect">// FAIL: KPI错误是系统性问题</div>
+      </div>
+      <div class="quiz-card" style="border-left:2px solid var(--accent)">
+        <div class="quiz-type">TEST_015</div>
+        <div class="quiz-question">15. 换人能解决问题吗？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>能，换个能力强的人就行</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>有可能，看运气</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>多数是机制问题，换人只是换了个棋子</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>看情况，不能一概而论</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 机制不变，换人只是换了个执行机制的人</div>
+        <div class="quiz-result incorrect">// FAIL: 换人解决不了系统问题</div>
+      </div>
+      <div class="quiz-card" style="border-left:2px solid var(--accent)">
+        <div class="quiz-type">TEST_016</div>
+        <div class="quiz-question">16. 短期业绩好但长期崩盘，最可能是？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>运气问题</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>市场周期</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>激励机制扭曲，短期行为伤害长期价值</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>团队能力下降</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 激励扭曲，短期行为伤害长期价值</div>
+        <div class="quiz-result incorrect">// FAIL: 短期好长期崩是系统问题</div>
+      </div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 延伸思考 //</h2>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_017</div>
+        <div class="quiz-question">17. 奖励与目标无关会导致？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>公平感</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>员工福利</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>行为严重偏离目标</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>激励效果增强</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 激励错配=人在做对自己有利的事</div>
+        <div class="quiz-result incorrect">// FAIL: 奖励和目标脱节是激励扭曲</div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-type">TEST_018</div>
+        <div class="quiz-question">18. 员工只做考核内容，反映了什么？</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>员工懒</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>员工现实</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>机制在驱动"做考核内容"这个行为</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>员工不负责任</span></div>
+        </div>
+        <div class="quiz-result correct">// PASS: 人在系统里被机制驱动，不是靠自觉</div>
+        <div class="quiz-result incorrect">// FAIL: 这是机制问题，不是人品问题</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="4">// 上一章 //</button>
+      <button class="btn-next" data-target="6">>> 进入第六章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-6">
+  <div class="summary-section">
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:36px;padding-bottom:10px;border-bottom:1px solid var(--accent);display:inline-block;text-shadow:0 0 20px var(--glow);color:var(--accent);font-family:'Courier New',Courier,monospace;letter-spacing:0.1em">// 第六章：核心总结 //</h2>
+    <div class="big-quote">
+      激励 → 行为<br>
+      <span style="color:var(--accent)">行为 → 结果</span><br>
+      结果 → 强化<br>
+      <span style="font-size:14px;color:var(--gray);font-weight:400;text-shadow:none">// 最小闭环：管理系统 //</span>
+    </div>
+    <div class="highlight-text" style="font-size:15px;max-width:600px;margin:0 auto 36px">管理不是改变人，而是设计一个让人不得不这样做的系统 // 核心定理</div>
+    <div class="theory-card" style="text-align:left;max-width:600px;margin:0 auto">
+      <h3>// 核心知识点 //</h3>
+      <div class="strategy-grid">
+        <div class="strategy-item"><h4>控制方向</h4><p>管理系统控制的是人的行为方向，不是人本身</p></div>
+        <div class="strategy-item"><h4>激励核心</h4><p>激励错了，所有努力方向都错</p></div>
+        <div class="strategy-item"><h4>先改机制</h4><p>先改机制，再考虑换人</p></div>
+        <div class="strategy-item"><h4>反馈速度</h4><p>反馈越快，修正越及时，系统越稳定</p></div>
+      </div>
+    </div>
+    <div class="theory-card" style="text-align:left;max-width:600px;margin:16px auto 0">
+      <h3>// 延伸阅读 //</h3>
+      <ul class="reading-list">
+        <li><strong>《系统之美》</strong> —— 德内拉·梅多斯 | 系统思考入门经典</li>
+        <li><strong>《原则》</strong> —— 瑞·达利欧 | 桥水的管理实验</li>
+        <li><strong>《思考，快与慢》</strong> —— 丹尼尔·卡尼曼 | 人类判断局限与激励机制设计</li>
+      </ul>
+    </div>
+    <div class="author-sig" style="padding-top:16px;">
+      <span style="font-size:14px;font-weight:700;letter-spacing:.08em;text-shadow:0 0 20px var(--glow),0 0 40px var(--glow),0 0 60px rgba(0,255,0,0.4);color:var(--accent);">> 托罗～转啊转 // 持续更新中 // 关注不迷路</span>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="5">// 上一章 //</button>
+      <button class="btn-next" onclick="switchLesson(1)">>> 重启系统 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音用户：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音用户：托罗～转啊转</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var bs=document.getElementById('bootScreen'),bl=document.querySelectorAll('.boot-line'),bp=document.getElementById('bootProgress'),bt=document.getElementById('bootProgressText'),bg=document.getElementById('bootGranted'),bs2=document.getElementById('bootSkip'),ts=bl.length,cs=0,bc=false;
+  function snl(){if(cs<ts){bl[cs].classList.add('visible');cs++;var p=Math.round((cs/ts)*100);bp.style.width=p+'%';bt.textContent='LOADING... '+p+'%';if(cs<ts)setTimeout(snl,280);else setTimeout(sg,400);}}
+  function sg(){bc=true;bg.classList.add('visible');bt.textContent='READY';setTimeout(function(){bs.classList.add('fade-out');setTimeout(function(){bs.style.display='none'},700);},900);}
+  document.addEventListener('keydown',function(e){if(e.code==='Space'&&!bc){e.preventDefault();cs=ts;for(var i=0;i<bl.length;i++)bl[i].classList.add('visible');bp.style.width='100%';bt.textContent='LOADING... 100%';setTimeout(sg,300);}});
+  bs2.addEventListener('click',function(){if(!bc){cs=ts;for(var i=0;i<bl.length;i++)bl[i].classList.add('visible');bp.style.width='100%';bt.textContent='LOADING... 100%';setTimeout(sg,300);}});
+  setTimeout(snl,500);
+})();
+
+function switchLesson(n){
+  var ls=document.querySelectorAll('.lesson'),ts=document.querySelectorAll('.progress-tab');
+  for(var i=0;i<ls.length;i++){ls[i].classList.remove('active');ts[i].classList.remove('active','completed');}
+  document.getElementById('lesson-'+n).classList.add('active');
+  var cur=document.querySelector('.progress-tab[data-lesson="'+n+'"]');
+  cur.classList.add('active');
+  for(var j=1;j<n;j++){document.querySelector('.progress-tab[data-lesson="'+j+'"]').classList.add('completed');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.progress-tab').forEach(function(t){t.addEventListener('click',function(){switchLesson(parseInt(this.dataset.lesson));});});
+document.querySelectorAll('.btn-next').forEach(function(b){b.addEventListener('click',function(){var t=this.dataset.target;if(t)switchLesson(parseInt(t));});});
+document.querySelectorAll('.btn-prev').forEach(function(b){b.addEventListener('click',function(){var t=this.dataset.target;if(t)switchLesson(parseInt(t));});});
+
+document.querySelectorAll('.quiz-option').forEach(function(o){
+  o.addEventListener('click',function(){
+    var card=this.closest('.quiz-card'),opts=card.querySelectorAll('.quiz-option'),isCorr=this.dataset.correct==='true';
+    opts.forEach(function(opt){opt.classList.remove('selected');opt.style.borderColor='';opt.style.background='';});
+    this.classList.add('selected');
+    card.classList.remove('answered','result-correct','result-incorrect');
+    card.classList.add('answered',isCorr?'result-correct':'result-incorrect');
+    if(!isCorr){opts.forEach(function(opt){if(opt.dataset.correct==='true'){opt.style.borderColor='var(--accent)';opt.style.background='rgba(0,255,0,0.08)';}});}
+  });
+});
+</script>
+</body>
+</html>
