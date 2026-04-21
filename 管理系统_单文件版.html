@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理系统 — 规则驱动行为</title>
+  <style>
+/* ===== 基础重置 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  background: #FFFFFF;
+  color: #000000;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 页面容器 ===== */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding: 60px 40px;
+}
+
+.page.active {
+  display: block;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ===== 返回按钮 ===== */
+.back-btn {
+  cursor: pointer;
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 60px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #FF3B30;
+}
+
+.back-arrow {
+  font-size: 18px;
+}
+
+/* ===== 首页 ===== */
+.diagram-section {
+  margin-bottom: 80px;
+}
+
+.flow-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.flow-node {
+  padding: 14px 28px;
+  border: 1px solid #000;
+  text-align: center;
+  font-size: 13px;
+  min-width: 180px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.flow-node:hover {
+  background: #000;
+  color: #FFF;
+}
+
+.flow-node.highlight {
+  border: 2px solid #FF3B30;
+  color: #FF3B30;
+  font-weight: 600;
+}
+
+.flow-node.highlight:hover {
+  background: #FF3B30;
+  color: #FFF;
+}
+
+.flow-arrow {
+  font-size: 14px;
+  color: #999;
+}
+
+.flow-loop {
+  font-size: 12px;
+  color: #FF3B30;
+  margin-top: 8px;
+}
+
+/* ===== 弹窗 ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: relative;
+  background: #FFF;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 2px solid #000;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #EEE;
+  position: sticky;
+  top: 0;
+  background: #FFF;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-close {
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #FF3B30;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #FF3B30;
+}
+
+.modal-body p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.modal-body ul {
+  list-style: none;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.modal-body ul li::before {
+  content: "→";
+  color: #FF3B30;
+  margin-right: 12px;
+}
+
+.modal-highlight {
+  background: #FFF5F5;
+  border-left: 3px solid #FF3B30;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.modal-highlight p {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* 核心理念 */
+.core-idea {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.idea-text {
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+.quote {
+  font-size: 36px;
+  color: #FF3B30;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* 三个入口按钮 */
+.entry-buttons {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.entry-btn {
+  width: 160px;
+  height: 160px;
+  border: 1px solid #000;
+  background: #FFF;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.entry-btn:hover:not(:disabled) {
+  background: #000;
+  color: #FFF;
+}
+
+.entry-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.btn-icon {
+  font-size: 32px;
+}
+
+.btn-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.btn-coming {
+  font-size: 10px;
+  color: #999;
+  position: absolute;
+  bottom: 16px;
+}
+
+/* ===== 卡片列表 ===== */
+.page-title {
+  font-size: 32px;
+  font-weight: 300;
+  margin-bottom: 60px;
+  letter-spacing: 4px;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.card {
+  border: 1px solid #000;
+  padding: 32px 40px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.card:hover {
+  background: #000;
+  color: #FFF;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card-label {
+  color: #FF3B30;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.card:hover .card-label {
+  color: #FF3B30;
+}
+
+.card-category {
+  font-size: 12px;
+  color: #999;
+}
+
+.card:hover .card-category {
+  color: #CCC;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.card-arrow {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  opacity: 0.3;
+}
+
+.card:hover .card-arrow {
+  opacity: 1;
+}
+
+/* ===== 内容区 ===== */
+.content-section {
+  margin-bottom: 60px;
+}
+
+.section-header {
+  margin-bottom: 40px;
+}
+
+.section-label {
+  font-size: 14px;
+  color: #FF3B30;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.section-content h2 {
+  font-size: 28px;
+  font-weight: 300;
+  margin-bottom: 48px;
+}
+
+.content-block {
+  margin-bottom: 40px;
+}
+
+.block-title {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.content-block p {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.content-block ul {
+  list-style: none;
+  font-size: 16px;
+  line-height: 2;
+}
+
+.content-block ul li::before {
+  content: "→";
+  color: #FF3B30;
+  margin-right: 12px;
+}
+
+.highlight-block {
+  border-left: 3px solid #FF3B30;
+  padding-left: 24px;
+}
+
+.highlight-text {
+  font-size: 18px !important;
+  font-weight: 500;
+}
+
+.emphasis {
+  color: #FF3B30;
+  font-weight: 600;
+}
+
+/* 五层模型 */
+.five-layers {
+  margin: 48px 0;
+}
+
+.layer-item {
+  display: flex;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid #EEE;
+  transition: all 0.2s;
+}
+
+.layer-item.highlight {
+  background: #000;
+  color: #FFF;
+  margin: 0 -24px;
+  padding: 24px;
+  border-bottom: none;
+}
+
+.layer-item.highlight .layer-desc {
+  color: #CCC;
+}
+
+.layer-num {
+  font-size: 32px;
+  font-weight: 300;
+  color: #000;
+  width: 40px;
+}
+
+.layer-item.highlight .layer-num {
+  color: #FF3B30;
+}
+
+.layer-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.layer-desc {
+  font-size: 14px;
+  color: #999;
+}
+
+/* ===== 知识块 ===== */
+.knowledge-block {
+  margin-bottom: 48px;
+  padding: 24px;
+  border: 1px solid #000;
+  transition: all 0.2s;
+}
+
+.knowledge-block.highlight {
+  border: 2px solid #FF3B30;
+  background: #FFF5F5;
+}
+
+.kb-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kb-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.kb-subtitle {
+  font-size: 12px;
+  color: #999;
+}
+
+.kb-content {
+  padding-left: 8px;
+}
+
+.kb-question {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.kb-points {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.point {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.point.full {
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #CCC;
+}
+
+.point-label {
+  font-size: 12px;
+  color: #FF3B30;
+  font-weight: 600;
+  min-width: 48px;
+}
+
+.point-text {
+  font-size: 14px;
+  color: #333;
+}
+
+/* ===== 案例块 ===== */
+.case-block {
+  margin-bottom: 48px;
+  padding: 32px;
+  border: 1px solid #EEE;
+  background: #FAFAFA;
+}
+
+.case-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.case-scenario {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #EEE;
+}
+
+.case-analysis,
+.case-solution {
+  margin-bottom: 16px;
+}
+
+.analysis-label,
+.solution-label {
+  font-size: 12px;
+  color: #FF3B30;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.case-analysis p,
+.case-solution p {
+  font-size: 14px;
+  line-height: 2;
+}
+
+.case-solution p::before {
+  content: "";
+  margin-left: 0;
+}
+
+/* ===== 行动按钮 ===== */
+.action-btn {
+  display: inline-block;
+  padding: 16px 32px;
+  background: #FF3B30;
+  color: #FFF;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 20px;
+}
+
+.action-btn:hover {
+  background: #E03527;
+}
+
+/* ===== 测试模块 ===== */
+.quiz-header {
+  text-align: right;
+  margin-bottom: 60px;
+}
+
+.quiz-progress {
+  font-size: 14px;
+  color: #FF3B30;
+  font-weight: 600;
+}
+
+.quiz-content {
+  margin-bottom: 60px;
+}
+
+.quiz-question {
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #EEE;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quiz-option {
+  padding: 20px 24px;
+  border: 1px solid #000;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.quiz-option:hover:not(.disabled) {
+  border-width: 2px;
+}
+
+.quiz-option.selected {
+  background: #000;
+  color: #FFF;
+  border-color: #000;
+}
+
+.quiz-option.correct {
+  background: #E8F5E9;
+  border-color: #4CAF50;
+  color: #2E7D32;
+}
+
+.quiz-option.wrong {
+  background: #FFEBEE;
+  border-color: #FF3B30;
+  color: #C62828;
+}
+
+.quiz-option.disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* 反馈 */
+.quiz-feedback {
+  margin-top: 32px;
+  padding: 24px;
+  background: #FAFAFA;
+}
+
+.feedback-result {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.feedback-result.correct {
+  color: #4CAF50;
+}
+
+.feedback-result.wrong {
+  color: #FF3B30;
+}
+
+.feedback-answer {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.feedback-answer span {
+  color: #FF3B30;
+  font-weight: 600;
+}
+
+.feedback-explain {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.8;
+}
+
+.quiz-actions {
+  text-align: center;
+}
+
+.quiz-btn {
+  padding: 16px 48px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.next-btn {
+  background: #000;
+  color: #FFF;
+}
+
+.next-btn:hover {
+  background: #333;
+}
+
+/* ===== 结果页 ===== */
+.result-content {
+  text-align: center;
+  padding: 60px 0;
+}
+
+.result-score {
+  font-size: 72px;
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+
+.result-label {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.result-percent {
+  font-size: 36px;
+  font-weight: 600;
+  color: #FF3B30;
+  margin-bottom: 40px;
+}
+
+.result-streak {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.result-streak span {
+  color: #FF3B30;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.result-wrong {
+  margin-bottom: 48px;
+}
+
+.wrong-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 32px;
+  border: 1px solid #000;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wrong-card:hover {
+  background: #000;
+  color: #FFF;
+}
+
+.result-stats {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.stats-divider {
+  width: 60px;
+  height: 1px;
+  background: #EEE;
+  margin: 0 auto 24px;
+}
+
+.stats-title {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.stats-label {
+  color: #666;
+}
+
+.stats-value {
+  font-weight: 600;
+}
+
+.stats-action {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #FF3B30;
+  color: #FFF;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stats-action:hover {
+  background: #E03527;
+}
+
+.result-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.result-btn {
+  padding: 16px 48px;
+  border: 1px solid #000;
+  background: #FFF;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.result-btn:hover {
+  background: #000;
+  color: #FFF;
+}
+
+.result-btn.secondary {
+  background: #FFF;
+}
+
+/* ===== 规则模块 ===== */
+.rule-section {
+  margin-bottom: 48px;
+}
+
+.rule-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #000;
+  color: #FFF;
+  cursor: pointer;
+}
+
+.rule-header.highlight {
+  background: #FF3B30;
+}
+
+.rule-category {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.rule-count {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.rule-list {
+  border: 1px solid #EEE;
+  border-top: none;
+}
+
+.rule-item {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rule-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #EEE;
+  font-size: 15px;
+}
+
+.rule-item:hover .rule-title {
+  background: #FAFAFA;
+}
+
+.rule-num {
+  font-size: 12px;
+  color: #999;
+  font-weight: 600;
+}
+
+.reward-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.penalty-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #FFEBEE;
+  color: #C62828;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.rule-detail {
+  display: none;
+  padding: 24px;
+  background: #FAFAFA;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.rule-item.open .rule-detail {
+  display: block;
+}
+
+.rule-detail p {
+  margin-bottom: 4px;
+}
+
+.rule-gap {
+  height: 12px;
+}
+
+.rule-note {
+  padding: 24px;
+  background: #FFF5F5;
+  border-left: 3px solid #FF3B30;
+  margin-top: 48px;
+}
+
+.note-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FF3B30;
+  margin-bottom: 12px !important;
+}
+
+.rule-note p {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+  .page {
+    padding: 40px 24px;
+  }
+  
+  .idea-text {
+    font-size: 18px;
+  }
+  
+  .quote {
+    font-size: 24px;
+  }
+  
+  .entry-btn {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .card {
+    padding: 24px;
+  }
+  
+  .card-arrow {
+    display: none;
+  }
+  
+  .section-content h2 {
+    font-size: 22px;
+  }
+  
+  .result-score {
+    font-size: 48px;
+  }
+  
+  .quiz-question {
+    font-size: 18px;
+  }
+  
+  .flow-node {
+    padding: 12px 20px;
+    min-width: 160px;
+    font-size: 12px;
+  }
+}
+  </style>
+</head>
+<body>
+  
+  <!-- ===== 首页 ===== -->
+  <div id="home-page" class="page active">
+    <div class="container">
+      
+      <!-- 系统动力图 -->
+      <div class="diagram-section">
+        <div class="flow-chart">
+          <div class="flow-node" onclick="showStepDetail(1)">① 战略系统</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(2)">② 规则系统</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(3)">③ 培训与同步</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(4)">④ 人的能力基线</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(5)">⑤ 任务触发</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(6)">⑥ 责权利分配</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(7)">⑦ 任务执行</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(8)">⑧ 过程控制</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(9)">⑨ 过程记录</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node highlight" onclick="showStepDetail(10)">⑩ 奖惩机制</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(11)">⑪ 结果输出</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(12)">⑫ 反馈系统</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-node" onclick="showStepDetail(13)">⑬ 规则更新</div>
+          <div class="flow-loop">↺ 回到培训</div>
+        </div>
+      </div>
+      
+      <!-- 步骤详情弹窗 -->
+      <div id="step-modal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeStepModal()"></div>
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="modal-title" id="step-title">步骤详情</span>
+            <span class="modal-close" onclick="closeStepModal()">×</span>
+          </div>
+          <div class="modal-body" id="step-body">
+            <!-- 动态内容 -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- 核心理念 -->
+      <div class="core-idea">
+        <p class="idea-text">
+          <span class="quote">"</span>
+          规则定方向，培训统一人，责权利驱行动，执行产出结果，反馈更新规则
+          <span class="quote">"</span>
+        </p>
+      </div>
+      
+      <!-- 三个入口 -->
+      <div class="entry-buttons">
+        <button class="entry-btn" onclick="showPage('concept-list')">
+          <span class="btn-icon">○</span>
+          <span class="btn-text">理念</span>
+        </button>
+        <button class="entry-btn" onclick="showPage('rules')">
+          <span class="btn-icon">◻</span>
+          <span class="btn-text">规则</span>
+        </button>
+        <button class="entry-btn" onclick="startQuiz()">
+          <span class="btn-icon">✓</span>
+          <span class="btn-text">测试</span>
+        </button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 理念模块 — 列表页 ===== -->
+  <div id="concept-list-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('home')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <h1 class="page-title">理念模块</h1>
+      
+      <div class="card-list">
+        
+        <div class="card" onclick="showPage('concept-layer1')">
+          <div class="card-header">
+            <span class="card-label">第一层</span>
+            <span class="card-category">哲学</span>
+          </div>
+          <div class="card-title">管理的本质是什么？</div>
+          <div class="card-arrow">→</div>
+        </div>
+        
+        <div class="card" onclick="showPage('concept-layer2')">
+          <div class="card-header">
+            <span class="card-label">第二层</span>
+            <span class="card-category">逻辑</span>
+          </div>
+          <div class="card-title">五层模型：为什么是这个结构？</div>
+          <div class="card-arrow">→</div>
+        </div>
+        
+        <div class="card" onclick="showPage('concept-layer3')">
+          <div class="card-header">
+            <span class="card-label">第三层</span>
+            <span class="card-category">知识点</span>
+          </div>
+          <div class="card-title">人 / 结构 / 规则 / 执行力 / 进化</div>
+          <div class="card-arrow">→</div>
+        </div>
+        
+        <div class="card" onclick="showPage('concept-layer4')">
+          <div class="card-header">
+            <span class="card-label">第四层</span>
+            <span class="card-category">案例</span>
+          </div>
+          <div class="card-title">具体应用场景解析</div>
+          <div class="card-arrow">→</div>
+        </div>
+        
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 理念模块 — 第一层：哲学 ===== -->
+  <div id="concept-layer1-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('concept-list')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <div class="content-section">
+        <div class="section-header">
+          <span class="section-label">第一层 · 哲学</span>
+        </div>
+        
+        <div class="section-content">
+          <h2>管理的本质是什么？</h2>
+          
+          <div class="content-block">
+            <div class="block-title">核心命题</div>
+            <p>人不会按照"对错"行动，而是按照"后果"行动。</p>
+          </div>
+          
+          <div class="content-block">
+            <div class="block-title">推导</div>
+            <ul>
+              <li>谁设计了后果，谁就设计了行为</li>
+              <li>谁设计了行为，谁就控制了结果</li>
+            </ul>
+          </div>
+          
+          <div class="content-block highlight-block">
+            <div class="block-title">结论</div>
+            <p class="highlight-text">管理不是管人，而是设计一套让人不得不做对事的系统。</p>
+          </div>
+          
+          <div class="content-block">
+            <div class="block-title">两个关键</div>
+            <p><span class="emphasis">清晰</span>：规则必须可理解、可执行、可验证</p>
+            <p><span class="emphasis">一致</span>：说好的奖惩必须兑现，否则系统崩溃</p>
+          </div>
+        </div>
+        
+        <button class="action-btn" onclick="startQuiz()">进入测试 →</button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 理念模块 — 第二层：逻辑 ===== -->
+  <div id="concept-layer2-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('concept-list')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <div class="content-section">
+        <div class="section-header">
+          <span class="section-label">第二层 · 逻辑</span>
+        </div>
+        
+        <div class="section-content">
+          <h2>五层模型：为什么是这个结构？</h2>
+          
+          <div class="content-block">
+            <div class="block-title">整体逻辑</div>
+            <p>前3层决定<span class="emphasis">"理论可行"</span></p>
+            <p>第4层决定<span class="emphasis">"现实发生"</span></p>
+            <p>第5层决定<span class="emphasis">"长期演化"</span></p>
+          </div>
+          
+          <div class="five-layers">
+            <div class="layer-item">
+              <div class="layer-num">1</div>
+              <div class="layer-content">
+                <div class="layer-title">人（知能愿）</div>
+                <div class="layer-desc">能不能上场</div>
+              </div>
+            </div>
+            <div class="layer-item">
+              <div class="layer-num">2</div>
+              <div class="layer-content">
+                <div class="layer-title">结构（责权利）</div>
+                <div class="layer-desc">能不能动起来</div>
+              </div>
+            </div>
+            <div class="layer-item">
+              <div class="layer-num">3</div>
+              <div class="layer-content">
+                <div class="layer-title">规则（标准/公平/透明）</div>
+                <div class="layer-desc">会不会内耗</div>
+              </div>
+            </div>
+            <div class="layer-item highlight">
+              <div class="layer-num">4</div>
+              <div class="layer-content">
+                <div class="layer-title">执行力（奖惩机制）</div>
+                <div class="layer-desc">会不会真正发生</div>
+              </div>
+            </div>
+            <div class="layer-item">
+              <div class="layer-num">5</div>
+              <div class="layer-content">
+                <div class="layer-title">进化（反馈/预期/决策）</div>
+                <div class="layer-desc">能不能持续变强</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-block highlight-block">
+            <div class="block-title">关键洞察</div>
+            <p class="highlight-text">没有奖惩 → 系统是"建议"<br>有了奖惩 → 系统才是"规则"</p>
+          </div>
+        </div>
+        
+        <button class="action-btn" onclick="startQuiz()">进入测试 →</button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 理念模块 — 第三层：知识点 ===== -->
+  <div id="concept-layer3-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('concept-list')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <div class="content-section">
+        <div class="section-header">
+          <span class="section-label">第三层 · 知识点</span>
+        </div>
+        
+        <div class="section-content">
+          
+          <!-- 人（知能愿）-->
+          <div class="knowledge-block">
+            <div class="kb-header">
+              <span class="kb-title">人</span>
+              <span class="kb-subtitle">知 / 能 / 愿</span>
+            </div>
+            <div class="kb-content">
+              <p class="kb-question">人能不能被用？</p>
+              <div class="kb-points">
+                <div class="point">
+                  <span class="point-label">知</span>
+                  <span class="point-text">认知对齐，解决理解偏差</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">能</span>
+                  <span class="point-text">执行能力，解决技能不足</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">愿</span>
+                  <span class="point-text">主观意愿，解决积极性问题</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 结构（责权利）-->
+          <div class="knowledge-block">
+            <div class="kb-header">
+              <span class="kb-title">结构</span>
+              <span class="kb-subtitle">责 / 权 / 利</span>
+            </div>
+            <div class="kb-content">
+              <p class="kb-question">事情如何被推动？</p>
+              <div class="kb-points">
+                <div class="point">
+                  <span class="point-label">责</span>
+                  <span class="point-text">结果归属清晰唯一</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">权</span>
+                  <span class="point-text">拥有资源与决策权</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">利</span>
+                  <span class="point-text">行动与回报挂钩</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 规则（标准/公平/透明）-->
+          <div class="knowledge-block">
+            <div class="kb-header">
+              <span class="kb-title">规则</span>
+              <span class="kb-subtitle">标准 / 公平 / 透明</span>
+            </div>
+            <div class="kb-content">
+              <p class="kb-question">多人协作如何不内耗？</p>
+              <div class="kb-points">
+                <div class="point">
+                  <span class="point-label">标准</span>
+                  <span class="point-text">完成定义、好坏边界清晰</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">公平</span>
+                  <span class="point-text">分配匹配贡献，奖惩一致</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">透明</span>
+                  <span class="point-text">进度、状态、问题可见</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 执行力（奖惩机制）-->
+          <div class="knowledge-block highlight">
+            <div class="kb-header">
+              <span class="kb-title">执行力</span>
+              <span class="kb-subtitle">奖惩机制</span>
+            </div>
+            <div class="kb-content">
+              <p class="kb-question">规则如何变成现实行为？</p>
+              <div class="kb-points">
+                <div class="point">
+                  <span class="point-label">激励</span>
+                  <span class="point-text">做对 → 得到好处；超额 → 额外回报</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">约束</span>
+                  <span class="point-text">做错 → 承担代价；不做 → 明确后果</span>
+                </div>
+                <div class="point full">
+                  <span class="point-label">关键</span>
+                  <span class="point-text">标准必须对应奖惩，行为必须对应后果</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 进化（反馈/预期/决策）-->
+          <div class="knowledge-block">
+            <div class="kb-header">
+              <span class="kb-title">进化</span>
+              <span class="kb-subtitle">反馈 / 预期 / 决策</span>
+            </div>
+            <div class="kb-content">
+              <p class="kb-question">系统能不能长期变强？</p>
+              <div class="kb-points">
+                <div class="point">
+                  <span class="point-label">反馈</span>
+                  <span class="point-text">记录问题、复盘、优化</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">预期</span>
+                  <span class="point-text">规则稳定、未来可判断</span>
+                </div>
+                <div class="point">
+                  <span class="point-label">决策</span>
+                  <span class="point-text">冲突处理、最终裁量权</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <button class="action-btn" onclick="startQuiz()">进入测试 →</button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 理念模块 — 第四层：案例 ===== -->
+  <div id="concept-layer4-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('concept-list')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <div class="content-section">
+        <div class="section-header">
+          <span class="section-label">第四层 · 案例</span>
+        </div>
+        
+        <div class="section-content">
+          <h2>具体应用场景解析</h2>
+          
+          <div class="case-block">
+            <div class="case-title">案例一：任务分配失效</div>
+            <div class="case-scenario">场景：老板布置任务，下属答应但没做</div>
+            <div class="case-analysis">
+              <div class="analysis-label">问题诊断</div>
+              <p>有责无权 → 没资源推动</p>
+              <p>有权无利 → 没动力执行</p>
+              <p>无奖惩 → 做不做都一样</p>
+            </div>
+            <div class="case-solution">
+              <div class="solution-label">解决方案</div>
+              <p>① 明确责任人（唯一归属）</p>
+              <p>② 授权资源（让他能动）</p>
+              <p>③ 设定奖惩（做成的后果）</p>
+            </div>
+          </div>
+          
+          <div class="case-block">
+            <div class="case-title">案例二：规则不被遵守</div>
+            <div class="case-scenario">场景：公司有制度，员工当空气</div>
+            <div class="case-analysis">
+              <div class="analysis-label">问题诊断</div>
+              <p>规则不可执行 → 没法照做</p>
+              <p>奖惩不兑现 → 做不做都一样</p>
+              <p>信息不透明 → 不知道在执行</p>
+            </div>
+            <div class="case-solution">
+              <div class="solution-label">解决方案</div>
+              <p>① 规则具体化（能落地）</p>
+              <p>② 奖惩刚性执行（说到做到）</p>
+              <p>③ 过程公开（谁都看得见）</p>
+            </div>
+          </div>
+          
+          <div class="case-block">
+            <div class="case-title">案例三：团队持续犯错</div>
+            <div class="case-scenario">场景：同样问题反复出现</div>
+            <div class="case-analysis">
+              <div class="analysis-label">问题诊断</div>
+              <p>没有反馈机制 → 错了不知道</p>
+              <p>没有规则更新 → 规则还是错的</p>
+              <p>没有培训同步 → 规则变了人不知道</p>
+            </div>
+            <div class="case-solution">
+              <div class="solution-label">解决方案</div>
+              <p>① 建立复盘机制（识别偏差）</p>
+              <p>② 更新规则（源头修正）</p>
+              <p>③ 培训同步（重新对齐认知）</p>
+            </div>
+          </div>
+          
+        </div>
+        
+        <button class="action-btn" onclick="startQuiz()">进入测试 →</button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 测试模块 — 刷题页 ===== -->
+  <div id="quiz-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="exitQuiz()">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <div class="quiz-header">
+        <span class="quiz-progress">题 <span id="current-q">1</span> / <span id="total-q">10</span></span>
+      </div>
+      
+      <div class="quiz-content">
+        <div class="quiz-question" id="question-text">
+          问题加载中...
+        </div>
+        
+        <div class="quiz-options" id="options-container">
+          <!-- 选项动态生成 -->
+        </div>
+        
+        <div class="quiz-feedback" id="feedback-container" style="display: none;">
+          <div class="feedback-result" id="feedback-result"></div>
+          <div class="feedback-answer" id="feedback-answer"></div>
+          <div class="feedback-explain" id="feedback-explain"></div>
+        </div>
+      </div>
+      
+      <div class="quiz-actions">
+        <button class="quiz-btn next-btn" id="next-btn" onclick="nextQuestion()" style="display: none;">
+          下一题 →
+        </button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 测试模块 — 结果页 ===== -->
+  <div id="result-page" class="page">
+    <div class="container">
+      
+      <div class="result-content">
+        <div class="result-score">
+          <span id="score-correct">0</span> / <span id="score-total">10</span>
+        </div>
+        <div class="result-label">本次正确率</div>
+        <div class="result-percent" id="score-percent">0%</div>
+        
+        <div class="result-streak" id="streak-display" style="display: none;">
+          连续正确 <span id="streak-count">0</span> 题
+        </div>
+        
+        <div class="result-wrong" id="wrong-display" style="display: none;">
+          <div class="wrong-card" onclick="reviewWrong()">
+            错题回顾 (<span id="wrong-count">0</span>题)
+            <span class="card-arrow">→</span>
+          </div>
+        </div>
+        
+        <!-- 累计统计 -->
+        <div class="result-stats" id="all-time-stats" style="display: none;">
+          <div class="stats-divider"></div>
+          <div class="stats-title">累计成绩</div>
+          <div class="stats-row">
+            <span class="stats-label">总答题数</span>
+            <span class="stats-value" id="all-total">0</span>
+          </div>
+          <div class="stats-row">
+            <span class="stats-label">总正确率</span>
+            <span class="stats-value" id="all-percent">0%</span>
+          </div>
+          <div class="stats-row">
+            <span class="stats-label">错题库</span>
+            <span class="stats-value" id="all-wrong">0</span>
+          </div>
+          <div class="stats-action" id="wrong-training-btn" style="display: none;" onclick="startWrongTraining()">
+            错题专项训练 →
+          </div>
+        </div>
+        
+        <div class="result-actions">
+          <button class="result-btn" onclick="startQuiz()">再刷一轮</button>
+          <button class="result-btn secondary" onclick="showPage('home')">返回首页</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- ===== 规则模块 — 规则库 ===== -->
+  <div id="rules-page" class="page">
+    <div class="container">
+      
+      <div class="back-btn" onclick="showPage('home')">
+        <span class="back-arrow">←</span> 返回
+      </div>
+      
+      <h1 class="page-title">规则库</h1>
+      
+      <!-- 标准类规则 -->
+      <div class="rule-section">
+        <div class="rule-header">
+          <span class="rule-category">标准类规则</span>
+          <span class="rule-count">3 条</span>
+        </div>
+        
+        <div class="rule-list">
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">01</span>
+              完成的定义
+            </div>
+            <div class="rule-detail">
+              <p><strong>什么是"做完"？</strong></p>
+              <p>· 交付物清晰、可验证</p>
+              <p>· 达到约定的质量标准</p>
+              <p>· 在约定时间内提交</p>
+              <p>· 接收方确认无误</p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">02</span>
+              好坏的边界
+            </div>
+            <div class="rule-detail">
+              <p><strong>什么是"做好"？</strong></p>
+              <p><strong>优秀（超额完成）：</strong></p>
+              <p>· 交付时间提前 ≥ 20%</p>
+              <p>· 质量超出标准要求</p>
+              <p>· 主动优化流程或方法</p>
+              <p class="rule-gap"></p>
+              <p><strong>合格（达到标准）：</strong></p>
+              <p>· 按时提交、质量达标、无返工</p>
+              <p class="rule-gap"></p>
+              <p><strong>不合格（未达标）：</strong></p>
+              <p>· 延期、质量不达标、需返工</p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">03</span>
+              质量底线
+            </div>
+            <div class="rule-detail">
+              <p><strong>不可触碰的红线：</strong></p>
+              <p>· 隐瞒问题 → 加重处罚</p>
+              <p>· 推卸责任 → 记录在案</p>
+              <p>· 欺骗行为 → 零容忍</p>
+              <p>· 重复犯错 → 升级处理</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 流程类规则 -->
+      <div class="rule-section">
+        <div class="rule-header">
+          <span class="rule-category">流程类规则</span>
+          <span class="rule-count">2 条</span>
+        </div>
+        
+        <div class="rule-list">
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">01</span>
+              任务下达流程
+            </div>
+            <div class="rule-detail">
+              <p><strong>任务必须包含：</strong></p>
+              <p>① 明确的目标和完成标准</p>
+              <p>② 唯一责任人</p>
+              <p>③ 截止时间</p>
+              <p>④ 授权资源</p>
+              <p>⑤ 明确的奖惩约定</p>
+              <p class="rule-gap"></p>
+              <p><strong>缺一不可，否则任务无效。</strong></p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">02</span>
+              反馈闭环流程
+            </div>
+            <div class="rule-detail">
+              <p><strong>问题发生时的处理链：</strong></p>
+              <p>① 发现问题 → 立即上报（不隐瞒）</p>
+              <p>② 分析原因 → 找出根本问题</p>
+              <p>③ 提出方案 → 不只说问题，要带方案</p>
+              <p>④ 执行修正 → 按方案执行</p>
+              <p>⑤ 复盘记录 → 更新规则，避免重复</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 奖惩类规则 -->
+      <div class="rule-section">
+        <div class="rule-header highlight">
+          <span class="rule-category">奖惩类规则</span>
+          <span class="rule-count">4 条</span>
+        </div>
+        
+        <div class="rule-list">
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">01</span>
+              <span class="reward-tag">奖励</span>超额完成
+            </div>
+            <div class="rule-detail">
+              <p><strong>条件：</strong></p>
+              <p>· 提前完成 ≥ 20% 或质量超额</p>
+              <p class="rule-gap"></p>
+              <p><strong>奖励：</strong></p>
+              <p>· 绩效加分</p>
+              <p>· 公开认可</p>
+              <p>· 优先机会分配</p>
+              <p>· 额外奖励金（可选）</p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">02</span>
+              <span class="penalty-tag">处罚</span>未完成
+            </div>
+            <div class="rule-detail">
+              <p><strong>条件：</strong></p>
+              <p>· 延期或质量不达标</p>
+              <p class="rule-gap"></p>
+              <p><strong>处罚：</strong></p>
+              <p>· 绩效扣分</p>
+              <p>· 比例扣减当期收益</p>
+              <p>· 记录在案，影响后续评估</p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">03</span>
+              <span class="reward-tag">奖励</span>主动改进
+            </div>
+            <div class="rule-detail">
+              <p><strong>条件：</strong></p>
+              <p>· 主动发现问题并提出有效方案</p>
+              <p>· 优化流程，提升团队效率</p>
+              <p class="rule-gap"></p>
+              <p><strong>奖励：</strong></p>
+              <p>· 额外认可</p>
+              <p>· 改进贡献积分</p>
+              <p>· 晋升优先考虑</p>
+            </div>
+          </div>
+          
+          <div class="rule-item" onclick="toggleRule(this)">
+            <div class="rule-title">
+              <span class="rule-num">04</span>
+              <span class="penalty-tag">加重处罚</span>隐瞒问题
+            </div>
+            <div class="rule-detail">
+              <p><strong>条件：</strong></p>
+              <p>· 发现问题不上报</p>
+              <p>· 隐瞒真实情况</p>
+              <p>· 欺骗行为</p>
+              <p class="rule-gap"></p>
+              <p><strong>处罚：</strong></p>
+              <p>· 加重扣分（1.5-2倍）</p>
+              <p>· 公开通报</p>
+              <p>· 严重者解除合作</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rule-note">
+        <p class="note-title">⚠️ 规则执行原则</p>
+        <p>1. 规则一旦制定，必须执行</p>
+        <p>2. 奖惩必须兑现，否则系统崩溃</p>
+        <p>3. 规则可以优化，但不能朝令夕改</p>
+        <p>4. 任何人包括管理者，都在规则之内</p>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+// ===== 题库 =====
+const questionBank = [
+  // 哲学层
+  {
+    question: "人不会按照“对错”行动，而是按照什么行动？",
+    options: ["心情", "后果", "命令", "直觉"],
+    correct: 1,
+    explain: "这是管理哲学的核心命题：谁设计了后果，谁就设计了行为。"
+  },
+  {
+    question: "“谁设计了后果，谁就设计了行为”这句话的下一句是？",
+    options: [
+      "谁设计了行为，谁就控制了成本",
+      "谁设计了行为，谁就控制了结果",
+      "谁设计了行为，谁就掌握了资源",
+      "谁设计了行为，谁就赢得了信任"
+    ],
+    correct: 1,
+    explain: "管理不是管人，而是设计一套让人不得不做对事的系统。"
+  },
+  {
+    question: "管理的本质是什么？",
+    options: [
+      "管人，让人听话",
+      "设计一套让人不得不做对事的系统",
+      "制定规则并监督执行",
+      "分配资源并考核绩效"
+    ],
+    correct: 1,
+    explain: "管理的核心是设计后果，从而设计行为，最终控制结果。"
+  },
+  {
+    question: "规则要发挥作用，必须同时满足哪两个关键？",
+    options: [
+      "简单和高效",
+      "清晰和一致",
+      "严格和公平",
+      "灵活和透明"
+    ],
+    correct: 1,
+    explain: "清晰：规则必须可理解、可执行、可验证。一致：说好的奖惩必须兑现。"
+  },
+  
+  // 逻辑层 — 五层模型
+  {
+    question: "五层模型中，哪一层决定了“理论可行”？",
+    options: [
+      "第4层执行力",
+      "第5层进化",
+      "前3层（人/结构/规则）",
+      "第1层人"
+    ],
+    correct: 2,
+    explain: "前3层决定“理论可行”，第4层决定“现实发生”，第5层决定“长期演化”。"
+  },
+  {
+    question: "“会不会真正发生”对应五层模型的哪一层？",
+    options: [
+      "人（知能愿）",
+      "结构（责权利）",
+      "规则（标准/公平/透明）",
+      "执行力（奖惩机制）"
+    ],
+    correct: 3,
+    explain: "执行力层（奖惩机制）是把“应该做”变成“必须做”的关键引擎。"
+  },
+  {
+    question: "没有奖惩和有了奖惩，系统分别是什么？",
+    options: [
+      "没有奖惩是空谈，有了奖惩是承诺",
+      "没有奖惩是建议，有了奖惩是规则",
+      "没有奖惩是理想，有了奖惩是现实",
+      "没有奖惩是软约束，有了奖惩是硬约束"
+    ],
+    correct: 1,
+    explain: "奖惩机制不是附属，而是整个系统的“执行引擎”。"
+  },
+  {
+    question: "五层模型中，“能不能上场”对应哪一层？",
+    options: [
+      "人（知能愿）",
+      "结构（责权利）",
+      "规则（标准/公平/透明）",
+      "进化（反馈/预期/决策）"
+    ],
+    correct: 0,
+    explain: "人（知能愿）解决的是人能不能被用的问题。"
+  },
+  
+  // 人（知能愿）
+  {
+    question: "“知能愿”中的“知”要解决什么问题？",
+    options: [
+      "执行能力不足",
+      "主观积极性不够",
+      "理解偏差",
+      "资源分配不公"
+    ],
+    correct: 2,
+    explain: "知 = 认知对齐，解决理解偏差。能 = 执行能力，愿 = 主观意愿。"
+  },
+  {
+    question: "“能”在“知能愿”框架中指的是什么？",
+    options: [
+      "是否知道目标",
+      "是否具备完成任务的技能",
+      "是否有动力参与",
+      "是否理解标准"
+    ],
+    correct: 1,
+    explain: "能解决的是执行能力不足的问题。"
+  },
+  {
+    question: "“愿”要解决的核心问题是什么？",
+    options: [
+      "认知偏差",
+      "技能短板",
+      "主观积极性",
+      "资源约束"
+    ],
+    correct: 2,
+    explain: "愿 = 主观意愿，解决的是“想不想做”的问题。"
+  },
+  {
+    question: "“知能愿”三者的关系可以概括为？",
+    options: [
+      "管理的工具集",
+      "人的“可用性前提”",
+      "奖惩的依据",
+      "流程的起点"
+    ],
+    correct: 1,
+    explain: "知能愿 = 人能不能被用的基础前提。"
+  },
+  
+  // 结构（责权利）
+  {
+    question: "“责权利”解决的核心问题是？",
+    options: [
+      "人能不能被用",
+      "事情如何被推动",
+      "会不会内耗",
+      "能不能持续变强"
+    ],
+    correct: 1,
+    explain: "责权利 = 行动的驱动结构，解决“事情如何被推动”。"
+  },
+  {
+    question: "“责”在“责权利”中的要求是？",
+    options: [
+      "资源匹配贡献",
+      "结果归属清晰唯一",
+      "拥有决策权",
+      "行动与回报挂钩"
+    ],
+    correct: 1,
+    explain: "责 = 责任，要求结果归属清晰唯一，不能多人负责。"
+  },
+  {
+    question: "“权”在“责权利”中指的是？",
+    options: [
+      "职位高低",
+      "资源与决策权",
+      "惩罚的权力",
+      "话语权"
+    ],
+    correct: 1,
+    explain: "权 = 权力，指是否拥有资源与决策权。无权则无法推动执行。"
+  },
+  {
+    question: "“利”要确保的是什么？",
+    options: [
+      "利益分配公平",
+      "行动与回报挂钩",
+      "团队氛围和谐",
+      "个人成长空间"
+    ],
+    correct: 1,
+    explain: "利 = 利益，要求行动与回报挂钩，做了有什么好处要清晰。"
+  },
+  
+  // 规则（标准/公平/透明）
+  {
+    question: "规则层（标准/公平/透明）要解决的问题是？",
+    options: [
+      "人能不能上场",
+      "事情能不能推动",
+      "多人协作会不会内耗",
+      "系统能不能进化"
+    ],
+    correct: 2,
+    explain: "规则系统 = 降低协作成本，解决“多人协作如何不内耗、不混乱”。"
+  },
+  {
+    question: "“标准”在规则系统中指的是？",
+    options: [
+      "行为准则",
+      "完成定义和好坏边界",
+      "道德标准",
+      "技术规范"
+    ],
+    correct: 1,
+    explain: "标准 = 完成的定义、好坏的边界，让所有人知道什么是“完成”。"
+  },
+  {
+    question: "“公平”的要求是？",
+    options: [
+      "人人平等",
+      "分配匹配贡献，奖惩一致",
+      "机会均等",
+      "结果平均"
+    ],
+    correct: 1,
+    explain: "公平 = 分配是否匹配贡献、奖惩是否一致。不是说人人一样，而是付出与回报对等。"
+  },
+  {
+    question: "“透明”的核心作用是？",
+    options: [
+      "方便监督",
+      "降低信息不对称",
+      "进度/状态/问题可见",
+      "增加信任"
+    ],
+    correct: 2,
+    explain: "透明 = 信息是否可见（进度/状态/问题），让所有人都知道发生了什么。"
+  },
+  
+  // 执行力（奖惩机制）
+  {
+    question: "奖惩机制的核心作用是什么？",
+    options: [
+      "降低协作成本",
+      "把“应该做”变成“必须做”",
+      "提升团队士气",
+      "增加管理层次"
+    ],
+    correct: 1,
+    explain: "奖惩机制 = 把“应该做”变成“必须做”，是整个系统的执行引擎。"
+  },
+  {
+    question: "“激励”（正向驱动）的作用是？",
+    options: [
+      "守住底线",
+      "拉高上限，促进主动性",
+      "防止失控",
+      "建立信任"
+    ],
+    correct: 1,
+    explain: "激励 = 做对得好处、超额得额外回报，作用是拉高上限。"
+  },
+  {
+    question: "“约束”（负向约束）的作用是？",
+    options: [
+      "拉高上限",
+      "促进主动性",
+      "守住底线，防止失控",
+      "提升士气"
+    ],
+    correct: 2,
+    explain: "约束 = 做错承担代价、不做有明确后果，作用是守住底线。"
+  },
+  {
+    question: "奖惩一致性的关键是什么？",
+    options: [
+      "奖惩金额要一致",
+      "标准必须对应奖惩，行为必须对应后果",
+      "奖励要多于惩罚",
+      "惩罚要公开，奖励要私密"
+    ],
+    correct: 1,
+    explain: "奖惩一致性的关键：标准→必须对应奖惩，行为→必须对应后果。这建立信任，防止系统崩溃。"
+  },
+  {
+    question: "为什么说“奖惩机制是执行引擎”？",
+    options: [
+      "因为它能提升效率",
+      "因为没有奖惩，系统是“建议”；有了奖惩，系统才是“规则”",
+      "因为它能激励员工",
+      "因为它能规范行为"
+    ],
+    correct: 1,
+    explain: "没有奖惩 → 系统是“建议”；有了奖惩 → 系统才是“规则”。这是管理的核心技术。"
+  },
+  
+  // 进化（反馈/预期/决策）
+  {
+    question: "进化层（反馈/预期/决策）要解决的问题是什么？",
+    options: [
+      "事情能不能推动",
+      "规则会不会被遵守",
+      "系统能不能长期变强",
+      "奖惩是否合理"
+    ],
+    correct: 2,
+    explain: "进化系统 = 让系统“越用越强”，解决重复错误的问题。"
+  },
+  {
+    question: "“反馈”在进化层中的要求是？",
+    options: [
+      "及时回复员工问题",
+      "记录问题、复盘、优化",
+      "建立投诉渠道",
+      "定期收集意见"
+    ],
+    correct: 1,
+    explain: "反馈 = 是否记录问题、是否复盘、是否优化。没有反馈，就会重复错误。"
+  },
+  {
+    question: "“预期”要确保的是？",
+    options: [
+      "目标明确",
+      "规则稳定、未来可判断",
+      "利益可预期",
+      "风险可控"
+    ],
+    correct: 1,
+    explain: "预期 = 规则是否稳定、未来是否可判断。人需要知道“如果我这样做，会发生什么”。"
+  },
+  
+  // 系统动力图相关
+  {
+    question: "系统动力图中，“培训与同步”的位置在哪里？",
+    options: [
+      "规则系统之后",
+      "战略系统之后",
+      "规则系统之前",
+      "反馈系统之后"
+    ],
+    correct: 0,
+    explain: "完整流程：规则系统 → 培训与同步 → 人的能力基线 → ... → 反馈系统 → 规则更新 → 回到培训。"
+  },
+  {
+    question: "当规则发生变化时，系统会怎样？",
+    options: [
+      "直接生效",
+      "通过培训重新对齐认知",
+      "发布通知",
+      "修改文档"
+    ],
+    correct: 1,
+    explain: "规则变化 → 人需要重新对齐认知，通过培训与同步环节实现。"
+  },
+  {
+    question: "系统动力图中，“规则更新”之后会发生什么？",
+    options: [
+      "系统结束",
+      "回到培训与同步",
+      "进入奖惩机制",
+      "触发任务执行"
+    ],
+    correct: 1,
+    explain: "规则更新后，必须回到培训与同步，让人重新理解规则，形成闭环。"
+  },
+  
+  // 综合/案例
+  {
+    question: "老板布置任务，下属答应但没做。问题可能在于？",
+    options: [
+      "下属能力不行",
+      "有责无权、有权无利、无奖惩",
+      "任务不清晰",
+      "时间不够"
+    ],
+    correct: 1,
+    explain: "常见问题：有责无权→没资源推动；有权无利→没动力执行；无奖惩→做不做都一样。"
+  },
+  {
+    question: "公司有制度，员工当空气。根本原因是？",
+    options: [
+      "员工素质低",
+      "规则不可执行、奖惩不兑现、信息不透明",
+      "制度太严格",
+      "管理层执行不力"
+    ],
+    correct: 1,
+    explain: "规则不被遵守的三大原因：规则不可执行→没法照做；奖惩不兑现→做不做都一样；信息不透明→不知道在执行。"
+  },
+  {
+    question: "同样问题反复出现，说明系统缺少什么？",
+    options: [
+      "更严格的制度",
+      "反馈机制、规则更新、培训同步",
+      "更多的人员培训",
+      "更高的奖惩力度"
+    ],
+    correct: 1,
+    explain: "持续犯错的原因：没有反馈机制→错了不知道；没有规则更新→规则还是错的；没有培训同步→规则变了人不知道。"
+  },
+  {
+    question: "要解决“任务分配失效”问题，正确步骤是？",
+    options: [
+      "加强监督、提高要求、增加惩罚",
+      "明确责任人、授权资源、设定奖惩",
+      "培训员工、制定流程、建立考核",
+      "分析原因、调整人员、优化方案"
+    ],
+    correct: 1,
+    explain: "三步法：①明确责任人（唯一归属）②授权资源（让他能动）③设定奖惩（做成的后果）。"
+  },
+  {
+    question: "哪句话最能概括这套管理系统的核心？",
+    options: [
+      "制度管人，流程管事",
+      "规则定方向，培训统一人，责权利驱行动",
+      "奖罚分明，执行有力",
+      "目标清晰，过程可控，结果可期"
+    ],
+    correct: 1,
+    explain: "“规则定方向，培训统一人，责权利驱行动，执行产出结果，反馈更新规则”——这是整套系统的运行逻辑。"
+  },
+  
+  // 战略系统
+  {
+    question: "战略系统在整个管理系统中的作用是什么？",
+    options: [
+      "控制团队执行过程",
+      "决定方向，明确“要去哪里”",
+      "制定奖惩规则",
+      "培训新人"
+    ],
+    correct: 1,
+    explain: "战略系统是整个管理系统的起点，它决定方向，明确目标、优先级和资源配置。"
+  },
+  {
+    question: "没有战略会发生什么？",
+    options: [
+      "团队不知道怎么做",
+      "执行必然混乱，所有动作没有方向",
+      "奖惩无法执行",
+      "培训无效"
+    ],
+    correct: 1,
+    explain: "没有战略，后面的所有动作都没有方向。战略不清，执行必然混乱。"
+  },
+  
+  // 任务触发
+  {
+    question: "一个完整任务必须包含哪些要素？",
+    options: [
+      "目标、时间、人员",
+      "目标、完成标准、责任人、截止时间、奖惩约定",
+      "计划、执行、检查、改进",
+      "要求、资源、监督"
+    ],
+    correct: 1,
+    explain: "任务五要素：目标（要达成什么）、完成标准（做到什么程度）、责任人（谁负责）、截止时间（什么时候）、奖惩（做成的后果）。缺一不可。"
+  },
+  {
+    question: "任务没有责任人会导致什么问题？",
+    options: [
+      "资源分配不公",
+      "没人管结果",
+      "目标不清晰",
+      "执行过程失控"
+    ],
+    correct: 1,
+    explain: "没有唯一责任人 → 出了问题没人管，结果无人负责。"
+  },
+  {
+    question: "任务没有奖惩约定会导致什么？",
+    options: [
+      "标准不清晰",
+      "做不做都一样",
+      "时间不确定",
+      "目标模糊"
+    ],
+    correct: 1,
+    explain: "没有奖惩 → 做成怎样、做不成怎样都没区别 → 动力不足，执行打折。"
+  },
+  
+  // 过程控制
+  {
+    question: "过程控制的目的是什么？",
+    options: [
+      "细致管理每个步骤",
+      "保证执行不走偏",
+      "惩罚执行不当的人",
+      "提升团队士气"
+    ],
+    correct: 1,
+    explain: "过程控制是在执行中检查、纠偏，保证按照标准和方向发展。"
+  },
+  {
+    question: "好的过程控制是怎样的？",
+    options: [
+      "事无巨细都要管",
+      "设定检查点，在关键节点验证",
+      "随时盯着每个人",
+      "每天开会汇报"
+    ],
+    correct: 1,
+    explain: "过程控制不是事无巨细都要管，而是设定检查点，在关键节点验证。控制太细就是不信任。"
+  },
+  
+  // 过程记录
+  {
+    question: "过程记录的核心价值是什么？",
+    options: [
+      "方便写报告",
+      "追溯、复盘、奖惩依据、培训素材",
+      "证明工作量",
+      "满足管理要求"
+    ],
+    correct: 1,
+    explain: "过程记录用于追溯（找到问题原因）、复盘（知道哪里好坏）、奖惩依据（不凭感觉）、培训素材（好案例坏案例）。"
+  },
+  {
+    question: "没有过程记录会发生什么？",
+    options: [
+      "无法写总结",
+      "奖惩变成“凭感觉”，复盘变成“扯皮”",
+      "团队效率下降",
+      "资源浪费"
+    ],
+    correct: 1,
+    explain: "没有记录，奖惩就变成“凭感觉”，复盘就变成“扯皮”。所有判断都失去依据。"
+  },
+  
+  // 结果输出
+  {
+    question: "结果输出后应该如何处理？",
+    options: [
+      "归档保存",
+      "触发奖惩、进入反馈系统、沉淀为案例",
+      "通知相关人员",
+      "总结经验教训"
+    ],
+    correct: 1,
+    explain: "结果输出后：①触发奖惩（结果不同，奖惩不同）②进入反馈系统（分析原因）③沉淀为案例（好案例/坏案例）。"
+  },
+  {
+    question: "结果可以分为哪三类？",
+    options: [
+      "成功、失败、放弃",
+      "超额完成、达到标准、未达标",
+      "按时、延期、取消",
+      "优秀、合格、不合格"
+    ],
+    correct: 1,
+    explain: "结果三类：超额完成（提前/超质量）、达到标准（按时/达标）、未达标（延期/质量问题）。"
+  },
+  
+  // 规则更新与反馈
+  {
+    question: "什么时候需要更新规则？",
+    options: [
+      "定期更新",
+      "重复出现同样问题、战略调整、外部环境变化",
+      "员工提建议时",
+      "每年一次"
+    ],
+    correct: 1,
+    explain: "更新规则的时机：①重复出现同样问题 → 规则有缺陷 ②战略调整 ③外部环境变化。"
+  },
+  {
+    question: "规则更新后必须做什么？",
+    options: [
+      "发布通知",
+      "通过培训重新对齐认知",
+      "修改文档",
+      "开会传达"
+    ],
+    correct: 1,
+    explain: "规则更新后，必须回到培训与同步，让人重新对齐认知。规则变了人不理解，等于没变。"
+  },
+  {
+    question: "这套系统的进化是如何实现的？",
+    options: [
+      "不断扩充内容",
+      "每次循环规则更完善，执行更顺畅",
+      "引入更多工具",
+      "增加人员"
+    ],
+    correct: 1,
+    explain: "系统通过闭环实现进化：每次循环（反馈→规则更新→培训），规则更完善，执行更顺畅。长期看系统越来越强。"
+  },
+  
+  // 培训与同步
+  {
+    question: "培训与同步解决的是什么问题？",
+    options: [
+      "技能提升问题",
+      "认知对齐问题",
+      "团队建设问题",
+      "绩效管理问题"
+    ],
+    correct: 1,
+    explain: "培训与同步解决认知对齐问题。规则再好，不理解就没用。"
+  },
+  {
+    question: "规则变了但人不知道会导致什么？",
+    options: [
+      "积极性下降",
+      "执行偏差",
+      "团队矛盾",
+      "资源浪费"
+    ],
+    correct: 1,
+    explain: "规则变了人不知道 → 执行偏差，按旧规则做，结果不符合预期。"
+  },
+  {
+    question: "培训应包含哪些内容？",
+    options: [
+      "技能培训、团队建设、文化建设",
+      "规则解读、案例分析、考核验证",
+      "产品知识、市场知识、技术知识",
+      "入职培训、在职培训、离职培训"
+    ],
+    correct: 1,
+    explain: "培训内容：①规则解读（每条规则怎么理解）②案例分析（什么是对的什么是错的）③考核验证（确保“知”到位）。"
+  },
+  
+  // 系统整体理解
+  {
+    question: "系统动力图中，哪一步是“执行引擎”？",
+    options: [
+      "⑤任务触发",
+      "⑦任务执行",
+      "⑩奖惩机制",
+      "⑫反馈系统"
+    ],
+    correct: 2,
+    explain: "奖惩机制⑩是整个系统的执行引擎。没有它，系统是“建议”；有了它，系统才是“规则”。"
+  },
+  {
+    question: "系统动力图的闭环是如何形成的？",
+    options: [
+      "从结果回到任务",
+      "从规则更新回到培训与同步",
+      "从反馈回到执行",
+      "从奖惩回到任务触发"
+    ],
+    correct: 1,
+    explain: "闭环：规则更新⑬ → 回到培训与同步③。规则变了，必须重新对齐认知，形成完整闭环。"
+  },
+  {
+    question: "五层模型与13步系统动力图的关系是？",
+    options: [
+      "两套独立的系统",
+      "五层模型是理论框架，13步是执行流程",
+      "五层模型是对13步的简化",
+      "没有关系"
+    ],
+    correct: 1,
+    explain: "五层模型（人/结构/规则/执行力/进化）是理论框架，解释“为什么这样设计”；13步系统动力图是执行流程，展示“具体怎么运行”。"
+  },
+  {
+    question: "这套管理系统适合什么规模的团队？",
+    options: [
+      "只适合大公司",
+      "只适合小团队",
+      "适合任何需要协作的团队",
+      "只适合制造业"
+    ],
+    correct: 2,
+    explain: "这套系统的底层逻辑（规则驱动行为、责权利合一、奖惩闭环）适用于任何需要协作的团队，规模和行业不影响核心原理。"
+  }
+];
+
+// ===== 状态管理 =====
+let currentPage = 'home';
+let quizQuestions = [];
+let currentQuestionIndex = 0;
+let correctCount = 0;
+let wrongQuestions = [];
+let streak = 0;
+let allTimeStats = {
+  totalAnswered: 0,
+  totalCorrect: 0,
+  wrongQuestionTexts: []
+};
+
+// 从 LocalStorage 读取历史数据
+function loadProgress() {
+  const saved = localStorage.getItem('managementQuizProgress');
+  if (saved) {
+    const data = JSON.parse(saved);
+    streak = data.streak || 0;
+    allTimeStats = data.allTimeStats || {
+      totalAnswered: 0,
+      totalCorrect: 0,
+      wrongQuestionTexts: []
+    };
+  }
+}
+
+// 保存进度到 LocalStorage
+function saveProgress() {
+  localStorage.setItem('managementQuizProgress', JSON.stringify({
+    streak: streak,
+    allTimeStats: allTimeStats,
+    lastUpdate: new Date().toISOString()
+  }));
+}
+
+// ===== 页面切换 =====
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  
+  const targetPage = document.getElementById(pageId + '-page');
+  if (targetPage) {
+    targetPage.classList.add('active');
+    currentPage = pageId;
+    window.scrollTo(0, 0);
+  }
+}
+
+// ===== 刷题系统 =====
+function startQuiz() {
+  // 随机抽10题
+  const shuffled = [...questionBank].sort(() => Math.random() - 0.5);
+  quizQuestions = shuffled.slice(0, 10);
+  
+  currentQuestionIndex = 0;
+  correctCount = 0;
+  wrongQuestions = [];
+  
+  showPage('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentQuestionIndex];
+  
+  document.getElementById('current-q').textContent = currentQuestionIndex + 1;
+  document.getElementById('total-q').textContent = quizQuestions.length;
+  document.getElementById('question-text').textContent = q.question;
+  
+  const optionsContainer = document.getElementById('options-container');
+  optionsContainer.innerHTML = '';
+  
+  const optionLabels = ['A', 'B', 'C', 'D'];
+  q.options.forEach((option, index) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.textContent = optionLabels[index] + '. ' + option;
+    div.onclick = () => selectOption(index);
+    optionsContainer.appendChild(div);
+  });
+  
+  document.getElementById('feedback-container').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+function selectOption(selectedIndex) {
+  const q = quizQuestions[currentQuestionIndex];
+  const options = document.querySelectorAll('.quiz-option');
+  
+  if (options[0].classList.contains('disabled')) return;
+  
+  options.forEach(opt => opt.classList.add('disabled'));
+  
+  const isCorrect = selectedIndex === q.correct;
+  
+  options[selectedIndex].classList.add(isCorrect ? 'correct' : 'wrong');
+  options[q.correct].classList.add('correct');
+  
+  allTimeStats.totalAnswered++;
+  
+  if (isCorrect) {
+    correctCount++;
+    streak++;
+    allTimeStats.totalCorrect++;
+    
+    const idx = allTimeStats.wrongQuestionTexts.indexOf(q.question);
+    if (idx > -1) {
+      allTimeStats.wrongQuestionTexts.splice(idx, 1);
+    }
+  } else {
+    wrongQuestions.push(q.question);
+    
+    if (!allTimeStats.wrongQuestionTexts.includes(q.question)) {
+      allTimeStats.wrongQuestionTexts.push(q.question);
+    }
+    
+    streak = 0;
+  }
+  saveProgress();
+  
+  const feedbackContainer = document.getElementById('feedback-container');
+  const feedbackResult = document.getElementById('feedback-result');
+  const feedbackAnswer = document.getElementById('feedback-answer');
+  const feedbackExplain = document.getElementById('feedback-explain');
+  
+  const optionLabels = ['A', 'B', 'C', 'D'];
+  
+  feedbackResult.textContent = isCorrect ? '✓ 正确' : '✗ 错误';
+  feedbackResult.className = 'feedback-result ' + (isCorrect ? 'correct' : 'wrong');
+  
+  feedbackAnswer.innerHTML = '正确答案：<span>' + optionLabels[q.correct] + '. ' + q.options[q.correct] + '</span>';
+  feedbackExplain.textContent = q.explain;
+  
+  feedbackContainer.style.display = 'block';
+  
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.style.display = 'inline-block';
+  nextBtn.textContent = currentQuestionIndex < quizQuestions.length - 1 ? '下一题 →' : '查看结果 →';
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+  
+  if (currentQuestionIndex >= quizQuestions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  const total = quizQuestions.length;
+  const percent = Math.round((correctCount / total) * 100);
+  
+  document.getElementById('score-correct').textContent = correctCount;
+  document.getElementById('score-total').textContent = total;
+  document.getElementById('score-percent').textContent = percent + '%';
+  
+  const streakDisplay = document.getElementById('streak-display');
+  if (streak > 0) {
+    streakDisplay.style.display = 'block';
+    document.getElementById('streak-count').textContent = streak;
+  } else {
+    streakDisplay.style.display = 'none';
+  }
+  
+  const wrongDisplay = document.getElementById('wrong-display');
+  if (wrongQuestions.length > 0) {
+    wrongDisplay.style.display = 'block';
+    document.getElementById('wrong-count').textContent = wrongQuestions.length;
+  } else {
+    wrongDisplay.style.display = 'none';
+  }
+  
+  const statsDisplay = document.getElementById('all-time-stats');
+  if (allTimeStats.totalAnswered > 0) {
+    statsDisplay.style.display = 'block';
+    document.getElementById('all-total').textContent = allTimeStats.totalAnswered;
+    const allPercent = Math.round((allTimeStats.totalCorrect / allTimeStats.totalAnswered) * 100);
+    document.getElementById('all-percent').textContent = allPercent + '%';
+    document.getElementById('all-wrong').textContent = allTimeStats.wrongQuestionTexts.length + ' 题';
+    
+    const wrongTrainBtn = document.getElementById('wrong-training-btn');
+    if (allTimeStats.wrongQuestionTexts.length > 0) {
+      wrongTrainBtn.style.display = 'inline-block';
+    } else {
+      wrongTrainBtn.style.display = 'none';
+    }
+  } else {
+    statsDisplay.style.display = 'none';
+  }
+  
+  showPage('result');
+}
+
+function reviewWrong() {
+  if (wrongQuestions.length === 0) return;
+  
+  quizQuestions = wrongQuestions.map(qText => 
+    questionBank.find(q => q.question === qText)
+  ).filter(Boolean);
+  
+  if (quizQuestions.length === 0) {
+    alert('错题加载失败，请重新开始');
+    startQuiz();
+    return;
+  }
+  
+  currentQuestionIndex = 0;
+  correctCount = 0;
+  wrongQuestions = [];
+  
+  showPage('quiz');
+  renderQuestion();
+}
+
+function startWrongTraining() {
+  if (allTimeStats.wrongQuestionTexts.length === 0) {
+    alert('暂无错题');
+    return;
+  }
+  
+  quizQuestions = allTimeStats.wrongQuestionTexts.map(qText => 
+    questionBank.find(q => q.question === qText)
+  ).filter(Boolean);
+  
+  if (quizQuestions.length === 0) {
+    alert('错题加载失败，请重新开始');
+    startQuiz();
+    return;
+  }
+  
+  currentQuestionIndex = 0;
+  correctCount = 0;
+  wrongQuestions = [];
+  
+  showPage('quiz');
+  renderQuestion();
+}
+
+function exitQuiz() {
+  showPage('home');
+}
+
+// ===== 规则模块 =====
+function toggleRule(element) {
+  element.classList.toggle('open');
+}
+
+// ===== 系统动力图步骤说明 =====
+const stepDetails = {
+  1: {
+    title: "① 战略系统",
+    content: '<h3>核心定位</h3><p>战略系统是整个管理系统的起点。它决定方向，明确"我们要去哪里"。</p><h3>解决的问题</h3><ul><li>团队的目标是什么？</li><li>优先级如何排序？</li><li>资源如何分配？</li></ul><h3>输出物</h3><ul><li>明确的战略目标</li><li>阶段性里程碑</li><li>资源配置方案</li></ul><div class="modal-highlight"><p>没有战略，后面的所有动作都没有方向。战略不清，执行必然混乱。</p></div>'
+  },
+  2: {
+    title: "② 规则系统",
+    content: '<h3>核心定位</h3><p>规则系统是"系统的宪法"。它定义标准、流程、奖惩，是所有人行为的边界。</p><h3>三大类型</h3><ul><li><strong>标准类规则</strong>：完成的定义、好坏的边界</li><li><strong>流程类规则</strong>：任务下达、反馈闭环</li><li><strong>奖惩类规则</strong>：激励与约束的具体约定</li></ul><h3>关键要求</h3><ul><li>清晰：可理解、可执行、可验证</li><li>一致：说好的奖惩必须兑现</li><li>透明：所有人都知道规则是什么</li></ul><div class="modal-highlight"><p>规则不是"建议"，而是"必须"。没有规则的系统，只是"群聊+分工"。</p></div>'
+  },
+  3: {
+    title: "③ 培训与同步",
+    content: '<h3>核心定位</h3><p>培训与同步解决"认知对齐"的问题。规则再好，不理解就没用。</p><h3>解决的问题</h3><ul><li>规则变了，人不知道 → 执行偏差</li><li>新人加入，不清楚标准 → 文化断层</li><li>理解不一致 → 协作内耗</li></ul><h3>培训内容</h3><ul><li>规则解读：每条规则怎么理解</li><li>案例分析：什么是对的，什么是错的</li><li>考核验证：确保"知"到位</li></ul><div class="modal-highlight"><p>没有培训，规则就是死的文档。培训让规则变成活的行为。</p></div>'
+  },
+  4: {
+    title: "④ 人的能力基线",
+    content: '<h3>核心定位</h3><p>人的能力基线决定"能不能上场"。这是执行的前提。</p><h3>知能愿模型</h3><ul><li><strong>知</strong>：认知对齐 → 是否理解目标、标准、要求</li><li><strong>能</strong>：执行能力 → 是否具备完成任务的技能和资源</li><li><strong>愿</strong>：主观意愿 → 是否有动力去做</li></ul><h3>判断逻辑</h3><ul><li>不知 → 不能用 → 培训</li><li>不能 → 不能用 → 赋能或换人</li><li>不愿 → 不能用 → 激励或淘汰</li></ul><div class="modal-highlight"><p>人不对，后面怎么设计都白搭。知能愿是"能不能被用"的三道门槛。</p></div>'
+  },
+  5: {
+    title: "⑤ 任务触发",
+    content: '<h3>核心定位</h3><p>任务触发是行动的起点。规则制定好了，人准备好了，现在开始做事。</p><h3>任务必须包含</h3><ul><li>明确的目标：要达成什么</li><li>完成标准：做到什么程度算完成</li><li>唯一责任人：谁对这个结果负责</li><li>截止时间：什么时候交</li><li>明确奖惩：做成怎样，做不成怎样</li></ul><h3>缺一不可</h3><p>没有目标 → 不知道去哪；没有责任人 → 没人管；没有奖惩 → 做不做都一样。</p><div class="modal-highlight"><p>任务不清，执行必乱。好的任务触发是"一次性说清楚"。</p></div>'
+  },
+  6: {
+    title: "⑥ 责权利分配",
+    content: '<h3>核心定位</h3><p>责权利分配解决"事情如何被推动"的问题。人有了，任务有了，怎么让他动起来？</p><h3>责权利模型</h3><ul><li><strong>责</strong>：结果归属清晰唯一 → 出了问题算谁的</li><li><strong>权</strong>：拥有资源与决策权 → 能调动什么资源</li><li><strong>利</strong>：行动与回报挂钩 → 做成有什么好处</li></ul><h3>常见错误</h3><ul><li>有责无权 → 干不了</li><li>有权无责 → 乱来</li><li>有利无责 → 只有好处没风险</li><li>有责无利 → 只干活没回报</li></ul><div class="modal-highlight"><p>责权利合一，事情才能动。缺一个，就是"瘫痪"或"内耗"。</p></div>'
+  },
+  7: {
+    title: "⑦ 任务执行",
+    content: '<h3>核心定位</h3><p>任务执行是"现实发生"的阶段。前面所有设计，到这里变成行动。</p><h3>执行的关键</h3><ul><li>按照标准执行 → 不是"做完了"，而是"做到位了"</li><li>遇到问题及时反馈 → 不隐瞒、不拖延</li><li>过程留痕 → 做了什么、做到哪了</li></ul><h3>执行失败的常见原因</h3><ul><li>目标不清 → 不知道要做到什么程度</li><li>能力不足 → 知能愿的"能"出问题</li><li>动力不足 → 奖惩没设计好</li><li>资源不够 → 责权利的"权"没给够</li></ul><div class="modal-highlight"><p>执行不是"做事"，而是"按照规则达到标准地做事"。</p></div>'
+  },
+  8: {
+    title: "⑧ 过程控制",
+    content: '<h3>核心定位</h3><p>过程控制是"保证执行不走偏"的机制。任务执行中，需要检查、纠偏。</p><h3>控制手段</h3><ul><li>节点检查：关键里程碑是否达标</li><li>异常预警：偏离标准时及时干预</li><li>资源调整：必要时追加资源</li><li>决策调整：发现问题时调整方案</li></ul><h3>控制 vs 管得细</h3><p>过程控制不是事无巨细都要管，而是设定检查点，在关键节点验证。</p><div class="modal-highlight"><p>没有控制，执行就是"放了羊"。控制太细，就是"不信任"。</p></div>'
+  },
+  9: {
+    title: "⑨ 过程记录",
+    content: '<h3>核心定位</h3><p>过程记录是"留痕"。做了什么、做成怎样、有什么问题，都要记下来。</p><h3>记录的价值</h3><ul><li>追溯：出问题能找到原因</li><li>复盘：知道哪里做得好、哪里不好</li><li>奖惩依据：不是凭感觉，而是有记录</li><li>培训素材：好案例、坏案例都能拿来教</li></ul><h3>记录什么</h3><ul><li>执行进度</li><li>遇到的偏差和问题</li><li>采取的措施</li><li>最终结果</li></ul><div class="modal-highlight"><p>没有记录，奖惩就变成"凭感觉"，复盘就变成"扯皮"。</p></div>'
+  },
+  10: {
+    title: "⑩ 奖惩机制",
+    content: '<h3>核心定位</h3><p>奖惩机制是整个系统的"执行引擎"。没有它，系统是"建议"；有了它，系统才是"规则"。</p><h3>激励（正向驱动）</h3><ul><li>超额完成 → 额外回报</li><li>主动改进 → 认可激励</li><li>持续优秀 → 晋升机会</li></ul><h3>约束（负向边界）</h3><ul><li>未完成 → 承担代价</li><li>隐瞒问题 → 加重处罚</li><li>重复犯错 → 升级处理</li></ul><h3>关键原则</h3><p>说到做到。说好的奖惩必须兑现，否则信任崩塌，系统崩溃。</p><div class="modal-highlight"><p>奖惩不是"附加项"，而是整个系统的"发动机"。谁设计了后果，谁就控制了行为。</p></div>'
+  },
+  11: {
+    title: "⑪ 结果输出",
+    content: '<h3>核心定位</h3><p>结果输出是"交付"。任务执行完毕，产出什么结果？</p><h3>结果分类</h3><ul><li><strong>超额完成</strong>：提前、超质量、主动优化</li><li><strong>达到标准</strong>：按时、达标、无返工</li><li><strong>未达标</strong>：延期、质量问题、需返工</li></ul><h3>结果的用途</h3><ul><li>触发奖惩：结果不同，奖惩不同</li><li>进入反馈系统：分析为什么会这样</li><li>沉淀为案例：好案例/坏案例</li></ul><div class="modal-highlight"><p>结果不是终点，而是反馈的起点。每个结果都是系统的"学习素材"。</p></div>'
+  },
+  12: {
+    title: "⑫ 反馈系统",
+    content: '<h3>核心定位</h3><p>反馈系统让系统"越用越强"。通过复盘、分析，发现问题，优化规则。</p><h3>反馈的内容</h3><ul><li>为什么达到/没达到目标？</li><li>执行中遇到什么问题？</li><li>规则是否有问题？</li><li>人的能力是否有短板？</li></ul><h3>反馈的作用</h3><ul><li>识别偏差 → 哪里出了问题</li><li>分析原因 → 规则问题? 能力问题? 执行问题?</li><li>提出优化 → 怎么改</li></ul><div class="modal-highlight"><p>没有反馈，就会重复错误。反馈是系统"进化"的起点。</p></div>'
+  },
+  13: {
+    title: "⑬ 规则更新",
+    content: '<h3>核心定位</h3><p>规则更新是闭环的最后一环。发现问题，通过反馈，更新规则。</p><h3>什么时候更新规则</h3><ul><li>重复出现同样问题 → 规则有缺陷</li><li>战略调整 → 规则要跟上</li><li>外部环境变化 → 规则要适配</li></ul><h3>更新后要做什么</h3><p>回到③培训与同步。规则变了，必须让人重新对齐认知。</p><h3>闭环的意义</h3><ul><li>系统不是静止的，而是动态演化的</li><li>每次循环，规则更完善，执行更顺畅</li><li>长期看，系统会越来越强</li></ul><div class="modal-highlight"><p>规则更新不是"改文档"，而是"改行为"。更新后必须回到培训，形成闭环。</p></div>'
+  }
+};
+
+function showStepDetail(stepNum) {
+  const step = stepDetails[stepNum];
+  if (!step) return;
+  
+  document.getElementById('step-title').textContent = step.title;
+  document.getElementById('step-body').innerHTML = step.content;
+  document.getElementById('step-modal').style.display = 'flex';
+}
+
+function closeStepModal() {
+  document.getElementById('step-modal').style.display = 'none';
+}
+
+// ===== 初始化 =====
+document.addEventListener('DOMContentLoaded', () => {
+  loadProgress();
+});
+  </script>
+</body>
+</html>
