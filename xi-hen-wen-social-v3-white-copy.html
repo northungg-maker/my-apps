@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>细狠稳 · 社交实战工具</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAFAFA;
+  --text:#1A1A1A;
+  --text-light:#888888;
+  --accent:#C8102E;
+  --accent-light:#FF1A1A;
+  --border:#E0E0E0;
+  --card:#FFFFFF;
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+  --shadow-hover:0 8px 32px rgba(0,0,0,0.10);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:#fff}
+
+.header{
+  padding:80px 40px 60px;
+  text-align:center;
+  background:#FFFFFF;
+  border-bottom:1px solid var(--border);
+}
+.header h1{
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:-0.03em;
+  color:var(--text);
+  margin-bottom:12px;
+}
+.header .subtitle{
+  color:var(--text-light);
+  font-size:15px;
+  letter-spacing:0.02em;
+  font-weight:400;
+}
+.header .tagline{
+  display:inline-block;
+  margin-top:20px;
+  padding:6px 20px;
+  border:1.5px solid var(--accent);
+  color:var(--accent);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+}
+
+.nav-bar{
+  display:flex;
+  justify-content:center;
+  gap:0;
+  padding:0 40px;
+  background:#FFFFFF;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:100;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.nav-btn{
+  padding:18px 32px;
+  border:none;
+  background:transparent;
+  color:var(--text-light);
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:0.05em;
+  cursor:pointer;
+  transition:all 0.2s;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+  font-weight:600;
+}
+
+.container{
+  max-width:900px;
+  margin:0 auto;
+  padding:60px 40px;
+}
+
+.section{display:none;animation:fadeIn 0.3s}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME */
+.home-intro{
+  font-size:13px;
+  color:var(--text-light);
+  text-align:center;
+  letter-spacing:0.05em;
+  margin-bottom:48px;
+  font-weight:500;
+  text-transform:uppercase;
+}
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+.dash-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:40px 28px;
+  cursor:pointer;
+  transition:all 0.25s;
+  box-shadow:var(--shadow);
+}
+.dash-card:hover{
+  box-shadow:var(--shadow-hover);
+  transform:translateY(-3px);
+  border-color:var(--accent);
+}
+.dash-num{
+  font-size:64px;
+  font-weight:800;
+  color:var(--accent);
+  letter-spacing:-0.04em;
+  line-height:1;
+  margin-bottom:20px;
+}
+.dash-title{
+  font-size:17px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.01em;
+}
+.dash-desc{
+  font-size:13px;
+  color:var(--text-light);
+  line-height:1.7;
+}
+.dash-tag{
+  display:inline-block;
+  margin-top:20px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  padding:3px 10px;
+  border-radius:2px;
+}
+.home-guide{
+  margin-top:60px;
+  padding:24px 32px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:4px;
+  box-shadow:var(--shadow);
+}
+.home-guide p{
+  font-size:13px;
+  color:var(--text-light);
+  line-height:2;
+  text-align:center;
+  letter-spacing:0.02em;
+}
+
+/* V1 Steps */
+.v1-progress{
+  display:flex;
+  align-items:center;
+  gap:0;
+  margin-bottom:48px;
+  padding:20px 24px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:4px;
+  box-shadow:var(--shadow);
+}
+.v1-dot{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:700;
+  border:2px solid var(--border);
+  color:var(--text-light);
+  flex-shrink:0;
+  transition:all 0.3s;
+}
+.v1-dot.done{background:var(--accent);border-color:var(--accent);color:#fff}
+.v1-dot.active{background:var(--text);border-color:var(--text);color:#fff}
+.v1-dot.locked{border-color:var(--border);color:#ccc}
+.v1-line{flex:1;height:2px;background:var(--border);transition:background 0.3s}
+.v1-line.done{background:var(--accent)}
+
+.step-header{margin-bottom:36px}
+.step-phase{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.step-header h2{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-0.03em;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.step-sub{font-size:14px;color:var(--text-light)}
+
+.card{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:28px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+  transition:all 0.2s;
+}
+.card:hover{border-color:#ccc}
+.card h3{
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:10px;
+  letter-spacing:-0.01em;
+}
+.card p{font-size:14px;color:var(--text-light);line-height:1.8}
+
+.criteria-box{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:24px 28px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.criteria-box h4{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--text-light);
+  margin-bottom:16px;
+}
+.criteria-box label{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  font-size:14px;
+  color:var(--text-light);
+  transition:color 0.2s;
+}
+.criteria-box label:last-child{border-bottom:none}
+.criteria-box label:hover{color:var(--text)}
+.criteria-box label.checked{color:var(--text);font-weight:500}
+.criteria-box label.checked::after{content:" ✓";color:var(--accent);font-weight:700}
+.criteria-box input{display:none}
+
+.warn-card{
+  background:#FFF5F5;
+  border:1px solid #FFCCD0;
+  border-radius:4px;
+  padding:20px 24px;
+  margin-bottom:16px;
+}
+.warn-card h4{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.warn-card p{font-size:13px;color:#555;line-height:1.8}
+
+.check-btn{
+  display:block;
+  width:100%;
+  max-width:320px;
+  margin:28px auto 0;
+  padding:16px;
+  background:var(--text);
+  border:none;
+  border-radius:3px;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0.05em;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+}
+.check-btn:hover{background:var(--accent);transform:translateY(-1px)}
+.check-btn:active{transform:translateY(0)}
+.check-btn.done{
+  background:#FFFFFF;
+  border:1.5px solid var(--accent);
+  color:var(--accent);
+}
+
+.nav-step-btns{
+  display:flex;
+  justify-content:space-between;
+  margin-top:32px;
+  gap:12px;
+}
+.nav-step-btn{
+  padding:12px 24px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:3px;
+  color:var(--text-light);
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.nav-step-btn:hover:not(:disabled){border-color:var(--text);color:var(--text)}
+.nav-step-btn:disabled{opacity:0.3;cursor:not-allowed}
+.nav-step-btn.next{background:var(--text);color:#fff;border-color:var(--text)}
+.nav-step-btn.next:hover{background:var(--accent);border-color:var(--accent)}
+
+.complete-banner{
+  display:none;
+  margin-top:20px;
+  padding:16px 24px;
+  background:#F0FFF4;
+  border:1px solid #9AE6B4;
+  border-radius:3px;
+  text-align:center;
+}
+.complete-banner.show{display:block}
+.complete-banner h4{font-size:14px;font-weight:700;color:#276749}
+
+/* V2 */
+.v2-loop{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:32px 0;
+  padding:20px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:4px;
+  box-shadow:var(--shadow);
+}
+.v2-node{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:700;
+  border:2px solid var(--border);
+  color:var(--text-light);
+  cursor:pointer;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.v2-node:hover{border-color:var(--text);color:var(--text)}
+.v2-node.active{background:var(--text);border-color:var(--text);color:#fff}
+.v2-node.trap{border-color:var(--accent);color:var(--accent)}
+.v2-node.trap.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.v2-node:hover.trap{border-color:var(--accent-light)}
+.v2-arrow{font-size:12px;color:#ccc;font-weight:300;flex-shrink:0}
+.v2-return{
+  width:100%;
+  text-align:center;
+  font-size:11px;
+  color:var(--text-light);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-top:8px;
+}
+
+.v2-phase-label{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:32px 0 12px;
+}
+.v2-phase-label.trap-phase{color:#888}
+.v2-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-bottom:8px;
+}
+.v2-step{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:16px 10px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.2s;
+  box-shadow:var(--shadow);
+}
+.v2-step:hover{border-color:var(--text);box-shadow:var(--shadow-hover)}
+.v2-step.active{border-color:var(--accent);background:#FFF5F5}
+.v2-step .v2-num{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-0.03em;line-height:1}
+.v2-step .v2-label{font-size:11px;color:var(--text-light);margin-top:4px;font-weight:500}
+.v2-step.trap .v2-num{color:#888}
+.v2-step.trap:hover{border-color:var(--accent)}
+
+.v2-detail{margin-top:28px}
+
+/* Pitfall */
+.pitfall-search{
+  width:100%;
+  padding:14px 20px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:3px;
+  font-size:14px;
+  color:var(--text);
+  outline:none;
+  margin-bottom:24px;
+  box-shadow:var(--shadow);
+  transition:border-color 0.2s;
+}
+.pitfall-search:focus{border-color:var(--text)}
+.pitfall-search::placeholder{color:#aaa}
+
+.pitfall-item{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:20px 24px;
+  margin-bottom:10px;
+  transition:all 0.2s;
+  box-shadow:var(--shadow);
+}
+.pitfall-item:hover{border-color:#ccc;box-shadow:var(--shadow-hover)}
+.pitfall-item.hidden{display:none}
+.pitfall-step{margin-bottom:8px}
+.pitfall-tag{
+  display:inline-block;
+  padding:2px 8px;
+  background:#F5F5F5;
+  border:1px solid var(--border);
+  border-radius:2px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-light);
+  margin-right:6px;
+}
+.pitfall-tag.warn-tag{background:#FFF5F5;border-color:#FFCCD0;color:var(--accent)}
+.pitfall-item h4{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-0.01em}
+.pitfall-item p{font-size:13px;color:var(--text-light);line-height:1.8}
+
+@media(max-width:768px){
+.header{padding:50px 20px 40px}
+.header h1{font-size:28px}
+.header .tagline{margin-top:14px}
+.nav-bar{gap:0;padding:0 12px;overflow-x:auto}
+.nav-btn{padding:14px 16px;font-size:12px;white-space:nowrap}
+.container{padding:32px 16px}
+.dashboard{grid-template-columns:1fr;gap:16px}
+.dash-card{padding:28px 20px}
+.dash-num{font-size:48px}
+.home-guide{padding:16px 20px}
+.v2-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:480px){
+.v2-loop{gap:4px;padding:14px}
+.v2-node{width:32px;height:32px;font-size:11px}
+.nav-btn{padding:14px 12px;font-size:11px}
+}
+
+.footer{padding:24px 16px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>细狠稳</h1>
+  <p class="subtitle">社交实战工具 &nbsp;·&nbsp; 不是学，是用</p>
+  <div><span class="tagline">Live Navigation Tool</span></div>
+</header>
+
+<nav class="nav-bar">
+  <button class="nav-btn active" id="nav-home" onclick="showSection('home')">总览</button>
+  <button class="nav-btn" id="nav-v1" onclick="showSection('v1')">V1 · 深度步骤</button>
+  <button class="nav-btn" id="nav-v2" onclick="showSection('v2')">V2 · 完整闭环</button>
+  <button class="nav-btn" id="nav-pitfall" onclick="showSection('pitfall')">避坑速查</button>
+</nav>
+
+<main class="container">
+
+  <!-- HOME -->
+  <section class="section active" id="sec-home">
+    <p class="home-intro">// 选择模式 //</p>
+    <div class="dashboard">
+      <div class="dash-card" onclick="showSection('v1')">
+        <div class="dash-num">V1</div>
+        <div class="dash-title">深度步骤系统</div>
+        <div class="dash-desc">5步线性推进<br>每步做透才能过关<br>核心能力：识别卡点在哪一步</div>
+        <span class="dash-tag">5 Steps</span>
+      </div>
+      <div class="dash-card" onclick="showSection('v2')">
+        <div class="dash-num">V2</div>
+        <div class="dash-title">完整闭环系统</div>
+        <div class="dash-desc">1→10→1无限循环<br>上套路径 + 维持路径<br>核心：让循环不停地转</div>
+        <span class="dash-tag">10+Loop</span>
+      </div>
+      <div class="dash-card" onclick="showSection('pitfall')">
+        <div class="dash-num">&#9889;</div>
+        <div class="dash-title">避坑速查手册</div>
+        <div class="dash-desc">随用随查<br>跟着步骤走<br>走到哪卡了，一翻就查</div>
+        <span class="dash-tag">Live Navigate</span>
+      </div>
+    </div>
+    <div class="home-guide">
+      <p>用法：先走V1定位自己在哪步 &rarr; 再进V2看完整闭环 &rarr; 随时翻避坑速查对照</p>
+    </div>
+  </section>
+
+  <!-- V1 -->
+  <section class="section" id="sec-v1">
+    <div class="v1-progress" id="v1-progress"></div>
+    <div id="v1-content"></div>
+  </section>
+
+  <!-- V2 -->
+  <section class="section" id="sec-v2">
+    <div class="step-header">
+      <div class="step-phase">// Full Loop System //</div>
+      <h2>V2 · 完整闭环</h2>
+      <div class="step-sub">1&rarr;5 上套路径 &nbsp;|&nbsp; 6&rarr;10 维持路径 &nbsp;|&nbsp; 10&rarr;1 循环不断</div>
+    </div>
+    <div class="v2-loop" id="v2-loop"></div>
+    <div id="v2-phases"></div>
+    <div class="v2-detail" id="v2-detail"></div>
+  </section>
+
+  <!-- PITFALL -->
+  <section class="section" id="sec-pitfall">
+    <div class="step-header">
+      <div class="step-phase">// Pitfall Index //</div>
+      <h2>避坑速查手册</h2>
+      <div class="step-sub">跟着V1和V2走，卡在哪步就查哪步的坑</div>
+    </div>
+    <input type="text" class="pitfall-search" id="pitfall-search" placeholder="搜索：单向投入 / 习惯化 / 沉没成本 / 节奏太快..." oninput="filterPitfalls(this.value)">
+    <div id="pitfall-list"></div>
+  </section>
+
+</main>
+
+<div class="footer">细狠稳社交系统 · 实战工具 v3.0 &nbsp;·&nbsp; 托罗~转啊转</div>
+
+<script>
+var V1_STEPS = [
+  {
+    id:1,name:"人群分型",desc:"判断这个人属于哪一类",
+    content:"<div class=\"card\"><h3>第一步：人群分型</h3><p>先定类型，再定策略。不是见谁都一样的聊法。</p></div><div class=\"card\"><h3>四类人</h3><div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px\"><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:4px\">A类 · 情绪型</div><div style=\"font-size:12px;color:#888\">发心情/孤独/倾诉 &rarr; 高潜力，最容易产生深度连接</div></div><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:4px\">B类 · 消遣型</div><div style=\"font-size:12px;color:#888\">无聊刷/随便聊聊 &rarr; 低但可转化，关键在制造新刺激</div></div><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:4px\">C类 · 展示型</div><div style=\"font-size:12px;color:#888\">发自拍/求关注 &rarr; 低性价比，对方要的是注意力不是关系</div></div><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:4px\">D类 · 目的型</div><div style=\"font-size:12px;color:#888\">找对象/找资源 &rarr; 高潜力，要求精准匹配，类型不合直接淘汰</div></div></div></div><div class=\"card\"><h3>操作方法</h3><p>3轮对话内判断对方类型。深夜发文+情绪语气=A类 / 回复慢+内容淡=B类 / 照片多+回复简短=C类 / 直接问条件=D类。</p></div>",
+    criteria:["我能说出这个人属于ABCD哪类","我知道为什么他是这类（不是猜的）","我决定用哪套策略应对这类人","对方没有出现明显的反向信号"],
+    warn:"<strong>B类当A类聊：</strong>对方只是无聊，你耗尽了自己。止损：3轮内对方仍零主动 &rarr; 降级维护。<br><br><strong>D类当A类聊：</strong>对方要匹配，不是情感连接。"
+  },
+  {
+    id:2,name:"动机识别",desc:"判断这个人为什么要社交",
+    content:"<div class=\"card\"><h3>第二步：动机识别</h3><p>判断动机才能选对路线。不是你说什么，是对方\"为什么来聊\"。</p></div><div class=\"card\"><h3>四层动机</h3><div style=\"margin-top:10px\"><div style=\"padding:8px 0;border-bottom:1px solid #EEE\"><span style=\"font-weight:700;color:#C8102E;font-size:13px\">情绪型</span><span style=\"font-size:13px;color:#888\"> &mdash; 需要被倾听/理解/共鸣。信号：孤独、累、烦</span></div><div style=\"padding:8px 0;border-bottom:1px solid #EEE\"><span style=\"font-weight:700;color:#C8102E;font-size:13px\">认知型</span><span style=\"font-size:13px;color:#888\"> &mdash; 需要被挑战/交换观点。信号：问你怎么看待</span></div><div style=\"padding:8px 0;border-bottom:1px solid #EEE\"><span style=\"font-weight:700;color:#C8102E;font-size:13px\">消遣型</span><span style=\"font-size:13px;color:#888\"> &mdash; 打时间，没明确目的。信号：随便聊聊、无聊</span></div><div style=\"padding:8px 0\"><span style=\"font-weight:700;color:#C8102E;font-size:13px\">目的型</span><span style=\"font-size:13px;color:#888\"> &mdash; 有明确目标，要效率。信号：问条件、直接表达</span></div></div></div><div class=\"card\"><h3>3轮探测问题</h3><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px;color:#C8102E;margin-top:8px\">\"你平时更喜欢聊人，还是聊事？\"<br>\"你更像是想找人聊，还是找人理解？\"<br>\"你刷这个一般找什么内容？\"</div><p style=\"margin-top:10px;font-size:13px;color:#888\">看回答：情绪宣泄&rarr;情绪路线 / 逻辑表达&rarr;认知路线 / 回避&rarr;降级处理</p></div>",
+    criteria:["我能说出对方的底层动机是什么","我的应对策略与对方动机匹配","对方对我有至少一次主动回应","对方没有出现动机不匹配的信号"],
+    warn:"<strong>动机不匹配：</strong>投入越多，对方越觉得你烦。<br><br><strong>路线错误：</strong>用认知路线对情绪型，对方觉得你冷漠。"
+  },
+  {
+    id:3,name:"注意力占领",desc:"成为被记住的人，不是普通聊天对象",
+    content:"<div class=\"card\"><h3>第三步：注意力占领</h3><p>记忆有权重分配。不是所有聊天对象都会被记住。</p></div><div class=\"card\"><h3>三机制合力</h3><div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px\"><div style=\"padding:14px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:11px;font-weight:700;color:#C8102E;letter-spacing:0.1em;margin-bottom:6px\">节奏错位</div><div style=\"font-size:12px;color:#888\">不秒回<br>不固定频率<br>让对方开始\"等你\"</div></div><div style=\"padding:14px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:11px;font-weight:700;color:#C8102E;letter-spacing:0.1em;margin-bottom:6px\">信息不对称</div><div style=\"font-size:12px;color:#888\">不一次说清楚<br>留钩子<br>制造悬念</div></div><div style=\"padding:14px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:11px;font-weight:700;color:#C8102E;letter-spacing:0.1em;margin-bottom:6px\">情绪插针</div><div style=\"font-size:12px;color:#888\">轻微质疑<br>轻微反转<br>制造波动</div></div></div></div><div class=\"card\"><h3>效果公式</h3><div style=\"text-align:center;padding:14px;background:#FAFAFA;border-radius:3px;margin-top:8px;font-size:14px\">节奏错位 &times; 信息不对称 &times; 情绪插针<br><span style=\"font-weight:800;color:#1A1A1A\">&darr;</span><br>普通聊天对象 &rarr; <strong>被记住的人</strong></div></div>",
+    criteria:["对方开始对你的消息有预期（不等但会等）","对方主动记住你说过的信息","对方在对话中有情绪波动","对方主动找话题的频率有增加"],
+    warn:"<strong>变粘了：</strong>你开始等对方消息、揣测意思。注意力已单向倾斜。自检：发消息前会不会犹豫？<br><br><strong>情绪垃圾桶：</strong>对方只宣泄不回问。你是出口，不是关系。"
+  },
+  {
+    id:4,name:"关系升温",desc:"让对方投入，不是我投入",
+    content:"<div class=\"card\"><h3>第四步：关系升温</h3><p>升温不是靠\"聊得久\"，是靠\"双方投入的量同步增加\"。</p></div><div class=\"card\"><h3>让对方投入三种东西</h3><div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px\"><div style=\"padding:16px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:22px;margin-bottom:6px\">&#9200;</div><div style=\"font-size:12px;font-weight:700;color:#1A1A1A;margin-bottom:4px\">投入时间</div><div style=\"font-size:12px;color:#888\">主动找时间聊<br>愿意等你的消息</div></div><div style=\"padding:16px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:22px;margin-bottom:6px\">&#128172;</div><div style=\"font-size:12px;font-weight:700;color:#1A1A1A;margin-bottom:4px\">投入表达</div><div style=\"font-size:12px;color:#888\">讲自己的事<br>分享真实想法</div></div><div style=\"padding:16px;text-align:center;background:#FAFAFA;border-radius:3px;border:1px solid #E0E0E0\"><div style=\"font-size:22px;margin-bottom:6px\">&#9889;</div><div style=\"font-size:12px;font-weight:700;color:#1A1A1A;margin-bottom:4px\">投入情绪</div><div style=\"font-size:12px;color:#888\">认同你/反驳你<br>为你的话产生波动</div></div></div></div><div class=\"card\"><h3>升温触发句</h3><div style=\"padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px;color:#C8102E;margin-top:8px\">\"你刚刚那个点，其实挺少人能说出来的\"<br>\"你是不是那种……\"（轻微贴标签，让对方纠正或认同）</div><p style=\"margin-top:10px;font-size:13px;color:#888\">升温唯一标准：对方主动行为有没有增加。都没有 = 没有升温。</p></div>",
+    criteria:["对方有过主动发起对话的行为","对方有记住/引用你说过的话","升温节奏是双方同步的，不是只有你在升温","升温没有触发对方防线"],
+    warn:"<strong>升温不对称：</strong>只有你在升温、对方在降温 &rarr; 暂停推进，观察3天。<br><br><strong>触发防线：</strong>对方突然冷淡 &rarr; 退回到上一节奏。"
+  },
+  {
+    id:5,name:"路径分流",desc:"分流是每个环节都要做的事，不是最后才决定",
+    content:"<div class=\"card\"><h3>第五步：路径分流</h3><p>分流决策只看未来回报，不看过去投入。</p></div><div class=\"card\"><h3>强制三选一</h3><div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px\"><div style=\"padding:16px;background:#FFF5F5;border:1.5px solid #C8102E;border-radius:3px;text-align:center\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:6px\">路径A · 高潜</div><div style=\"font-size:12px;color:#555\">类型+动机匹配<br>有主动投入<br>&rarr; 可以深入/语音/现实</div></div><div style=\"padding:16px;background:#FAFAFA;border:1px solid #E0E0E0;border-radius:3px;text-align:center\"><div style=\"font-size:12px;font-weight:700;color:#888;margin-bottom:6px\">路径B · 普通</div><div style=\"font-size:12px;color:#aaa\">有互动但无升温<br>&rarr; 低频维护<br>不追加资源</div></div><div style=\"padding:16px;background:#FAFAFA;border:1px solid #E0E0E0;border-radius:3px;text-align:center\"><div style=\"font-size:12px;font-weight:700;color:#ccc;margin-bottom:6px\">路径C · 无价值</div><div style=\"font-size:12px;color:#ccc\">踩坑止损信号<br>&rarr; 直接丢<br>不留恋</div></div></div></div><div class=\"card\"><h3>分流决策检核</h3><div style=\"margin-top:10px\"><div style=\"padding:8px 0;border-bottom:1px solid #EEE;font-size:13px;color:#888\"><span style=\"color:#C8102E;font-weight:700\">[ ]</span> 这人的动机我判断清楚了吗？</div><div style=\"padding:8px 0;border-bottom:1px solid #EEE;font-size:13px;color:#888\"><span style=\"color:#C8102E;font-weight:700\">[ ]</span> 这人的类型我定位准确了吗？</div><div style=\"padding:8px 0;border-bottom:1px solid #EEE;font-size:13px;color:#888\"><span style=\"color:#C8102E;font-weight:700\">[ ]</span> 对方有过主动投入吗？</div><div style=\"padding:8px 0;border-bottom:1px solid #EEE;font-size:13px;color:#888\"><span style=\"color:#C8102E;font-weight:700\">[ ]</span> 三个坑我排查过了吗？</div><div style=\"padding:8px 0;font-size:13px;color:#888\"><span style=\"color:#C8102E;font-weight:700\">[ ]</span> 我现在的判断是情绪还是事实？</div></div><div style=\"margin-top:14px;padding:12px;background:#FFF5F5;border-radius:3px;font-size:13px;color:#C8102E;font-weight:600\">自检问题：\"如果今天刚认识这个人，我会继续吗？\" &mdash; 不会 = 现在就该断。</div></div>",
+    criteria:["我能明确说出走A/B/C哪条路","分流决策基于事实而非情绪","我设置了跟进时间","沉没成本没有影响我的判断"],
+    warn:"<strong>应该分不分：</strong>明知道不合适但舍不得断。持续消耗，没有新可能。<br><br><strong>过早就闭环：</strong>还没充分了解就判定无价值。错过高潜，后悔比止损更难受。"
+  }
+];
+
+var V2_STEPS = [
+  {id:1,name:"类型锁定",phase:"hook",desc:"判断对方属于哪类人，类型本身就是过滤器",detail:"<p>上套第一步：先知道对方是什么类型。不是所有人都会上钩，只有类型匹配的人才值得进入下一步。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">钩子：类型判断本身就是过滤器——不匹配的人进入下一步只是消耗你。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">操作：</span> 3轮对话内完成ABCD分类，根据类型选钩子类型</div>"},
+  {id:2,name:"需求探测",phase:"hook",desc:"找出对方当下的真实需求",detail:"<p>需求不等于表面说的话。表面情绪背后往往有更深的需求。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">钩子：探测需求不是为了满足对方，是为了找到连接点。找到连接点，对方才会觉得\"你懂我\"。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">操作：</span> 用探测问题组确认对方在情绪层/认知层/消遣层的哪一层</div>"},
+  {id:3,name:"价值展示",phase:"hook",desc:"让对方感知到你值得投入",detail:"<p>不是你说什么，是对方接收到什么。信息不对称是关键。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">钩子：不是炫价值，是让对方\"感觉\"到你有价值，且这种价值和他有关。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">操作：</span> 展示你有对方没有的东西，且这个东西是对方真正需要的</div>"},
+  {id:4,name:"连接建立",phase:"hook",desc:"让对方感觉被理解",detail:"<p>连接不是热情，是精准。不是你说得多，是你说中了。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">钩子：让对方说出来比让你说出来更有效。你问对了问题，对方自己说服自己。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">操作：</span> 用对方自己的话反抛给他，让他纠正/认同，制造\"他懂我\"的感觉</div>"},
+  {id:5,name:"投入门槛",phase:"hook",desc:"让对方开始为你投入时间和情绪",detail:"<p>上套完成的标志：对方开始主动投入。投入才会产生沉没成本。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">钩子：让对方为你做事，比你为他做事更能产生粘性。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">操作：</span> 设置让对方主动投入的场景，让对方自己决定投入——不强迫，是引导</div>"},
+  {id:6,name:"依赖建立",phase:"trap",desc:"让对方开始依赖这段连接",detail:"<p>维持路径第一步：让离开的代价大于留下的代价。依赖不等于喜欢，是习惯。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">陷阱：对方开始有事没事找你，即使没事也要聊两句。已经不是\"需要\"，是\"习惯\"。</p><div style=\"margin-top:14px;padding:12px;background:#FFF5F5;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">维持操作：</span> 制造\"不可替代感\"——你提供的价值，别人给不了</div>"},
+  {id:7,name:"规则内化",phase:"trap",desc:"让对方开始自己管理自己",detail:"<p>不靠你管，让对方自己管自己。对方以为这是\"自愿\"，其实是内化后的规则。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">陷阱：对方开始主动汇报行程、主动关心你、主动配合你的节奏——这已经是自我管理。</p><div style=\"margin-top:14px;padding:12px;background:#FFF5F5;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">维持操作：</span> 将你期望的行为包装成\"共同规则\"，让对方主动执行</div>"},
+  {id:8,name:"身份绑定",phase:"trap",desc:"让这段关系成为对方身份的一部分",detail:"<p>不是关系，是身份。你已经成为对方\"我是谁\"的一部分。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">陷阱：对方在介绍你时用什么词？\"朋友\"还是\"我们\"？</p><div style=\"margin-top:14px;padding:12px;background:#FFF5F5;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">维持操作：</span> 制造共同记忆、共同敌人、共同目标——你们是一个整体</div>"},
+  {id:9,name:"退出成本",phase:"trap",desc:"让对方意识到离开的代价",detail:"<p>不是威胁，是让对方自己算清楚账。离开的代价远大于留下的代价。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">陷阱：让对方算账——时间成本、情绪成本、沉没成本、机会成本。账算清楚，腿就迈不动了。</p><div style=\"margin-top:14px;padding:12px;background:#FFF5F5;border-radius:3px;font-size:13px\"><span style=\"font-weight:700;color:#C8102E\">维持操作：</span> 不要明说\"离开代价很大\"，是让对方自己意识到——用第三方故事，用对比</div>"},
+  {id:10,name:"闭环重启",phase:"trap",desc:"回到第一步，开启新循环",detail:"<p>第10步连接第1步。不是结束，是新的开始。每一轮循环都比上一轮更深。</p><p style=\"margin-top:10px;font-size:13px;color:#888\">闭环本质：每一轮都比上一轮认知更深、互信更高、协作更广。回到类型判断——引入新人，闭环重启。</p><div style=\"margin-top:14px;padding:12px;background:#FAFAFA;border-radius:3px;font-size:12px;font-weight:700;color:#C8102E\">// 最小闭环：类型锁定&rarr;需求探测&rarr;价值展示&rarr;连接建立&rarr;投入门槛&rarr;依赖建立&rarr;规则内化&rarr;身份绑定&rarr;退出成本&rarr;闭环重启 &#8635;</div>"}
+];
+
+var PITFALLS = [
+  {steps:[1],title:"B类当A类聊",content:"把消遣型当情绪型投入大量情绪。对方只是无聊，你耗尽了自己。判断标准：3轮内对方仍零主动 &rarr; 降级维护。",tags:["单向投入","类型判断"]},
+  {steps:[1],title:"D类当A类聊",content:"把目的型当情绪型聊。对方要匹配条件，你要情感连接，底层需求不一样。判断标准：对方主动问条件而非问感受 &rarr; D类信号。",tags:["类型判断","目标不一致"]},
+  {steps:[2],title:"动机探测失败",content:"没有用问题探测，直接猜测动机，猜错了路线选错。回避深层话题 &rarr; 降预期。",tags:["动机识别","探测失败"]},
+  {steps:[2,3],title:"单向投入陷阱",content:"一直是你找话题、关心、推进，对方从来不主动。止损线：3轮试探后对方仍零主动 &rarr; 暂停测试或退出。",tags:["单向投入","变粘了"]},
+  {steps:[3],title:"变粘了信号",content:"你开始等对方消息、揣测对方意思、调整自己语气。注意力已单向倾斜。自检：发消息前会不会犹豫？",tags:["变粘了","注意力陷阱"]},
+  {steps:[3],title:"情绪垃圾桶陷阱",content:"对方只在你这里宣泄，不给你任何正向反馈，不问你任何事。你是情绪出口，不是关系。",tags:["情绪垃圾桶","注意力陷阱"]},
+  {steps:[3,4],title:"节奏太快",content:"3天内说了平时3个月才说的话。预期管理失败，后面没东西承接。后果：快速亲密 &rarr; 快速冷淡。自检：期待是否超出对方实际能给的量级？",tags:["节奏太快","升温失败"]},
+  {steps:[4],title:"升温不对称",content:"\"聊得多\"不等于\"在升温\"。升温唯一标准：对方主动行为有没有增加。都没有 = 没有升温。",tags:["升温失败","升温不对称"]},
+  {steps:[4,5],title:"升温触发对方防线",content:"你想推进，对方突然冷淡。节奏超过对方舒适区。应对：退回到上一层的节奏，不要硬推。",tags:["升温失败","节奏太快"]},
+  {steps:[5],title:"应该分不分",content:"明知道不合适但舍不得断。沉没成本心理。后果：持续消耗，没有新可能。分流决策只看未来回报，不看过去投入。",tags:["沉没成本","分流错误"]},
+  {steps:[5],title:"过早就闭环",content:"还没充分了解就判定\"无价值\"。过早闭环，错过潜在高潜。后悔比止损更难受。",tags:["分流错误","过早闭环"]},
+  {steps:[5,6],title:"习惯化陷阱",content:"聊了几天，每次都是\"吃了吗睡了吗在干嘛\"。习惯化 &rarr; 冷漠 &rarr; 消失。止损线：第3天内容开始重复 &rarr; 必须换维度。",tags:["习惯化","没有新刺激"]},
+  {steps:[6],title:"依赖不等于喜欢",content:"对方依赖你，不等于喜欢你。可能只是习惯、沉没成本或没有更好选择。判断标准：除了你，对方还有没有其他连接？",tags:["依赖建立","身份绑定"]},
+  {steps:[7],title:"规则变成控制",content:"你期望的行为对方不主动做了，如果你出面\"管理\"，规则就变成了控制，对方会感觉到不舒服。应该是引导而非管理。",tags:["规则内化","控制过度"]},
+  {steps:[8],title:"身份绑定过度",content:"如果对方身边所有人都反对这段关系，说明你可能已经是\"标签\"而非\"选择\"。让对方身边的人接受你，比让对方留下更重要。",tags:["身份绑定","外部压力"]}
+];
+
+var v1Current = 1;
+var v1Done = {};
+
+function showSection(name) {
+  var secs = document.querySelectorAll("section");
+  for (var i = 0; i < secs.length; i++) secs[i].classList.remove("active");
+  var btns = document.querySelectorAll(".nav-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+  document.getElementById("sec-" + name).classList.add("active");
+  var navBtn = document.getElementById("nav-" + name);
+  if (navBtn) navBtn.classList.add("active");
+  if (name === "v1") renderV1Step(v1Current);
+  if (name === "v2") initV2();
+  if (name === "pitfall") renderPitfalls("");
+}
+
+function initV1Progress() {
+  var prog = document.getElementById("v1-progress");
+  var html = "";
+  for (var i = 1; i <= 5; i++) {
+    var cls = i < v1Current ? "done" : (i === v1Current ? "active" : "locked");
+    html += "<div class=\"v1-dot " + cls + "\" id=\"v1-dot-" + i + "\">" + i + "</div>";
+    if (i < 5) html += "<div class=\"v1-line" + (i < v1Current ? " done" : "") + "\"></div>";
+  }
+  prog.innerHTML = html;
+}
+
+function renderV1Step(n) {
+  var step = V1_STEPS[n - 1];
+  var content = document.getElementById("v1-content");
+  var checks = "";
+  for (var i = 0; i < step.criteria.length; i++) {
+    var checked = v1Done[n] ? " checked" : "";
+    checks += "<label id=\"lbl-" + n + "-" + i + "\" class=\"" + checked + "\"><input type=\"checkbox\" onclick=\"toggleV1Check(" + n + "," + i + ")\"> " + step.criteria[i] + "</label>";
+  }
+  var html = "<div class=\"step-header\"><div class=\"step-phase\">// Step " + n + " of 5 //</div><h2>" + step.name + "</h2><div class=\"step-sub\">" + step.desc + "</div></div>";
+  html += step.content;
+  html += "<div class=\"criteria-box\"><h4>过关标准（全部满足才能进下一步）</h4>" + checks + "</div>";
+  html += "<div class=\"warn-card\"><h4>避坑提示</h4><p>" + step.warn + "</p></div>";
+  html += "<div class=\"nav-step-btns\">";
+  html += "<button class=\"nav-step-btn\" " + (n === 1 ? "disabled" : "") + " onclick=\"navigateV1(" + (n - 1) + ")\">&larr; 上一步</button>";
+  if (n < 5) {
+    html += "<button class=\"nav-step-btn next\" onclick=\"advanceV1(" + n + ")\">确认过关 &rarr;</button>";
+  } else {
+    html += "<button class=\"nav-step-btn next\" onclick=\"finishV1()\">V1 完成 &#10003;</button>";
+  }
+  html += "</div>";
+  if (v1Done[n]) {
+    html += "<div class=\"complete-banner show\"><h4>&#10003; 已过关</h4></div>";
+  }
+  content.innerHTML = html;
+}
+
+function toggleV1Check(step, idx) {
+  var label = document.getElementById("lbl-" + step + "-" + idx);
+  if (label) {
+    if (label.className.indexOf("checked") >= 0) {
+      label.className = "";
+    } else {
+      label.className = "checked";
+    }
+  }
+}
+
+function advanceV1(n) {
+  v1Done[n] = true;
+  v1Current = n + 1;
+  initV1Progress();
+  renderV1Step(v1Current);
+}
+
+function navigateV1(n) {
+  v1Current = n;
+  initV1Progress();
+  renderV1Step(v1Current);
+}
+
+function finishV1() {
+  v1Done[5] = true;
+  initV1Progress();
+  renderV1Step(5);
+}
+
+function initV2() {
+  var loop = document.getElementById("v2-loop");
+  var html = "";
+  for (var i = 1; i <= 10; i++) {
+    var cls = i <= 5 ? "" : " trap";
+    html += "<div class=\"v2-node" + cls + "\" id=\"vn-" + i + "\" onclick=\"showV2Step(" + i + ", event)\">" + i + "</div>";
+    if (i < 10) html += "<div class=\"v2-arrow\">&rarr;</div>";
+  }
+  html += "<div class=\"v2-return\">// 10 &rarr; 1 // 闭环重启</div>";
+  loop.innerHTML = html;
+
+  var phases = document.getElementById("v2-phases");
+  var hookSteps = V2_STEPS.filter(function(s) { return s.phase === "hook"; });
+  var trapSteps = V2_STEPS.filter(function(s) { return s.phase === "trap"; });
+  var phHtml = "<div class=\"v2-phase-label\">// Phase 01: Hook &mdash; 让对方进来</div><div class=\"v2-grid\">";
+  for (var i = 0; i < hookSteps.length; i++) {
+    var s = hookSteps[i];
+    phHtml += "<div class=\"v2-step\" id=\"vs-" + s.id + "\" onclick=\"showV2Step(" + s.id + ", event)\"><div class=\"v2-num\">" + s.id + "</div><div class=\"v2-label\">" + s.name + "</div></div>";
+  }
+  phHtml += "</div>";
+  phHtml += "<div class=\"v2-phase-label trap-phase\">// Phase 02: Trap &mdash; 让对方出不去</div><div class=\"v2-grid\">";
+  for (var i = 0; i < trapSteps.length; i++) {
+    var s = trapSteps[i];
+    phHtml += "<div class=\"v2-step trap\" id=\"vs-" + s.id + "\" onclick=\"showV2Step(" + s.id + ", event)\"><div class=\"v2-num\">" + s.id + "</div><div class=\"v2-label\">" + s.name + "</div></div>";
+  }
+  phHtml += "</div>";
+  phases.innerHTML = phHtml;
+}
+
+function showV2Step(n, evt) {
+  var step = V2_STEPS[n - 1];
+  var detail = document.getElementById("v2-detail");
+  detail.style.display = "block";
+
+  document.querySelectorAll(".v2-node").forEach(function(el) { el.classList.remove("active"); });
+  document.querySelectorAll(".v2-step").forEach(function(el) { el.classList.remove("active"); });
+  var nodeEl = document.getElementById("vn-" + n);
+  if (nodeEl) nodeEl.classList.add("active");
+  var stepEl = document.getElementById("vs-" + n);
+  if (stepEl) stepEl.classList.add("active");
+
+  var prevBtn = n > 1 ? "<button class=\"nav-step-btn\" onclick=\"showV2Step(" + (n - 1) + ", event)\">&larr; 第" + (n - 1) + "步</button>" : "";
+  var nextLabel = n < 10 ? "第" + (n + 1) + "步 &rarr;" : "回到第1步 &#8635;";
+  var nextN = n < 10 ? n + 1 : 1;
+
+  var relatedPitfalls = PITFALLS.filter(function(p) {
+    return p.steps.indexOf(n) >= 0;
+  });
+  var pitHtml = "";
+  if (relatedPitfalls.length > 0) {
+    pitHtml = "<div style=\"margin-top:16px\"><div style=\"font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#C8102E;margin-bottom:10px\">关联避坑</div>";
+    for (var i = 0; i < relatedPitfalls.length; i++) {
+      var p = relatedPitfalls[i];
+      pitHtml += "<div style=\"padding:12px;background:#FFF5F5;border:1px solid #FFCCD0;border-radius:3px;margin-bottom:8px\"><div style=\"font-size:12px;font-weight:700;color:#C8102E;margin-bottom:4px\">" + p.title + "</div><div style=\"font-size:13px;color:#555\">" + p.content + "</div></div>";
+    }
+    pitHtml += "</div>";
+  }
+
+  detail.innerHTML = "<div class=\"card\" style=\"border-color:#C8102E\"><h3>第" + n + "步：" + step.name + "</h3><p style=\"font-size:14px;color:#888;margin-bottom:14px\">" + step.desc + "</p>" + step.detail + pitHtml + "<div class=\"nav-step-btns\" style=\"margin-top:20px\">" + prevBtn + "<button class=\"nav-step-btn next\" onclick=\"showV2Step(" + nextN + ", event)\">" + nextLabel + "</button></div></div>";
+  detail.scrollIntoView({behavior: "smooth"});
+}
+
+function filterPitfalls(query) {
+  renderPitfalls(query.toLowerCase());
+}
+
+function renderPitfalls(query) {
+  var list = document.getElementById("pitfall-list");
+  var filtered = PITFALLS.filter(function(p) {
+    if (!query) return true;
+    var q = query.toLowerCase();
+    return p.title.toLowerCase().indexOf(q) >= 0 ||
+           p.content.toLowerCase().indexOf(q) >= 0 ||
+           p.tags.some(function(t) { return t.toLowerCase().indexOf(q) >= 0; });
+  });
+  if (filtered.length === 0) {
+    list.innerHTML = "<p style=\"text-align:center;color:#aaa;font-size:14px;padding:40px\">没有匹配的避坑条目</p>";
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < filtered.length; i++) {
+    var p = filtered[i];
+    var tagsHtml = "";
+    for (var j = 0; j < p.steps.length; j++) {
+      var s = p.steps[j];
+      var label = s <= 5 ? "V1 第" + s + "步" : "V2 第" + s + "步";
+      tagsHtml += "<span class=\"pitfall-tag\">" + label + "</span>";
+    }
+    html += "<div class=\"pitfall-item\"><div class=\"pitfall-step\">" + tagsHtml + "</div><h4>" + p.title + "</h4><p>" + p.content + "</p></div>";
+  }
+  list.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  showSection("home");
+});
+</script>
+</body>
+</html>
