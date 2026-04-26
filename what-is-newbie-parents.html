@@ -1,6 +1,4 @@
-  <st
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-yle>
+  <style>
 :root{--bg:#000000;--accent:#00ff00;--accent-dim:#00cc00;--white:#ffffff;--gray:#00ff88;--card:#0a0a0a;--glow:rgba(0,255,0,0.5);--glow-dim:rgba(0,255,0,0.2);}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--white);line-height:1.7;font-size:16px;overflow-x:hidden;}
@@ -110,73 +108,43 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background
 .btn-prev:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px var(--glow-dim);}
 .nav-buttons{display:flex;justify-content:center}
 .page-footer{margin-top:30px;text-align:center;font-size:10px;color:rgba(0,255,136,0.25);line-height:1.8;font-family:"Courier New",Courier,monospace;border-top:1px solid rgba(0,255,0,0.08);padding-top:16px;letter-spacing:0.05em;}
-/* ===== 移动端适配（0-768px） ===== */
+@media(max-width:600px){.header{padding:48px 16px 36px}.header h1{font-size:24px}.progress-nav{padding:14px 16px;gap:8px}.progress-tab{width:34px;height:34px;font-size:11px}.container{padding:28px 16px}.big-quote{font-size:20px}.boot-screen{padding:24px 16px}.boot-line{font-size:11px}}
+  
+/* ===== 移动端适配（0-768px）===== */
 @media(max-width:768px){
-  /* 导航栏横向滚动 */
-  .progress-nav{overflow-x:auto;justify-content:flex-start;padding:12px 16px!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .progress-nav{overflow-x:auto;justify-content:flex-start;padding:12px 16px!important;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .progress-nav::-webkit-scrollbar{display:none}
   .progress-tab{min-width:34px!important;width:34px!important;height:34px!important;font-size:11px!important;flex-shrink:0}
-
-  /* 标题区 */
   .header{padding:40px 16px 24px!important}
   .header h1{font-size:20px!important;letter-spacing:.03em!important}
   .header .subtitle{font-size:12px!important}
   .header .tagline{font-size:10px!important;padding:4px 12px!important}
   .header .positioning{font-size:10px!important;display:block!important;margin-left:0!important;margin-top:6px!important}
-
-  /* 容器 */
   .container{padding:20px 12px!important}
-
-  /* 理论卡片 */
   .theory-card{padding:14px!important}
   .theory-card h3{font-size:13px!important}
-
-  /* 双栏→单栏 */
   .content-grid{grid-template-columns:1fr!important;gap:20px!important}
-
-  /* 策略网格→单列 */
   .strategy-grid{grid-template-columns:1fr!important}
-
-  /* 循环图 */
   .cycle-diagram{gap:4px!important}
   .cycle-node{padding:4px 8px!important;font-size:11px!important}
   .cycle-arrow{font-size:11px!important}
-
-  /* 案例 */
   .case-study{padding:10px!important}
   .case-content{font-size:12px!important}
-
-  /* 测验区 */
   .quiz-section{border:none!important;padding-left:0!important;margin-top:0!important;padding-top:0!important}
   .quiz-card{padding:12px!important}
   .quiz-question{font-size:13px!important}
   .quiz-option{padding:7px 10px!important;font-size:12px!important}
   .quiz-section h2{font-size:16px!important}
-
-  /* 核心金句 */
   .big-quote{font-size:16px!important;line-height:1.4!important}
-
-  /* 关键词标签 */
   .keyword-tag{padding:4px 10px!important;font-size:11px!important}
   .summary-keywords{gap:6px!important}
-
-  /* 阅读列表 */
   .reading-list li{padding:8px 10px!important;font-size:12px!important}
-
-  /* 大引用高亮 */
   .highlight-text{font-size:13px!important;padding:12px 8px!important}
-
-  /* 下一课按钮 */
   .btn-next,.btn-prev{padding:10px 20px!important;font-size:13px!important}
   .btn-prev{margin-right:8px!important}
-
-  /* 页脚 */
   .page-footer{font-size:9px!important;padding-top:10px!important}
-
-  /* 关闭桌面背景动画 */
   body::before,body::after{display:none!important}
 }
-
 /* 超小屏幕（0-400px）额外调整 */
 @media(max-width:400px){
   .header h1{font-size:17px!important}
@@ -186,8 +154,8 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background
   .check-list li{font-size:11px!important}
 }
 
-
 </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body>
 <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.18) 0px,rgba(0,0,0,0.18) 1px,transparent 1px,transparent 3px);pointer-events:none;z-index:998;animation:gridPulse 3s ease-in-out infinite alternate;"></div>
@@ -199,7 +167,7 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background
     <div class="boot-line" data-delay="0">&gt;_ INITIALIZING SYSTEM...</div>
     <div class="boot-line" data-delay="300">&gt;_ LOADING KERNEL MODULES</div>
     <div class="boot-line" data-delay="600">&gt;_ MOUNTING FILE SYSTEM</div>
-    <div class="boot-line" data-delay="900">>_ LOADING 新手父母 PROTOCOL</div>
+    <div class="boot-line" data-delay="900">&gt;_ LOADING 新手父母 PROTOCOL</div>
     <div class="boot-line" data-delay="1200">&gt;_ PARSING CONTENT STREAMS</div>
     <div class="boot-line" data-delay="1500">&gt;_ CALIBRATING UI ENGINE</div>
     <div class="boot-line" data-delay="1800">&gt;_ BUILDING THEORY NODES</div>
@@ -410,7 +378,7 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background
       </div>
       <div class="theory-card">
         <h3>场景二：睡眠</h3>
-        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 孩子哭就是有问题<br><strong style="color:var(--accent)">现实：</strong> 哭是信号，不哭不一定没问题</div><div class="case-insight"><strong>// 系统提示：</strong> 哭是结果，不是原因，找对原因才能用对方法</div></div>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 孩子哭是饿了或者困了<br><strong style="color:var(--accent)">现实：</strong> 5个月大运动期、出牙期、分离焦虑同时来，你根本分不清是哪个</div><div class="case-insight"><strong>// 系统提示：</strong> 哭是结果，不是原因，找对原因才能用对方法</div></div>
       </div>
       <div class="theory-card">
         <h3>场景三：哄睡</h3>
