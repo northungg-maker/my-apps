@@ -108,83 +108,82 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background
 .btn-prev:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px var(--glow-dim);}
 .nav-buttons{display:flex;justify-content:center}
 .page-footer{margin-top:30px;text-align:center;font-size:10px;color:rgba(0,255,136,0.25);line-height:1.8;font-family:"Courier New",Courier,monospace;border-top:1px solid rgba(0,255,0,0.08);padding-top:16px;letter-spacing:0.05em;}
-@media(max-width:600px){.header{padding:48px 16px 36px}.header h1{font-size:24px}.progress-nav{padding:14px 16px;gap:8px}.progress-tab{width:34px;height:34px;font-size:11px}.container{padding:28px 16px}.big-quote{font-size:20px}.boot-screen{padding:24px 16px}.boot-line{font-size:11px}}
-  
-/* ===== 移动端适配 ===== */
+/* ===== 移动端适配（0-768px） ===== */
 @media(max-width:768px){
   /* 导航栏横向滚动 */
-  .progress-nav{overflow-x:auto;justify-content:flex-start;padding:12px 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .progress-nav{overflow-x:auto;justify-content:flex-start;padding:12px 16px!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
   .progress-nav::-webkit-scrollbar{display:none}
-  .progress-tab{min-width:34px;width:34px;height:34px;font-size:11px;flex-shrink:0}
+  .progress-tab{min-width:34px!important;width:34px!important;height:34px!important;font-size:11px!important;flex-shrink:0}
 
   /* 标题区 */
-  .header{padding:40px 16px 24px}
-  .header h1{font-size:20px;letter-spacing:.03em}
-  .header .subtitle{font-size:12px}
-  .header .tagline{font-size:10px;padding:4px 12px}
-  .header .positioning{font-size:10px;display:block;margin-left:0;margin-top:6px}
+  .header{padding:40px 16px 24px!important}
+  .header h1{font-size:20px!important;letter-spacing:.03em!important}
+  .header .subtitle{font-size:12px!important}
+  .header .tagline{font-size:10px!important;padding:4px 12px!important}
+  .header .positioning{font-size:10px!important;display:block!important;margin-left:0!important;margin-top:6px!important}
 
   /* 容器 */
-  .container{padding:20px 12px}
+  .container{padding:20px 12px!important}
 
   /* 理论卡片 */
-  .theory-card{padding:14px}
-  .theory-card h3{font-size:13px}
+  .theory-card{padding:14px!important}
+  .theory-card h3{font-size:13px!important}
 
   /* 双栏→单栏 */
-  .content-grid{grid-template-columns:1fr!important;gap:20px}
+  .content-grid{grid-template-columns:1fr!important;gap:20px!important}
 
   /* 策略网格→单列 */
   .strategy-grid{grid-template-columns:1fr!important}
 
   /* 循环图 */
-  .cycle-diagram{gap:4px}
-  .cycle-node{padding:4px 8px;font-size:11px}
-  .cycle-arrow{font-size:11px}
+  .cycle-diagram{gap:4px!important}
+  .cycle-node{padding:4px 8px!important;font-size:11px!important}
+  .cycle-arrow{font-size:11px!important}
 
   /* 案例 */
-  .case-study{padding:10px}
-  .case-content{font-size:12px}
+  .case-study{padding:10px!important}
+  .case-content{font-size:12px!important}
 
   /* 测验区 */
   .quiz-section{border:none!important;padding-left:0!important;margin-top:0!important;padding-top:0!important}
-  .quiz-card{padding:12px}
-  .quiz-question{font-size:13px}
-  .quiz-option{padding:7px 10px;font-size:12px}
-  .quiz-section h2{font-size:16px}
+  .quiz-card{padding:12px!important}
+  .quiz-question{font-size:13px!important}
+  .quiz-option{padding:7px 10px!important;font-size:12px!important}
+  .quiz-section h2{font-size:16px!important}
 
   /* 核心金句 */
-  .big-quote{font-size:16px!important;line-height:1.4}
+  .big-quote{font-size:16px!important;line-height:1.4!important}
 
   /* 关键词标签 */
-  .keyword-tag{padding:4px 10px;font-size:11px}
-  .summary-keywords{gap:6px}
+  .keyword-tag{padding:4px 10px!important;font-size:11px!important}
+  .summary-keywords{gap:6px!important}
 
   /* 阅读列表 */
-  .reading-list li{padding:8px 10px;font-size:12px}
+  .reading-list li{padding:8px 10px!important;font-size:12px!important}
 
   /* 大引用高亮 */
-  .highlight-text{font-size:13px;padding:12px 8px}
+  .highlight-text{font-size:13px!important;padding:12px 8px!important}
 
   /* 下一课按钮 */
-  .btn-next,.btn-prev{padding:10px 20px;font-size:13px}
-  .btn-prev{margin-right:8px}
+  .btn-next,.btn-prev{padding:10px 20px!important;font-size:13px!important}
+  .btn-prev{margin-right:8px!important}
 
   /* 页脚 */
-  .page-footer{font-size:9px;padding-top:10px}
+  .page-footer{font-size:9px!important;padding-top:10px!important}
 
-  /* 去掉桌面端固定背景提升性能 */
-  body::before{display:none}
+  /* 关闭桌面背景动画 */
+  body::before,body::after{display:none!important}
 }
 
-/* 超小屏幕进一步调整 */
+/* 超小屏幕（0-400px）额外调整 */
 @media(max-width:400px){
-  .header h1{font-size:17px}
-  .theory-card h3{font-size:12px}
-  .strategy-item h4{font-size:12px}
-  .signal-list li{font-size:11px}
-  .check-list li{font-size:11px}
+  .header h1{font-size:17px!important}
+  .theory-card h3{font-size:12px!important}
+  .strategy-item h4{font-size:12px!important}
+  .signal-list li{font-size:11px!important}
+  .check-list li{font-size:11px!important}
 }
+
 
 </style>
 </head>
