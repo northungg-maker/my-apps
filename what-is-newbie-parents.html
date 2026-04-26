@@ -1,0 +1,796 @@
+  <style>
+:root{--bg:#000000;--accent:#00ff00;--accent-dim:#00cc00;--white:#ffffff;--gray:#00ff88;--card:#0a0a0a;--glow:rgba(0,255,0,0.5);--glow-dim:rgba(0,255,0,0.2);}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--white);line-height:1.7;font-size:16px;overflow-x:hidden;}
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(0,255,0,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,0,0.12) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;animation:gridPulse 3s ease-in-out infinite alternate;}
+@keyframes gridPulse{from{opacity:0.4;}to{opacity:1;}}
+body::after{content:"";position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.45),transparent);animation:scanline 6s linear infinite;pointer-events:none;z-index:999;}
+
+@keyframes scanline{from{top:0;}to{top:100vh;}}
+@keyframes scanline_slow{from{top:-5vh;}to{top:105vh;}}
+.boot-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:9999;display:flex;flex-direction:column;justify-content:center;padding:40px;font-family:"Courier New",Courier,monospace;transition:opacity 0.6s ease;}
+.boot-screen.fade-out{opacity:0;pointer-events:none}
+.boot-logo{font-size:11px;color:rgba(0,255,0,0.4);letter-spacing:0.1em;margin-bottom:30px;line-height:1.8;}
+.boot-line{font-size:13px;color:var(--accent);margin-bottom:6px;opacity:0;white-space:nowrap;overflow:hidden;letter-spacing:0.05em;}
+.boot-line.visible{opacity:1}
+.boot-progress{margin-top:20px;max-width:500px}
+.boot-progress-bar{height:2px;background:rgba(0,255,0,0.15);border-radius:1px;overflow:hidden;}
+.boot-progress-fill{height:100%;background:var(--accent);width:0%;box-shadow:0 0 8px var(--glow);transition:width 0.3s ease;}
+.boot-progress-text{font-size:11px;color:rgba(0,255,0,0.5);margin-top:6px;letter-spacing:0.1em;}
+.boot-granted{margin-top:30px;font-size:15px;font-weight:700;color:var(--accent);text-shadow:0 0 20px var(--glow),0 0 40px var(--glow);letter-spacing:0.2em;opacity:0;transition:opacity 0.5s ease;}
+.boot-granted.visible{opacity:1}
+.boot-skip{position:fixed;bottom:30px;right:30px;font-size:11px;color:rgba(0,255,0,0.25);letter-spacing:0.1em;font-family:"Courier New",Courier,monospace;cursor:pointer;transition:color 0.2s;}
+.boot-skip:hover{color:rgba(0,255,0,0.6)}
+.header{position:relative;padding:80px 40px 60px;text-align:center;background:linear-gradient(180deg,rgba(0,255,0,0.05) 0%,transparent 100%);border-bottom:1px solid rgba(0,255,0,0.2);z-index:1;}
+.header-cmd{font-family:"Courier New",Courier,monospace;font-size:12px;color:var(--accent);letter-spacing:0.1em;margin-bottom:20px;padding:0 20px;}
+.header-cmd span{opacity:0.6}
+.header h1{font-size:34px;font-weight:700;letter-spacing:.08em;text-shadow:0 0 20px var(--glow),0 0 40px var(--glow),0 0 60px var(--glow);color:var(--accent);margin-bottom:10px;}
+.header .subtitle{color:var(--gray);margin-top:8px;font-size:14px;letter-spacing:.05em}
+.header .tagline{display:inline-block;margin-top:16px;padding:6px 24px;border:1px solid var(--accent);border-radius:2px;color:var(--accent);font-size:12px;font-weight:600;font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;box-shadow:0 0 10px var(--glow),inset 0 0 10px rgba(0,255,0,0.1);text-shadow:0 0 8px var(--glow);}
+.header .positioning{display:inline-block;margin-top:8px;padding:3px 12px;background:rgba(0,255,0,0.08);border-radius:2px;color:var(--gray);font-size:11px;font-family:"Courier New",Courier,monospace;margin-left:8px;border:1px solid rgba(0,255,0,0.2);}
+.progress-nav{display:flex;justify-content:center;gap:12px;padding:20px 40px;background:rgba(0,0,0,0.9);border-bottom:1px solid rgba(0,255,0,0.15);position:sticky;top:0;z-index:100;backdrop-filter:blur(5px);}
+.progress-tab{width:44px;height:44px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;font-family:"Courier New",Courier,monospace;cursor:pointer;transition:all .3s ease;border:1px solid var(--accent-dim);background:transparent;color:var(--accent-dim);box-shadow:0 0 5px var(--glow-dim);user-select:none;}
+.progress-tab:hover{border-color:var(--accent);box-shadow:0 0 10px var(--glow);color:var(--accent);}
+.progress-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;box-shadow:0 0 15px var(--glow);}
+.progress-tab.completed{background:rgba(0,255,0,0.2);border-color:rgba(0,255,0,0.4);color:var(--accent);}
+.container{max-width:1200px;margin:0 auto;padding:50px 40px;z-index:1;position:relative;}
+.lesson{display:none;animation:fadeIn .4s ease}
+.lesson.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+@media(max-width:900px){.content-grid{grid-template-columns:1fr}}
+.theory-section h2{font-size:20px;font-weight:700;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--accent);color:var(--accent);font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;text-shadow:0 0 10px var(--glow);display:inline-block;}
+.theory-card{background:var(--card);border-radius:2px;padding:20px;margin-bottom:14px;border:1px solid rgba(0,255,0,0.15);transition:all .3s ease;box-shadow:0 0 10px rgba(0,255,0,0.05);}
+.theory-card:hover{border-color:var(--accent-dim);box-shadow:0 0 20px var(--glow-dim);}
+.theory-card h3{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--white);font-family:"Courier New",Courier,monospace;letter-spacing:0.05em;}
+.theory-card h3::before{content:"> ";color:var(--accent)}
+.theory-card p{color:var(--gray);font-size:14px}
+.example{margin-top:8px;padding:10px;background:rgba(0,255,0,0.05);border-radius:2px;font-size:13px;border-left:2px solid var(--accent-dim);color:var(--gray);}
+.example-title{font-weight:600;color:var(--accent);font-size:12px;margin-bottom:4px;font-family:"Courier New",Courier,monospace}
+.signal-list{list-style:none;margin-top:8px}
+.signal-list li{padding:5px 0 5px 16px;position:relative;font-size:13px;color:var(--gray);border-bottom:1px solid rgba(0,255,0,0.08);font-family:"Courier New",Courier,monospace;}
+.signal-list li:last-child{border-bottom:none}
+.signal-list li::before{content:"|_";position:absolute;left:0;color:var(--accent-dim);font-size:10px}
+.mechanism-box{margin-top:10px;padding:14px;background:rgba(0,255,0,0.04);border-radius:2px;border-left:2px solid var(--accent);}
+.mechanism-box h4{font-size:13px;font-weight:600;margin-bottom:4px;color:var(--accent);font-family:"Courier New",Courier,monospace}
+.mechanism-box p{font-size:12px;color:var(--gray)}
+.cycle-diagram{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px 0;}
+.cycle-node{padding:6px 12px;border-radius:2px;font-size:12px;font-weight:600;border:1px solid var(--accent-dim);background:rgba(0,255,0,0.05);color:var(--accent);font-family:"Courier New",Courier,monospace;box-shadow:0 0 8px var(--glow-dim);}
+.cycle-arrow{font-size:14px;color:var(--accent-dim);font-weight:bold;text-shadow:0 0 5px var(--glow)}
+.warning-box{background:rgba(255,60,0,0.06);border-radius:2px;padding:14px;margin-top:10px;border-left:2px solid #ff3c00;}
+.warning-box h4{font-size:13px;font-weight:600;color:#ff3c00;font-family:"Courier New",Courier,monospace;margin-bottom:4px}
+.warning-box p{font-size:12px;color:#ffaaaa}
+.highlight-text{font-size:15px;font-weight:600;text-align:center;padding:16px;margin:16px 0;border-top:1px solid rgba(0,255,0,0.2);border-bottom:1px solid rgba(0,255,0,0.2);font-family:"Courier New",Courier,monospace;color:var(--gray);}
+.highlight-text .red{color:var(--accent);text-shadow:0 0 8px var(--glow)}
+.strategy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;}
+.strategy-item{padding:10px;background:rgba(0,255,0,0.04);border-radius:2px;border:1px solid rgba(0,255,0,0.1);}
+.strategy-item h4{font-size:13px;font-weight:600;margin-bottom:3px;color:var(--white);font-family:"Courier New",Courier,monospace}
+.strategy-item p{font-size:12px;color:var(--gray)}
+.check-list{list-style:none;counter-reset:check}
+.check-list li{counter-increment:check;padding:6px 6px 6px 36px;position:relative;font-size:13px;border-bottom:1px solid rgba(0,255,0,0.08);color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.check-list li:last-child{border-bottom:none}
+.check-list li::before{content:"[" counter(check) "]";position:absolute;left:6px;color:var(--accent);font-size:12px}
+.case-study{background:rgba(0,255,0,0.04);border-radius:2px;padding:14px;margin-top:10px;border:1px solid rgba(0,255,0,0.12);}
+.case-study h4{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--white);font-family:"Courier New",Courier,monospace}
+.case-content{font-size:13px;color:var(--gray);line-height:1.7}
+.case-insight{margin-top:8px;padding:8px;background:rgba(0,255,0,0.06);border-radius:2px;font-size:12px;border-left:2px solid var(--accent);color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.case-insight strong{color:var(--accent)}
+.quiz-section{border-left:1px solid rgba(0,255,0,0.15);padding-left:30px;}
+@media(max-width:900px){.quiz-section{border-left:none;padding-left:0;border-top:1px solid rgba(0,255,0,0.15);padding-top:24px;margin-top:20px}}
+.quiz-section h2{font-size:20px;font-weight:700;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--accent);color:var(--accent);font-family:"Courier New",Courier,monospace;letter-spacing:0.1em;text-shadow:0 0 10px var(--glow);}
+.quiz-card{background:var(--card);border-radius:2px;padding:16px;margin-bottom:12px;border:1px solid rgba(0,255,0,0.12);transition:all .3s ease;}
+.quiz-card:hover{border-color:var(--accent-dim);box-shadow:0 0 12px var(--glow-dim)}
+.quiz-type{font-size:10px;color:var(--accent-dim);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-family:"Courier New",Courier,monospace}
+.quiz-question{font-size:14px;font-weight:500;margin-bottom:10px;color:var(--white)}
+.quiz-options{display:flex;flex-direction:column;gap:5px}
+.quiz-option{padding:8px 12px;border:1px solid rgba(0,255,0,0.15);border-radius:2px;cursor:pointer;font-size:13px;transition:all .2s ease;display:flex;align-items:flex-start;gap:8px;color:var(--gray);background:rgba(0,255,0,0.02);font-family:"Courier New",Courier,monospace;}
+.quiz-option:hover{border-color:var(--accent);background:rgba(0,255,0,0.06);box-shadow:0 0 8px var(--glow-dim);}
+.quiz-option.selected{border-color:var(--accent);background:rgba(0,255,0,0.1);color:var(--accent);box-shadow:0 0 10px var(--glow);}
+.option-letter{width:20px;height:20px;border-radius:2px;background:rgba(0,255,0,0.1);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;color:var(--accent);font-family:"Courier New",Courier,monospace;}
+.quiz-option.selected .option-letter{background:var(--accent);color:#000;border-color:var(--accent);}
+.quiz-result{margin-top:6px;padding:6px;border-radius:2px;font-size:12px;display:none;font-family:"Courier New",Courier,monospace;}
+.quiz-card.answered.result-correct .quiz-result.correct{display:block;background:rgba(0,255,0,0.08);color:var(--accent);border:1px solid rgba(0,255,0,0.2)}
+.quiz-card.answered.result-incorrect .quiz-result.incorrect{display:block;background:rgba(255,60,0,0.08);color:#ff3c00;border:1px solid rgba(255,60,0,0.2)}
+.summary-section{max-width:800px;margin:0 auto;text-align:center;}
+.big-quote{font-size:26px;font-weight:700;line-height:1.5;color:var(--accent);text-shadow:0 0 20px var(--glow),0 0 40px var(--glow);margin-bottom:30px;}
+.summary-keywords{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.keyword-tag{padding:6px 16px;border-radius:2px;font-size:13px;font-weight:500;background:rgba(0,255,0,0.08);border:1px solid var(--accent-dim);color:var(--accent);font-family:"Courier New",Courier,monospace;box-shadow:0 0 8px var(--glow-dim);}
+.reading-list{list-style:none;text-align:left;margin-top:36px}
+.reading-list li{padding:10px 14px;border-bottom:1px solid rgba(0,255,0,0.1);font-size:13px;color:var(--gray);font-family:"Courier New",Courier,monospace;}
+.reading-list li strong{color:var(--white)}
+.author-sig{text-align:center;margin:24px auto 0;padding:10px 0;border-top:1px solid rgba(0,255,0,0.15);}
+.author-sig h1{display:block;text-align:center;}
+.author-sig > div{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px;}
+.next-lesson{text-align:center;margin-top:50px;padding-top:30px;border-top:1px solid rgba(0,255,0,0.15)}
+.btn-next{padding:12px 36px;background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:2px;font-family:"Courier New",Courier,monospace;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s ease;letter-spacing:0.1em;box-shadow:0 0 10px var(--glow-dim);}
+.btn-next:hover{background:var(--accent);color:#000;box-shadow:0 0 25px var(--glow);}
+.btn-prev{padding:12px 36px;background:transparent;color:var(--accent-dim);border:1px solid rgba(0,255,0,0.3);border-radius:2px;font-family:"Courier New",Courier,monospace;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s ease;letter-spacing:0.1em;margin-right:12px;}
+.btn-prev:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 15px var(--glow-dim);}
+.nav-buttons{display:flex;justify-content:center}
+.page-footer{margin-top:30px;text-align:center;font-size:10px;color:rgba(0,255,136,0.25);line-height:1.8;font-family:"Courier New",Courier,monospace;border-top:1px solid rgba(0,255,0,0.08);padding-top:16px;letter-spacing:0.05em;}
+@media(max-width:600px){.header{padding:48px 16px 36px}.header h1{font-size:24px}.progress-nav{padding:14px 16px;gap:8px}.progress-tab{width:34px;height:34px;font-size:11px}.container{padding:28px 16px}.big-quote{font-size:20px}.boot-screen{padding:24px 16px}.boot-line{font-size:11px}}
+  </style>
+</head>
+<body>
+<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.18) 0px,rgba(0,0,0,0.18) 1px,transparent 1px,transparent 3px);pointer-events:none;z-index:998;animation:gridPulse 3s ease-in-out infinite alternate;"></div>
+<div style="position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.5),transparent);filter:blur(2px);animation:scanline_slow 12s linear infinite;pointer-events:none;z-index:999;"></div>
+
+<div class="boot-screen" id="bootScreen">
+  <div class="boot-logo">SYSTEM_BUILD: v2.8.1<br>CORE: 什么是新手父母 // PARENTING_SYSTEM<br>────────────────────────────────</div>
+  <div id="bootLines">
+    <div class="boot-line" data-delay="0">&gt;_ INITIALIZING SYSTEM...</div>
+    <div class="boot-line" data-delay="300">&gt;_ LOADING KERNEL MODULES</div>
+    <div class="boot-line" data-delay="600">&gt;_ MOUNTING FILE SYSTEM</div>
+    <div class="boot-line" data-delay="900">>_ LOADING 新手父母 PROTOCOL</div>
+    <div class="boot-line" data-delay="1200">&gt;_ PARSING CONTENT STREAMS</div>
+    <div class="boot-line" data-delay="1500">&gt;_ CALIBRATING UI ENGINE</div>
+    <div class="boot-line" data-delay="1800">&gt;_ BUILDING THEORY NODES</div>
+    <div class="boot-line" data-delay="2100">&gt;_ FINALIZING SYSTEM</div>
+  </div>
+  <div class="boot-progress">
+    <div class="boot-progress-bar"><div class="boot-progress-fill" id="bootProgress"></div></div>
+    <div class="boot-progress-text" id="bootProgressText">LOADING... 0%</div>
+  </div>
+  <div class="boot-granted" id="bootGranted">[ ACCESS GRANTED ]</div>
+  <div class="boot-skip" id="bootSkip">SKIP [ SPACE ] >></div>
+</div>
+
+<header class="header">
+  <div class="header-cmd">
+    <span>[00]</span> SYSTEM_BOOT // SERIES: 什么是系列<br>
+    <span>[01]</span> CORE_LOAD: ██████████ 100%<br>
+    <span>[02]</span> THEME_INIT // FOLLOW: 托罗～转啊转
+  </div>
+  <h1>什么是新手父母</h1>
+  <p class="subtitle">掌握新手父母系统，让反馈替你建立规律</p>
+  <div>
+    <div class="tagline">// CYBER_PUNK_ //</div>
+    <span class="positioning">SYS: v2.8.1</span>
+  </div>
+</header>
+
+<nav class="progress-nav">
+  <div class="progress-tab active" data-lesson="1">01</div>
+  <div class="progress-tab" data-lesson="2">02</div>
+  <div class="progress-tab" data-lesson="3">03</div>
+  <div class="progress-tab" data-lesson="4">04</div>
+  <div class="progress-tab" data-lesson="5">05</div>
+  <div class="progress-tab" data-lesson="6">06</div>
+</nav>
+
+<main class="container">
+
+<section class="lesson active" id="lesson-1">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第一章：本质定义 //</h2>
+      <div class="theory-card"><h3>核心定义</h3><p><strong>新手父母是第一次进入育儿角色、在缺乏经验和系统认知下对婴儿进行照护与决策的人群，本质是一个高不确定+强反馈的决策适应系统。</strong></p></div>
+      <div class="theory-card">
+        <h3>四个维度</h3>
+        <div class="example"><div class="example-title">// 感知层：</div>推理的有效性取决于形式，不是结论的对错</div>
+        <div class="example"><div class="example-title">// 输出层：</div>概念必须清晰，模糊是规律最大的敌人</div>
+        <div class="example"><div class="example-title">// 反应层：</div>论证要能被重构，感想不等于规律</div>
+        <div class="example"><div class="example-title">// 强化层：</div>规律检验的是结构，不是情绪共鸣</div>
+      </div>
+      <div class="theory-card">
+        <h3>三大误区</h3>
+        <ul class="signal-list">
+          <li style="color:#ff3c00">// 误区01 // 以为说得通就是正确 → 说得通≠规律成立</li>
+          <li style="color:#ff3c00">// 误区02 // 以为多数人认同就是真理 → 认同≠论证</li>
+          <li style="color:#ff3c00">// 误区03 // 以为结论对论证就正确 → 结果≠过程</li>
+        </ul>
+      </div>
+      <div class="highlight-text">新手父母不是不会带孩子，<span class="red">而是在没有正确反馈模型的情况下，不断强化错误行为</span> // CORE_THEOREM</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_001</div>
+        <div class="quiz-question">1. 孩子一直哭，你马上换方法：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 灵活</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 聪明</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 打断系统建立</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正确</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 频繁变化无法形成稳定反馈，系统需要一致性</div>
+        <div class="quiz-result incorrect">// B/C/D: 灵活和聪明是假象，频繁变化让系统无法建立规律</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_002</div>
+        <div class="quiz-question">2. 你觉得"孩子很难带"：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 正确</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 运气差</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 可能是策略问题</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// B: "难带"往往是策略和反馈错位，不是孩子本身</div>
+        <div class="quiz-result incorrect">// A/C/D: 不是孩子难带，是你的策略和反馈模型不匹配</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_003</div>
+        <div class="quiz-question">3. 别人方法很好，你直接照做：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 高效</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 学习</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 可能不适配</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 聪明</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 不同系统的初始条件不同，方法需要适配</div>
+        <div class="quiz-result incorrect">// A/B/D: 高效和学习是假象，不同系统照搬会适得其反</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" style="visibility:hidden">// 上一章 //</button>
+      <button class="btn-next" data-target="2">>> 进入第二章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音作者：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音作者：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-2">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第二章：运作机制 //</h2>
+      <div class="theory-card"><h3>核心规律</h3><p>婴儿哭闘是一个<strong style="color:var(--accent)">刺激—反应—反馈—强化</strong>的适应系统。<strong style="color:var(--accent)">刺激</strong>来自发育变化，<strong style="color:var(--accent)">反应</strong>来自父母应对，<strong style="color:var(--accent)">反馈</strong>决定行为是否固化，三者共同决定这个系统能不能建立起来。</p></div>
+      <div class="theory-card">
+        <h3>循环流程</h3>
+        <div class="cycle-diagram">
+          <span class="cycle-node">刺激</span><span class="cycle-arrow">→</span><span class="cycle-node">反应</span><span class="cycle-arrow">→</span><span class="cycle-node">结果</span><span class="cycle-arrow">→</span><span class="cycle-node">强化</span><span class="cycle-arrow">→</span><span class="cycle-node">刺激</span>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>四个关键变量</h3>
+        <div class="strategy-grid">
+          <div class="strategy-item"><h4>信号读准</h4><p>婴儿的哭声是信号，读准了才知道怎么反应</p></div>
+          <div class="strategy-item"><h4>反应对症</h4><p>不同信号对应不同原因，找对原因才能用对方法</p></div>
+          <div class="strategy-item"><h4>反馈正向</h4><p>正向反馈强化正确行为，负向反馈要及时调整</p></div>
+          <div class="strategy-item"><h4>行为固化</h4><p>规律一旦建立，系统就能自我维持</p></div>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>正向循环</h3>
+        <div class="mechanism-box">
+          <p>信号读准 → 反应对症 → 反馈正向 → 行为固化 → 系统稳定</p>
+          <div class="cycle-diagram" style="margin-top:10px">
+            <span class="cycle-node" style="border-color:var(--accent)">刺激</span><span class="cycle-arrow">→</span><span class="cycle-node">反应</span><span class="cycle-arrow">→</span><span class="cycle-node">结果</span><span class="cycle-arrow">→</span><span class="cycle-node">强化</span><span class="cycle-arrow">→</span><span class="cycle-node" style="border-color:var(--accent)">刺激</span>
+          </div>
+        </div>
+      </div>
+      <div class="theory-card">
+        <h3>负向循环 // 警示</h3>
+        <div class="warning-box">
+          <h4 style="color:#ff3c00">// 崩溃路径：3种错误循环 //</h4>
+          <ul style="margin-top:8px;list-style:none">
+            <li style="color:#ff3c00">路径A： 信号读错 → 反应过度 → 问题强化 → 更难哄</li>
+            <li style="color:#ff3c00">路径B： 焦虑带娃 → 方法乱换 → 系统混乱 → 更焦虑</li>
+            <li style="color:#ff3c00">路径C： 偶然而成功 → 经验误推广 → 错误固化 → 更大哭闘</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-text">这个系统真正控制的，不是孩子，而是<span class="red">你对反馈的解读方式</span> // FEEDBACK_FILTER</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_004</div>
+        <div class="quiz-question">4. 精通新手父母系统，能解决什么问题：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 认知模型</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 反馈判断</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 情绪稳定性</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 一致性</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 知道精通它能解决什么问题，是建立系统认知的第一步</div>
+        <div class="quiz-result incorrect">// A/B/C: 懂和理解是过程，不是答案，模式匹配才是这个系统的核心</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_005</div>
+        <div class="quiz-question">5. 你在焦虑时处理问题：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 认真</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 负责</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 影响判断</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 焦虑影响判断，让系统失灵</div>
+        <div class="quiz-result incorrect">// B/C/D: 认真和负责是假象，焦虑让判断失准，让系统进入负循环</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_006</div>
+        <div class="quiz-question">6. 建立稳定养育节奏靠什么：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 方法多</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 努力</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 一致性</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 运气</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 节奏靠一致性建立，不是靠方法多少</div>
+        <div class="quiz-result incorrect">// A/C/D: 方法多和努力是安慰剂，一致性才是建立规律的核心</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="1">// 上一章 //</button>
+      <button class="btn-next" data-target="3">>> 进入第三章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音作者：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音作者：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-3">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第三章：现实场景 //</h2>
+      <div class="theory-card">
+        <h3>场景一：喂养</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 按专家说的做了，孩子就能睡好<br><strong style="color:var(--accent)">现实：</strong> 每个孩子节奏不同，同一套方法结果完全不一样</div><div class="case-insight"><strong>// 系统提示：</strong> 专家给的是概率，不是因果，你的孩子是独特的样本</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景二：睡眠</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 孩子哭就是有问题<br><strong style="color:var(--accent)">现实：</strong> 哭是信号，不哭不一定没问题</div><div class="case-insight"><strong>// 系统提示：</strong> 哭是结果，不是原因，找对原因才能用对方法</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景三：哄睡</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 多试几种哄睡方法，总有一种能行<br><strong style="color:var(--accent)">现实：</strong> 每天换方法，孩子永远建立不了规律，反而更闹</div><div class="case-insight"><strong>// 系统提示：</strong> 一致性比方法的数量重要得多，方法换得越勤系统建立越慢</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景四：哭闘</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 孩子哭就是有问题，没哭就是没问题<br><strong style="color:var(--accent)">现实：</strong> 安静，不代表舒服，有时候是累了，有时候是认了，有时候是在偷偷发烧</div><div class="case-insight"><strong>// 系统提示：</strong> 哭是信号，不哭不一定是平安，要看整体状态</div></div>
+      </div>
+      <div class="theory-card">
+        <h3>场景五：就医</h3>
+        <div class="case-study"><h4>预期 vs 现实</h4><div class="case-content"><strong style="color:var(--gray)">预期：</strong> 去医院就能得到明确答案<br><strong style="color:var(--accent)">现实：</strong> 不同医院说法不一，同一个医生今天和上周说法也不一样</div><div class="case-insight"><strong>// 系统提示：</strong> 医疗是不确定学科，给的是概率不是答案，你要自己判断用哪个</div></div>
+      </div>
+      <div class="highlight-text" style="margin-top:20px">以为多试一个方法就离答案近一步，<span class="red">其实是离系统建立远一步</span> // REPEAT_ERR</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_007</div>
+        <div class="quiz-question">7. 合伙中你以为多出力就能解决：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 对</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 正常</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 错误方向放大损失</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 合理</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 错误方向会放大损失，不是努力不够</div>
+        <div class="quiz-result incorrect">// A/B/D: 多出力是本能，但方向错了出力越大损失越大</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_008</div>
+        <div class="quiz-question">8. 感情中你以为多付出就会更好：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 对</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 迟早被替代</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 没有结构的付出</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 没有结构的付出只会失衡</div>
+        <div class="quiz-result incorrect">// A/B/C: 付出是本能，但无结构的付出让对方无法形成稳定预期</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="2">// 上一章 //</button>
+      <button class="btn-next" data-target="4">>> 进入第四章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音作者：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音作者：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-4">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第四章：精通路径 //</h2>
+      <div class="theory-card">
+        <h3>精通六步</h3>
+        <ol class="check-list">
+          <li><strong>建立规律：</strong> 固定喂奶时间、哄睡时间、户外时间——规律是系统的骨架</li>
+          <li><strong>观察信号：</strong> 记录哭声、时间段、持续时长——信号是系统的输入数据</li>
+          <li><strong>保持一致性：</strong> 同一种哭声，同一种反应，不要这次这样下次那样</li>
+          <li><strong>给自己留buffer：</strong> 每个坑都有周期，撑过周期才是解药，不要提前放弃</li>
+          <li><strong>区分信号：</strong> 饿的哭和困的哭不一样，疼的哭和闹的哭不一样</li>
+          <li><strong>接受波动：</strong> 系统建立需要时间，波动不是失败，崩溃才是</li>
+        </ol>
+      </div>
+      <div class="theory-card">
+        <h3>识别行业变化</h3>
+        <div class="strategy-item"><h4>第一坑：大运动期</h4><p>翻身期夜醒、俯卧撑训练、坐立期摇晃——大运动消耗大，反而更容易饿、更难哄</p></div>
+      </div>
+      <div class="theory-card">
+        <h3>发育三坑</h3>
+        <ul class="signal-list">
+          <li style="color:#ff3c00">大运动期 → 消耗大 → 更饿更难哄</li>
+          <li style="color:#ff3c00">出牙期 → 疼痛信号干扰 → 睡眠周期断裂</li>
+          <li style="color:#ff3c00">室温波动 → 过热/过冷 → 夜醒增加</li>
+        </ul>
+      </div>
+      <div class="highlight-text">五月哭闘不是同一个坑，是三个坑叠加在一起 // 系统警示</div>
+    </div>
+    <div class="quiz-section">
+      <h2>// 随堂测验 //</h2>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_009</div>
+        <div class="quiz-question">9. 你觉得孩子问题变严重：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 运气差</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 错误循环放大</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 偶然</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 错误循环会放大问题，不是运气差</div>
+        <div class="quiz-result incorrect">// A/C/D: 不是运气差，是错误反馈在循环里被强化了</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_010</div>
+        <div class="quiz-question">10. 你觉得别人带得轻松：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 别人系统更稳定</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 条件好</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 运气好</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 别人系统更稳定，不是条件更好</div>
+        <div class="quiz-result incorrect">// B/C/D: 不是运气和条件，是别人已经建立了一套稳定的反馈模型</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_011</div>
+        <div class="quiz-question">11. 你不断尝试新方法：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 学习</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 进步</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 正确</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 可能破坏一致性</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 可能破坏一致性，让系统无法稳定</div>
+        <div class="quiz-result incorrect">// A/B/C: 学习是假象，不断换方法破坏的是一致性本身</div>
+      </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="3">// 上一章 //</button>
+      <button class="btn-next" data-target="5">>> 进入第五章 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音作者：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音作者：托罗～转啊转</div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-5">
+  <div class="content-grid">
+    <div class="theory-section">
+      <h2>// 第五章：认知突破 //</h2>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_012</div>
+        <div class="quiz-question">12. 你觉得"时间会解决一切"：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 发育是到了</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 时间到了</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 运气</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 必然</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 发育是到了，不是时间到了</div>
+        <div class="quiz-result incorrect">// B/C/D: 时间是旁观者，发育才是主角，不是时间治愈了问题</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_013</div>
+        <div class="quiz-question">13. 孩子哭你马上反应：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 负责</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 可能强化行为</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 敏感</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正确</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 可能强化行为，让哭变得有目的</div>
+        <div class="quiz-result incorrect">// A/C/D: 负责和敏感是假象，立刻反应强化了哭作为工具的价值</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_014</div>
+        <div class="quiz-question">14. 你觉得"我不够好"：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 自省</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 正确</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 合理</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 可能是认知偏差</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 可能是认知偏差，不是真的不够好</div>
+        <div class="quiz-result incorrect">// A/B/D: 自省过头是认知偏差，不好的不是能力，是反馈模型</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_015</div>
+        <div class="quiz-question">15. 你每天很累：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 正常</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 系统低效</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 应该</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 必然</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 系统低效，不是应该累</div>
+        <div class="quiz-result incorrect">// A/C/D: 正常和应该是借口，累是系统在告诉你它在低效运转</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_016</div>
+        <div class="quiz-question">16. 孩子越来越依赖你：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 可能是结构问题</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 好事</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 正常</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 必然</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 可能是结构问题，不是孩子问题</div>
+        <div class="quiz-result incorrect">// B/C/D: 好事和正常是安慰剂，依赖是结构没有建立自主性的信号</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_017</div>
+        <div class="quiz-question">17. 你不断查资料：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 学习</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 好事</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 可能更混乱</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正确</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 可能反而让系统更混乱</div>
+        <div class="quiz-result incorrect">// A/B/D: 学习和好事是安慰剂，信息越多模型越乱</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_018</div>
+        <div class="quiz-question">18. 孩子变化快你策略也变：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 不稳定会让系统失效</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 灵活</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 聪明</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 正确</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 不稳定会让系统失效</div>
+        <div class="quiz-result incorrect">// A/B/C: 灵活和聪明是假象，策略跟着孩子跑，系统永远建立不起来</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_019</div>
+        <div class="quiz-question">19. 孩子反复出现同样问题：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 正常</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 系统没建立</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 运气</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 无解</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 系统没建立，不是无解</div>
+        <div class="quiz-result incorrect">// A/C/D: 反复是系统没有形成闭环的证据，不是无解</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_020</div>
+        <div class="quiz-question">20. 新手父母的核心问题：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 不努力</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 不负责</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 运气差</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 认知与反馈错位</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 认知与反馈错位，不是努力不够</div>
+        <div class="quiz-result incorrect">// A/B/D: 不是态度问题，是模型和反馈之间的错位</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_021</div>
+        <div class="quiz-question">21. 孩子吃奶时哭：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 一定饿了</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 一定是困了</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 可能是姿势或流量问题</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 吃奶哭可能是多种信号叠加，不是单一原因</div>
+        <div class="quiz-result incorrect">// A/B/D: 一定是饿了或一定是困了是假象，多种信号要一起看</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_022</div>
+        <div class="quiz-question">22. 用了方法A有效，第二天又没效：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 方法A不行</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 孩子变了</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 变量没控制住</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 可能破坏一致性</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 系统本身不稳定，不是方法的问题</div>
+        <div class="quiz-result incorrect">// A/B/C: 有效是偶然，系统没建立才是常态</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_023</div>
+        <div class="quiz-question">23. 孩子夜里哭闹，你开始担心自己带不好：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 正常反应</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 自省过头</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 焦虑影响判断</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 孩子真的有问题</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 自省过头是认知偏差，不是真的有问题</div>
+        <div class="quiz-result incorrect">// A/C/D: 正常反应和焦虑都是假象，自省过头让你的判断失焦</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_024</div>
+        <div class="quiz-question">24. 家里老人说"以前都这样带"：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="true"><span class="option-letter">A</span><span>A. 环境和方法已变化</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 老人有经验</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 照做就行</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 听老人的</span></div>
+        </div>
+        <div class="quiz-result correct">// A: 旧经验不一定适合新环境</div>
+        <div class="quiz-result incorrect">// B/C/D: 老人有经验和现在适用是两回事，环境变了方法也要变</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_025</div>
+        <div class="quiz-question">25. 听说别人孩子已经睡整夜了：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 落后了</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 方法不对</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 节奏不同</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="true"><span class="option-letter">D</span><span>D. 正常表现</span></div>
+        </div>
+        <div class="quiz-result correct">// D: 正常表现，每个孩子节奏不一样</div>
+        <div class="quiz-result incorrect">// A/B/C: 落后和方法不对是焦虑驱动的判断，不是事实</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_026</div>
+        <div class="quiz-question">26. 孩子今天异常哭闘：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 孩子不乖</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 一定有原因</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 发育信号干扰</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 正常</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 异常是系统在告诉你有变化</div>
+        <div class="quiz-result incorrect">// A/C/D: 不乖是假象，异常哭闘一定有意义</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_027</div>
+        <div class="quiz-question">27. 决定不再查资料了：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 放弃学习</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 够用了</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 实践比信息重要</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 资料是骗人的</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 建立系统需要实践，不需要更多碎片信息</div>
+        <div class="quiz-result incorrect">// A/B/D: 放弃学习和够用了都是假象，实践才是建立系统的唯一路径</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_028</div>
+        <div class="quiz-question">28. 你们对孩子的判断经常不一致：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 谁对听谁的</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 沟通不够</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 缺乏统一反馈模型</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 其中一人错了</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 没有统一模型就没法协调</div>
+        <div class="quiz-result incorrect">// A/B/D: 谁对听谁和沟通不够是症状，不是根因</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_029</div>
+        <div class="quiz-question">29. 觉得自己是"差劲的父母"：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 正确评价</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 应该自责</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 判断失焦</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 确实做得不好</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 判断标准错了，不是你差了</div>
+        <div class="quiz-result incorrect">// A/B/D: 正确评价和应该自责都是走偏，差劲是情绪词不是事实词</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_030</div>
+        <div class="quiz-question">30. 孩子出现了问题行为：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 孩子有问题</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="false"><span class="option-letter">B</span><span>B. 要惩罚</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="true"><span class="option-letter">C</span><span>C. 系统在暴露漏洞</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 没办法</span></div>
+        </div>
+        <div class="quiz-result correct">// C: 问题行为是系统的反馈信号</div>
+        <div class="quiz-result incorrect">// A/B/D: 孩子有问题和要惩罚都是走偏，问题行为是系统在告诉你哪里要调整</div>
+      </div>
+            <div class="quiz-card">
+        <div class="quiz-type">TEST_031</div>
+        <div class="quiz-question">31. 带新生儿最不需要的是：</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-answer="a" data-correct="false"><span class="option-letter">A</span><span>A. 耐心</span></div>
+          <div class="quiz-option" data-answer="b" data-correct="true"><span class="option-letter">B</span><span>B. 方法多</span></div>
+          <div class="quiz-option" data-answer="c" data-correct="false"><span class="option-letter">C</span><span>C. 信息</span></div>
+          <div class="quiz-option" data-answer="d" data-correct="false"><span class="option-letter">D</span><span>D. 稳定的反馈模型</span></div>
+        </div>
+        <div class="quiz-result correct">// B: 方法多反而破坏一致性</div>
+        <div class="quiz-result incorrect">// A/C/D: 耐心和信息都是辅助，一致性才是核心</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lesson" id="lesson-6">
+  <div class="summary-section">
+    <h2 style="font-size:22px;font-weight:700;margin-bottom:36px;padding-bottom:10px;border-bottom:1px solid var(--accent);display:inline-block;text-shadow:0 0 20px var(--glow);color:var(--accent);font-family:'Courier New',Courier,monospace;letter-spacing:0.1em">// 第六章：核心总结 //</h2>
+    <div class="big-quote">
+      新手父母不是不会带孩子<br>
+      <span style="color:var(--accent)">而是缺乏反馈模型</span><br>
+      不断强化错误行为
+    </div>
+    <div style="text-align:center;margin:12px 0;font-size:13px;color:var(--gray);font-family:'Courier New',Courier,monospace;letter-spacing:0.05em">// 最小闭环：刺激—反应—结果—强化 //</div>
+    <div class="theory-card" style="text-align:left;max-width:600px;margin:0 auto">
+      <h3>// 核心知识点 //</h3>
+      <div class="strategy-grid">
+        <div class="strategy-item"><h4>建立规律</h4><p>规律是婴儿的框架，规律建立后哭闹会自然减少</p></div>
+        <div class="strategy-item"><h4>观察信号</h4><p>信号是输入，只有观察准确了反应才对</p></div>
+        <div class="strategy-item"><h4>保持一致</h4><p>同一信号同一反应，不要来回变</p></div>
+        <div class="strategy-item"><h4>接受波动</h4><p>系统建立需要时间，波动是正常的</p></div>
+      </div>
+    </div>
+    <div class="theory-card" style="text-align:left;max-width:600px;margin:16px auto 0">
+      <h3>// 延伸阅读 //</h3>
+      <ul class="reading-list">
+        <li><strong>《父母的挑战》</strong> —— 鲁道夫·德雷克斯 | 正面管教理论基础</li>
+        <li><strong>《婴儿与母亲》</strong> —— 唐纳德·温尼科特 | 原始母性专注与足够好母亲</li>
+        <li><strong>《Pendleton手册》</strong> —— 新生儿护理标准参考 | 实用护理操作规范</li>
+      </ul>
+    </div>
+    <div class="author-sig" style="padding-top:20px;">
+      <div style="font-size:13px;color:var(--gray);font-family:'Courier New',Courier,monospace;line-height:1.8;text-align:center;">
+        <div style="margin-bottom:4px">如果你喜欢这些内容 &gt; <span style="color:var(--accent);font-weight:600">请关注抖音：托罗～转啊转</span></div>
+        <div style="margin-bottom:4px">想看什么请留言 <span style="color:var(--accent)">//</span> 并期待你提出宝贵意见</div>
+        <div style="color:var(--accent);letter-spacing:0.05em">// 内容持续更新中 //</div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="next-lesson">
+    <div class="nav-buttons">
+      <button class="btn-prev" data-target="5">// 上一章 //</button>
+      <button class="btn-next" onclick="switchLesson(1)">>> 重启系统 //</button>
+    </div>
+    <div class="page-footer">COPYRIGHT: 抖音作者：托罗～转啊转 | 禁止商业传播 | 禁止二次转载 | 禁止作为收费内容分发 | 内部学习资料禁止商业运作 | 更多资料请私信抖音作者：托罗～转啊转</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var bs=document.getElementById('bootScreen'),bl=document.querySelectorAll('.boot-line'),bp=document.getElementById('bootProgress'),bt=document.getElementById('bootProgressText'),bg=document.getElementById('bootGranted'),bs2=document.getElementById('bootSkip'),ts=bl.length,cs=0,bc=false;
+  function snl(){if(cs<ts){bl[cs].classList.add('visible');cs++;var p=Math.round((cs/ts)*100);bp.style.width=p+'%';bt.textContent='LOADING... '+p+'%';if(cs<ts)setTimeout(snl,280);else setTimeout(sg,400);}}
+  function sg(){bc=true;bg.classList.add('visible');bt.textContent='READY';setTimeout(function(){bs.classList.add('fade-out');setTimeout(function(){bs.style.display='none'},700);},900);}
+  document.addEventListener('keydown',function(e){if(e.code==='Space'&&!bc){e.preventDefault();cs=ts;for(var i=0;i<bl.length;i++)bl[i].classList.add('visible');bp.style.width='100%';bt.textContent='LOADING... 100%';setTimeout(sg,300);}});
+  bs2.addEventListener('click',function(){if(!bc){cs=ts;for(var i=0;i<bl.length;i++)bl[i].classList.add('visible');bp.style.width='100%';bt.textContent='LOADING... 100%';setTimeout(sg,300);}});
+  setTimeout(snl,500);
+})();
+
+function switchLesson(n){
+  var ls=document.querySelectorAll('.lesson'),ts=document.querySelectorAll('.progress-tab');
+  for(var i=0;i<ls.length;i++){ls[i].classList.remove('active');ts[i].classList.remove('active','completed');}
+  document.getElementById('lesson-'+n).classList.add('active');
+  var cur=document.querySelector('.progress-tab[data-lesson="'+n+'"]');
+  cur.classList.add('active');
+  for(var j=1;j<n;j++){document.querySelector('.progress-tab[data-lesson="'+j+'"]').classList.add('completed');}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.progress-tab').forEach(function(t){t.addEventListener('click',function(){switchLesson(parseInt(this.dataset.lesson));});});
+document.querySelectorAll('.btn-next').forEach(function(b){b.addEventListener('click',function(){var t=this.dataset.target;if(t)switchLesson(parseInt(t));});});
+document.querySelectorAll('.btn-prev').forEach(function(b){b.addEventListener('click',function(){var t=this.dataset.target;if(t)switchLesson(parseInt(t));});});
+
+document.querySelectorAll('.quiz-option').forEach(function(o){
+  o.addEventListener('click',function(){
+    var card=this.closest('.quiz-card'),opts=card.querySelectorAll('.quiz-option'),isCorr=this.dataset.correct==='true';
+    opts.forEach(function(opt){opt.classList.remove('selected');opt.style.borderColor='';opt.style.background='';});
+    this.classList.add('selected');
+    card.classList.remove('answered','result-correct','result-incorrect');
+    card.classList.add('answered',isCorr?'result-correct':'result-incorrect');
+    if(!isCorr){opts.forEach(function(opt){if(opt.dataset.correct==='true'){opt.style.borderColor='var(--accent)';opt.style.background='rgba(0,255,0,0.08)';}});}
+  });
+});
+</script>
+</body>
+</html>
