@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爆款优化引擎</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#14141f;--border:#2a2a3a;--accent:#ff6b35;--accent2:#ff3366;--text:#e8e8f0;--dim:#888899;--gold:#ffd700;--silver:#c0c0c0;--bronze:#cd7f32}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;line-height:1.6}
+.container{max-width:800px;margin:0 auto;padding:24px 16px}
+h1{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
+.subtitle{text-align:center;color:var(--dim);font-size:14px;margin-bottom:32px}
+
+/* Steps */
+.step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.step-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.step-title{font-size:16px;font-weight:700}
+
+label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px;font-weight:600}
+input[type="text"],textarea{width:100%;background:#1a1a2e;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:15px;outline:none;transition:border-color .2s}
+input[type="text"]:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+
+/* Score Display */
+.score-section{margin-top:16px}
+.score-total{text-align:center;font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2}
+.score-label{text-align:center;color:var(--dim);font-size:13px;margin-bottom:12px}
+.dimension{margin-bottom:10px}
+.dim-header{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.dim-name{color:var(--text)}
+.dim-value{color:var(--accent);font-weight:700}
+.dim-bar{height:6px;background:#1a1a2e;border-radius:3px;overflow:hidden}
+.dim-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.dim-fill.conflict{background:linear-gradient(90deg,#ff4444,#ff6b35)}
+.dim-fill.emotion{background:linear-gradient(90deg,#ff6b35,#ff3366)}
+.dim-fill.target{background:linear-gradient(90deg,#3366ff,#6644ff)}
+.dim-fill.specific{background:linear-gradient(90deg,#00cc88,#00aa66)}
+
+/* Type Badge */
+.type-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-top:8px}
+.type-反认知{background:rgba(255,107,53,.15);color:#ff6b35;border:1px solid rgba(255,107,53,.3)}
+.type-警告{background:rgba(255,51,102,.15);color:#ff3366;border:1px solid rgba(255,51,102,.3)}
+.type-清单{background:rgba(51,102,255,.15);color:#6688ff;border:1px solid rgba(51,102,255,.3)}
+.type-普通陈述{background:rgba(136,136,153,.15);color:var(--dim);border:1px solid rgba(136,136,153,.3)}
+
+/* Generate Button */
+.btn-generate{width:100%;padding:14px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:transform .1s,box-shadow .2s;margin-top:8px}
+.btn-generate:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,107,53,.3)}
+.btn-generate:active{transform:translateY(0)}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* Results */
+.results{margin-top:24px}
+.results-header{font-size:18px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px;position:relative;transition:border-color .2s}
+.result-card:hover{border-color:rgba(255,107,53,.4)}
+.result-card.rank-1{border-color:rgba(255,215,0,.4);box-shadow:0 0 20px rgba(255,215,0,.08)}
+.result-card.rank-2{border-color:rgba(192,192,192,.3);box-shadow:0 0 15px rgba(192,192,192,.05)}
+.result-card.rank-3{border-color:rgba(205,127,50,.3);box-shadow:0 0 15px rgba(205,127,50,.05)}
+.rank-badge{position:absolute;top:-8px;left:12px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#000}
+.rank-1 .rank-badge{background:var(--gold)}
+.rank-2 .rank-badge{background:var(--silver)}
+.rank-3 .rank-badge{background:var(--bronze)}
+.result-title{font-size:15px;font-weight:600;margin:4px 0 10px 24px;line-height:1.5}
+.result-meta{display:flex;align-items:center;gap:8px;margin-left:24px}
+.result-score{font-size:12px;color:var(--accent);font-weight:700}
+.result-tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.tag-反认知{background:rgba(255,107,53,.12);color:#ff6b35}
+.tag-警告{background:rgba(255,51,102,.12);color:#ff3366}
+.tag-打脸{background:rgba(255,68,68,.12);color:#ff4444}
+.tag-认知拔高{background:rgba(51,102,255,.12);color:#6688ff}
+.tag-具体化{background:rgba(0,204,136,.12);color:#00cc88}
+.result-actions{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+.btn-small{padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--dim);font-size:12px;cursor:pointer;transition:all .15s}
+.btn-small:hover{border-color:var(--accent);color:var(--accent)}
+.btn-copy.copied{border-color:#00cc88;color:#00cc88}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid var(--accent);color:var(--text);padding:10px 20px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* History */
+.history-section{margin-top:32px;padding-top:20px;border-top:1px solid var(--border)}
+.history-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;font-size:13px}
+.history-item .h-title{font-weight:600;margin-bottom:4px}
+.history-item .h-score{color:var(--accent);font-size:12px}
+.history-item .h-time{color:var(--dim);font-size:11px}
+.btn-clear-history{background:transparent;border:1px solid var(--border);color:var(--dim);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:8px}
+.btn-clear-history:hover{border-color:#ff4444;color:#ff4444}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔥 爆款优化引擎</h1>
+<p class="subtitle">强制输入 → 套模板 → 输出结果 → 可复制</p>
+
+<!-- Step 1: 输入原始观点A -->
+<div class="step">
+<div class="step-header">
+<div class="step-num">1</div>
+<div class="step-title">输入原始观点</div>
+</div>
+<label>你的核心观点（一句话）</label>
+<input type="text" id="inputA" placeholder="例：努力一定有回报">
+</div>
+
+<!-- Step 2: 输入矛盾点B -->
+<div class="step">
+<div class="step-header">
+<div class="step-num">2</div>
+<div class="step-title">输入矛盾点</div>
+</div>
+<label>与观点对立的事实/判断</label>
+<input type="text" id="inputB" placeholder="例：大多数人努力方向是错的">
+</div>
+
+<!-- Step 3: 评分预览 -->
+<div class="step">
+<div class="step-header">
+<div class="step-num">3</div>
+<div class="step-title">原标题评分（可选）</div>
+</div>
+<label>如果有现成标题，贴进来打分</label>
+<input type="text" id="inputTitle" placeholder="例：大多数人以为努力很重要，其实方向才是关键">
+<div class="score-section" id="scoreSection" style="display:none">
+<div class="score-total" id="scoreTotal">0</div>
+<div class="score-label">总分（满分100）</div>
+<div id="typeBadge"></div>
+<div class="dimension">
+<div class="dim-header"><span class="dim-name">冲突强度</span><span class="dim-value" id="dConflict">0/30</span></div>
+<div class="dim-bar"><div class="dim-fill conflict" id="bConflict" style="width:0%"></div></div>
+</div>
+<div class="dimension">
+<div class="dim-header"><span class="dim-name">情绪强度</span><span class="dim-value" id="dEmotion">0/30</span></div>
+<div class="dim-bar"><div class="dim-fill emotion" id="bEmotion" style="width:0%"></div></div>
+</div>
+<div class="dimension">
+<div class="dim-header"><span class="dim-name">指向性</span><span class="dim-value" id="dTarget">0/20</span></div>
+<div class="dim-bar"><div class="dim-fill target" id="bTarget" style="width:0%"></div></div>
+</div>
+<div class="dimension">
+<div class="dim-header"><span class="dim-name">具体性</span><span class="dim-value" id="dSpecific">0/20</span></div>
+<div class="dim-bar"><div class="dim-fill specific" id="bSpecific" style="width:0%"></div></div>
+</div>
+</div>
+</div>
+
+<!-- Generate -->
+<button class="btn-generate" id="btnGenerate" onclick="generate()">⚡ 生成优化标题</button>
+
+<!-- Results -->
+<div class="results" id="results" style="display:none">
+<div class="results-header">📋 优化结果</div>
+<div id="resultList"></div>
+</div>
+
+<!-- History -->
+<div class="history-section" id="historySection" style="display:none">
+<div class="results-header">🕐 历史记录</div>
+<div id="historyList"></div>
+<button class="btn-clear-history" onclick="clearHistory()">清空历史</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === 关键词库 ===
+const conflictWords = ["但","其实","却","真相","然而","不是","而是"]
+const strongConflictWords = ["根本不是","完全相反","恰恰相反"]
+const emotionWords = ["吃亏","毁掉","惨","错了","可怕","扎心","后悔","被骗","坑","亏"]
+const strongEmotionWords = ["毁掉","可怕","被骗","扎心"]
+const targetWords = ["你","普通人","大多数人","很多人","大部分人"]
+const typeRules = [
+  {type:"反认知",words:["大多数人","你以为","其实","以为","以为.","以为，"]},
+  {type:"警告",words:["如果你还","迟早","继续","小心","别再"]},
+  {type:"清单",words:["3个","5个","几个","至少","条","种"]}
+]
+
+// === 模板库（可扩展） ===
+const templates = [
+  // 反认知强化
+  {tag:"反认知",gen:(A,B)=>`99%的人都搞错了：${A}根本不是关键，${B}才是`},
+  {tag:"反认知",gen:(A,B)=>`你以为${A}，其实${B}`},
+  {tag:"反认知",gen:(A,B)=>`${A}这件事，真相跟你想的完全相反`},
+  // 警告升级
+  {tag:"警告",gen:(A,B)=>`你继续相信${A}，只会越来越惨`},
+  {tag:"警告",gen:(A,B)=>`${A}这件事，正在悄悄毁掉普通人`},
+  // 认知拔高
+  {tag:"认知拔高",gen:(A,B)=>`关于${A}，大多数人只懂第一层`},
+  {tag:"认知拔高",gen:(A,B)=>`${A}这件事，你至少误解了三年`},
+  // 打脸型
+  {tag:"打脸",gen:(A,B)=>`别再被骗了，${A}根本就是错的`},
+  {tag:"打脸",gen:(A,B)=>`${A}不是问题，${B}才是你该怕的`},
+  // 具体化
+  {tag:"具体化",gen:(A,B)=>`3个原因告诉你，为什么${A}是错的`},
+  {tag:"具体化",gen:(A,B)=>`90%的人在${A}上都踩过坑`},
+  // 混合强化
+  {tag:"反认知",gen:(A,B)=>`都在说${A}，没人告诉你${B}`},
+  {tag:"打脸",gen:(A,B)=>`${A}？别傻了，${B}才是真相`},
+  {tag:"警告",gen:(A,B)=>`还在信${A}？你正在被${B}悄悄吞噬`},
+]
+
+// === 评分 ===
+function scoreTitle(title){
+  let conflict=0,emotion=0,target=0,specific=0
+  if(conflictWords.some(w=>title.includes(w)))conflict+=15
+  if(strongConflictWords.some(w=>title.includes(w)))conflict+=15
+  conflict=Math.min(conflict,30)
+  if(emotionWords.some(w=>title.includes(w)))emotion+=20
+  if(strongEmotionWords.some(w=>title.includes(w)))emotion+=10
+  emotion=Math.min(emotion,30)
+  if(targetWords.some(w=>title.includes(w)))target+=20
+  target=Math.min(target,20)
+  if(/\d+/.test(title))specific+=10
+  if(/[\u4e00-\u9fa5]{2,}(里|中|上|时|后|前|下)/.test(title))specific+=10
+  specific=Math.min(specific,20)
+  const total=Math.min(conflict+emotion+target+specific,100)
+  return{conflict,emotion,target,specific,total}
+}
+
+// === 类型识别 ===
+function detectType(title){
+  for(const rule of typeRules){
+    if(rule.words.some(w=>title.includes(w)))return rule.type
+  }
+  return"普通陈述"
+}
+
+// === 打分标题 ===
+function scoreOriginal(title){
+  if(!title.trim())return
+  const s=scoreTitle(title)
+  const type=detectType(title)
+  document.getElementById('scoreSection').style.display='block'
+  document.getElementById('scoreTotal').textContent=s.total
+  document.getElementById('dConflict').textContent=s.conflict+'/30'
+  document.getElementById('dEmotion').textContent=s.emotion+'/30'
+  document.getElementById('dTarget').textContent=s.target+'/20'
+  document.getElementById('dSpecific').textContent=s.specific+'/20'
+  document.getElementById('bConflict').style.width=(s.conflict/30*100)+'%'
+  document.getElementById('bEmotion').style.width=(s.emotion/30*100)+'%'
+  document.getElementById('bTarget').style.width=(s.target/20*100)+'%'
+  document.getElementById('bSpecific').style.width=(s.specific/20*100)+'%'
+  document.getElementById('typeBadge').innerHTML=`<span class="type-badge type-${type}">${type}型</span>`
+}
+
+// === 生成 ===
+function generate(){
+  const A=document.getElementById('inputA').value.trim()
+  const B=document.getElementById('inputB').value.trim()
+  if(!A){showToast('请输入原始观点');return}
+  if(!B){showToast('请输入矛盾点');return}
+
+  const results=templates.map(t=>{
+    const title=t.gen(A,B)
+    const s=scoreTitle(title)
+    return{title,score:s.total,tag:t.tag}
+  }).sort((a,b)=>b.score-a.score)
+
+  const list=document.getElementById('resultList')
+  list.innerHTML=''
+
+  results.forEach((r,i)=>{
+    const card=document.createElement('div')
+    card.className=`result-card${i<3?' rank-'+(i+1):''}`
+    card.innerHTML=`
+      ${i<3?`<div class="rank-badge">${i+1}</div>`:''}
+      <div class="result-title">${escHtml(r.title)}</div>
+      <div class="result-meta">
+        <span class="result-score">${r.score}分</span>
+        <span class="result-tag tag-${r.tag}">${r.tag}</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn-small btn-copy" onclick="copyText(this,'${escAttr(r.title)}')">复制</button>
+        <button class="btn-small" onclick="replaceTitle('${escAttr(r.title)}')">替换</button>
+      </div>
+    `
+    list.appendChild(card)
+  })
+
+  document.getElementById('results').style.display='block'
+
+  // Save history
+  const history=JSON.parse(localStorage.getItem('hto_history')||'[]')
+  history.unshift({A,B,time:Date.now(),topScore:results[0]?.score||0})
+  if(history.length>20)history.length=20
+  localStorage.setItem('hto_history',JSON.stringify(history))
+  renderHistory()
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escAttr(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+
+function copyText(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='已复制'
+    btn.classList.add('copied')
+    setTimeout(()=>{btn.textContent='复制';btn.classList.remove('copied')},1500)
+  }).catch(()=>showToast('复制失败，请手动复制'))
+}
+
+function replaceTitle(title){
+  document.getElementById('inputTitle').value=title
+  scoreOriginal(title)
+  showToast('已替换到评分区')
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast')
+  t.textContent=msg
+  t.classList.add('show')
+  setTimeout(()=>t.classList.remove('show'),2000)
+}
+
+// === History ===
+function renderHistory(){
+  const history=JSON.parse(localStorage.getItem('hto_history')||'[]')
+  const sec=document.getElementById('historySection')
+  const list=document.getElementById('historyList')
+  if(!history.length){sec.style.display='none';return}
+  sec.style.display='block'
+  list.innerHTML=''
+  history.forEach(h=>{
+    const d=new Date(h.time)
+    const ts=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`
+    const item=document.createElement('div')
+    item.className='history-item'
+    item.innerHTML=`<div class="h-title">${escHtml(h.A)} → ${escHtml(h.B)}</div><span class="h-score">最高${h.topScore}分</span> <span class="h-time">${ts}</span>`
+    item.style.cursor='pointer'
+    item.onclick=()=>{
+      document.getElementById('inputA').value=h.A
+      document.getElementById('inputB').value=h.B
+      showToast('已填入，点击生成')
+      window.scrollTo({top:0,behavior:'smooth'})
+    }
+    list.appendChild(item)
+  })
+}
+
+function clearHistory(){
+  localStorage.removeItem('hto_history')
+  renderHistory()
+  showToast('历史已清空')
+}
+
+// === Live score on title input ===
+document.getElementById('inputTitle').addEventListener('input',function(){
+  scoreOriginal(this.value)
+})
+
+// Init
+renderHistory()
+</script>
+</body>
+</html>
